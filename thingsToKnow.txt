@@ -1,0 +1,28 @@
+node.js
+-know concept of callbacks and asynchronous
+-node.js runs on a single thread -> blocking IO is bad
+-know how http requests (GET, POST, etc) and responses work
+
+connect
+-framework for node.js
+-concept of middleware
+-augments res and req objects
+
+express.js
+-framework built on top of connect
+-similar to connect, has better functionality such as simple routing
+
+koa notes
+-framework built on top of connect and very similar to express, uses co and generators to asynchronously execute functions -> No more callback hell (go search it up, it’s very real)
+-in express.js, middleware functions are only handled once, koa enables each middleware layer to handle it twice (except the most bottom layer)
+-many express functionalities are moved to koa middleware (routing is one example)
+-this stores context and encapsulates request and response
+when using koa, yield next moves to next middleware; upon return from last middleware, state is saved and resume execution from yielded functions -> imagine it like a function stack
+-detailed article about koa: http://realguess.net/2014/01/17/a-new-nodejs-web-framework-koa/
+-yield vs yield*: http://jongleberry.com/delegating-yield.html (delegating generators is good! <- speed up of request handling, can think of it as being analogous to inlining in c++ )
+-Koa overview from one of the authors: http://jongleberry.com/koa.html
+-**learn to use the bluebird api to convert callback functions into promises: https://github.com/petkaantonov/bluebird/blob/master/API.md <- how we’ll be converting node callback functions to promises
+simple example for the above: http://blog.peterdecroos.com/blog/2014/02/01/koa-zero-to-todo-list/
+
+Templating engine (if we need one)
+-will be using Handlebars (see koa-hbs)
