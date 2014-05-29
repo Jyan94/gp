@@ -1,0 +1,32 @@
+div.pure-g-r.banner
+  div.pure-u-3-4.banner-inner
+    if user
+      div.banner-nav
+        div#divide
+          h4
+            a(href='/') Newsfeed
+          h4
+            a(href='/pages/#{user.user_id}')=user.first_name
+        div.pure-hidden-phone
+          span
+            a.fui-gear
+        div.pure-hidden-desktop.pure-hidden-tablet
+          span
+            a.fui-list(href='/')
+      div.search
+        h2.pure-hidden-phone
+          a(href='/')= title
+        h2.pure-hidden-desktop.pure-hidden-tablet C
+        form#searchform.pure-form.pure-hidden-mini(method='get')
+          input#autocomplete.input.pure-input-1-4(type='text' name='search' placeholder='Looking for something?')
+          button#searchbutton.pure-button.button-primary.input(type='submit')
+            span.fui-search
+      div#settings
+        a(href='/logout') Logout
+    else
+      form.pure-form(action='/login' method='post')
+        input.input(type='text' name='email' placeholder='email' autofocus=true required=true)
+        input.input(type='password' name='password' placeholder='password' required=true)
+        input.pure-button.button-primary.input(type='submit' value='Submit')
+      h1
+        a(href='/')=title
