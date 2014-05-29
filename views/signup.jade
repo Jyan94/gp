@@ -15,6 +15,9 @@ html(lang='en')
             hr
             form#signup.pure-form.pure-form-aligned(action='/signup' method='post')
               fieldset
+                label(for='username') Username
+                input(type='text' name='username' placeholder='Username' autofocus=true required=true)
+              fieldset
                 label(for='first_name') First name
                 input(type='text' name='first_name' placeholder='First name' autofocus=true required=true)
               fieldset
@@ -37,6 +40,8 @@ html(lang='en')
             p Emails do not match
           div#passmatch
             p Passwords do not match
+          div#badusername
+            p Username is in use
           div#bademail
             p Email address is in use
     script(type='application/javascript' src='/js/signup.js')

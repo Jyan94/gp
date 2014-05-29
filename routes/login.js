@@ -4,32 +4,40 @@ var app = module.exports = express();
 var configs = require('config/index');
 configs.configure(app);
 
+var async = require('async');
 var User = require('models/user');
 var cql = configs.cassandra.cql;
-
-var ERROR = {
-  'message': 'incorrect username'
-};
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+var messages = {
+  incorrect_username: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try a different username and try again, or sign up."] }',
+  incorrect_password: '{ "title": "Incorrect password", "parts": ["The provided username and password didn\'t match anyone in our records.", "Please check your spelling and try again."] }',
+};
+
 function localStrategyVerify(username, password, done) {
   User.select('username', username, function (err, result) {
+    console.log(result);
     if (err) {
       return done(err);
     }
     if (!result) {
-      return done(null, false, ERROR);
+      return done(null, false, {message: messages.incorrect_username});
     }
     //do bcrypt compare here
-    return done(null, result);
+    if (password !== result.password) {
+      return done(null, false, {message: messages.incorrect_password});
+    } else {
+      console.log('woohoo');
+      return done(null, result);
+    }
   });
 }
 
 passport.use(new LocalStrategy({
-  usernameField: 'user',
-  passwordField: 'world'
+  usernameField: 'username',
+  passwordField: 'password'
 },
 function(username, password, done) {
   localStrategyVerify(username, password, done);
@@ -47,50 +55,14 @@ passport.deserializeUser(function (id, done) {
 
 app.use(passport.initialize());
 app.use(passport.session());
-/*app.get('/', function(req, res) {
-  res.render('index');
-});*/
 
-app.get('/', function(req, res) {
-  var errors = req.flash();
-  console.log(errors);
-  var results = [];
-  if (errors.error) {
-    for (var i = 0; i < errors.error.length; i++) {
-      results.push(JSON.parse(errors.error[i]));
-    } 
-  }
-  res.render('login', { flash: results });
-});
-
-app.get('/index', function(req, res) {
-  res.render('index');
-});
-
-var responseValues = {
-  emailMismatch: 1,
-  passwordMismatch: 2,
-  userTaken: 3,
-  emailTaken: 4,
-  success: 5
-};
-
-function processSignUp() {
-  var user_id = cql.types.uuid();
-
-}
-
-app.route('/signup')
+app.route('/login')
 .get(function(req, res) {
-  res.render('signup');
+  var results = [];
+  res.render('login.jade', { flash: results });
 })
-.post(function(req, res) {
-
-});
-
-app.post('/',
-  passport.authenticate('local', { successRedirect: '/',
-                                   failureRedirect: '/',
+.post(passport.authenticate('local', { successRedirect: '/',
+                                   failureRedirect: '/login',
                                    failureFlash: true }));
 
-app.listen(3000);
+//app.listen(3000);
