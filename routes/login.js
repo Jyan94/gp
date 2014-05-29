@@ -1,17 +1,15 @@
-var koa = require('koa');
-var app = koa();
-var middlewares = require('koa-middlewares');
-var flash = require('koa-flash');
-var router = require('koa-router');
-var passport = require('koa-passport');
-var views = require('koa-views');
-app.use(middlewares.session({
-  secret : 'my secret',
-  key : 'sid',
-  cookie : {
-    secure: true
-  }
-}));
+require('rootpath')();
+var express = require('express');
+var app = module.exports = express();
+var configs = require('config/index');
+configs.configure(app);
+
+app.all('/', function(req, res) {
+  res.render('index');
+});
+
+app.listen(3000);
+/*
 app.use(flash);
 app.use(router);
 
@@ -40,13 +38,13 @@ passport.serializeUser(function (user, done) {
   done(null, user.user_id);
 });
 
-passport.deserializeUser(function (id, done) {
+passport.deserializeUser(function (id, done) {*/
 /*
     var query = 'SELECT * FROM users WHERE user_id=?';
     client.executeAsPrepared(query, [id], cql.types.consistencies.one, function (err, user) {
       done(err, user.rows[0]);
     });
- */
+ *//*
 });
 
 app.use(passport.initialize()).use(passport.session());
@@ -80,3 +78,4 @@ app.get('/auth/facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/',
                                       failureRedirect: '/login' }));
+                                      */

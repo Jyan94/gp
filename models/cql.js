@@ -4,9 +4,9 @@
 'use strict';
 (require('rootpath')());
 
-var cassandra = require('config/index');
-var client = cassandra.client;
-var cql = cassandra.cql;
+var configs = require('config/index');
+var client = configs.cassandra.client;
+var cql = configs.cassandra.cql;
 
 exports.query = function(cql, params, consistency, callback) {
   //console.log(callback.toString());
