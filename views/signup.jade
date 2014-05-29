@@ -1,0 +1,30 @@
+doctype html
+html(lang='en')
+head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title GoProphet Login Example
+  body
+    form(action='/signup', method='post')
+      p
+        label
+          | Create Username:
+          input(type='text', name='username', value='test')
+      p
+        label
+          | Password:
+          input(type='password', name='password', value='test')
+      p
+        label
+          | Verify Password:
+          input(type='password', name='password', value='test')
+      p
+        label
+          | Email Address:
+          input(type='password', name='password', value='test')
+      p
+        label
+          | Verify Email Address:
+          input(type='password', name='password', value='test')
+      p
+        button(type='submit') Sign Up

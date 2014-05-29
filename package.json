@@ -1,0 +1,50 @@
+{
+  "name": "goprophet",
+  "version": "0.0.0",
+  "description": "goprophet website",
+  "main": "app.js",
+  "dependencies": {
+    "bcrypt": "^0.7.8",
+    "body-parser": "1.2.2",
+    "cheerio": "^0.15.0",
+    "connect-busboy": "0.0.1",
+    "connect-cassandra-cql": "~0.1.2",
+    "connect-flash": "~0.1.1",
+    "express": "4.x",
+    "cookie-parser": "1.1.x",
+    "express-session": "1.2.x",
+    "express-mailer": "^0.2.3",
+    "image-size": "^0.2.3",
+    "jade": "~1.3.0",
+    "knox": "^0.8.9",
+    "method-override": "1.0.x",
+    "node-cassandra-cql": "^0.5.0",
+    "passport": "~0.2.0",
+    "passport-facebook": "^1.0.3",
+    "passport-local": "~0.1.6",
+    "request": "^2.34.0",
+    "s3-upload-stream": "^0.2.0"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harrisonzhao/goprophet"
+  },
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/harrisonzhao/goprophet/bugs.txt"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-less": "^0.11.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-mocha": "~0.4.10",
+    "co-mocha": "0.0.x",
+    "mocha": "^1.19.0",
+    "should": "^3.3.2"
+  }
+}
