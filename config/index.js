@@ -3,19 +3,21 @@ var bodyParser = require('body-parser');
 var cookieparser = require('cookie-parser');
 var compress = require('compression');
 var express = require('express');
-//var CassandraStore = require('connect-cassandra-cql')(express);
-var cql = require('node-cassandra-cql');
 var flash = require('connect-flash');
 var methodOverride = require('method-override');
 var session = require('express-session');
 var path = require('path');
 
+//cassandra configurations
 var cassandraConfig = {
   hosts: ['localhost'],
   keyspace: 'goprophet'
 };
+var cql = require('node-cassandra-cql');
+var CassandraStore = require('connect-cassandra-cql')(session);
 var client = new cql.Client(cassandraConfig);
 
+//exported configurations
 var config = {
   configure: function(app) {
     app.set('views', path.join(__dirname, "../views"));
@@ -31,7 +33,8 @@ var config = {
       cookie: {
         secure: true
       },
-      //store: new CassandraStore({client : client})
+      //make sure cassandra is running for this to work
+      store: new CassandraStore({client: client})
     }));
   },
   cassandra: {
