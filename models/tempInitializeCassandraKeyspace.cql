@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
 
 CREATE TABLE IF NOT EXISTS pending_bets (
     bet_id timeuuid PRIMARY KEY,
-    long_better_id text,
-    short_better_id text,
+    user_id text,
+    longPos boolean,
     bet_value int,
     multiplier int,
     game_id uuid,
