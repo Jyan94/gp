@@ -1,30 +1,42 @@
 doctype html
 html(lang='en')
-head
-    meta(charset='utf-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    title GoProphet Login Example
+  head
+    include base_head
   body
-    form(action='/signup', method='post')
-      p
-        label
-          | Create Username:
-          input(type='text', name='username', value='test')
-      p
-        label
-          | Password:
-          input(type='password', name='password', value='test')
-      p
-        label
-          | Verify Password:
-          input(type='password', name='password', value='test')
-      p
-        label
-          | Email Address:
-          input(type='password', name='password', value='test')
-      p
-        label
-          | Verify Email Address:
-          input(type='password', name='password', value='test')
-      p
-        button(type='submit') Sign Up
+    div.pure-g-r
+      div.pure-u-1-1.banner
+        div.pure-u-3-4.banner-inner
+          h1
+            a(href='/')=title
+      div.pure-u-1-2.content
+        div.bounding-box.rounded
+          div.padded
+            h3 Create a user
+            hr
+            form#signup.pure-form.pure-form-aligned(action='/signup' method='post')
+              fieldset
+                label(for='first_name') First name
+                input(type='text' name='first_name' placeholder='First name' autofocus=true required=true)
+              fieldset
+                label(for='last_name') Last name
+                input(type='text' name='last_name' placeholder='Last name' required=true)
+              fieldset
+                label(for='email') Email
+                input(type='email' name='email' placeholder='Email' required=true)
+              fieldset
+                label(for='email2') Reenter email
+                input(type='email' name='email2' placeholder='Reenter email' required=true)
+              fieldset
+                label(for='password') Password
+                input(type='password' name='password' placeholder='Password' required=true)
+              fieldset
+                label(for='password2') Reenter password
+                input(type='password' name='password2' placeholder='Reenter password' required=true)
+              input.pure-button.button-primary(type='submit' value='Submit')
+          div#emailmatch
+            p Emails do not match
+          div#passmatch
+            p Passwords do not match
+          div#bademail
+            p Email address is in use
+    script(type='application/javascript' src='/js/signup.js')

@@ -1,0 +1,43 @@
+doctype html
+html(lang='en')
+  head
+    include base_head
+  body
+    div.pure-g-r
+      div.pure-u-1-1.banner
+        div.pure-u-3-4.banner-inner
+          h1
+            a(href='/')=title
+      div.pure-u-1-2.content
+        div.bounding-box.rounded
+          div.padded
+            h3 Log in to #{title}
+            hr
+            div.pure-g-r
+              div.pure-u-11-24.relative
+                div.error.rounded
+                  div.padded
+                    if flash.length > 0
+                      each error in flash
+                        h4=error.title
+                        for part in error.parts
+                          p=part
+                    else
+                      h4 An error occurred
+                      asd
+                      p Sorry! It looks like we messed up. Unfortunately, that's all we know.
+                      p We'll dispatch the nerds right away.
+              div.pure-u-1-12
+              div.pure-u-11-24
+                form#login.pure-form.pure-form-stacked(action='/login' method='post')
+                  fieldset
+                    label(for='email') Email
+                    input(type='text' name='email' placeholder='email' autofocus=true required=true)
+                  fieldset
+                    label(for='password') Password
+                    input(type='password' name='password' placeholder='password' required=true)
+                div.button-align
+                  input.pure-button.button-primary.left(type='submit' form='login' value='Log in')
+                  p or
+                  form
+                    input.pure-button.button-primary.right(onClick='parent.location="signup"' value='Sign up here')
