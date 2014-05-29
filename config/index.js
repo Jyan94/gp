@@ -28,6 +28,11 @@ var config = {
     app.use(bodyParser());
     app.use(cookieparser());
     app.use(methodOverride());
+    //basic error handler
+    app.use(function(err, req, res, next) {
+      console.error(err.stack);
+      res.send(500, 'Something broke!');
+    });
     app.use(session({
       secret: 'secret-key',
       cookie: {

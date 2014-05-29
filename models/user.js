@@ -3,7 +3,6 @@ require('rootpath')();
 
 var cassandra = require('./cql');
 var cql = cassandra.cql;
-var passport = require('koa-passport');
 var multiline = require('multiline');
 
 var INSERT_USER_CQL = multiline(function() {;/*
@@ -79,7 +78,7 @@ function chainSelectQuery(field, value, callback) {
     INDEX_USERS_CQL + ' (' + field + ');', 
     [],
     cql.types.consistencies.one, 
-    function(err, result) {
+    function(err) {
       cassandra.queryOneRow(
         SELECT_USER_CQL + ' ' + field + ' = ?;',
         [value], 
