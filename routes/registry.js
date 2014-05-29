@@ -67,6 +67,19 @@ app.get('/index', function(req, res) {
   res.render('index');
 });
 
+var responseValues = {
+  emailMismatch: 1,
+  passwordMismatch: 2,
+  userTaken: 3,
+  emailTaken: 4,
+  success: 5
+};
+
+function processSignUp() {
+  var user_id = cql.types.uuid();
+
+}
+
 app.route('/signup')
 .get(function(req, res) {
   res.render('signup');
