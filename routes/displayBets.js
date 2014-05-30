@@ -7,14 +7,11 @@ configs.configure(app);
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 
-app.use('/', require('../app.js'));
-
 /* Routing */
 app.get('/', function (req, res) {
   var rows;
-  console.log(req.user);
   var betinfo = [];
-  var query = 'SELECT bet_id, user_id, long_position, bet_value, multiplier FROM pending_bets';
+  var query = 'SELECT bet_id, username, long_position, bet_value, multiplier FROM pending_bets';
   client.executeAsPrepared(query,
     cql.types.consistencies.one,
     function(err, result){
@@ -22,7 +19,7 @@ app.get('/', function (req, res) {
       for (var i = 0; i < rows.length; i++) {
         betinfo[i] = {
           bet_id: rows[i].bet_id,
-          user_id: rows[i].user_id,
+          username: rows[i].username,
           long_position: rows[i].long_position,
           bet_value: rows[i].bet_value,
           multiplier: rows[i].multiplier
@@ -37,12 +34,12 @@ app.post('/submitForm', function (req, res) {
   if (req.body.longOrShort === 'Above') {
     var queries = [
     {
-      query: 'INSERT INTO pending_bets (bet_id, user_id, long_position, bet_value, multiplier) VALUES (?, ?, ?, ?, ?)',
-      params: [betId, req.body.namePerson, true, parseInt(req.body.price), parseInt(req.body.shareNumber)]
+      query: 'INSERT INTO pending_bets (bet_id, user_id, username, long_position, bet_value, multiplier) VALUES (?, ?, ?, ?, ?, ?)',
+      params: [betId, req.user.user_id, req.user.username, true, parseInt(req.body.price), parseInt(req.body.shareNumber)]
     },
     {
       query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
-      params: [req.body.namePerson, betId]
+      params: [req.user.user_id, betId]
     }
     ];
     client.executeBatch(queries, cql.types.consistencies.one, function(err) {
@@ -57,12 +54,12 @@ app.post('/submitForm', function (req, res) {
   else if (req.body.longOrShort === 'Under') {
     var queries1 = [
     {
-      query: 'INSERT INTO pending_bets (bet_id, user_id, ong_position, bet_value, multiplier) VALUES (?, ?, ?, ?, ?)',
-      params: [betId, req.body.namePerson, false, parseInt(req.body.price), parseInt(req.body.shareNumber)]
+      query: 'INSERT INTO pending_bets (bet_id, user_id, username, long_position, bet_value, multiplier) VALUES (?, ?, ?, ?, ?, ?)',
+      params: [betId, req.user.user_id, req.user.username, false, parseInt(req.body.price), parseInt(req.body.shareNumber)]
     },
     {
       query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
-      params: [req.body.namePerson, betId]
+      params: [req.user.user_id, betId]
     }
     ]
     client.executeBatch(queries1, cql.types.consistencies.one, function(err) {

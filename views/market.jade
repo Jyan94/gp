@@ -13,7 +13,6 @@ html(lang="en")
           form#betForm.pure-form(action='/submitForm' method='post')
             input(type='integer' name='price' placeholder='Price' autofocus=true required=true style='width: 100px')
             input(type='integer' name='shareNumber' placeholder='Number of Shares' required=true style='width: 100px')
-            input(type='text' name='namePerson' placeholder='Insert Name' required=true style='width: 100px')
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
             | Above
             input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
@@ -25,7 +24,7 @@ html(lang="en")
             div.leftsidehome
               center
                 div(id="shown_first" style='display: inline')
-                  h2=item.user_id
+                  h2=item.username
             div.rightsidehome
               center
                 a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
@@ -40,7 +39,7 @@ html(lang="en")
             div.rightsidehome
               center
                 div(id="shown_first" style='display: inline')
-                  h2=item.user_id
+                  h2=item.username
             div.leftsidehome
               center
                 a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').

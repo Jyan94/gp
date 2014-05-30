@@ -36,7 +36,7 @@ var config = {
     app.use(session({
       secret: 'secret-key',
       cookie: {
-        secure: true
+        secure: false
       },
       //make sure cassandra is running for this to work
       store: new CassandraStore({client: client})

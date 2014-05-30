@@ -21,14 +21,15 @@ CREATE TABLE IF NOT EXISTS users(
 );
 
 CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
-    user_id text PRIMARY KEY,
+    user_id uuid PRIMARY KEY,
     bet_id timeuuid
 );
 
 CREATE TABLE IF NOT EXISTS pending_bets (
     bet_id timeuuid PRIMARY KEY,
-    user_id text,
-    longPos boolean,
+    username text,
+    user_id uuid,
+    long_position boolean,
     bet_value int,
     multiplier int,
     game_id uuid,
