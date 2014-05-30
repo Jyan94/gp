@@ -7,6 +7,8 @@ configs.configure(app);
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 
+app.use('/', require('../app.js'));
+
 /* Routing */
 app.get('/', function (req, res) {
   var rows;
@@ -74,38 +76,42 @@ app.post('/submitForm', function (req, res) {
 });
 
 
-/*app.post('/addBets', function (req, res) {
+app.post('/addBets', function (req, res) {
 
-  var query0 = 'SELECT user_id, bet_value, multiplier FROM pending_bets WHERE bet_id = ?'
-  var params0 = [req.params.bet_id];
+  var bet_id = req.body.bet_id;
+  var query0 = 'SELECT username, bet_value, multiplier FROM pending_bets WHERE bet_id = ?'
+  var params0 = [bet_id];
   client.executeAsPrepared(query0, params0, cql.types.consistencies.one, function(err, result) {
     if (err) {
       console.log(err);
     }
     else {
-      var long_better = result.rows[0].user_id;
+      var long_better = result.rows[0].username;
+      console.log(long_better);
       var bet_value = result.rows[0].bet_value;
+      console.log(bet_value);
       var multiplier = result.rows[0].multiplier
+      console.log(multiplier);
       var queries = [
         {
           query: 'DELETE FROM pending_bets WHERE bet_id = ?',
-          params: [req.params.bet_id]
+          params: [bet_id]
         },
         {
           query: 'INSERT INTO current_bets (bet_id, long_better_id, short_better_id, bet_value, multiplier) VALUES (?, ?, ?, ?, ?)',
-          params: [req.params.bet_id, long_better, req.user.user_id, bet_value, multiplier]
+          params: [bet_id, long_better, req.user.username, bet_value, multiplier]
         },
         {
           query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
-          params: [req.user.user_id, req.params.bet_id]
+          params: [req.user.user_id, bet_id]
         }
       ];
-      client.executeAsPrepared(queries, cql.types.consistencies.one, function(err) {
+      client.executeBatch(queries, cql.types.consistencies.one, function(err) {
         if (err) {
           console.log(err);
         }
       })
     }
   })
-})*/
+})
 app.listen(3000);

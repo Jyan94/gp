@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS users(
     VIP_status varint
 );
 
+CREATE INDEX ON users (username);
+CREATE INDEX ON users (email);
+
 CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
     user_id uuid PRIMARY KEY,
     bet_id timeuuid

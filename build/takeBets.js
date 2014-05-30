@@ -1,7 +1,8 @@
 $('bet').each(function(index, element) {
   $('#'+element.id).click(function(e) {
     e.preventDefault();
-    var url = $(element).attr('href');
+    console.log('1');
+    var bet_id = $(element).attr('href');
     var data = {bet_id: bet_id};
     $.ajax({
       type: 'POST',
