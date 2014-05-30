@@ -64,5 +64,4 @@ app.route('/login')
 .post(passport.authenticate('local', { successRedirect: '/',
                                    failureRedirect: '/login',
                                    failureFlash: true }));
-
 //app.listen(3000);
