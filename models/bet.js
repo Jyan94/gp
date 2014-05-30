@@ -7,9 +7,9 @@ var multiline = require('multiline');
 var INSERT_USER_CQL = multiline(function() {;/*
   INSERT INTO users (
     user_id, email, verified, verified_time, username, password, first_name,
-    last_name, age, address, payment_info, money, fbid, VIP_status, image
+    last_name, age, address, payment_info, money, fbid, VIP_status
   ) VALUES 
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 */});
 exports.insert = function (fields, callback) {
   //parse values
@@ -63,22 +63,58 @@ exports.update = function (user_id, fields, params, callback) {
     });
 };
 
-var SELECT_USER_CQL = multiline(function () {;/*
-  SELECT * FROM users WHERE
+var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {;/*
+  SELECT * FROM
 */});
+var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {;/*
+  WHERE bet_id IN
+*/});
+exports.selectMultiple = function (bets_table, params, callback) {
+  var paramsLength = params.length;
+  var filter = '';
 
-var allowed_fields = ['user_id', 'username', 'email'];
+  for (var i = 0; i < paramsLength; i++) {
+    filter += '?';
 
-exports.select = function (field, value, callback) {
-  if (allowed_fields.indexOf(field) < 0) {
-    callback(new Error(field + ' is not a searchable field.'));
-  } else {
-    cassandra.queryOneRow(
-      SELECT_USER_CQL + ' ' + field + ' = ?;',
-      [value], 
-      cql.types.consistencies.one, 
-      function(err, result) {
-        callback(err, result);
-    });
+    if (i < (paramsLength - 1)) {
+      filter += ', ';
+    }
   }
-};
+
+  cassandra.query(SELECT_BETS_MULTIPLE_CQL_1 + ' ' + bets_table + ' ' + SELECT_BETS_MULTIPLE_CQL_2 + ' (' + filter + ');',
+    params, cql.types.consistencies.one,
+    function (err, result) {
+      console.log(result);
+      callback(err, result);
+    });
+}
+
+var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {;/*
+  SELECT * FROM user_id_to_bet_id WHERE
+    user_id = ?;
+*/});
+exports.selectUsingUserID = function (bets_table, user_id, callback) {
+  console.log(callback);
+  var betIDs = [];
+
+  cassandra.query(SELECT_BETS_USING_USER_ID_CQL,
+      [user_id], cql.types.consistencies.one, 
+      function(err, result) {
+        if (err) {
+          callback(err);
+        }
+
+        if (result) {
+          for (var i = 0; i < result.length; i++) {
+            betIDs[i] = result[i].bet_id;
+          }
+
+          exports.selectMultiple(bets_table, betIDs, function (err, result) {
+            callback(err, result);
+          });
+        }
+        else {
+          callback(err);
+        }
+    });
+}
