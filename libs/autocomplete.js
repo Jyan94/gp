@@ -10,7 +10,7 @@ app.use('/', importedapp);
 var client = configs.client;
 var cql = configs.cql;
 
-app.get('/autocomp', function(req,res) {
+app.get('/autocomplete', function(req,res) {
   console.log('woohoo');
   var search =[];
   var query = 'SELECT player_id, first_name, last_name FROM players';
@@ -24,8 +24,7 @@ app.get('/autocomp', function(req,res) {
         for (var i = 0; i < rows.length; i++) {
           search[i] = {
             label: rows[i].first_name + ' ' + rows[i].last_name,
-            player_id: rows[i].player_id,
-            image: rows[i].image
+            player_id: rows[i].player_id
           };
         }
       }
@@ -34,4 +33,7 @@ app.get('/autocomp', function(req,res) {
   });
 });
 
+app.get('/', function(req, res) {
+  res.render('market', {betinfo : []});
+});
 app.listen(3000);
