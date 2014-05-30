@@ -20,15 +20,19 @@ CREATE TABLE IF NOT EXISTS users(
     VIP_status varint
 );
 
+CREATE INDEX ON users (username);
+CREATE INDEX ON users (email);
+
 CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
-    user_id text PRIMARY KEY,
+    user_id uuid PRIMARY KEY,
     bet_id timeuuid
 );
 
 CREATE TABLE IF NOT EXISTS pending_bets (
     bet_id timeuuid PRIMARY KEY,
-    long_better_id text,
-    short_better_id text,
+    username text,
+    user_id uuid,
+    long_position boolean,
     bet_value int,
     multiplier int,
     game_id uuid,

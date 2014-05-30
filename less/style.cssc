@@ -933,8 +933,8 @@ input {
 /*----------------------------------------------------------------------------*/
 .linkcontainer {
   width: 980px;
-  height: 50px;
-  margin-bottom: 5px;
+  height: 80px;
+  margin-bottom: 15px;
   background-color: white;
   box-shadow: 0px 1px 4px #888;
   font-family: 'Roboto Condensed', 'Helvetica', 'Arial', 'sans-serif';
@@ -950,23 +950,16 @@ input {
 .leftsidehome {
   padding: 5px 5px 5px 10px;
   float: left;
-  width: 35%;
-  height: 40px;
+  width: 50%;
+  height: 50px;
   border-right: 2px solid #cecece;
   border-radius: 0px;
 }
 .rightsidehome {
-  padding: 5px 5px 5px 10px;
+  padding: 5px 5px 5px 5px;
   float: right;
-  width: 35%;
-  height: 40px;
-  border-left: 2px solid #cecece;
-  border-radius: 0px;
-}
-.centersidehome {
-  padding: 5px 5px 5px 10px;
-  float: center;
-  height: 40px;
+  width: 50%;
+  height: 50px;
 }
 /*----------------------------------------------------------------------------*/
 /* Formatting Comments                                                        */

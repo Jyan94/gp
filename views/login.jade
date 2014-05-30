@@ -17,22 +17,12 @@ html(lang='en')
               div.pure-u-11-24.relative
                 div.error.rounded
                   div.padded
-                    if flash.length > 0
-                      each error in flash
-                        h4=error.title
-                        for part in error.parts
-                          p=part
-                    else
-                      h4 An error occurred
-                      asd
-                      p Sorry! It looks like we messed up. Unfortunately, that's all we know.
-                      p We'll dispatch the nerds right away.
               div.pure-u-1-12
               div.pure-u-11-24
                 form#login.pure-form.pure-form-stacked(action='/login' method='post')
                   fieldset
-                    label(for='email') Email
-                    input(type='text' name='email' placeholder='email' autofocus=true required=true)
+                    label(for='username') Username
+                    input(type='text' name='username' placeholder='username' autofocus=true required=true)
                   fieldset
                     label(for='password') Password
                     input(type='password' name='password' placeholder='password' required=true)

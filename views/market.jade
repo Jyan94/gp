@@ -4,24 +4,48 @@ html(lang="en")
     include base_head
   body
     div.content
+      //div#prof-behind
+        div(style='height: 400px; width: 600px; background-size: cover; background-position: center')
+        br
+
       div.feed
         center
           form#betForm.pure-form(action='/submitForm' method='post')
             input(type='integer' name='price' placeholder='Price' autofocus=true required=true style='width: 100px')
             input(type='integer' name='shareNumber' placeholder='Number of Shares' required=true style='width: 100px')
-            input(type='text' name='namePerson' placeholder='Insert Name' required=true style='width: 100px')
-            input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' required=true)
+            input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
             | Above
             input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
             | Under
             input.pure-button.button-primary(type='submit')
       each item in betinfo
-        div.linkcontainer
-          div.leftsidehome
-            //h1
-              a(href='http://localhost:3000/'+item.short_better_id) #{item.short_better_id}
-              h2=item.long_better_id + " " + item.short_better_id + " " + item.multiplier + " " + item.bet_value
-            div(id="shown_first" style='display: inline')
-              h2=item.long_better_id + " " + item.short_better_id + " " + item.bet_value + " " + item.multiplier
-              a(href=item.url class = 'bet' id='bet'+bet_id).
-                Take Bet!
+        if (item.long_position===false)
+          div.linkcontainer
+            div.leftsidehome
+              center
+                div(id="shown_first" style='display: inline')
+                  h2=item.username
+            div.rightsidehome
+              center
+                a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
+                  Take Bet!
+            div.centersidehome
+              center
+                h5="price: " + item.bet_value
+                h5="multiplier: " + item.multiplier
+
+        else
+          div.linkcontainer
+            div.rightsidehome
+              center
+                div(id="shown_first" style='display: inline')
+                  h2=item.username
+            div.leftsidehome
+              center
+                a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
+                  Take Bet!
+            div.centersidehome
+              center
+                h5="price: " + item.bet_value
+                h5="multiplier: " + item.multiplier
+    script(type='application/javascript' src='/js/takeBets.js')
