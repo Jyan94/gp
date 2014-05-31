@@ -6,7 +6,7 @@ div.pure-g-r.banner
           h4
             a(href='/') Newsfeed
           h4
-            a(href='/pages/#{user.user_id}')=user.first_name
+            a(href='/market/#{user.player_id}')=player.first_name
         div.pure-hidden-phone
           span
             a.fui-gear
@@ -18,7 +18,7 @@ div.pure-g-r.banner
           a(href='/')= title
         h2.pure-hidden-desktop.pure-hidden-tablet C
         form#searchform.pure-form.pure-hidden-mini(method='get')
-          input#autocomplete.input.pure-input-1-4(type='text' name='search' placeholder='Looking for something?')
+          input#autocomplete.input.pure-input-1-4(type='text' name='search' placeholder='Looking for a player?')
           button#searchbutton.pure-button.button-primary.input(type='submit')
             span.fui-search
       div#settings

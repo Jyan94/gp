@@ -72,7 +72,8 @@ function processSignUp(req, res) {
     null, //payment_info
     0, //money
     null, //fbid
-    0  //VIP_status
+    0,  //VIP_status
+    null //image
     ];
     User.insert(fields, function(err) {
       console.log(err);

@@ -1,0 +1,35 @@
+doctype html
+html(lang="en")
+  head
+    include base_head
+  body
+    div.pure-g-r
+      div.pure-u-1-1.banner
+        div.pure-u-3-4.banner-inner
+          h1
+            a(href='/')=title
+      div.pure-u-1-2.content
+        div.panel(style='height:210px')
+          div.left_panel
+            h1 #{userInfo.username}'s Profile
+            h2 ID: #{userInfo.user_id}
+        div.bounding-box.rounded
+          div.padded
+            h3 Profile Information
+            table(border='1')
+              tr
+                td(style='width:100px')
+                  b Name:
+                td(style='width:100px') #{userInfo.first_name} #{userInfo.last_name}
+              tr
+                td(style='width:100px')
+                  b Money:
+                td(style='width:100px')= userInfo.verified_time
+              tr
+                td(style='width:100px')
+                  b User since:
+                td(style='width:100px')= userInfo.verified_time
+              tr
+                td(style='width:100px')
+                  b User since:
+                td(style='width:100px')= userInfo.verified_time

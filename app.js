@@ -4,6 +4,8 @@
 var express = require('express');
 var app = module.exports = express();
 var configs = require('config/index');
+configs.configure(app);
+var path = require('path');
 
 //mount on on other modules
 //app.use('path', require('moduleName'))
@@ -11,4 +13,4 @@ var configs = require('config/index');
 app.use('/', require('routes/login'));
 app.use('/', require('routes/signup'));
 
-//app.listen(3000);
+app.listen(3000);
