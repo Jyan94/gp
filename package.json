@@ -27,7 +27,8 @@
     "passport-local": "~0.1.6",
     "request": "^2.34.0",
     "rootpath": "0.1.2",
-    "s3-upload-stream": "^0.2.0"
+    "s3-upload-stream": "^0.2.0",
+    "sportsdata": "0.1.19"
   },
   "engines": {
     "node": ">= 0.10.0"
