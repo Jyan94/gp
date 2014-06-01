@@ -20,18 +20,23 @@ var client = new cql.Client(cassandraConfig);
 //exported configurations
 var config = {
   configure: function(app) {
-    app.set('views', path.join(__dirname, "../views"));
+    app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
+    app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
-    app.use(express.static('../public'));
     app.use(flash());
     app.use(bodyParser());
     app.use(cookieparser());
     app.use(methodOverride());
+    //basic error handler
+    app.use(function(err, req, res, next) {
+      console.error(err.stack);
+      res.send(500, 'Something broke!');
+    });
     app.use(session({
       secret: 'secret-key',
       cookie: {
-        secure: true
+        secure: false
       },
       //make sure cassandra is running for this to work
       store: new CassandraStore({client: client})
