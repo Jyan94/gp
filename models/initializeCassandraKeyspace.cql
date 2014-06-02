@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users(
     payment_info text,
     money bigint,
     fbid text,
-    VIP_status int,
+    vip_status int,
     image text
 );
 

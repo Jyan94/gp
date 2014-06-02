@@ -7,7 +7,7 @@ var multiline = require('multiline');
 var INSERT_USER_CQL = multiline(function() {;/*
   INSERT INTO users (
     user_id, email, verified, verified_time, username, password, first_name,
-    last_name, age, address, payment_info, money, fbid, VIP_status, image
+    last_name, age, address, payment_info, money, fbid, vip_status, image
   ) VALUES 
     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 */});
