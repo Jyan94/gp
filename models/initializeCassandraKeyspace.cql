@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users(
     age int,
     address text,
     payment_info text,
-    money bigint,
+    money double,
     fbid text,
     vip_status int,
     image text
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS pending_bets (
     long_better_id uuid,
     short_better_id uuid,
     player_id uuid,
-    bet_value int,
-    multiplier bigint,
+    bet_value double,
+    multiplier double,
     game_id uuid,
     expiration timeuuid
 );
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS current_bets (
     long_better_id uuid,
     short_better_id uuid,
     player_id uuid,
-    bet_value int,
-    multiplier bigint,
+    bet_value double,
+    multiplier double,
     game_id uuid,
     expiration timeuuid
 );
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS past_bets (
     long_better_id uuid,
     short_better_id uuid,
     player_id uuid,
-    bet_value int,
-    multiplier bigint,
+    bet_value double,
+    multiplier double,
     long_better_payoff bigint,
     short_better_payoff bigint,
     game_id uuid,
@@ -70,10 +70,20 @@ CREATE TABLE IF NOT EXISTS all_bets (
     long_better_id uuid,
     short_better_id uuid,
     player_id uuid,
-    bet_value int,
-    multiplier bigint,
+    bet_value double,
+    multiplier double,
     long_better_payoff bigint,
     short_better_payoff bigint,
     game_id uuid,
     expiration timeuuid,
+);
+
+CREATE TABLE IF NOT EXISTS players (
+    currvalue double,
+    first_name text,
+    last_name text,
+    player_id int,
+    team_id text,
+    age int,
+    biography text,
 );
