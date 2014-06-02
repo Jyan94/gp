@@ -1,11 +1,12 @@
+'use strict';
 require('rootpath')();
 //var cql = require('libs/database/cassandra/cassandraClient.js').cql;
 
-var cassandra = require('./cql');
+var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
-var INSERT_PLAYER_CQL = multiline(function() {;/*
+var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO players (
     currvalue, first_name, last_name, player_id, team_id, age, biography 
   ) VALUES 
@@ -19,7 +20,7 @@ exports.insert = function (fields, callback) {
     });
 };
 
-var DELETE_PLAYER_CQL = multiline(function() {;/*
+var DELETE_PLAYER_CQL = multiline(function() {/*
   DELETE FROM players WHERE
     player_id
   IN
@@ -32,10 +33,10 @@ exports.delete = function (player_id, callback) {
     });
 };
 
-var UPDATE_PLAYER_CQL_1 = multiline(function() {;/*
+var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
   UPDATE players SET
 */});
-var UPDATE_PLAYER_CQL_2 = multiline(function() {;/*
+var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
     player_id = ?;
 */});
@@ -64,7 +65,7 @@ exports.update = function (player_id, fields, params, callback) {
     });
 };
 
-var SELECT_PLAYER_CQL = multiline(function () {;/*
+var SELECT_PLAYER_CQL = multiline(function () {/*
   SELECT * FROM players WHERE
 */});
 
