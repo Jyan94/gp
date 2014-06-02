@@ -3,33 +3,53 @@ html(lang="en")
   head
     include base_head
   body
+      include banner
     div.pure-g-r
       div.pure-u-1-1.banner
         div.pure-u-3-4.banner-inner
           h1
             a(href='/')=title
-      div.pure-u-1-2.content
-        div.panel(style='height:210px')
+      div.pure-u-1-2.content(style='width:1080px')
+        div.panel(style='height:210px;width:1080px')
           div.left_panel
             h1 #{userInfo.username}'s Profile
             h2 ID: #{userInfo.user_id}
-        div.bounding-box.rounded
+        div#prof-behind
+          div#prof-pic(style='background-image: url(#{userInfo.image})')
+            div.fileUpload
+              div
+                span.fui-photo
+                span Edit profile photo
+                  form#prof-upload(enctype='multipart/form-data' action='/upload/image/#{user.user_id}' method='post')
+                    input.upload(type='file' name='filefield' onchange='change_async()')
+        div.bounding-box.rounded(style='width:1080px')
           div.padded
             h3 Profile Information
-            table(border='1')
+            table(border='0', cellpadding='5')
               tr
-                td(style='width:100px')
+                td(style='width:150px', align='right')
                   b Name:
-                td(style='width:100px') #{userInfo.first_name} #{userInfo.last_name}
+                td #{userInfo.first_name} #{userInfo.last_name}
               tr
-                td(style='width:100px')
+                td(style='width:150px', align='right')
                   b Money:
-                td(style='width:100px')= userInfo.verified_time
+                td= userInfo.money
               tr
-                td(style='width:100px')
+                td(style='width:150px', align='right')
                   b User since:
-                td(style='width:100px')= userInfo.verified_time
+                td= userInfo.verified_time
               tr
-                td(style='width:100px')
-                  b User since:
-                td(style='width:100px')= userInfo.verified_time
+                td(style='width:150px', align='right')
+                  b VIP Status:
+                td= userInfo.vip_status
+        div.bounding-box.rounded(style='width:1090px')
+          div.padded
+            h3 Pending Bets
+            table(border='0', cellpadding='5')
+              tr
+                th(style='width:200px', align='center') Bet ID
+                th(style='width:200px', align='center') Player ID
+              each item in betInfo
+                tr
+                  td(style='width:200px', align='right') #{item.bet_id}
+                  td(style='width:200px', align='right') #{item.player_id}
