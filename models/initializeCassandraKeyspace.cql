@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
 
 CREATE TABLE IF NOT EXISTS pending_bets (
     bet_id timeuuid PRIMARY KEY,
-    long_better_id uuid,
-    short_better_id uuid,
+    user_id uuid,
+    long_position boolean,
     player_id uuid,
     bet_value double,
     multiplier double,
@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS football_player (
     uniform_number int,
     height int,
     weight int,
+    image text,
 
 );
 
