@@ -1,12 +1,9 @@
 div.pure-g-r.banner
   div.pure-u-3-4.banner-inner
-    if user
       div.banner-nav
         div#divide
           h4
             a(href='/') Newsfeed
-          h4
-            a(href='/market/#{user.player_id}')=player.first_name
         div.pure-hidden-phone
           span
             a.fui-gear
@@ -23,7 +20,6 @@ div.pure-g-r.banner
             span.fui-search
       div#settings
         a(href='/logout') Logout
-    else
       form.pure-form(action='/login' method='post')
         input.input(type='text' name='email' placeholder='email' autofocus=true required=true)
         input.input(type='password' name='password' placeholder='password' required=true)

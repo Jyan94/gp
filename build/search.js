@@ -1,7 +1,7 @@
 $(function() {
   var searchCache = [];
   var id;
-  $.getJSON("/autocomp", function (data) {
+  $.getJSON("/autocomplete", function (data) {
     for (var i = 0; i < data.length; i++) {
       searchCache.push(data[i]);
     }
@@ -15,6 +15,8 @@ $(function() {
       id = ui.item.player_id;
     }
   })
+
+  /*
   .data('ui-autocomplete')._renderItem = function ( ul, item ) {
       console.log(item.image);
       return $('<li>')
@@ -22,6 +24,7 @@ $(function() {
          item.label + '</a>')
         .appendTo(ul);
     };
+*/
 
   // Hover states on the static widgets
   $('#dialog-link, #icons li').hover(

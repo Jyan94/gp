@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users(
     payment_info text,
     money double,
     fbid text,
-    VIP_status int,
+    vip_status int,
     image text
 );
 
@@ -79,10 +79,10 @@ CREATE TABLE IF NOT EXISTS all_bets (
 );
 
 CREATE TABLE IF NOT EXISTS players (
+    player_id uuid PRIMARY KEY,
     currvalue double,
     first_name text,
     last_name text,
-    player_id int,
     team_id text,
     age int,
     biography text,
