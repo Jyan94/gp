@@ -20,10 +20,10 @@ var client = new cql.Client(cassandraConfig);
 //exported configurations
 var config = {
   configure: function(app) {
-    app.set('views', path.join(__dirname, "../views"));
+    app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
+    app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
-    app.use(express.static('../public'));
     app.use(flash());
     app.use(bodyParser());
     app.use(cookieparser());

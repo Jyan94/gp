@@ -1,10 +1,11 @@
-require('rootpath')();
+'use strict';
+(require('rootpath')());
 
-var cassandra = require('./cql');
+var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
-var INSERT_USER_CQL = multiline(function() {;/*
+var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
     user_id, email, verified, verified_time, username, password, first_name,
     last_name, age, address, payment_info, money, fbid, VIP_status
@@ -19,7 +20,7 @@ exports.insert = function (fields, callback) {
     });
 };
 
-var DELETE_USER_CQL = multiline(function() {;/*
+var DELETE_USER_CQL = multiline(function() {/*
   DELETE FROM users WHERE
     user_id
   IN
@@ -32,10 +33,10 @@ exports.delete = function (user_id, callback) {
     });
 };
 
-var UPDATE_USER_CQL_1 = multiline(function() {;/*
+var UPDATE_USER_CQL_1 = multiline(function() {/*
   UPDATE users SET
 */});
-var UPDATE_USER_CQL_2 = multiline(function() {;/*
+var UPDATE_USER_CQL_2 = multiline(function() {/*
   WHERE
     user_id = ?;
 */});
@@ -63,10 +64,10 @@ exports.update = function (user_id, fields, params, callback) {
     });
 };
 
-var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {;/*
+var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */});
-var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {;/*
+var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {/*
   WHERE bet_id IN
 */});
 exports.selectMultiple = function (bets_table, params, callback) {
@@ -89,7 +90,7 @@ exports.selectMultiple = function (bets_table, params, callback) {
     });
 }
 
-var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {;/*
+var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {/*
   SELECT * FROM user_id_to_bet_id WHERE
     user_id = ?;
 */});

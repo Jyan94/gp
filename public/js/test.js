@@ -24,11 +24,25 @@ $(function() {
     return data;
   }
 
-  var rangeDisplay = {
+  var zoom = [
+  {
+    count: 1,
+    type: 'minute',
+    text: '1min'
+  }, {
+    count: 5,
+    type: 'minute',
+    text: '5min'
+  }, {
+    count: 30,
+    type: 'minute',
+    text: '30min'
+  }, {
+    type: 'all',
+    text: 'All'
+  }];
 
-  }
 
-  
   //high charts below
   Highcharts.setOptions({
     global : {
@@ -53,6 +67,7 @@ $(function() {
         count: 5,
         type: 'minute',
         text: '5M'
+      }, {
       }, {
         type: 'all',
         text: 'All'

@@ -1,19 +1,32 @@
+'use strict';
 require('rootpath')();
 var express = require('express');
 var app = module.exports = express();
+var bcrypt = require('bcrypt-nodejs');
 var configs = require('config/index');
 configs.configure(app);
 
 var async = require('async');
-var User = require('models/user');
+var User = require('libs/cassandra/user');
+
 var cql = configs.cassandra.cql;
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 var messages = {
-  incorrect_username: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try a different username and try again, or sign up."] }',
-  incorrect_password: '{ "title": "Incorrect password", "parts": ["The provided username and password didn\'t match anyone in our records.", "Please check your spelling and try again."] }',
+  incorrect_username: { 
+    "title": "Incorrect username", 
+    "parts": 
+    ["We couldn\'t find any user with the username you provided.", 
+    "Please try a different username and try again, or sign up."] 
+  },
+  incorrect_password: { 
+    "title": "Incorrect password", 
+    "parts": 
+    ["The provided username and password didn\'t match anyone in our records.", 
+    "Please check your spelling and try again."] 
+  }
 };
 
 function localStrategyVerify(username, password, done) {
@@ -26,12 +39,15 @@ function localStrategyVerify(username, password, done) {
       return done(null, false, {message: messages.incorrect_username});
     }
     //do bcrypt compare here
-    if (password !== result.password) {
-      return done(null, false, {message: messages.incorrect_password});
-    } else {
-      console.log('woohoo');
-      return done(null, result);
-    }
+    bcrypt.compare(password, result.password, function(err, res) {
+      console.log(res);
+      if (res) {
+        return done(null, result);
+      } else {
+        console.log('boo');
+        return done(null, false, {message: messages.incorrect_password});
+      }
+    });
   });
 }
 
@@ -63,5 +79,5 @@ app.route('/login')
 })
 .post(passport.authenticate('local', { successRedirect: '/',
                                    failureRedirect: '/login',
-                                   failureFlash: true }));
-//app.listen(3000);
+                                   failureFlash: true })
+);

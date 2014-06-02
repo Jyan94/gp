@@ -1,13 +1,14 @@
+'use strict';
 require('rootpath')();
 
-var cassandra = require('./cql');
+var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
-var INSERT_USER_CQL = multiline(function() {;/*
+var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
     user_id, email, verified, verified_time, username, password, first_name,
-    last_name, age, address, payment_info, money, fbid, VIP_status, image
+    last_name, age, address, payment_info, money, fbid, vip_status, image
   ) VALUES 
     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 */});
@@ -19,7 +20,7 @@ exports.insert = function (fields, callback) {
     });
 };
 
-var DELETE_USER_CQL = multiline(function() {;/*
+var DELETE_USER_CQL = multiline(function() {/*
   DELETE FROM users WHERE
     user_id
   IN
@@ -32,10 +33,10 @@ exports.delete = function (user_id, callback) {
     });
 };
 
-var UPDATE_USER_CQL_1 = multiline(function() {;/*
+var UPDATE_USER_CQL_1 = multiline(function() {/*
   UPDATE users SET
 */});
-var UPDATE_USER_CQL_2 = multiline(function() {;/*
+var UPDATE_USER_CQL_2 = multiline(function() {/*
   WHERE
     user_id = ?;
 */});
@@ -63,7 +64,7 @@ exports.update = function (user_id, fields, params, callback) {
     });
 };
 
-var SELECT_USER_CQL = multiline(function () {;/*
+var SELECT_USER_CQL = multiline(function () {/*
   SELECT * FROM users WHERE
 */});
 

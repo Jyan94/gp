@@ -1,5 +1,5 @@
 /**
- * cassandra cql general
+ * cassandra cql general query wrapping for returning rows
  */
 'use strict';
 (require('rootpath')());
