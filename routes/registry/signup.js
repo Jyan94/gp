@@ -25,7 +25,7 @@ function insertUser(body, res) {
       console.log(err);
       return;
     }
-    console.log(hash);
+    //console.log(hash);
     var fields = 
     [
       cql.types.uuid(), //user_id
