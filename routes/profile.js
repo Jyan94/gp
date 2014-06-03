@@ -4,14 +4,22 @@ var app = module.exports = express();
 var configs = require('config/index');
 configs.configure(app);
 
+//app.use('/', require('../app.js'))
+
 var async = require('async');
-var User = require('models/user');
-var bet = require('models/bet');
+var User = require('libs/cassandra/user');
+var bet = require('libs/cassandra/bet');
 var cql = configs.cassandra.cql;
 var busboy = require('connect-busboy');
+var fs = require('fs');
+var url = require('url');
+
+app.use(busboy());
 
 var messages = {
-  incorrect_username: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }'
+  incorrect_username: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }',
+  delete_error: '{ "title": "Delete error", "parts": ["Something went wrong while deleting a file."] }',
+  upload_error:'{ "title": "Upload error", "parts": ["Something went wrong while uploading a file."] }'
   };
 
 function retrieveProfile(req, res) {
@@ -25,8 +33,7 @@ function retrieveProfile(req, res) {
         if (err) {
           console.log(err);
         }
-
-        if (result) {
+        else if (result) {
           
           for (var i = 0; i < result.columns.length; i++) {
             field = result.columns[i].name;
@@ -41,21 +48,22 @@ function retrieveProfile(req, res) {
 
           console.log(userInfo)
 
-          callback(null, result);
+          callback(null, result.user_id);
         }
         else {
           res.send(messages.incorrect_username);
         }
       });
     },
-    function (arg1, callback) {
-      bet.selectUsingUserID('all_bets', arg1.user_id, function (err, result) {
+    function (user_id, callback) {
+      bet.selectUsingUserID('all_bets', user_id, function (err, result) {
         if (err) {
           console.log(err);
         }
-
-        betInfo = result;
-        callback(null, result);
+        else {
+          betInfo = result;
+          callback(null, result);
+        }
       });
     }
   ], function(err, result) {
@@ -78,10 +86,13 @@ function retrieveProfile(req, res) {
  */
 
 function updateProfile(req, res) {
-  var profileInfo = {}
+  var upload_file = null;
+  var upload_filename = null;
+  var upload_user_id = null;
 
   async.waterfall ([
     function (callback) {
+      req.pipe(req.busboy);
       req.busboy.on('file', function(fieldname, file, filename, encoding, 
                                      mimetype) {
         // Check that the user posted an appropriate photo
@@ -91,51 +102,67 @@ function updateProfile(req, res) {
           res.end();
         }
         else {
-          callback()
-
-    }
-  ], )
-
-  async.waterfall([
+          upload_file = file;
+          upload_filename = filename;
+          callback(null);
+        }
+      });
+    },
     function (callback) {
       User.select('username', req.params.username, function (err, result) {
         if (err) {
-          callback(err);
+          console.log(err);
         }
-
-        if (result) {
-          console.log(result);
-          profileInfo.userInfo = result;
-          callback(null, result);
+        else if (result) {
+          upload_user_id = result.user_id;
+          callback(null, result.image);
         }
         else {
           res.send(messages.incorrect_username);
         }
       });
     },
-    function (userInfo, callback) {
-      bet.selectUsingUserID('pending_bets', userInfo.user_id, function (err, result) {
+    function (image, callback) {
+      if (image && (1===0)) {
+        fs.unlink(image, function (err) {
+          if (err) {
+            res.send(messages.delete_error);
+          }
+          
+            image = 'file://' + __dirname + '/' + upload_filename;
+            callback(null, image);
+        });
+      }
+      else {
+        image = 'file://' + __dirname + '/' + upload_filename;
+        console.log(image);
+        callback(null, image);
+      }
+    },
+    function (image, callback) {
+      //upload_file.pipe(fs.createWriteStream(image));
+      callback(null, image);
+    },
+    function (image, callback) {
+      console.log(image);
+      User.update(upload_user_id, ['image'], [image], function (err, result) {
         if (err) {
-          callback(err);
+          res.send(messages.update_error);
         }
-
-        if (result) {
-          profileInfo.betInfo = result;
+        else {
           callback(null, result);
         }
       });
     }
-  ], function(err, result) {
+  ], function (err, result) {
     if (err) {
       console.log(err);
-      return;
     }
-
-    res.send(profileInfo);
+    else {
+      return { image: upload_filename };
+    }
   });
 }
-
-app.use(busboy());
 
 app.route('/user')
 .get(function (req, res) {
@@ -143,14 +170,7 @@ app.route('/user')
   retrieveProfile(req, res);
 });
 
-app.route('/user/:username')
-.get(function (req, res) {
-  retrieveProfile(req, res);
-});
-
-app.route('/upload/image/:username')
-.post(function (req, res) {
-  updateProfile(req, res);
-});
+app.route('/user/:username').get(retrieveProfile);
+app.route('/upload/image/:username').post(updateProfile);
 
 app.listen(3000);

@@ -87,3 +87,5 @@ CREATE TABLE IF NOT EXISTS players (
     age int,
     biography text,
 );
+
+INSERT INTO users (user_id, username) VALUES (00000000-0000-0000-0000-000000000001, 'Bobob');

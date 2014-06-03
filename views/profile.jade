@@ -3,7 +3,7 @@ html(lang="en")
   head
     include base_head
   body
-      include banner
+    include banner
     div.pure-g-r
       div.pure-u-1-1.banner
         div.pure-u-3-4.banner-inner
@@ -15,13 +15,13 @@ html(lang="en")
             h1 #{userInfo.username}'s Profile
             h2 ID: #{userInfo.user_id}
         div#prof-behind
-          div#prof-pic(style='background-image: url(#{userInfo.image})')
+          div#prof-pic(style='background-image: url(file:///home/jmiooo/Documents/github/gp/routes/yappa.jpeg)')
             div.fileUpload
               div
                 span.fui-photo
                 span Edit profile photo
-                  form#prof-upload(enctype='multipart/form-data' action='/upload/image/#{user.user_id}' method='post')
-                    input.upload(type='file' name='filefield' onchange='change_async()')
+              form#prof-upload(enctype='multipart/form-data' action='/upload/image/#{userInfo.username}' method='post')
+                input.upload(type='file' name='filefield' onchange='change_async()')
         div.bounding-box.rounded(style='width:1080px')
           div.padded
             h3 Profile Information
@@ -53,3 +53,5 @@ html(lang="en")
                 tr
                   td(style='width:200px', align='right') #{item.bet_id}
                   td(style='width:200px', align='right') #{item.player_id}
+      script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
+      script(type='application/javascript' src='/js/profile.js')
