@@ -92,7 +92,6 @@ CREATE TABLE IF NOT EXISTS football_player (
     height int,
     weight int,
     image text,
-
 );
 
 CREATE TABLE IF NOT EXISTS football_team (

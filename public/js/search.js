@@ -1,27 +1,30 @@
 $(function() {
   var searchCache = [];
   var id;
-  $.getJSON("/autocomplete", function (data) {
+  $.getJSON("/autocomp", function (data) {
+    console.log(data);
     for (var i = 0; i < data.length; i++) {
       searchCache.push(data[i]);
+      console.log(JSON.stringify(data[i]));
     }
   });
   $('#autocomplete').on('input', function () {
     id = undefined;
   });
+
   $('#autocomplete').autocomplete({
+    minLength : 3,
     source: searchCache,
     select: function(e, ui) {
       id = ui.item.player_id;
     }
   })
 
-  /*
-  .data('ui-autocomplete')._renderItem = function ( ul, item ) {
+  /* .data('ui-autocomplete')._renderItem = function ( ul, item ) {
       console.log(item.image);
       return $('<li>')
         .append('<a><img style="background-image: url(' + item.image + ')">' +
-         item.label + '</a>')
+          item.label + '</a>')
         .appendTo(ul);
     };
 */
@@ -44,7 +47,7 @@ $(function() {
         console.log($('#autocomplete').val());
         console.log('test');
         if (searchCache[i].label === $('#autocomplete').val()) {
-          id = searchCache[i].player_id;
+          id = searchCache[i].user_id;
           break;
         }
       }
