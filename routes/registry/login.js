@@ -31,7 +31,7 @@ var messages = {
 
 function localStrategyVerify(username, password, done) {
   User.select('username', username, function (err, result) {
-    console.log(result);
+    //console.log(result);
     if (err) {
       return done(err);
     }
@@ -40,11 +40,10 @@ function localStrategyVerify(username, password, done) {
     }
     //do bcrypt compare here
     bcrypt.compare(password, result.password, function(err, res) {
-      console.log(res);
+      //console.log(res);
       if (res) {
         return done(null, result);
       } else {
-        console.log('boo');
         return done(null, false, {message: messages.incorrect_password});
       }
     });
@@ -73,6 +72,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.route('/login')
+.get(function(req, res, next) {
+  if (req.user) {
+    res.redirect('/');
+  } else {
+    next();
+  }
+})
 .get(function(req, res) {
   var results = [];
   res.render('login.jade', { flash: results });

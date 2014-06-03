@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
 
 CREATE TABLE IF NOT EXISTS pending_bets (
     bet_id timeuuid PRIMARY KEY,
-    long_better_id uuid,
-    short_better_id uuid,
+    user_id uuid,
+    long_position boolean,
     player_id uuid,
     bet_value double,
     multiplier double,
@@ -78,14 +78,78 @@ CREATE TABLE IF NOT EXISTS all_bets (
     expiration timeuuid,
 );
 
-CREATE TABLE IF NOT EXISTS players (
+CREATE TABLE IF NOT EXISTS football_player (
     player_id uuid PRIMARY KEY,
     currvalue double,
+    full_name text,
     first_name text,
     last_name text,
-    team_id text,
-    age int,
-    biography text,
+    team text,
+    status text,
+    position text,
+    profile_url text,
+    uniform_number int,
+    height int,
+    weight int,
+    image text,
+
 );
 
-INSERT INTO users (user_id, username) VALUES (00000000-0000-0000-0000-000000000001, 'Bobob');
+CREATE TABLE IF NOT EXISTS football_team (
+    team_id uuid PRIMARY KEY,
+    city text,
+    name text,
+);
+
+CREATE TABLE IF NOT EXISTS football_game (
+    gsis_id uuid PRIMARY KEY,
+    start_time timeuuid,
+    end_time timeuuid,
+    week int,
+    season_year int,
+    season_type text,
+    finished boolean,
+    home_team text,
+    away_team text,
+    home_score int,
+    away_score int,
+);
+
+CREATE TABLE IF NOT EXISTS football_meta (
+    version int PRIMARY KEY,
+    season_type text,
+    season_year int,
+    week int, 
+);
+
+CREATE TABLE IF NOT EXISTS football_player_stat (
+    player_id uuid PRIMARY KEY,
+    season_year int,
+    season_type text,
+    finished boolean,
+    week int,
+    position text,
+    passing_tds int,
+    passing_yrds int,
+    passing_twoptm int,
+    rushing_yds int,
+    rushing_tds int,
+    rushing_twoptm int,
+    receiving_yds int,
+    receiving_tds int,
+    receiving_twoptm int,
+    fumbles_lost int,
+);
+
+CREATE TABLE IF NOT EXISTS football_market_value (
+    player_id uuid PRIMARY KEY,
+    start_time timeuuid,
+    end_time timeuuid,
+    position text,
+    game_id uuid,
+    market_value int,
+    season_year int,
+    season_type text,
+    week int,
+    finished boolean,
+);
