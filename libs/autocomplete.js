@@ -7,14 +7,14 @@ var configs = require('config/index');
 configs.configure(app);
 app.use('/', importedapp);
 
-var client = configs.client;
-var cql = configs.cql;
+var client = configs.cassandra.client;
+var cql = configs.cassandra.cql;
 
-app.get('/autocomplete', function(req,res) {
-  console.log('woohoo');
+app.get('/autocomp', function(req,res) {
   var search =[];
-  var query = 'SELECT player_id, first_name, last_name FROM players';
-  client.executeAsPrepared(query, cql.types.consistencies.one, function(err, result) {
+  var query = 'SELECT player_id, full_name FROM football_player';
+  client.executeAsPrepared(query, cql.types.consistencies.one,
+    function(err, result) {
     if (err) {
       console.log(err);
     }
@@ -23,7 +23,7 @@ app.get('/autocomplete', function(req,res) {
       if (rows[0]) {
         for (var i = 0; i < rows.length; i++) {
           search[i] = {
-            label: rows[i].first_name + ' ' + rows[i].last_name,
+            label: rows[i].full_name,
             player_id: rows[i].player_id
           };
         }
@@ -33,7 +33,11 @@ app.get('/autocomplete', function(req,res) {
   });
 });
 
+app.get('/hello', function(req, res) {
+  console.log(req.query);
+});
+
 app.get('/', function(req, res) {
-  res.render('market', {betinfo : []});
+  res.render('banner');
 });
 app.listen(3000);
