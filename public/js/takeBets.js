@@ -9,13 +9,14 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 $('.bet').each(function(index, element) {
   $('#'+element.id).click(function(e) {
     e.preventDefault();
-    var bet_id = $(element).attr('href');
+    var player_id = $(element).attr('href');
+    var bet_id = element.id.substring(3);
     var data = {bet_id: bet_id};
     $.ajax({
       type: 'POST',
       data: JSON.stringify(data),
       contentType: 'application/json',
-      url: 'http://localhost:3000/addBets'
+      url: 'http://localhost:3000/addBets/' + player_id
     });
   });
 });

@@ -15,17 +15,17 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 var messages = {
-  incorrect_username: { 
-    "title": "Incorrect username", 
-    "parts": 
-    ["We couldn\'t find any user with the username you provided.", 
-    "Please try a different username and try again, or sign up."] 
+  incorrect_username: {
+    "title": "Incorrect username",
+    "parts":
+    ["We couldn\'t find any user with the username you provided.",
+    "Please try a different username and try again, or sign up."]
   },
-  incorrect_password: { 
-    "title": "Incorrect password", 
-    "parts": 
-    ["The provided username and password didn\'t match anyone in our records.", 
-    "Please check your spelling and try again."] 
+  incorrect_password: {
+    "title": "Incorrect password",
+    "parts":
+    ["The provided username and password didn\'t match anyone in our records.",
+    "Please check your spelling and try again."]
   }
 };
 
@@ -74,7 +74,7 @@ app.use(passport.session());
 app.route('/login')
 .get(function(req, res, next) {
   if (req.user) {
-    res.redirect('/');
+    res.redirect('/market/00000000-0000-0000-0000-000000005ba7');
   } else {
     next();
   }
@@ -83,7 +83,7 @@ app.route('/login')
   var results = [];
   res.render('login.jade', { flash: results });
 })
-.post(passport.authenticate('local', { successRedirect: '/',
+.post(passport.authenticate('local', { successRedirect: '/market/00000000-0000-0000-0000-000000005ba7',
                                    failureRedirect: '/login',
                                    failureFlash: true })
 );

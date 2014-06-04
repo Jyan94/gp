@@ -38,8 +38,10 @@ CREATE TABLE IF NOT EXISTS pending_bets (
     bet_value double,
     multiplier double,
     game_id uuid,
-    expiration timeuuid
+    expiration timeuuid,
 );
+
+CREATE INDEX IF NOT EXISTS ON pending_bets(player_id);
 
 CREATE TABLE IF NOT EXISTS current_bets (
     bet_id timeuuid PRIMARY KEY,
@@ -91,8 +93,7 @@ CREATE TABLE IF NOT EXISTS football_player (
     uniform_number int,
     height int,
     weight int,
-    image text,
-
+    image text
 );
 
 CREATE TABLE IF NOT EXISTS football_team (
@@ -119,7 +120,7 @@ CREATE TABLE IF NOT EXISTS football_meta (
     version int PRIMARY KEY,
     season_type text,
     season_year int,
-    week int, 
+    week int,
 );
 
 CREATE TABLE IF NOT EXISTS football_player_stat (
@@ -152,4 +153,9 @@ CREATE TABLE IF NOT EXISTS football_market_value (
     season_type text,
     week int,
     finished boolean,
+);
+
+CREATE TABLE IF NOT EXISTS player_images (
+    player_name text PRIMARY KEY,
+    image_url text
 );

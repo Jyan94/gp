@@ -6,19 +6,22 @@ html(lang="en")
     include banner
     div.content
       //div#prof-behind
-        div(style='height: 400px; width: 600px; background-size: cover; background-position: center')
+        div(style='height: 250px; width: 600px; background-size: cover; background-position: center')
         br
 
       div.feed
         center
-          form#betForm.pure-form(action='/submitForm' method='post')
-            input(type='integer' name='price' placeholder='Price' autofocus=true required=true style='width: 100px')
-            input(type='integer' name='shareNumber' placeholder='Number of Shares' required=true style='width: 100px')
+          form#betForm.pure-form(action='/submitForm/'+player_id method='post')
+            input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width: 100px')
+            input(type='number' name='shareNumber' placeholder='Number of Shares' required=true style='width: 100px')
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
             | Above
             input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
             | Under
             input.pure-button.button-primary(type='submit')
+      center
+        img(src=image_url height='250px', width='250px')
+
       each item in betinfo
         if (item.long_position===false)
           div.linkcontainer
@@ -28,7 +31,7 @@ html(lang="en")
                   h2=item.username
             div.rightsidehome
               center
-                a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
+                a(href=player_id class='bet' id='bet'+item.bet_id style='cursor: pointer').
                   Take Bet!
             div.centersidehome
               center
@@ -43,7 +46,7 @@ html(lang="en")
                   h2=item.username
             div.leftsidehome
               center
-                a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
+                a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
                   Take Bet!
             div.centersidehome
               center
