@@ -14,7 +14,7 @@ var cassandraConfig = {
   keyspace: 'goprophet'
 };
 var cql = require('node-cassandra-cql');
-var CassandraStore = require('connect-cassandra-cql')(session);
+//var CassandraStore = require('connect-cassandra-cql')(session);
 var client = new cql.Client(cassandraConfig);
 
 //exported configurations
@@ -39,7 +39,7 @@ var config = {
         secure: false
       },
       //make sure cassandra is running for this to work
-      store: new CassandraStore({client: client})
+      //store: new CassandraStore({client: client})
     }));
   },
   cassandra: {
