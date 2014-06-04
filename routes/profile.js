@@ -73,7 +73,9 @@ function retrieveProfile(req, res) {
     }
 
     res.render('profile', { userInfo: userInfo, 
-                            betInfo: betInfo
+                            pendingBetInfo: betInfo.pending_bets,
+                            currentBetInfo: betInfo.current_bets,
+                            pastBetInfo: betInfo.past_bets
     });
   });
 }
@@ -194,8 +196,12 @@ app.route('/upload/image/:username').post(updateProfile);
 app.route('/images/:file').get(function (req, res) {
   file = req.params.file;
   var img = fs.readFileSync(__dirname + '/' + file);
-  res.writeHead(200, {'Content-Type': 'image/jpg' });
-  res.end(img, 'binary');
+  if (img) {
+    res.send(img);
+  }
+  else {
+    res.send(404, 'Profile picture not found.');
+  }
 });
 
 app.listen(3000);
