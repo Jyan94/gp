@@ -64,15 +64,32 @@ exports.update = function (user_id, fields, params, callback) {
     });
 };
 
+var BEGIN_BATCH_CQL = multiline(function () {/*
+  BEGIN BATCH
+*/});
+var APPLY_BATCH_CQL = multiline(function () {/*
+  APPLY BATCH;
+*/});
 var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */});
 var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {/*
   WHERE bet_id IN
 */});
-exports.selectMultiple = function (bets_table, params, callback) {
+exports.selectMultiple = function selectMultiple(bets_table, params, callback) {
+  var allowed_tables = ['pending_bets', 'current_bets', 'past_bets', 'all_bets'];
   var paramsLength = params.length;
   var filter = '';
+  var query = '';
+  var all_bets_result = {
+    pending_bets: [],
+    current_bets: [],
+    past_bets: []
+  };
+
+  if (allowed_tables.indexOf(bets_table) < 0) {
+    callback(new Error(bets_table + ' is not an allowed table.'));
+  }
 
   for (var i = 0; i < paramsLength; i++) {
     filter += '?';
@@ -82,12 +99,26 @@ exports.selectMultiple = function (bets_table, params, callback) {
     }
   }
 
-  cassandra.query(SELECT_BETS_MULTIPLE_CQL_1 + ' ' + bets_table + ' ' + SELECT_BETS_MULTIPLE_CQL_2 + ' (' + filter + ');',
-    params, cql.types.consistencies.one,
-    function (err, result) {
-      console.log(result);
-      callback(err, result);
+  if (bets_table === 'all_bets') {
+    selectMultiple('past_bets', params, function (err, result) {
+      all_bets_result.past_bets = result;
+      selectMultiple('current_bets', params, function (err, result) {
+        all_bets_result.current_bets = result;
+        selectMultiple('pending_bets', params, function (err, result) {
+          all_bets_result.pending_bets = result;
+          callback(err, all_bets_result);
+        });
+      });
     });
+  }
+  else {
+    query = SELECT_BETS_MULTIPLE_CQL_1 + ' ' + bets_table + ' ' + SELECT_BETS_MULTIPLE_CQL_2 + ' (' + filter + ');';
+    cassandra.query(query, params, cql.types.consistencies.one,
+      function (err, result) {
+        console.log(result);
+        callback(err, result);
+      });
+  }
 }
 
 var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {/*
@@ -113,9 +144,6 @@ exports.selectUsingUserID = function (bets_table, user_id, callback) {
           exports.selectMultiple(bets_table, betIDs, function (err, result) {
             callback(err, result);
           });
-        }
-        else {
-          callback(err);
         }
     });
 }
