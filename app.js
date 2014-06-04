@@ -8,6 +8,9 @@ configs.configure(app);
 
 //mount on on other modules
 //keep this file clean
+//
+
+
 app.use('/', require('routes/index'));
 app.get('/', function (req, res) {
   console.log(req.user);

@@ -15,7 +15,7 @@ html(lang="en")
             h1 #{userInfo.username}'s Profile
             h2 ID: #{userInfo.user_id}
         div#prof-behind
-          div#prof-pic(style='background-image: url(file:///home/jmiooo/Documents/github/gp/routes/yappa.jpeg)')
+          div#prof-pic(style='background-image: url(#{userInfo.image})')
             div.fileUpload
               div
                 span.fui-photo
@@ -42,7 +42,7 @@ html(lang="en")
                 td(style='width:150px', align='right')
                   b VIP Status:
                 td= userInfo.vip_status
-        div.bounding-box.rounded(style='width:1090px')
+        div.bounding-box.rounded(style='width:1080px')
           div.padded
             h3 Pending Bets
             table(border='0', cellpadding='5')
@@ -53,5 +53,19 @@ html(lang="en")
                 tr
                   td(style='width:200px', align='right') #{item.bet_id}
                   td(style='width:200px', align='right') #{item.player_id}
+        ul.tabs
+          li
+            input#tab1(type='radio', checked='checked', name='tabs')
+            label Pending Bets
+            div#tab-content1.tab-content.animated.fadeIn
+          li
+            input#tab2(type='radio', name='tabs')
+            label Current Bets
+            div#tab-content2.tab-content.animated.fadeIn
+          li
+            input#tab3(type='radio', name='tabs')
+            label Past Bets
+            div#tab-content3.tab-content.animated.fadeIn
+
       script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
       script(type='application/javascript' src='/js/profile.js')
