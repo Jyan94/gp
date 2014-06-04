@@ -22,85 +22,31 @@ var urlHelper2 = require('../libs/url_helper_nfl')  //change name later
 sportsdata_nfl.init('t', 1, 'gzjpc3dseum9ps25td2y6mtx', 2013, 'REG');
 sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
 
-function createRequest(url, callback) {
-  request(url, function(error, response, body) {
-    if (!error && response.statusCode == 200) {
 
-      parser.parseString(body, function(err, result) {
-        callback(err, result);
-      });
-    }
-    else {
-      callback(error, body);
-    }
-  });
-}
-
-function getPlayerImages(callback) {
-  var url = urlHelper2.getPlayerManifestsUrl();
-  createRequest(url, callback);
-}
-
-function insertImages(i, callback) {
-  getPlayerImages(function(err, result) {
-    var urltemp = result.assetlist.asset[i].links[0].link[0].$.href
-    var url = 'http://api.sportsdatallc.org/nfl-images-t2/usat' + urltemp + '?api_key=3khf4k9vsw7tmkzf7f56ej8u';
-    var player = result.assetlist.asset[i].title[0];
-    var query = 'INSERT INTO player_images (player_name, image_url) VALUES (?, ?)'
-    var params = [player, url];
-    client.executeAsPrepared(query, params, cql.types.consistencies.one, callback)
-  })
-}
-
-
-function insertAll() {
-  var length = 240;
-  var arr = new Array(length);
-  for (var i = 0; i < length; i++) {
-    arr[i] = i;
+/*sportsdata_nfl.getWeeklySchedule(1, function(err, schedule) {
+  if (!err) {
+    console.log(schedule.games.game);
   }
-  var callback = function(err) {
-    if (!err) {
-      console.log('Success')
+})*/
+
+/**
+ * takes as parameter the following object:
+ * {
+          'player': players[i].name,
+          'prefixSchedule': prefixSchedule,
+          'isOnHomeTeam': players[i].isOnHomeTeam,
+          'year': year,
+          'week': week
     }
-  };
-  async.eachSeries(
-    arr,
-    function(i, callback) {
-      insertImages(i, callback)
-    },
-    callback
-  );
-}
+ */
+var calculateFantasyPoints = function(playerObject, callback) {
+  var player_name = playerObject.playerName;
+  var team_name = playerObject.prefixSchedule.$.home;
+  var opponent_name = playerObject.prefixSchedule.$.away;
+  var boolHome = playerObject.isOnHomeTeam;
+  var year = playerObject.year;
+  var week = playerObject.week;
 
-insertAll();
-
-/*
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
-    }
-  }
-}
-
-
-function insertAll() {
-  var length = 2000;
-  for (var i = 0; i < length; i++) {
-    insertImages(i);
-    sleep(1000);
-  }
-}
-
-insertAll();
-*/
-/*need to add REG or PLAYOFFS*/
-/*
-var calculateFantasyPoints = function(player_name, team_name, opponent_name, boolHome, year, week, callback) {
-
-  sportsdata_nfl.init('t', 1, 'gzjpc3dseum9ps25td2y6mtx', year, 'REG');
   var away_team;
   var home_team;
   if (boolHome === true) {
@@ -166,16 +112,21 @@ var calculateFantasyPoints = function(player_name, team_name, opponent_name, boo
   })
 }
 
-calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false, '2013', 1, function(err, result) {
+/*calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false, '2013', 1, function(err, result) {
   if (err) {
     console.log(err);
     return;
   }
   console.log(result);
-});
+});*/
 
-
-function calculateBets(betId, fantasyPoints) {
+/**
+ * takes a betId and a fantasy point value and updates a user's wallet
+ * @param  {uuid}   betId
+ * @param  {double}   fantasyPoints [single fantasy point value]
+ * @param  {Function} callback
+ */
+function calculateBet(betId, fantasyPoints, callback) {
   var rows;
   var query = 'SELECT bet_value, multiplier, long_better_id, short_better_id FROM current_bets WHERE bet_id = ?'
   var params = [betId];
@@ -183,6 +134,8 @@ function calculateBets(betId, fantasyPoints) {
     rows = result.rows[0]
     var longWinnings = rows.multiplier * (fantasyPoints - rows.bet_value);
     var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
+    console.log(longWinnings);
+    console.log(shortWinnings);
     var queries = [
     {
       query: 'UPDATE users SET cash = cash +  WHERE user_id = ?',
@@ -196,61 +149,198 @@ function calculateBets(betId, fantasyPoints) {
     client.executeBatch(queries, cql.types.consistencies.one, function(err) {
       if (err) {
         console.log(err);
+      } else {
+        callback(null);
       }
     })
   })
 }
 
-function getPlayerBetId(player_id, player) {
-
-
-
-}
-
-function findClosedSchedulesAndPlayers(team) {
-  var rows;
-  if (team.$.status === 'closed') {
-    var query = 'SELECT player_id, player FROM team WHERE team = ?'
-    var params = [team.$.home];
-    client.executeAsPrepared(query, params, cql.types.consistencies.one, function(err, result) {
-      rows = result.rows[0];
-    })
+/**
+ * [processArrayBets description]
+ * @param  {[type]}   betArray
+ * @param  {[type]}   fantasyPoints
+ * @param  {Function} callback
+ * @return {[type]}
+ */
+//betArray is an array of arrays
+//the index of each entry in fantasyPoints corresponds to an array of bets
+//in betsArray
+function processArrayBets(betsArray, fantasyPoints) {
+  var errCallback = function(err) {
+    if (err) {
+      console.log(err);
+    }
+  };
+  for (var i = 0; i !== betsArray.length; ++i) {
+    var betIds = betsArray[i];
+    for (var j = 0; j !== betIds.length; ++j) {
+      calculateBet(betIds[j], fantasyPoints[i], errCallback);
+    }
   }
 }
 
-//don't make function inside a loop Need to change!!
 
-var checkEndGames = function(game_id, status, year, week) {
+function getBetIdsFromPlayerId(playerId, callback) {
+  var query = 'SELECT bet_id FROM current_bets WHERE player_id = ?';
+  var params = [playerId];
+  client.executeAsPrepared(
+    query,
+    params,
+    cql.types.consistencies.one,
+    function(err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        //returns a list of bets
+        callback(null, result.rows);
+      }
+    });
+}
+
+
+//result returned:
+/**
+ * [
+ *  { 'name': player1name, 'id': player1id, 'isOnHomeTeam': [bool] }
+ *  { 'name': player2name, 'id': player2id, 'isOnHomeTeam': [bool] }
+ *  ...
+ * ]
+ */
+//MUST FIX HERE!!!!!
+function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
   var rows;
-  sportsdata_nfl.init('t', 1, 'gzjpc3dseum9ps25td2y6mtx', year, 'REG');
-  sportsdata_nfl.getWeeklySchedule(1, function(err, schedule){
-    if (!err) {
-      var prefixSchedule = schedule.games.game;
-      async.map(prefixSchedule, findClosedSchedulesAndPlayers(prefixSchedule), function(err))
-        //need to query to see flag status
-
-            for (var i = 0; i < rows.length; i++) {
-              calculateFantasyPoints(rows.player, prefixSchedule[i].home, prefixSchedule[i].away, true, year, week, function(err, result) {
-                var fantasyPoints = result;
-                var query = 'SELECT bet_id FROM current_bets WHERE player_id = ?'
-                var params = [rows.player_id];
-                client.executeAsPrepared(query, params, cql.types.consistencies.one, function(err, result) {
-                  rows = result.rows[0];
-                  async.each(rows, calculateBets(rows, fantasyPoints), function(err) {
-                    if (err) {
-                      console.log(err);
-                    }
-                  });
-                });
-              });
-            }
+  var result1 = [];
+  var hometeam = prefixSchedElement.$.home;
+  var awayteam = prefixSchedElement.$.away;
+  if (prefixSchedElement.$.status === 'closed') {
+    var query = 'SELECT player_id, player FROM team WHERE team = ?'
+    // do a batch query
+    var params = [hometeam];
+    client.executeAsPrepared(
+      query,
+      params,
+      cql.types.consistencies.one,
+      function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          for (var i = 0; i < result.rows.length; i++) {
+            result1.push({
+              'name': result.rows[i].player,
+              'id': result.rows[i].player_id,
+              'isOnHomeTeam': true
+            })
+            console.log(result.rows[i].player);
           }
         }
+      })
+    query = 'SELECT player_id, player FROM team WHERE team = ?'
+    params = [awayteam];
+    client.executeAsPrepared(query, params, cql.types.consistencies.one, function(err, result) {
+      if (err) {
+        console.log(err);
       }
-    }
-  })
+      else {
+        for (var i = 0; i < result.rows.length; i++) {
+          result1.push({
+            'name': result.rows[i].player,
+            'id': result.rows[i].player_id,
+            'isOnHomeTeam': false
+          })
+          console.log(result.rows[i].player);
+        }
+      }
+    })
+    callback(null, result1);
+  }
 }
-*/
+
+function calculateAllFantasyPoints(schedule, year, week) {
+  var prefixSchedule = schedule.games.game;
+  async.waterfall([
+    //first waterfall function
+    //gets list of players + player_id
+    function (callback) {
+      async.map(
+        prefixSchedule,
+        findClosedSchedulesAndPlayers,
+        //result here is an array of objects specified by return value of
+        //findClosedSchedulesAndPlayer function
+        function(err, result) {
+          if (err) {
+            console.log(err);
+          } else {
+            callback(null, result);
+          }
+        });
+    },
+    //second waterfall function
+    //get all bet ids associated with player
+    //result.rows is list of players and player_id queried from database
+    function (players, callback) {
+      var mapArray = [];
+      var playerIds = [];
+      for (var i = 0; i !== players.length; ) {
+        mapArray.push({
+          'player': players[i].name,
+          'prefixSchedule': prefixSchedule,
+          'isOnHomeTeam': players[i].isOnHomeTeam,
+          'year': year,
+          'week': week
+        });
+        playerIds.push(players[i].id);
+      }
+      //returns an array of fantasy points as result
+      //matches playerIds array
+      async.map(mapArray, calculateFantasyPoints, function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          callback(null, playerIds, result);
+        }
+      });
+    },
+    //third waterfall function
+    //get all bet ids corresponding to given player id
+    function (playerIds, fantasyPointsArray, callback) {
+      async.map(playerIds, getBetIdsFromPlayerId, function (err, result) {
+        //result is an array of bet arrays
+        if (err) {
+          console.log(err);
+        } else {
+          callback(null, result, fantasyPointsArray);
+        }
+      })
+    },
+    //fourth waterfall function
+    function (betslist, fantasyPointsArray, callback) {
+      processArrayBets(betslist, fantasyPointsArray);
+    }], function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+}
+
+function weeklyScheduleCallback(err, schedule, year, week) {
+  if (err) {
+    console.log(err);
+  } else {
+    calculateAllFantasyPoints(schedule, year, week);
+  }
+}
+
+
+
+var checkEndGames = function(year, week) {
+  var rows;
+  sportsdata_nfl.getWeeklySchedule(1, function(err, schedule) {
+    weeklyScheduleCallback(err, schedule, year, week);
+  });
+}
+
+checkEndGames(2013, 6);
 //async.map schedules -> closed schedules
 //async.map closed schedules -> player objects
 //async.each player objects -> get bets and update

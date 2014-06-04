@@ -138,6 +138,9 @@ app.post('/addBets/:player_id', function (req, res) {
     if (err) {
       console.log(err);
     }
+    else if (result.rows[0] === undefined) {
+      console.log('Bet Already Taken')
+    }
     else {
       var long_better = result.rows[0].user_id;
       var bet_value = result.rows[0].bet_value;
