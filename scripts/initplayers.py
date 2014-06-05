@@ -14,7 +14,7 @@ session = cluster.connect('goprophet')
 db = nfldb.connect()
 q = nfldb.Query(db)
 
-q.game(season_year=2011, season_type='Regular')
+q.game(season_year=2013, season_type='Regular')
 for player in q.as_players():
     print player
     print player.player_id

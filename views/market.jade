@@ -20,7 +20,7 @@ html(lang="en")
             | Under
             input.pure-button.button-primary(type='submit')
       center
-        img(src=image_url height='250px', width='250px')
+        div#prof-pic(style='background-image: url(#{image_url})')
 
       each item in betinfo
         if (item.long_position===false)

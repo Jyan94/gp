@@ -15,7 +15,7 @@ function getbetInfoFromPlayerId(player_id, callback) {
 }
 
 /* Routing */
-//get to '/market/:player_id', 
+//get to '/market/:player_id',
 var get = function (req, res) {
   var callback = function(err, arr) {
     if (err) {
@@ -116,7 +116,7 @@ var submitBet = function (req, res) {
 }
 
 
-//post to '/addBets/:player_id' 
+//post to '/addBets/:player_id'
 var takeBet = function (req, res) {
   var bet_id = req.body.bet_id;
   var query0 = 'SELECT user_id, bet_value, multiplier FROM pending_bets WHERE bet_id = ?'
