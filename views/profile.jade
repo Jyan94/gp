@@ -42,17 +42,6 @@ html(lang="en")
                 td(style='width:150px', align='right')
                   b VIP Status:
                 td= userInfo.vip_status
-        div.bounding-box.rounded(style='width:1080px')
-          div.padded
-            h3 Pending Bets
-            table(border='0', cellpadding='5')
-              tr
-                th(style='width:200px', align='center') Bet ID
-                th(style='width:200px', align='center') Player ID
-              each item in pendingBetInfo
-                tr
-                  td(style='width:200px', align='right') #{item.bet_id}
-                  td(style='width:200px', align='right') #{item.player_id}
         div#tab-container
           ul.tab-menu
             li#pending-bets.active Pending Bets
@@ -62,49 +51,58 @@ html(lang="en")
           div.tab-top-border
           div#pending-bets-tab.tab-content.active
             h1 Pending Bets
-            each item in pendingBetInfo
-              div#betcontainer
-                table(border='0', cellpadding='5')
-                  tr#bet-row
-                    td(style='width:100px', align='right')
-                      b Bet ID:
-                    td= item.bet_id
-                    td(style='width:100px', align='right')
-                      b Bet Value:
-                    td= item.bet_value
-                    td(style='width:100px', align='right')
-                      b Multiplier:
-                    td= item.multiplier
+            div#bet-container
+              each item in pendingBetInfo
+                div.padded
+                  div#indiv-bet-container.rounded
+                    table#bet-layout(border='0', cellpadding='5')
+                      tbody
+                        tr
+                          td#bet-player-image-cell(style='width:100px', align='right')
+                            div#bet-player-image(style='background-image: url(#{userInfo.image})')
+                          td#bet-info-cell
+                            div#bet-player-name
+                              h1 Bet on #{item.bet_id}
+                            div#bet-info
+                              | Price: TBD
+                            div#bet-info
+                              | Multiplier: TBD
           div#current-bets-tab.tab-content
             h1 Current Bets
-            each item in currentBetInfo
-              div#betcontainer
-                table(border='0', cellpadding='5')
-                  tr#bet-row
-                    td(style='width:100px', align='right')
-                      b Bet ID:
-                    td= item.bet_id
-                    td(style='width:100px', align='right')
-                      b Bet Value:
-                    td= item.bet_value
-                    td(style='width:100px', align='right')
-                      b Multiplier:
-                    td= item.multiplier
+            div#bet-container
+              each item in currentBetInfo
+                div.padded
+                  div#indiv-bet-container.rounded
+                    table#bet-layout(border='0', cellpadding='5')
+                      tbody
+                        tr
+                          td#bet-player-image-cell(style='width:100px', align='right')
+                            div#bet-player-image(style='background-image: url(#{userInfo.image})')
+                          td#bet-info-cell
+                            div#bet-player-name
+                              h1 Bet on #{item.bet_id}
+                            div#bet-info
+                              | Price: TBD
+                            div#bet-info
+                              | Multiplier: TBD
           div#past-bets-tab.tab-content
             h1 Past Bets
-            each item in pastBetInfo
-              div#betcontainer
-                table(border='0', cellpadding='5')
-                  tr#bet-row
-                    td(style='width:100px', align='right')
-                      b Bet ID:
-                    td= item.bet_id
-                    td(style='width:100px', align='right')
-                      b Bet Value:
-                    td= item.bet_value
-                    td(style='width:100px', align='right')
-                      b Multiplier:
-                    td= item.multiplier
+            div#bet-container
+              each item in pastBetInfo
+                div.padded
+                  div#indiv-bet-container.rounded
+                    table#bet-layout(border='0', cellpadding='5')
+                      tbody
+                        tr
+                          td#bet-player-image-cell(style='width:100px', align='right')
+                            div#bet-player-image(style='background-image: url(#{userInfo.image})')
+                          td#bet-info-cell
+                            div Bet on #{item.player_id}
+                              h1=item.bet_id
+                            div#bet-info
+                              | Price: TBD
+                            div#bet-info
+                              | Multiplier: TBD
 
       script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
       script(type='application/javascript' src='/js/profile.js')

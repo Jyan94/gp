@@ -88,36 +88,16 @@ function retrieveProfile(req, res) {
  */
 
 function updateProfile(req, res) {
-  /*req.busboy.on('file', function(fieldname, file, filename, encoding, 
-                                     mimetype) {
-        // Check that the user posted an appropriate photo
-        if (mimetype !== 'image/gif' && mimetype !== 'image/jpeg' &&
-            mimetype !== 'image/png') {
-        // Again, clobber fraudulent requests
-          res.send(500, 'Not a valid image file.');
-        }
-        else {
-          User.select('username', req.params.username, function (err, result) {
-            file.pipe(fs.createWriteStream(__dirname + '/' + filename));
-            User.update(result.user_id, ['image'], ['http://localhost:3000/images/' + filename], function (err, result) {
-              res.send('http://localhost:3000/images/' + filename);
-            });
-          });
-        }
-  });
-  
-  req.pipe(req.busboy);
-}*/
-  
+  var upload_username = req.params.username;
   var upload_file = null;
   var upload_filename = null;
+  var upload_mimetype = null;
   var upload_user_id = null;
 
   req.busboy.on('file', function(fieldname, file, filename, encoding, 
                                      mimetype) {
     async.waterfall([
       function (callback) {
-          console.log(2341);
           // Check that the user posted an appropriate photo
           if (mimetype !== 'image/gif' && mimetype !== 'image/jpeg' &&
               mimetype !== 'image/png') {
@@ -127,12 +107,12 @@ function updateProfile(req, res) {
           else {
             upload_file = file;
             upload_filename = filename;
-            console.log(2341);
+            upload_mimetype = mimetype.substring(6);
             callback(null);
           }
         },
       function (callback) {
-        User.select('username', req.params.username, function (err, result) {
+        User.select('username', upload_username, function (err, result) {
           if (err) {
             res.send(500, 'Database error.');
           }
@@ -152,22 +132,22 @@ function updateProfile(req, res) {
               res.send(messages.delete_error);
             }
 
-            upload_file.pipe(fs.createWriteStream(__dirname + '/' + upload_filename));
+            upload_file.pipe(fs.createWriteStream(__dirname + '/' + upload_username + '.' + upload_mimetype));
             callback(null);
           });
         }
         else {
-          upload_file.pipe(fs.createWriteStream(__dirname + '/' + upload_filename));
+          upload_file.pipe(fs.createWriteStream(__dirname + '/' + upload_username + '.' + upload_mimetype));
           callback(null);
         }
       },
       function (callback) {
-        User.update(upload_user_id, ['image'], ['/images/' + upload_filename], function (err, result) {
+        User.update(upload_user_id, ['image'], ['/images/' + upload_username + '.' + upload_mimetype], function (err, result) {
           if (err) {
             res.send(500, 'Database error.');
           }
           else {
-            res.send('/images/' + upload_filename);
+            res.send('/images/' + upload_username + '.' + upload_mimetype);
             callback(null);
           }
         });
@@ -195,13 +175,14 @@ app.route('/upload/image/:username').post(updateProfile);
 
 app.route('/images/:file').get(function (req, res) {
   file = req.params.file;
-  var img = fs.readFileSync(__dirname + '/' + file);
-  if (img) {
-    res.send(img);
-  }
-  else {
-    res.send(404, 'Profile picture not found.');
-  }
+  fs.readFile(__dirname + '/' + file, function (err, result) {
+    if (result) {
+      res.send(result);
+    }
+    else {
+      res.send(404, 'Profile picture not found.');
+    }
+  });
 });
 
 app.listen(3000);

@@ -397,7 +397,7 @@ input {
   line-height: 14px;
   margin: 3em auto;
   width: 1080px;
-  overflow: hidden;
+  overflow: visible;
 }
 #tab-container ul{
     list-style: none;
@@ -442,12 +442,13 @@ input {
     border-top-style: none;
     text-align: left;
     padding: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 30px;
     font-size: 11px;
+    box-shadow: none #888;
     display: none;
-    height: 250px;
 }
 #tab-container div.active{
+    box-shadow: 0px 1px 4px #888;
     display: block;
 }
 .tab-content h1{
@@ -455,78 +456,41 @@ input {
     height: 28px;
     font-size: 22px;
 }
-#bet-row{
-    border: 1px solid #ddc;
+#bet-container{
+    border: 0px;
+    padding: 0px;
+}
+#indiv-bet-container{
+    border: 7px solid #ddc;
     padding: 10px;
+    box-shadow: 0px 4px 0px #B6B69E;
+    -webkit-transition:all 0.1s ease-in-out;
 }
-
-/*.tabs input[type=radio] {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
+#indiv-bet-container:hover{
+    background: #efefef;
 }
-.tabs {
-  width: 650px;
-  float: none;
-  list-style: none;
-  position: relative;
-  padding: 0;
-  margin: 75px auto;
+#indiv-bet-container:active{
+    box-shadow: 0px 1px 0px #D6D6C1;
+    -webkit-transform: translateY(3px);
 }
-.tabs li{
-  float: left;
+#bet-player-image-cell{
+    padding-right: 10px;
 }
-.tabs label {
+#bet-player-image{
     display: block;
-    padding: 10px 20px;
-    border-radius: 2px 2px 0 0;
-    color: #08C;
-    font-size: 24px;
-    font-weight: normal;
-    font-family: 'Lily Script One', helveti;
-    background: rgba(255,255,255,0.2);
-    cursor: pointer;
     position: relative;
-    top: 3px;
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
+    height: 80px;
+    width: 80px;
+    background-position: center;
+    background-size: cover;
 }
-.tabs label:hover {
-  background: rgba(255,255,255,0.5);
-  top: 0;
+#bet-player-name{
+    line-height: 40px;
 }
- 
-[id^=tab]:checked + label {
-  background: #08C;
-  color: white;
-  top: 0;
+#bet-info{
+    font-size: 15px;
+    line-height: 20px;
 }
- 
-[id^=tab]:checked ~ [id^=tab-content] {
-    display: block;
-}
-.tab-content{
-  z-index: 2;
-  display: none;
-  text-align: left;
-  width: 100%;
-  font-size: 20px;
-  line-height: 140%;
-  padding-top: 10px;
-  background: #08C;
-  padding: 15px;
-  color: white;
-  position: absolute;
-  top: 53px;
-  left: 0;
-  box-sizing: border-box;
-  -webkit-animation-duration: 0.5s;
-  -o-animation-duration: 0.5s;
-  -moz-animation-duration: 0.5s;
-  animation-duration: 0.5s;
-}*/
 /*----------------------------------------------------------------------------*/
 /* Signup form                                                                */
 /*----------------------------------------------------------------------------*/
@@ -748,7 +712,7 @@ input {
 .bounding-box {
   position: relative;
   width: 100%;
-  margin-top: 80px;
+  margin-top: 40px;
   border: solid 1px #fff;
   box-shadow: 0px 1px 4px #888;
   background-color: #fff;
