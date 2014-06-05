@@ -16,8 +16,6 @@ var async = require('async');
 var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
-var urlHelper = require('../libs/url_helper_mlb');
-var urlHelper2 = require('../libs/url_helper_nfl')  //change name later
 
 sportsdata_nfl.init('t', 1, 'gzjpc3dseum9ps25td2y6mtx', 2013, 'REG');
 sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
@@ -71,27 +69,43 @@ var calculateFantasyPoints = function(playerObject, callback) {
       var prefixPass = stats.game.team[arrayIndex].passing[0].player;
       for (var i = 0; i < prefixPass.length; i++) {
         if (prefixPass[i].$.name === player_name) {
-          points = points + prefixPass[i].$.yds/25.0 + 4*prefixPass[i].$.td - 2*prefixPass[i].$.int;
+          points = 
+            points + 
+            prefixPass[i].$.yds/25.0 + 
+            4*prefixPass[i].$.td - 
+            2*prefixPass[i].$.int;
         }
       }
       var prefixRush = stats.game.team[arrayIndex].rushing[0].player;
       for (var j = 0; j < prefixRush.length; j++) {
         if (prefixRush[j].$.name === player_name) {
-          points = points + prefixRush[j].$.yds/10 + 6*prefixRush[j].$.td;
+          points = 
+            points + 
+            prefixRush[j].$.yds/10 + 
+            6*prefixRush[j].$.td;
         }
       }
       var prefixRec = stats.game.team[arrayIndex].receiving[0].player;
       for (var k = 0; k < prefixRec.length; k++) {
         if (prefixRec[k].$.name === player_name) {
-           points = points + prefixRec[k].$.yds/10 + 6*prefixRec[k].$.td;
+           points = 
+            points + 
+            prefixRec[k].$.yds/10 + 
+            6*prefixRec[k].$.td;
         }
       }
       if (stats.game.team[arrayIndex].two_point_conversion !== undefined) {
-        var prefixTwoPointConv = stats.game.team[arrayIndex].two_point_conversion[0].player;
+        var prefixTwoPointConv = 
+          stats.game.team[arrayIndex].two_point_conversion[0].player;
         for (var l = 0; l < prefixTwoPointConv.length; l++) {
           if (prefixTwoPointConv[l].$.name === player_name) {
             console.log(points);
-            points = points + 2*(prefixTwoPointConv[l].$.pass + prefixTwoPointConv[l].$.rush + prefixTwoPointConv[l].$.rec);
+            points = 
+              points + 
+              2*
+                (prefixTwoPointConv[l].$.pass + 
+                  prefixTwoPointConv[l].$.rush + 
+                  prefixTwoPointConv[l].$.rec);
           }
         }
       }
@@ -100,7 +114,9 @@ var calculateFantasyPoints = function(playerObject, callback) {
         var prefixFumbles = stats.game.team[arrayIndex].fumbles[0].player;
         for (var m = 0; m < prefixFumbles.length; m++) {
           if (prefixFumbles[m].$.name === player_name) {
-            points = points - 2*(prefixFumbles[m].$.lost)
+            points = 
+              points - 
+              2*(prefixFumbles[m].$.lost)
           }
         }
       }
@@ -112,14 +128,6 @@ var calculateFantasyPoints = function(playerObject, callback) {
   })
 }
 
-/*calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false, '2013', 1, function(err, result) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log(result);
-});*/
-
 /**
  * takes a betId and a fantasy point value and updates a user's wallet
  * @param  {uuid}   betId
@@ -130,7 +138,11 @@ function calculateBet(betId, fantasyPoints, callback) {
   var rows;
   var query = 'SELECT bet_value, multiplier, long_better_id, short_better_id FROM current_bets WHERE bet_id = ?'
   var params = [betId];
-  client.executeAsPrepared(query, params, cql.types.consistencies.one, function(err, result) {
+  client.executeAsPrepared(
+    query, 
+    params, 
+    cql.types.consistencies.one, 
+    function(err, result) {
     rows = result.rows[0]
     var longWinnings = rows.multiplier * (fantasyPoints - rows.bet_value);
     var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
@@ -146,14 +158,17 @@ function calculateBet(betId, fantasyPoints, callback) {
       params: [rows.short_better_id]
     }
     ]
-    client.executeBatch(queries, cql.types.consistencies.one, function(err) {
-      if (err) {
-        console.log(err);
-      } else {
-        callback(null);
-      }
-    })
-  })
+    client.executeBatch(
+      queries, 
+      cql.types.consistencies.one, 
+      function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          callback(null);
+        }
+    });
+  });
 }
 
 /**
@@ -198,7 +213,6 @@ function getBetIdsFromPlayerId(playerId, callback) {
     });
 }
 
-
 //result returned:
 /**
  * [
@@ -207,141 +221,172 @@ function getBetIdsFromPlayerId(playerId, callback) {
  *  ...
  * ]
  */
-//MUST FIX HERE!!!!!
 function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
   var rows;
-  var result1 = [];
+  var retArray = [];
   var hometeam = prefixSchedElement.$.home;
   var awayteam = prefixSchedElement.$.away;
   if (prefixSchedElement.$.status === 'closed') {
-    var query = 'SELECT player_id, player FROM team WHERE team = ?'
-    // do a batch query
-    var params = [hometeam];
-    client.executeAsPrepared(
-      query,
-      params,
-      cql.types.consistencies.one,
-      function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          for (var i = 0; i < result.rows.length; i++) {
-            result1.push({
-              'name': result.rows[i].player,
-              'id': result.rows[i].player_id,
-              'isOnHomeTeam': true
-            })
-            console.log(result.rows[i].player);
-          }
-        }
-      })
-    query = 'SELECT player_id, player FROM team WHERE team = ?'
-    params = [awayteam];
-    client.executeAsPrepared(query, params, cql.types.consistencies.one, function(err, result) {
+    async.waterfall([
+
+      //pushes on the home players
+      function (callback) {
+        var query = 'SELECT player_id, player FROM team WHERE team = ?'
+        var params = [hometeam];
+        client.executeAsPrepared(
+          query,
+          params,
+          cql.types.consistencies.one,
+          function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              for (var i = 0; i < result.rows.length; i++) {
+                retArray.push({
+                  'name': result.rows[i].player,
+                  'id': result.rows[i].player_id,
+                  'isOnHomeTeam': true
+                });
+              }
+              callback(null, retArray);
+            }
+          });
+      },
+
+      //pushes on the away players
+      function (arr, callback) {
+        var query = 'SELECT player_id, player FROM team WHERE team = ?'
+        var params = [awayteam];
+        client.executeAsPrepared(
+          query, 
+          params, 
+          cql.types.consistencies.one, 
+          function(err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              for (var i = 0; i < result.rows.length; i++) {
+                arr.push({
+                  'name': result.rows[i].player,
+                  'id': result.rows[i].player_id,
+                  'isOnHomeTeam': false
+                });
+              }
+              callback(null, arr);
+            }
+          });
+      }
+      ], function (err, result) {
+        callback(null, retArray);
+      });
+  }
+}
+
+//first waterfall function
+//gets list of players + player_id
+function getPlayers(prefixSchedule, year, week, callback) {
+  async.map(
+    prefixSchedule,
+    findClosedSchedulesAndPlayers,
+    //result here is an array of objects specified by return value of
+    //findClosedSchedulesAndPlayer function
+    function(err, result) {
       if (err) {
         console.log(err);
+      } else {
+        callback(null, result);
       }
-      else {
-        for (var i = 0; i < result.rows.length; i++) {
-          result1.push({
-            'name': result.rows[i].player,
-            'id': result.rows[i].player_id,
-            'isOnHomeTeam': false
-          })
-          console.log(result.rows[i].player);
-        }
-      }
-    })
-    callback(null, result1);
+    });
+}
+
+function getBetIds(players, prefixSchedule, year, week, callback) {
+  var mapArray = [];
+  var playerIds = [];
+  for (var i = 0; i !== players.length; ) {
+    mapArray.push({
+      'player': players[i].name,
+      'prefixSchedule': prefixSchedule,
+      'isOnHomeTeam': players[i].isOnHomeTeam,
+      'year': year,
+      'week': week
+    });
+    playerIds.push(players[i].id);
   }
+  //returns an array of fantasy points as result
+  //matches playerIds array
+  async.map(mapArray, calculateFantasyPoints, function (err, result) {
+    if (err) {
+      console.log(err);
+    } else {
+      callback(null, playerIds, result);
+    }
+  });
+}
+
+function getBetIdsPlayerId(playerIds, fantasyPointsArray, callback) {
+  async.map(playerIds, getBetIdsFromPlayerId, function (err, result) {
+    //result is an array of bet arrays
+    if (err) {
+      console.log(err);
+    } else {
+      callback(null, result, fantasyPointsArray);
+    }
+  });
+}
+
+function processBets(betslist, fantasyPointsArray, callback) {
+  processArrayBets(betslist, fantasyPointsArray);
 }
 
 function calculateAllFantasyPoints(schedule, year, week) {
   var prefixSchedule = schedule.games.game;
   async.waterfall([
+    //starts off chain
+    function (callback) {
+      callback(null, prefixSchedule, year, week);
+    },
     //first waterfall function
     //gets list of players + player_id
-    function (callback) {
-      async.map(
-        prefixSchedule,
-        findClosedSchedulesAndPlayers,
-        //result here is an array of objects specified by return value of
-        //findClosedSchedulesAndPlayer function
-        function(err, result) {
-          if (err) {
-            console.log(err);
-          } else {
-            callback(null, result);
-          }
-        });
-    },
+    getPlayers,
     //second waterfall function
     //get all bet ids associated with player
     //result.rows is list of players and player_id queried from database
-    function (players, callback) {
-      var mapArray = [];
-      var playerIds = [];
-      for (var i = 0; i !== players.length; ) {
-        mapArray.push({
-          'player': players[i].name,
-          'prefixSchedule': prefixSchedule,
-          'isOnHomeTeam': players[i].isOnHomeTeam,
-          'year': year,
-          'week': week
-        });
-        playerIds.push(players[i].id);
-      }
-      //returns an array of fantasy points as result
-      //matches playerIds array
-      async.map(mapArray, calculateFantasyPoints, function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          callback(null, playerIds, result);
-        }
-      });
-    },
+    getBetIds,
     //third waterfall function
     //get all bet ids corresponding to given player id
-    function (playerIds, fantasyPointsArray, callback) {
-      async.map(playerIds, getBetIdsFromPlayerId, function (err, result) {
-        //result is an array of bet arrays
-        if (err) {
-          console.log(err);
-        } else {
-          callback(null, result, fantasyPointsArray);
-        }
-      })
-    },
+    getBetIdsPlayerId,
     //fourth waterfall function
-    function (betslist, fantasyPointsArray, callback) {
-      processArrayBets(betslist, fantasyPointsArray);
-    }], function (err) {
+    processBets
+    ], 
+    function (err) {
       if (err) {
         console.log(err);
       }
     });
 }
 
-function weeklyScheduleCallback(err, schedule, year, week) {
-  if (err) {
-    console.log(err);
-  } else {
-    calculateAllFantasyPoints(schedule, year, week);
-  }
-}
-
-
-
 var checkEndGames = function(year, week) {
   var rows;
   sportsdata_nfl.getWeeklySchedule(1, function(err, schedule) {
-    weeklyScheduleCallback(err, schedule, year, week);
+    if (err) {
+      console.log(err);
+    } else {
+      calculateAllFantasyPoints(schedule, year, week);
+    }
   });
-}
+};
 
 checkEndGames(2013, 6);
 //async.map schedules -> closed schedules
 //async.map closed schedules -> player objects
 //async.each player objects -> get bets and update
 app.listen(3000);
+
+//tests
+/*calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false, '2013', 1, function(err, result) {
+  if (err) {
+    console.log(err);
+    return;
+  }
+  console.log(result);
+});*/
