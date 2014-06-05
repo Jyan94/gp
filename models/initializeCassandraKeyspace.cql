@@ -53,6 +53,8 @@ CREATE TABLE IF NOT EXISTS current_bets (
     expiration timeuuid
 );
 
+CREATE INDEX IF NOT EXISTS ON current_bets(player_id);
+
 CREATE TABLE IF NOT EXISTS past_bets (
     bet_id timeuuid PRIMARY KEY,
     long_better_id uuid,
