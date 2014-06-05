@@ -14,8 +14,7 @@ function getbetInfoFromPlayerId(player_id, callback) {
   client.executeAsPrepared(query, params, cql.types.consistencies.one, callback)
 }
 
-/* Routing */
-//get to '/market/:player_id',
+
 var get = function (req, res) {
   var callback = function(err, arr) {
     if (err) {

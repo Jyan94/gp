@@ -17,8 +17,13 @@ app.use(passport.session());
 //root path
 //FOR TESTING PURPOSES
 app.get('/', function(req, res) {
-  res.redirect('/market/00000000-0000-0000-0000-000000005ba7');
+  res.render('banner');
 });
+
+
+//autocomplete
+var autocomplete = require('routes/autocomplete');
+app.get('/autocomp', autocomplete.autocomp);
 
 //login
 app.route('/login')
@@ -56,20 +61,15 @@ app.route('/signup')
 });
 
 //market
-var market = require('routes/displayBets');
+var market = require('routes/market');
 app.get('/market/:player_id', market.get);
 app.post('/submitForm/:player_id', market.submitBet);
 app.post('/addBets/:player_id', market.takeBet);
 
 //profile
 var profile = require('routes/profile');
-app.route('/user')
-.get(function (req, res) {
-  req.params.username = '';
-  profile.retrieveProfile(req, res);
-});
-app.route('/user/:username').get(profile.retrieveProfile);
-app.route('/upload/image/:username').post(profile.updateProfile);
-app.route('/images/:file').get(profile.pictureNotFound);
+app.get('/user/:username', profile.retrieveProfile);
+app.post('/upload/image/:username', profile.updateProfile);
+app.get('/images/:file', profile.pictureNotFound);
 
 //app.listen(3000);
