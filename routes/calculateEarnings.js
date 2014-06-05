@@ -13,19 +13,8 @@ var sportsdata_nfl = require('sportsdata').NFL;
 var sportsdata_mlb = require('sportsdata').MLB;
 var async = require('async');
 
-var request = require('request');
-var xml2js = require('xml2js');
-var parser = new xml2js.Parser();
-
 sportsdata_nfl.init('t', 1, 'gzjpc3dseum9ps25td2y6mtx', 2013, 'REG');
 sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
-
-
-/*sportsdata_nfl.getWeeklySchedule(1, function(err, schedule) {
-  if (!err) {
-    console.log(schedule.games.game);
-  }
-})*/
 
 /**
  * takes as parameter the following object:

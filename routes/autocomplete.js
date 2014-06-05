@@ -1,16 +1,11 @@
 'use strict';
 (require('rootpath')());
-var importedapp = require('app.js');
-var express = require('express');
-var app = express();
 var configs = require('config/index');
-configs.configure(app);
-app.use('/', importedapp);
-
 var client = configs.cassandra.client;
 var cql = configs.cassandra.cql;
 
-app.get('/autocomp', function(req,res) {
+//get autocomp
+var autocomp = function(req,res) {
   var search =[];
   var query = 'SELECT player_id, full_name FROM football_player';
   client.executeAsPrepared(query, cql.types.consistencies.one,
@@ -31,13 +26,6 @@ app.get('/autocomp', function(req,res) {
       res.send(JSON.stringify(search));
     }
   });
-});
+};
 
-app.get('/hello', function(req, res) {
-  console.log(req.query);
-});
-
-app.get('/', function(req, res) {
-  res.render('banner');
-});
-app.listen(3000);
+exports.autocomp = autocomp;

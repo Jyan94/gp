@@ -15,7 +15,7 @@ function getbetInfoFromPlayerId(player_id, callback) {
 }
 
 /* Routing */
-//get to '/market/:player_id', 
+//get '/market/:player_id', 
 var get = function (req, res) {
   var callback = function(err, arr) {
     if (err) {

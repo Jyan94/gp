@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS users(
     vip_status int,
     image text
 );
-
 CREATE INDEX IF NOT EXISTS ON users (username);
 CREATE INDEX IF NOT EXISTS ON users (email);
 
@@ -64,7 +63,7 @@ CREATE TABLE IF NOT EXISTS past_bets (
     long_better_payoff bigint,
     short_better_payoff bigint,
     game_id uuid,
-    expiration timeuuid,
+    expiration timeuuid
 );
 
 CREATE TABLE IF NOT EXISTS all_bets (
@@ -77,7 +76,7 @@ CREATE TABLE IF NOT EXISTS all_bets (
     long_better_payoff bigint,
     short_better_payoff bigint,
     game_id uuid,
-    expiration timeuuid,
+    expiration timeuuid
 );
 
 CREATE TABLE IF NOT EXISTS football_player (
@@ -93,17 +92,13 @@ CREATE TABLE IF NOT EXISTS football_player (
     uniform_number int,
     height int,
     weight int,
-<<<<<<< HEAD
     image text
-=======
-    image text,
->>>>>>> 286d7222bfaaf046260b64443969a3d2cc519999
 );
 
 CREATE TABLE IF NOT EXISTS football_team (
     team_id uuid PRIMARY KEY,
     city text,
-    name text,
+    name text
 );
 
 CREATE TABLE IF NOT EXISTS football_game (
@@ -117,14 +112,14 @@ CREATE TABLE IF NOT EXISTS football_game (
     home_team text,
     away_team text,
     home_score int,
-    away_score int,
+    away_score int
 );
 
 CREATE TABLE IF NOT EXISTS football_meta (
     version int PRIMARY KEY,
     season_type text,
     season_year int,
-    week int,
+    week int
 );
 
 CREATE TABLE IF NOT EXISTS football_player_stat (
@@ -143,7 +138,7 @@ CREATE TABLE IF NOT EXISTS football_player_stat (
     receiving_yds int,
     receiving_tds int,
     receiving_twoptm int,
-    fumbles_lost int,
+    fumbles_lost int
 );
 
 CREATE TABLE IF NOT EXISTS football_market_value (
@@ -156,26 +151,17 @@ CREATE TABLE IF NOT EXISTS football_market_value (
     season_year int,
     season_type text,
     week int,
-    finished boolean,
-<<<<<<< HEAD
+    finished boolean
 );
 
-<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS player_images (
     player_name text PRIMARY KEY,
     image_url text
 );
-=======
-INSERT INTO users (user_id, username) VALUES (00000000-0000-0000-0000-000000000001, 'Bobob');
-INSERT INTO users (user_id, username) VALUES (00000000-0000-0000-0000-000000000002, 'Mang');
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000001, 2e4ac100-31f1-11e2-9286-14109fcdd33b);
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000001, 2e4ac100-31f1-11e2-9287-14109fcdd33b);
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000001, 2e4ac100-31f1-11e2-9288-14109fcdd33b);
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000002, 2e4ac100-31f1-11e2-9288-14109fcdd33b);
-INSERT INTO pending_bets (bet_id, user_id) VALUES (2e4ac100-31f1-11e2-9286-14109fcdd33b, 00000000-0000-0000-0000-000000000001);
-INSERT INTO pending_bets (bet_id, user_id) VALUES (2e4ac100-31f1-11e2-9287-14109fcdd33b, 00000000-0000-0000-0000-000000000001);
-INSERT INTO current_bets (bet_id, long_better_id, short_better_id) VALUES (2e4ac100-31f1-11e2-9288-14109fcdd33b, 00000000-0000-0000-0000-000000000001, 00000000-0000-0000-0000-000000000002);
->>>>>>> 286d7222bfaaf046260b64443969a3d2cc519999
-=======
-);
->>>>>>> fb4e3a3dd2f029eb887c09187c4b74a8b80ef36c
+
+CREATE TABLE IF NOT EXISTS timeseries_bets (
+  player_id text,
+  time timeuuid,
+  price double,
+  PRIMARY KEY (player_id, time)
+) WITH CLUSTERING ORDER BY (time ASC);
