@@ -1,26 +1,10 @@
 require('rootpath')();
-var express = require('express');
-var app = module.exports = express();
 var configs = require('config/index');
-configs.configure(app);
 
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 
-
-var sportsdata_nfl = require('sportsdata').NFL;
-var sportsdata_mlb = require('sportsdata').MLB;
 var async = require('async');
-
-var request = require('request');
-var xml2js = require('xml2js');
-var parser = new xml2js.Parser();
-var urlHelper = require('../libs/url_helper_mlb');
-
-sportsdata_nfl.init('t', 1, 'gzjpc3dseum9ps25td2y6mtx', 2013, 'REG');
-sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
-
-app.use('/', require('../app.js'));
 
 function getbetInfoFromPlayerId(player_id, callback) {
   var rows;
@@ -31,7 +15,8 @@ function getbetInfoFromPlayerId(player_id, callback) {
 }
 
 /* Routing */
-app.get('/market/:player_id', function (req, res) {
+//get '/market/:player_id', 
+var get = function (req, res) {
   var callback = function(err, arr) {
     if (err) {
       console.log(err);
@@ -83,9 +68,10 @@ app.get('/market/:player_id', function (req, res) {
       })
     }
   ])
-})
+}
 
-app.post('/submitForm/:player_id', function (req, res) {
+//post to '/submitForm/:player_id'
+var submitBet = function (req, res) {
   var betId = cql.types.timeuuid();
   if (req.body.longOrShort === 'Above') {
     var queries = [
@@ -127,10 +113,11 @@ app.post('/submitForm/:player_id', function (req, res) {
       }
     });
   }
-});
+}
 
 
-app.post('/addBets/:player_id', function (req, res) {
+//post to '/addBets/:player_id' 
+var takeBet = function (req, res) {
   var bet_id = req.body.bet_id;
   var query0 = 'SELECT user_id, bet_value, multiplier FROM pending_bets WHERE bet_id = ?'
   var params0 = [bet_id];
@@ -165,6 +152,10 @@ app.post('/addBets/:player_id', function (req, res) {
         }
       })
     }
-  })
-})
-app.listen(3000);
+  });
+}
+
+//exports above functions
+exports.get = get;
+exports.submitBet = submitBet;
+exports.takeBet = takeBet;

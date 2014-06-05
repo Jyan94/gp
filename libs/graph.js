@@ -44,6 +44,7 @@ app.get('/data', function(req, res) {
 
 
 // tests
+/*
 setInterval(function() {
   timeseriesBets.insert('hello', Math.random() * 100, function(err) {
     if (err) {
@@ -52,3 +53,4 @@ setInterval(function() {
   });
 }, 1000);
 app.listen(3000);
+*/

@@ -1,9 +1,6 @@
 'use strict';
 require('rootpath')();
-var express = require('express');
-var app = module.exports = express();
 var configs = require('config/index');
-configs.configure(app);
 
 var async = require('async');
 var bcrypt = require('bcrypt-nodejs');
@@ -15,6 +12,7 @@ var responseValues = {
   emailTaken: 2,
   success: 3
 };
+
 function insertUser(body, res) {
   /*
     user_id, email, verified, verified_time, username, password, first_name,
@@ -54,7 +52,7 @@ function insertUser(body, res) {
   });
 }
 
-function processSignUp(req, res) {
+var processSignUp = function(req, res) {
   var body = req.body;
   async.waterfall([
     //username lookup
@@ -83,7 +81,9 @@ function processSignUp(req, res) {
         }
       });
     }
-  ], function(err) {
+  ], 
+  //callback when done
+  function(err) {
     if (err) {
       console.log(err);
       return;
@@ -92,12 +92,4 @@ function processSignUp(req, res) {
   });
 }
 
-app.route('/signup')
-.get(function(req, res) {
-  res.render('signup');
-})
-.post(function(req, res) {
-  processSignUp(req, res);
-});
-
-//app.listen(3000);
+exports.processSignUp = processSignUp;

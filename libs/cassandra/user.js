@@ -64,6 +64,31 @@ exports.update = function (user_id, fields, params, callback) {
     });
 };
 
+var UPDATE_CASH_CQL = multiline(function() {/*
+  'UPDATE users SET cash = cash + ? WHERE user_id = ?'
+*/});
+exports.updateCash = function (cash_values, user_id_values, callback) {
+  var cash_values_length = cash_values.length;
+  var user_id_values_length = user_id_values.length;
+  var query = []
+
+  if (cash_values_length !== user_id_values_length) {
+    callback(new Error('Number of cash values and user id values are not the same.'));
+  }
+
+  for (var i = 0; i < cash_values_length; i++) {
+    query[i] = {
+      query: UPDATE_CASH_CQL,
+      params: [cash_values[i], user_id_values[i]]
+    }
+  }
+
+  cassandra.queryBatch(query, cql.types.consistencies.one, 
+    function(err, result) {
+      callback(err, result);
+  });
+};
+
 var SELECT_USER_CQL = multiline(function () {/*
   SELECT * FROM users WHERE
 */});
@@ -73,7 +98,8 @@ var allowed_fields = ['user_id', 'username', 'email'];
 exports.select = function (field, value, callback) {
   if (allowed_fields.indexOf(field) < 0) {
     callback(new Error(field + ' is not a searchable field.'));
-  } else {
+  }
+  else {
     cassandra.queryOneRow(
       SELECT_USER_CQL + ' ' + field + ' = ?;',
       [value], 
