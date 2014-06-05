@@ -54,5 +54,9 @@
     "co-mocha": "0.0.x",
     "mocha": "^1.19.0",
     "should": "^3.3.2"
+  },
+  "scripts": {
+   "start": "node_modules/.bin/supervisor app",
+   "test": "node_modules/.bin/mocha -w"
   }
 }

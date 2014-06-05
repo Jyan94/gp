@@ -27,6 +27,22 @@ exports.insert = function (player_id, price, callback) {
     });
 };
 
+var DELETE_PRICE_CQL = multiline(function() {/*
+  DELETE FROM timeseries_bets WHERE
+    player_id
+  IN
+    (?);
+*/});
+exports.deletePrices = function (player_id, callback) {
+  cassandra.query(
+    DELETE_PRICE_CQL,
+    [player_id],
+    cql.types.consistencies.one,
+    function (err) {
+      callback(err);
+    });
+}
+
 var SELECT_TIMERANGE_CQL = multiline(function () {/*
   SELECT  
     price, dateOf(time) 
@@ -95,23 +111,7 @@ exports.selectSinceTime = function (player_id, start, callback) {
       callback(err, result);
   });
 };
-/*
-var TIME_FIELD = 'dateOf(time)';
-exports.reduceBetsToObject = function (prices, callback) {
-  var retObj = {};
-  var addToObj = function (element) {
-    var price = element.price;
-    console.log(price);
-    //if (!retObj.hasOwnProperty(element[TIME_FIELD])) {
-      retObj[element[TIME_FIELD]] =  price;
-    //}
-  };
-  for (var i = 0; i !== prices.length; ++i) {
-    addToObj(prices[i]);
-  }
-  callback(retObj);
-}
-*/
+
 /**
  * TEST FUNCTION BELOW
  */

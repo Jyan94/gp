@@ -383,6 +383,7 @@ checkEndGames(2013, 6);
 app.listen(3000);
 
 //tests
+//for calculating fantasy points
 /*calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false, '2013', 1, function(err, result) {
   if (err) {
     console.log(err);
