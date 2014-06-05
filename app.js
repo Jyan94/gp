@@ -13,4 +13,4 @@ app.get('/', function (req, res) {
   console.log(req.user);
 });
 
-//app.listen(3000);
+app.listen(3000);

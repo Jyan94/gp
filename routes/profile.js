@@ -1,8 +1,6 @@
 require('rootpath')();
-var express = require('express');
-var app = module.exports = express();
+
 var configs = require('config/index');
-configs.configure(app);
 
 //app.use('/', require('../app.js'))
 
@@ -10,11 +8,8 @@ var async = require('async');
 var User = require('libs/cassandra/user');
 var bet = require('libs/cassandra/bet');
 var cql = configs.cassandra.cql;
-var busboy = require('connect-busboy');
 var fs = require('fs');
 var url = require('url');
-
-app.use(busboy());
 
 var messages = {
   incorrect_username: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }',
@@ -22,7 +17,7 @@ var messages = {
   upload_error:'{ "title": "Upload error", "parts": ["Something went wrong while uploading a file."] }'
   };
 
-function retrieveProfile(req, res) {
+var retrieveProfile = function(req, res) {
   var userInfo = {};
   var betInfo = [];
   var field = '';
@@ -80,14 +75,7 @@ function retrieveProfile(req, res) {
   });
 }
 
-/*
-  Git commands if you forget:
-  git add -A
-  git commit -m
-  git push
- */
-
-function updateProfile(req, res) {
+var updateProfile = function(req, res) {
   var upload_username = req.params.username;
   var upload_file = null;
   var upload_filename = null;
@@ -162,19 +150,8 @@ function updateProfile(req, res) {
   req.pipe(req.busboy);
 }
 
-
-app.route('/user')
-.get(function (req, res) {
-  req.params.username = '';
-  retrieveProfile(req, res);
-});
-
-app.route('/user/:username').get(retrieveProfile);
-app.route('/upload/image/:username').post(updateProfile);
-
-
-app.route('/images/:file').get(function (req, res) {
-  file = req.params.file;
+var pictureNotFound = function (req, res) {
+  var file = req.params.file;
   fs.readFile(__dirname + '/' + file, function (err, result) {
     if (result) {
       res.send(result);
@@ -183,6 +160,9 @@ app.route('/images/:file').get(function (req, res) {
       res.send(404, 'Profile picture not found.');
     }
   });
-});
+}
 
-app.listen(3000);
+//exports
+exports.retrieveProfile = retrieveProfile;
+exports.updateProfile = updateProfile;
+exports.pictureNotFound = pictureNotFound;

@@ -1,5 +1,6 @@
 'use strict';
 var bodyParser = require('body-parser');
+var busboy = require('connect-busboy');
 var cookieparser = require('cookie-parser');
 var compress = require('compression');
 var express = require('express');
@@ -41,6 +42,7 @@ var config = {
       //make sure cassandra is running for this to work
       //store: new CassandraStore({client: client})
     }));
+    app.use(busboy());
   },
   cassandra: {
     cql: cql,

@@ -67,23 +67,3 @@ passport.deserializeUser(function (id, done) {
     done(err, result);
   });
 });
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.route('/login')
-.get(function(req, res, next) {
-  if (req.user) {
-    res.redirect('/market/00000000-0000-0000-0000-000000005ba7');
-  } else {
-    next();
-  }
-})
-.get(function(req, res) {
-  var results = [];
-  res.render('login.jade', { flash: results });
-})
-.post(passport.authenticate('local', { successRedirect: '/market/00000000-0000-0000-0000-000000005ba7',
-                                   failureRedirect: '/login',
-                                   failureFlash: true })
-);
