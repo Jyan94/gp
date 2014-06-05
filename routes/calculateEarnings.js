@@ -9,6 +9,7 @@ var client = configs.cassandra.client;
 
 app.use('/', require('../app.js'));
 
+var Bet = require('../libs/cassandra/bet.js')
 var sportsdata_nfl = require('sportsdata').NFL;
 var sportsdata_mlb = require('sportsdata').MLB;
 var async = require('async');
@@ -26,6 +27,113 @@ sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
     console.log(schedule.games.game);
   }
 })*/
+
+/**
+ * takes a betId and a fantasy point value and updates a user's wallet
+ * @param  {uuid}   betId
+ * @param  {double}   fantasyPoints [single fantasy point value]
+ * @param  {Function} callback
+ */
+function calculateBet(bet_id, fantasyPoints, callback) {
+  var rows;
+  Bet.selectMultiple('current_bets', bet_id, function (err, result) {
+  //var query = 'SELECT bet_value, multiplier, long_better_id, short_better_id FROM current_bets WHERE bet_id = ?'
+  //var params = [betId];
+  //client.executeAsPrepared(
+    //query, 
+    //params, 
+    //cql.types.consistencies.one, 
+    //function(err, result) {
+      rows = result.rows[0];
+      var longWinnings = rows.multiplier * (fantasyPoints - rows.bet_value);
+      var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
+      console.log(longWinnings);
+      console.log(shortWinnings);
+      var queries = [
+        {
+          query: 'UPDATE users SET cash = cash +  WHERE user_id = ?',
+          params: [rows.long_better_id]
+        },
+        {
+          query: 'UPDATE users SET cash = cash +  WHERE user_id = ?',
+          params: [rows.short_better_id]
+        }
+      ];
+      client.executeBatch(
+        queries, 
+        cql.types.consistencies.one, 
+        function(err) {
+          if (err) {
+            console.log(err);
+          } else {
+            callback(null);
+          }
+      });
+  });
+}
+
+//result returned:
+/**
+ * [
+ *  { 'name': player1name, 'id': player1id, 'isOnHomeTeam': [bool] }
+ *  { 'name': player2name, 'id': player2id, 'isOnHomeTeam': [bool] }
+ *  ...
+ * ]
+ */
+function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
+  var retArray = [];
+  var hometeam = prefixSchedElement.$.home;
+  var awayteam = prefixSchedElement.$.away;
+  if (prefixSchedElement.$.status === 'closed') {
+    async.waterfall([
+
+      //pushes on the home players
+      function (callback) {
+        var query = 'SELECT player_id, player FROM team WHERE team = ?'
+        var params = [hometeam];
+        client.executeAsPrepared(query, params, cql.types.consistencies.one,
+          function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              for (var i = 0; i < result.rows.length; i++) {
+                retArray.push({
+                  'name': result.rows[i].player,
+                  'id': result.rows[i].player_id,
+                  'isOnHomeTeam': true
+                });
+              }
+              callback(null, retArray);
+            }
+          });
+      },
+
+      //pushes on the away players
+      function (arr, callback) {
+        var query = 'SELECT player_id, player FROM team WHERE team = ?'
+        var params = [awayteam];
+        client.executeAsPrepared(query, params, cql.types.consistencies.one, 
+          function(err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              for (var i = 0; i < result.rows.length; i++) {
+                arr.push({
+                  'name': result.rows[i].player,
+                  'id': result.rows[i].player_id,
+                  'isOnHomeTeam': false
+                });
+              }
+              callback(null, arr);
+            }
+          });
+      }
+      ], function (err, result) {
+        callback(null, retArray);
+      });
+  }
+}
+
 
 /**
  * takes as parameter the following object:
@@ -62,7 +170,7 @@ var calculateFantasyPoints = function(playerObject, callback) {
       if (boolHome === true) {
         arrayIndex = 0;
       }
-      else {
+      else {   
         arrayIndex = 1;
       }
       var points = 0.0;
@@ -128,47 +236,22 @@ var calculateFantasyPoints = function(playerObject, callback) {
   })
 }
 
-/**
- * takes a betId and a fantasy point value and updates a user's wallet
- * @param  {uuid}   betId
- * @param  {double}   fantasyPoints [single fantasy point value]
- * @param  {Function} callback
- */
-function calculateBet(betId, fantasyPoints, callback) {
-  var rows;
-  var query = 'SELECT bet_value, multiplier, long_better_id, short_better_id FROM current_bets WHERE bet_id = ?'
-  var params = [betId];
+
+function getBetIdsFromPlayerId(playerId, callback) {
+  var query = 'SELECT bet_id FROM current_bets WHERE player_id = ?';
+  var params = [playerId];
   client.executeAsPrepared(
-    query, 
-    params, 
-    cql.types.consistencies.one, 
+    query,
+    params,
+    cql.types.consistencies.one,
     function(err, result) {
-    rows = result.rows[0]
-    var longWinnings = rows.multiplier * (fantasyPoints - rows.bet_value);
-    var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
-    console.log(longWinnings);
-    console.log(shortWinnings);
-    var queries = [
-    {
-      query: 'UPDATE users SET cash = cash +  WHERE user_id = ?',
-      params: [rows.long_better_id]
-    },
-    {
-      query: 'UPDATE users SET cash = cash +  WHERE user_id = ?',
-      params: [rows.short_better_id]
-    }
-    ]
-    client.executeBatch(
-      queries, 
-      cql.types.consistencies.one, 
-      function(err) {
-        if (err) {
-          console.log(err);
-        } else {
-          callback(null);
-        }
+      if (err) {
+        console.log(err);
+      } else {
+        //returns a list of bets
+        callback(null, result.rows);
+      }
     });
-  });
 }
 
 /**
@@ -195,92 +278,7 @@ function processArrayBets(betsArray, fantasyPoints) {
   }
 }
 
-
-function getBetIdsFromPlayerId(playerId, callback) {
-  var query = 'SELECT bet_id FROM current_bets WHERE player_id = ?';
-  var params = [playerId];
-  client.executeAsPrepared(
-    query,
-    params,
-    cql.types.consistencies.one,
-    function(err, result) {
-      if (err) {
-        console.log(err);
-      } else {
-        //returns a list of bets
-        callback(null, result.rows);
-      }
-    });
-}
-
-//result returned:
-/**
- * [
- *  { 'name': player1name, 'id': player1id, 'isOnHomeTeam': [bool] }
- *  { 'name': player2name, 'id': player2id, 'isOnHomeTeam': [bool] }
- *  ...
- * ]
- */
-function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
-  var rows;
-  var retArray = [];
-  var hometeam = prefixSchedElement.$.home;
-  var awayteam = prefixSchedElement.$.away;
-  if (prefixSchedElement.$.status === 'closed') {
-    async.waterfall([
-
-      //pushes on the home players
-      function (callback) {
-        var query = 'SELECT player_id, player FROM team WHERE team = ?'
-        var params = [hometeam];
-        client.executeAsPrepared(
-          query,
-          params,
-          cql.types.consistencies.one,
-          function (err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              for (var i = 0; i < result.rows.length; i++) {
-                retArray.push({
-                  'name': result.rows[i].player,
-                  'id': result.rows[i].player_id,
-                  'isOnHomeTeam': true
-                });
-              }
-              callback(null, retArray);
-            }
-          });
-      },
-
-      //pushes on the away players
-      function (arr, callback) {
-        var query = 'SELECT player_id, player FROM team WHERE team = ?'
-        var params = [awayteam];
-        client.executeAsPrepared(
-          query, 
-          params, 
-          cql.types.consistencies.one, 
-          function(err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              for (var i = 0; i < result.rows.length; i++) {
-                arr.push({
-                  'name': result.rows[i].player,
-                  'id': result.rows[i].player_id,
-                  'isOnHomeTeam': false
-                });
-              }
-              callback(null, arr);
-            }
-          });
-      }
-      ], function (err, result) {
-        callback(null, retArray);
-      });
-  }
-}
+//Waterfull functions start here
 
 //first waterfall function
 //gets list of players + player_id
@@ -294,7 +292,7 @@ function getPlayers(prefixSchedule, year, week, callback) {
       if (err) {
         console.log(err);
       } else {
-        callback(null, result);
+        callback(null, result, prefixSchedule, year, week);
       }
     });
 }

@@ -93,11 +93,7 @@ CREATE TABLE IF NOT EXISTS football_player (
     uniform_number int,
     height int,
     weight int,
-<<<<<<< HEAD
     image text
-=======
-    image text,
->>>>>>> 286d7222bfaaf046260b64443969a3d2cc519999
 );
 
 CREATE TABLE IF NOT EXISTS football_team (
@@ -157,25 +153,9 @@ CREATE TABLE IF NOT EXISTS football_market_value (
     season_type text,
     week int,
     finished boolean,
-<<<<<<< HEAD
 );
 
-<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS player_images (
     player_name text PRIMARY KEY,
     image_url text
 );
-=======
-INSERT INTO users (user_id, username) VALUES (00000000-0000-0000-0000-000000000001, 'Bobob');
-INSERT INTO users (user_id, username) VALUES (00000000-0000-0000-0000-000000000002, 'Mang');
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000001, 2e4ac100-31f1-11e2-9286-14109fcdd33b);
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000001, 2e4ac100-31f1-11e2-9287-14109fcdd33b);
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000001, 2e4ac100-31f1-11e2-9288-14109fcdd33b);
-INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (00000000-0000-0000-0000-000000000002, 2e4ac100-31f1-11e2-9288-14109fcdd33b);
-INSERT INTO pending_bets (bet_id, user_id) VALUES (2e4ac100-31f1-11e2-9286-14109fcdd33b, 00000000-0000-0000-0000-000000000001);
-INSERT INTO pending_bets (bet_id, user_id) VALUES (2e4ac100-31f1-11e2-9287-14109fcdd33b, 00000000-0000-0000-0000-000000000001);
-INSERT INTO current_bets (bet_id, long_better_id, short_better_id) VALUES (2e4ac100-31f1-11e2-9288-14109fcdd33b, 00000000-0000-0000-0000-000000000001, 00000000-0000-0000-0000-000000000002);
->>>>>>> 286d7222bfaaf046260b64443969a3d2cc519999
-=======
-);
->>>>>>> fb4e3a3dd2f029eb887c09187c4b74a8b80ef36c
