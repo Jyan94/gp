@@ -1,6 +1,6 @@
 //real time updates query database every few seconds
 
-//get the player id from url
+//get the player id from url (last element after split)
 var player_id = document.URL.split('/')[document.URL.split('/').length - 1];
 
 //real time updates
@@ -116,7 +116,7 @@ function createGraph(initdata) {
     },
 
     title : {
-      text : 'Live random data'
+      text : 'Fantasy value over time'
     },
 
     plotOptions: {
@@ -155,7 +155,7 @@ $(function() {
     },
     success: function (data) {
       createGraph(data);
-    }
+    },
   });
 
 });

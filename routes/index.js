@@ -17,7 +17,7 @@ app.use(passport.session());
 //root path
 //FOR TESTING PURPOSES
 app.get('/', function(req, res) {
-  res.render('banner');
+  res.render('graph');
 });
 
 
