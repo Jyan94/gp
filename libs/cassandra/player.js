@@ -86,11 +86,9 @@ exports.select = function (field, value, callback) {
 };
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
-  SELECT * FROM football_players WHERE team = ?;
+  SELECT * FROM football_player WHERE team = ?;
 */})
 exports.selectUsingTeam = function (team, callback) {
-  console.log(callback);
-
   cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, [team], cql.types.consistencies.one, 
       function(err, result) {
         console.log(result);

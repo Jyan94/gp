@@ -65,29 +65,43 @@ exports.update = function (user_id, fields, params, callback) {
 };
 
 var UPDATE_CASH_CQL = multiline(function() {/*
-  'UPDATE users SET cash = cash + ? WHERE user_id = ?'
+  UPDATE users SET money = ? WHERE user_id = ?;
 */});
-exports.updateCash = function (cash_values, user_id_values, callback) {
-  var cash_values_length = cash_values.length;
+exports.updateCash = function (money_values, user_id_values, callback) {
+  var money_values_length = money_values.length;
   var user_id_values_length = user_id_values.length;
-  var query = []
+  var old_money_values = {};
+  var current_user_id = null;
+  var query = [];
 
-  if (cash_values_length !== user_id_values_length) {
-    callback(new Error('Number of cash values and user id values are not the same.'));
+  if (money_values_length !== user_id_values_length) {
+    callback(new Error('Number of money values and user id values are not the same.'));
   }
 
-  for (var i = 0; i < cash_values_length; i++) {
-    query[i] = {
-      query: UPDATE_CASH_CQL,
-      params: [cash_values[i], user_id_values[i]]
+  exports.selectMultiple(user_id_values, function (err, result) {
+
+    for (var i = 0; i < result.length; i++) {
+      current_user_id = result[i].user_id;
+      old_money_values[current_user_id] = result[i].money;
     }
-  }
 
-  cassandra.queryBatch(query, cql.types.consistencies.one, 
-    function(err, result) {
-      callback(err, result);
-  });
+    for (i = 0; i < money_values_length; i++) {
+      current_user_id = user_id_values[i];
+      query[i] = {
+        query: UPDATE_CASH_CQL,
+        params: [old_money_values[current_user_id] + money_values[i], current_user_id]
+      }
+    }
+
+    console.log(query);
+
+    cassandra.queryBatch(query, cql.types.consistencies.one, 
+      function(err, result) {
+        callback(err, result);
+    });
+  })
 };
+
 
 var SELECT_USER_CQL = multiline(function () {/*
   SELECT * FROM users WHERE
@@ -109,3 +123,28 @@ exports.select = function (field, value, callback) {
     });
   }
 };
+
+
+var SELECT_USERS_MULTIPLE_CQL = multiline(function () {/*
+  SELECT * FROM users WHERE user_id IN
+*/});
+exports.selectMultiple = function selectMultiple(params, callback) {
+  var paramsLength = params.length;
+  var filter = '';
+  var query = '';
+
+  for (var i = 0; i < paramsLength; i++) {
+    filter += '?';
+
+    if (i < (paramsLength - 1)) {
+      filter += ', ';
+    }
+  }
+
+  query = SELECT_USERS_MULTIPLE_CQL + ' (' + filter + ');';
+  cassandra.query(query, params, cql.types.consistencies.one,
+    function (err, result) {
+      console.log(result);
+      callback(err, result);
+    });
+}

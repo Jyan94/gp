@@ -68,6 +68,8 @@ CREATE TABLE IF NOT EXISTS past_bets (
     expiration timeuuid
 );
 
+CREATE INDEX IF NOT EXISTS ON past_bets(player_id);
+
 CREATE TABLE IF NOT EXISTS all_bets (
     bet_id timeuuid PRIMARY KEY,
     long_better_id uuid,
@@ -96,6 +98,8 @@ CREATE TABLE IF NOT EXISTS football_player (
     weight int,
     image text
 );
+
+CREATE INDEX IF NOT EXISTS ON football_player (team);
 
 CREATE TABLE IF NOT EXISTS football_team (
     team_id uuid PRIMARY KEY,
