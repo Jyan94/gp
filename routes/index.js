@@ -17,11 +17,11 @@ app.use(passport.session());
 //root path
 //FOR TESTING PURPOSES
 app.get('/', function(req, res) {
-  res.render('graph');
+  res.render('banner');
 });
 
 
-//autocomplete
+//autocompletel
 var autocomplete = require('routes/autocomplete');
 app.get('/autocomp', autocomplete.autocomp);
 

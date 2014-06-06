@@ -66,7 +66,7 @@ var retrieveProfile = function(req, res) {
       console.log(err);
       return;
     }
-
+    console.log(betInfo);
     res.render('profile', { userInfo: userInfo, 
                             pendingBetInfo: betInfo.pending_bets,
                             currentBetInfo: betInfo.current_bets,
