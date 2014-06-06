@@ -21,7 +21,7 @@ app.get('/', function(req, res) {
 });
 
 
-//autocomplete
+//autocompletel
 var autocomplete = require('routes/autocomplete');
 app.get('/autocomp', autocomplete.autocomp);
 
