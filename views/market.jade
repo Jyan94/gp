@@ -27,29 +27,23 @@ html(lang="en")
           div.linkcontainer
             div.leftsidehome
               center
-                div(id="shown_first" style='display: inline')
-                  h2=item.username
-            div.rightsidehome
-              center
-                a(href=player_id class='bet' id='bet'+item.bet_id style='cursor: pointer').
+                a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
                   Take Bet!
-            div.centersidehome
+            div.rightsidehome
               center
                 h5="price: " + item.bet_value
                 h5="multiplier: " + item.multiplier
 
+
         else
           div.linkcontainer
-            div.rightsidehome
-              center
-                div(id="shown_first" style='display: inline')
-                  h2=item.username
             div.leftsidehome
-              center
-                a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
-                  Take Bet!
-            div.centersidehome
               center
                 h5="price: " + item.bet_value
                 h5="multiplier: " + item.multiplier
+            div.rightsidehome
+              center
+                a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
+                  Take Bet!
+
     script(type='application/javascript' src='/js/takeBets.js')

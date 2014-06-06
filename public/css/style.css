@@ -386,110 +386,66 @@ input {
 .right_panel button {
   margin-left: 10px;
 }
-.clear{
-  clear: both;
-  height: 0;
-  visibility: hidden;
+.tabs {
+  width: 650px;
+  float: none;
+  list-style: none;
+  position: relative;
+  padding: 0;
+  margin: 75px auto;
+}
+.tabs input[type=radio] {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+.tabs li {
+  float: left;
+}
+.tabs label {
   display: block;
+  padding: 10px 20px;
+  border-radius: 2px 2px 0 0;
+  color: #08C;
+  font-size: 24px;
+  font-weight: normal;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  position: relative;
+  top: 3px;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
-#tab-container{
-  font-size: 12px;
-  line-height: 14px;
-  margin: 3em auto;
-  width: 1080px;
-  overflow: visible;
+.tabs label:hover {
+  background: rgba(255, 255, 255, 0.5);
+  top: 0;
 }
-#tab-container ul{
-    list-style: none;
-    list-style-position: outside;
-    width: 100%;
+[id^=tab]:checked {
+  background: #08C;
+  color: white;
+  top: 0;
 }
-#tab-container ul.tab-menu li{
-    display: block;
-    float: left;
-    position: relative;
-    font-weight: 700;
-    padding: 5px 10px 5px 10px;
-    background: #eee;
-    border: 1px solid #ddc;
-    border-bottom: none;
-    border-width: 1px;
-    color: #999;
-    cursor: default;
-    height: 14px;
-    margin-bottom: -1px;
-    margin-right: 5px;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-}
-#tab-container ul.tab-menu li.active{
-    background: #fff;
-    color: #0088CC;
-    height: 15px;
-    border-bottom: 0;
-}
-#tab-container ul.tab-menu li:hover{
-    background-color: #fff;
-}
-.tab-top-border {
-    border-bottom: 1px solid #d0ccc9;
-}
-.tab-content{
-    margin: 0 auto;
-    background: #efefef;
-    background: #fff;
-    border: 1px solid #ddc;
-    border-top-style: none;
-    text-align: left;
-    padding: 10px;
-    padding-bottom: 30px;
-    font-size: 11px;
-    box-shadow: none #888;
-    display: none;
-}
-#tab-container div.active{
-    box-shadow: 0px 1px 4px #888;
-    display: block;
-}
-.tab-content h1{
-    line-height: 1em;
-    height: 28px;
-    font-size: 22px;
-}
-#bet-container{
-    border: 0px;
-    padding: 0px;
-}
-#indiv-bet-container{
-    border: 7px solid #ddc;
-    padding: 10px;
-    box-shadow: 0px 4px 0px #B6B69E;
-    -webkit-transition:all 0.1s ease-in-out;
-}
-#indiv-bet-container:hover{
-    background: #efefef;
-}
-#indiv-bet-container:active{
-    box-shadow: 0px 1px 0px #D6D6C1;
-    -webkit-transform: translateY(3px);
-}
-#bet-player-image-cell{
-    padding-right: 10px;
-}
-#bet-player-image{
-    display: block;
-    position: relative;
-    height: 80px;
-    width: 80px;
-    background-position: center;
-    background-size: cover;
-}
-#bet-player-name{
-    line-height: 40px;
-}
-#bet-info{
-    font-size: 15px;
-    line-height: 20px;
+.tab-content {
+  z-index: 2;
+  display: none;
+  text-align: left;
+  width: 100%;
+  font-size: 20px;
+  line-height: 140%;
+  padding-top: 10px;
+  background: #08C;
+  padding: 15px;
+  color: white;
+  position: absolute;
+  top: 53px;
+  left: 0;
+  box-sizing: border-box;
+  -webkit-animation-duration: 0.5s;
+  -o-animation-duration: 0.5s;
+  -moz-animation-duration: 0.5s;
+  animation-duration: 0.5s;
 }
 /*----------------------------------------------------------------------------*/
 /* Signup form                                                                */
@@ -712,7 +668,7 @@ input {
 .bounding-box {
   position: relative;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 80px;
   border: solid 1px #fff;
   box-shadow: 0px 1px 4px #888;
   background-color: #fff;
@@ -1055,7 +1011,7 @@ input {
 .leftsidehome {
   padding: 5px 5px 5px 10px;
   float: left;
-  width: 35%;
+  width: 48%;
   height: 40px;
   border-right: 2px solid #cecece;
   border-radius: 0px;
@@ -1063,14 +1019,7 @@ input {
 .rightsidehome {
   padding: 5px 5px 5px 10px;
   float: right;
-  width: 35%;
-  height: 40px;
-  border-left: 2px solid #cecece;
-  border-radius: 0px;
-}
-.centersidehome {
-  padding: 5px 5px 5px 10px;
-  float: center;
+  width: 48%;
   height: 40px;
 }
 /*----------------------------------------------------------------------------*/

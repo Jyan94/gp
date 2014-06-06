@@ -58,6 +58,75 @@ function(username, password, done) {
   localStrategyVerify(username, password, done);
 }));
 
+/*
+var FacebookStrategy = require('passport-facebook').Strategy;
+
+  passport.use(new FacebookStrategy({
+      clientID: "656697897711155",
+      clientSecret: "da59fa7c8e4cc617c40793b45ac31b97",
+      callbackURL: "https://localhost:8443/auth/facebook/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+      // asynchronous verification, for effect...
+      process.nextTick(function () {
+        User.select('email', profile.username, function(err, result){
+          if (err) {
+            return done(err);
+          }
+          else if (result.rows[0]) {
+            return done(null, result.rows[0]);
+          }
+          else {
+            var user_id = cql.types.uuid();
+            User.insert('user_id', 'fbid', 'email', 'first_name', 'image', 'last_name')
+          }
+        })
+        var query0 = 'SELECT * FROM users WHERE email = ?';
+        client.executeAsPrepared(query0, [profile.username], cql.types.consistencies.one, function(err, result) {
+
+          else if (result.rows[0]) {
+            var query1 = 'SELECT * FROM users WHERE email = ?';
+            client.executeAsPrepared(query1, [profile.username], cql.types.consistencies.one, function(err, user) {
+              if (err) {
+                return done(err);
+              }
+              else {
+                return done(null, user.rows[0]);
+              }
+            });
+          }
+          else {
+            var user_id = cql.types.uuid();
+
+            var query2 = 'INSERT INTO users (user_id, fbid, email, first_name, image, last_name) values (?, ?, ?, ?, ?, ?)';
+
+            client.executeAsPrepared(query2, [user_id, profile.id, profile.username,
+                                     profile.name.givenName, strings.anonymous,
+                                     profile.name.familyName],
+                                     cql.types.consistencies.one,
+                                     function(err, result) {
+              if (err) {
+                return done(err);
+              }
+              else {
+                query1 = 'SELECT * FROM users WHERE email = ?';
+                client.executeAsPrepared(query1, [profile.username],
+                               cql.types.consistencies.one, function (err, user) {
+                  if (err) {
+                    return done(err);
+                  }
+                  else {
+                    return done(null, user.rows[0]);
+                  }
+                });
+              }
+            });
+          }
+        });
+      });
+    }
+  ));
+*/
 passport.serializeUser(function (user, done) {
   done(null, user.user_id);
 });
