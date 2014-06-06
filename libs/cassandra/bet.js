@@ -93,7 +93,7 @@ exports.selectUsingUserID = function (bets_table, user_id, callback) {
   var betIDs = [];
 
   cassandra.query(SELECT_BETS_USING_USER_ID_CQL,
-      [user_id], cql.types.consistencies.one, 
+      [user_id], cql.types.consistencies.one,
       function(err, result) {
         if (err) {
           callback(err);
@@ -116,9 +116,8 @@ var SELECT_BETS_USING_PLAYER_ID_CQL_1 = multiline(function () {/*
 */})
 var SELECT_BETS_USING_PLAYER_ID_CQL_2 = multiline(function () {/*
   WHERE player_id = ?;
-*/});
+*/})
 exports.selectUsingPlayerID = function (bets_table, player_id, callback) {
-  console.log(callback);
   var query = null;
   var allowed_tables = ['pending_bets', 'current_bets', 'past_bets'];
 
@@ -127,9 +126,8 @@ exports.selectUsingPlayerID = function (bets_table, player_id, callback) {
   }
 
   query = SELECT_BETS_USING_PLAYER_ID_CQL_1 + ' ' + bets_table + ' ' + SELECT_BETS_USING_PLAYER_ID_CQL_2;
-  cassandra.query(query, [player_id], cql.types.consistencies.one, 
+  cassandra.query(query, [player_id], cql.types.consistencies.one,
       function(err, result) {
-        console.log(result);
         callback(err, result);
     });
 }

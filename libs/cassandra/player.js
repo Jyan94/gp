@@ -8,8 +8,8 @@ var multiline = require('multiline');
 
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO players (
-    currvalue, first_name, last_name, player_id, team_id, age, biography 
-  ) VALUES 
+    currvalue, first_name, last_name, player_id, team_id, age, biography
+  ) VALUES
     (?, ?, ?, ?, ?, ?);
 */});
 exports.insert = function (fields, callback) {
@@ -86,10 +86,12 @@ exports.select = function (field, value, callback) {
 };
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
-  SELECT * FROM football_player WHERE team = ?;
+  SELECT * FROM football_players WHERE team = ?;
 */})
 exports.selectUsingTeam = function (team, callback) {
-  cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, [team], cql.types.consistencies.one, 
+  console.log(callback);
+
+  cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, [team], cql.types.consistencies.one,
       function(err, result) {
         console.log(result);
         callback(err, result);

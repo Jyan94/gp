@@ -6,12 +6,19 @@ var client = configs.cassandra.client;
 
 var async = require('async');
 
+var Bet = require('libs/cassandra/bet');
+var Player = require('libs/cassandra/player')
+var Cql = require('libs/cassandra/cql')
+
 function getbetInfoFromPlayerId(player_id, callback) {
-  var rows;
-  var betinfo = [];
-  var query = 'SELECT bet_id, user_id, long_position, bet_value, multiplier FROM pending_bets WHERE player_id = ?'
-  var params = [player_id]
-  client.executeAsPrepared(query, params, cql.types.consistencies.one, callback)
+  Bet.selectUsingPlayerID('pending_bets', player_id, function (err, result) {
+    if (err) {
+      console.log(err);
+    }
+    else{
+      callback(null, result);
+    }
+  });
 }
 
 
@@ -34,7 +41,7 @@ var get = function (req, res) {
         if (err) {
           console.log(err);
         }
-        rows = result.rows;
+        rows = result;
         for (var i = 0; i < rows.length; i++) {
           betinfo[i] = {
             bet_id: rows[i].bet_id,
@@ -43,84 +50,111 @@ var get = function (req, res) {
             multiplier: rows[i].multiplier
           }
         }
-      })
-      callback(null, betinfo);
+        callback(null, betinfo);
+      });
     },
     function(betinfo, callback) {
-      var query = 'SELECT full_name FROM football_player WHERE player_id = ?'
-      var params = [req.params.player_id];
-      client.executeAsPrepared(query, params, cql.types.consistencies.one, function(err, result) {
-        var player_name = result.rows[0].full_name;
-        query = 'SELECT image_url FROM player_images WHERE player_name = ?'
-        params = [player_name];
-        client.executeAsPrepared(query, params, cql.types.consistencies.one, function(err, result) {
-          if (result.rows[0] == undefined) {
+      var default_image = 'http://2.bp.blogspot.com/-6QyJDHjB5XE/Uscgo2DVBdI/AAAAAAAACS0/DFSFGLBK_fY/s1600/facebook-default-no-profile-pic.jpg';
+      Player.select('player_id', req.params.player_id, function(err, result) {
+        if (err) {
+          console.log(err);
+        }
+        var player_name = result.full_name;
+        Player.selectImagesUsingPlayersName(player_name, function(err, result) {
+          if (result == undefined) {
             res.render('market', {betinfo: betinfo,
-              image_url: 'http://2.bp.blogspot.com/-6QyJDHjB5XE/Uscgo2DVBdI/AAAAAAAACS0/DFSFGLBK_fY/s1600/facebook-default-no-profile-pic.jpg',
+              image_url: default_image,
               player_id:req.params.player_id})
           }
           else {
-            var image_url = result.rows[0].image_url;
-            res.render('market', {betinfo: betinfo, image_url: image_url, player_id: req.params.player_id})
+            var image_url = result.image_url;
+            res.render('market', {betinfo: betinfo,
+              image_url: image_url,
+              player_id: req.params.player_id})
           }
-        })
-      })
-    }
-  ])
+        });
+      });
+    }],
+    callback
+  );
 }
 
+var insertToPendingTable = function(betId, user, player, long_pos, price, multiplier, callback) {
+    var queries = [
+  {
+    query: 'INSERT INTO pending_bets (bet_id, user_id, player_id, long_position, bet_value, multiplier) VALUES (?, ?, ?, ?, ?, ?)',
+    params: [betId, user, player, long_pos, {value: parseFloat(price), hint: "double"}, {value: parseFloat(multiplier), hint: "double"}]
+  },
+  {
+    query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
+    params: [user, betId]
+  }
+  ];
+  Cql.executeBatch(queries, cql.types.consistencies.one, callback)
+}
 //post to '/submitForm/:player_id'
 var submitBet = function (req, res) {
   var betId = cql.types.timeuuid();
+  var long_pos;
   if (req.body.longOrShort === 'Above') {
-    var queries = [
-    {
-      query: 'INSERT INTO pending_bets (bet_id, user_id, player_id, long_position, bet_value, multiplier) VALUES (?, ?, ?, ?, ?, ?)',
-      params: [betId, req.user.user_id, req.params.player_id, true, {value: parseFloat(req.body.price), hint: "double"}, {value: parseFloat(req.body.shareNumber), hint: "double"}]
-    },
-    {
-      query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
-      params: [req.user.user_id, betId]
-    }
-    ];
-    client.executeBatch(queries, cql.types.consistencies.one, function(err) {
-      if (err) {
-        console.log(err);
-      }
-      else {
-        res.redirect('/market/' + req.params.player_id);
-      }
-    });
+    long_pos = true;
   }
-  else if (req.body.longOrShort === 'Under') {
-    var queries1 = [
-    {
-      query: 'INSERT INTO pending_bets (bet_id, user_id, player_id, long_position, bet_value, multiplier) VALUES (?, ?, ?, ?, ?, ?)',
-      params: [betId, req.user.user_id, req.params.player_id, false, {value: parseFloat(req.body.price), hint: "double"}, {value: parseFloat(req.body.shareNumber), hint: "double"}]
-    },
-    {
-      query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
-      params: [req.user.user_id, betId]
-    }
-    ]
-    client.executeBatch(queries1, cql.types.consistencies.one, function(err) {
-      if (err) {
-        console.log(err);
-      }
-      else{
-        res.redirect('/market/' + req.params.player_id);
-      }
-    });
+  else {
+    long_pos = false;
   }
+  insertToPendingTable(betId,
+    req.user.user_id,
+    req.params.player_id,
+    long_pos,
+    req.body.price,
+    req.body.shareNumber,
+    function(err){
+    if (err) {
+      console.log(err);
+    }
+    else {
+      res.redirect('/market/' + req.params.player_id)
+    }
+  })
 }
 
+var insertIntoCurrentTable = function(bet_id, long_pos, taker, giver, player_id, bet_value, multiplier, callback) {
+  var short_better;
+  var long_better;
+  if (long_pos === true) {
+    short_better = taker;
+    long_better = giver;
+  }
+  else {
+    short_better = giver;
+    long_better = taker;
+  }
+
+  var queries = [
+    {
+      query: 'DELETE FROM pending_bets WHERE bet_id = ?',
+      params: [bet_id]
+    },
+    {
+      query: 'INSERT INTO current_bets (bet_id, long_better_id, short_better_id, player_id, bet_value, multiplier) VALUES (?, ?, ?, ?, ?, ?)',
+      params: [bet_id, long_better, short_better, player_id, {value: parseFloat(bet_value), hint: "double"}, {value: parseFloat(multiplier), hint: "double"}]
+    },
+    {
+      query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
+      params: [taker, bet_id]
+    }
+  ];
+  Cql.executeBatch(queries, cql.types.consistencies.one, function(err) {
+    if (err) {
+      console.log(err);
+    }
+  })
+}
 
 //post to '/addBets/:player_id'
 var takeBet = function (req, res) {
   var bet_id = req.body.bet_id;
-  var query0 = 'SELECT user_id, bet_value, multiplier FROM pending_bets WHERE bet_id = ?'
-  var params0 = [bet_id];
-  client.executeAsPrepared(query0, params0, cql.types.consistencies.one, function(err, result) {
+  Bet.selectMultiple('pending_bets', [bet_id], function(err, result) {
     if (err) {
       console.log(err);
     }
@@ -128,24 +162,12 @@ var takeBet = function (req, res) {
       console.log('Bet Already Taken')
     }
     else {
-      var long_better = result.rows[0].user_id;
+      var long_pos = result.rows[0].long_position
+      var giver = result.rows[0].user_id;
+      var taker = req.user.user_id
       var bet_value = result.rows[0].bet_value;
       var multiplier = result.rows[0].multiplier
-      var queries = [
-        {
-          query: 'DELETE FROM pending_bets WHERE bet_id = ?',
-          params: [bet_id]
-        },
-        {
-          query: 'INSERT INTO current_bets (bet_id, long_better_id, short_better_id, player_id, bet_value, multiplier) VALUES (?, ?, ?, ?, ?, ?)',
-          params: [bet_id, long_better, req.user.user_id, req.params.player_id, {value: parseFloat(bet_value), hint: "double"}, {value: parseFloat(multiplier), hint: "double"}]
-        },
-        {
-          query: 'INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?)',
-          params: [req.user.user_id, bet_id]
-        }
-      ];
-      client.executeBatch(queries, cql.types.consistencies.one, function(err) {
+      insertIntoCurrentTable(bet_id, long_pos, taker, giver,  req.params.player_id, bet_value, multiplier, function(err) {
         if (err) {
           console.log(err);
         }
