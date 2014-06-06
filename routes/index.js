@@ -72,4 +72,13 @@ app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
 
+//graph
+/*app.get('/', function(req, res){
+  res.render('graph');
+});*/
+var graph = require('routes/graph');
+app.get('/update', graph.update);
+app.get('/data', graph.get);
+
+
 //app.listen(3000);

@@ -53,6 +53,7 @@ describe('insert, select, delete', function () {
   it('should return '+arrlength +' results and then delete all', 
     function(done) {
       async.waterfall([
+        testDelete,
         testInsert,
         testSelectBeforeDelete,
         testDelete,
