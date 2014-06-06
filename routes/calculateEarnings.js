@@ -261,7 +261,7 @@ exports.processArrayBets = processArrayBets;
 exports.calculateAllFantasyPoints = calculateAllFantasyPoints;
 exports.checkEndGames = checkEndGames;
 
-//checkEndGames(2013, 1);
+checkEndGames(2013, 1);
 //async.map schedules -> closed schedules
 //async.map closed schedules -> player objects
 //async.each player objects -> get bets and update
