@@ -7,10 +7,11 @@ var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
 var INSERT_PLAYER_CQL = multiline(function() {/*
-  INSERT INTO players (
-    currvalue, first_name, last_name, player_id, team_id, age, biography 
-  ) VALUES 
-    (?, ?, ?, ?, ?, ?);
+  INSERT INTO football_player (
+    player_id, currvalue, fullname, first_name, last_name,
+    player_id, team, status, position, profile_url
+  ) VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 */});
 exports.insert = function (fields, callback) {
   //parse values
@@ -21,7 +22,7 @@ exports.insert = function (fields, callback) {
 };
 
 var DELETE_PLAYER_CQL = multiline(function() {/*
-  DELETE FROM players WHERE
+  DELETE FROM football_player WHERE
     player_id
   IN
     (?);
@@ -34,7 +35,7 @@ exports.delete = function (player_id, callback) {
 };
 
 var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
-  UPDATE players SET
+  UPDATE football_player SET
 */});
 var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
@@ -66,7 +67,7 @@ exports.update = function (player_id, fields, params, callback) {
 };
 
 var SELECT_PLAYER_CQL = multiline(function () {/*
-  SELECT * FROM players WHERE
+  SELECT * FROM football_player WHERE
 */});
 
 var allowed_fields = ['player_id', 'team_id'];
@@ -86,14 +87,30 @@ exports.select = function (field, value, callback) {
 };
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
-  SELECT * FROM football_players WHERE team = ?;
+  SELECT * FROM football_player WHERE team = ?;
 */})
 exports.selectUsingTeam = function (team, callback) {
-  console.log(callback);
-
-  cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, [team], cql.types.consistencies.one, 
-      function(err, result) {
-        console.log(result);
-        callback(err, result);
+  cassandra.query(
+    SELECT_PLAYERS_USING_TEAM_CQL,
+    [team],
+    cql.types.consistencies.one,
+    function(err, result) {
+      callback(err, result);
     });
+}
+
+
+var SELECT_IMAGES_USING_PLAYERNAME = multiline(function() {/*
+  SELECT image_url FROM player_images WHERE player_name = ?;
+*/})
+exports.selectImagesUsingPlayersName = function(player_name, callback) {
+  var query = SELECT_IMAGES_USING_PLAYERNAME;
+  cassandra.query(
+    query,
+    [player_name],
+    cql.types.consistencies.one,
+    function(err, result) {
+      callback(err, result);
+    }
+  );
 }
