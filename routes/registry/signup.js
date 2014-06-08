@@ -13,17 +13,15 @@ var responseValues = {
   success: 3
 };
 
-function insertUser(body, res) {
+function insertUser(body, res, next) {
   /*
     user_id, email, verified, verified_time, username, password, first_name,
     last_name, age, address, payment_info, money, fbid, VIP_status, image
    */
   bcrypt.hash(body.password, null, null, function(err, hash) {
     if (err) {
-      console.log(err);
-      return;
+      next(err);
     }
-    //console.log(hash);
     var fields = 
     [
       cql.types.uuid(), //user_id
@@ -44,15 +42,14 @@ function insertUser(body, res) {
     ];
     User.insert(fields, function(err) {
       if (err) {
-        console.log(err);
-        return;
+        next(err);
       }
       res.send({value: responseValues.success});
     });
   });
 }
 
-var processSignUp = function(req, res) {
+var processSignup = function(req, res, next) {
   var body = req.body;
   async.waterfall([
     //username lookup
@@ -82,14 +79,19 @@ var processSignUp = function(req, res) {
       });
     }
   ], 
-  //callback when done
+  //callback for when done
   function(err) {
     if (err) {
-      console.log(err);
-      return;
+      next(err);
     }
-    insertUser(body, res);
+    insertUser(body, res, next);
   });
 }
 
-exports.processSignUp = processSignUp;
+var renderSignup = function(req, res) {
+  res.render('signup');
+}
+
+//exports
+exports.processSignup = processSignup;
+exports.renderSignup = renderSignup;

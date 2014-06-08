@@ -1,3 +1,4 @@
+'use strict';
 require('rootpath')();
 var configs = require('config/index');
 
@@ -10,7 +11,7 @@ var Bet = require('libs/cassandra/bet.js');
 var Player = require('libs/cassandra/player.js')
 var Cql = require('libs/cassandra/cql.js')
 
-var get = function (req, res) {
+var get = function (req, res, next) {
   if (typeof(req.user) === 'undefined') {
     res.redirect('/login');
   }
@@ -22,7 +23,7 @@ var get = function (req, res) {
 
         Bet.selectUsingPlayerID('pending_bets', req.params.player_id, function(err, result) {
           if (err) {
-            console.log(err);
+            next(err);
           }
           else {
             rows = result;
@@ -46,7 +47,7 @@ var get = function (req, res) {
 
         Player.select('player_id', req.params.player_id, function(err, result) {
           if (err) {
-            console.log(err);
+            next(err);
           }
           else {
             full_name = result.full_name;
@@ -68,7 +69,7 @@ var get = function (req, res) {
       }],
       function (err, arr) {
         if (err) {
-          console.log(err);
+          next(err);
         }
         else {
           return arr;
@@ -79,7 +80,7 @@ var get = function (req, res) {
 }
 
 //post to '/submitForm/:player_id'
-var submitBet = function (req, res) {
+var submitBet = function (req, res, next) {
   var bet_id = cql.types.timeuuid();
   var long_position = null;
 
@@ -99,7 +100,7 @@ var submitBet = function (req, res) {
       {value: parseFloat(req.body.shareNumber), hint: 'double'}, null, null],
       function(err){
         if (err) {
-          console.log(err);
+          next(err);
         }
         else {
           res.redirect('/market/' + req.params.player_id)
@@ -109,7 +110,7 @@ var submitBet = function (req, res) {
 }
 
 //post to '/addBets/:player_id'
-var takeBet = function (req, res) {
+var takeBet = function (req, res, next) {
   var bet_id = req.body.bet_id;
   var current_bet = null;
   var long_better_id = null;
@@ -117,7 +118,7 @@ var takeBet = function (req, res) {
 
   Bet.selectMultiple('pending_bets', [bet_id], function(err, result) {
     if (err) {
-      console.log(err);
+      next(err);
     }
     else if (result.length === 0) {
       console.log('Bet Already Taken');
@@ -125,7 +126,7 @@ var takeBet = function (req, res) {
     else {
       current_bet = result[0];
 
-      console.log(current_bet.long_position);
+      //console.log(current_bet.long_position);
 
       if (current_bet.long_position === 'true') {
         long_better_id = current_bet.user_id;
@@ -143,7 +144,7 @@ var takeBet = function (req, res) {
         current_bet.game_id, current_bet.expiration],
         function (err) {
           if (err) {
-            console.log(err);
+            next(err);
           }
         });
      }

@@ -13,31 +13,21 @@ var passport = require('passport');
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 //root path
 //FOR TESTING PURPOSES
 app.get('/', function(req, res) {
   res.render('banner');
 });
 
-
-//autocompletel
+//autocomplete
 var autocomplete = require('routes/autocomplete');
 app.get('/autocomp', autocomplete.autocomp);
 
 //login
+var login = require('routes/registry/login');
 app.route('/login')
-.get(function(req, res, next) {
-  if (req.user) {
-    res.redirect('/market');
-  } else {
-    next();
-  }
-})
-.get(function(req, res) {
-  var results = [];
-  res.render('login.jade', { flash: results });
-})
+.get(login.checkUser)
+.get(login.renderLogin)
 .post(passport.authenticate('local', 
   { successRedirect: '/market',
     failureRedirect: '/login',
@@ -46,19 +36,9 @@ app.route('/login')
 //signup
 var signup = require('routes/registry/signup');
 app.route('/signup')
-.get(function(req, res, next) {
-  if (req.user) {
-    res.redirect('/market');
-  } else {
-    next();
-  }
-})
-.get(function(req, res) {
-  res.render('signup');
-})
-.post(function(req, res) {
-  signup.processSignUp(req, res);
-});
+.get(login.checkUser)
+.get(signup.renderSignup)
+.post(signup.processSignup);
 
 //market
 var market = require('routes/market');
@@ -73,12 +53,12 @@ app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
 
 //graph
-/*app.get('/', function(req, res){
-  res.render('graph');
-});*/
 var graph = require('routes/graph');
 app.get('/update', graph.update);
 app.get('/data', graph.get);
 
+//error handling middleware logs errors and sends 500
+var errorHandler = require('routes/error/error');
+app.use(errorHandler.errorHandler);
 
 //app.listen(3000);

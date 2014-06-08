@@ -5,13 +5,13 @@ var client = configs.cassandra.client;
 var cql = configs.cassandra.cql;
 
 //get autocomp
-var autocomp = function(req,res) {
+var autocomp = function(req, res, next) {
   var search =[];
   var query = 'SELECT player_id, full_name FROM football_player';
   client.executeAsPrepared(query, cql.types.consistencies.one,
     function(err, result) {
     if (err) {
-      console.log(err);
+      next(err);
     }
     else {
       var rows = result.rows;

@@ -1,8 +1,7 @@
+'use strict';
 require('rootpath')();
 
 var configs = require('config/index');
-
-//app.use('/', require('../app.js'))
 
 var async = require('async');
 var User = require('libs/cassandra/user');
@@ -17,7 +16,7 @@ var messages = {
   upload_error:'{ "title": "Upload error", "parts": ["Something went wrong while uploading a file."] }'
   };
 
-var retrieveProfile = function(req, res) {
+var retrieveProfile = function(req, res, next) {
   var userInfo = {};
   var betInfo = [];
   var field = '';
@@ -26,7 +25,7 @@ var retrieveProfile = function(req, res) {
     function (callback) {
       User.select('username', req.params.username, function (err, result) {
         if (err) {
-          console.log(err);
+          next(err);
         }
         else if (result) {
           
@@ -51,7 +50,7 @@ var retrieveProfile = function(req, res) {
     function (user_id, callback) {
       bet.selectUsingUserID('all_bets', user_id, function (err, result) {
         if (err) {
-          console.log(err);
+          next(err);
         }
         else {
           betInfo = result;
@@ -61,7 +60,7 @@ var retrieveProfile = function(req, res) {
     }
   ], function(err, result) {
     if (err) {
-      console.log(err);
+      next(err);
       return;
     }
 
@@ -73,7 +72,7 @@ var retrieveProfile = function(req, res) {
   });
 }
 
-var updateProfile = function(req, res) {
+var updateProfile = function(req, res, next) {
   var upload_username = req.params.username;
   var upload_file = null;
   var upload_filename = null;
@@ -140,7 +139,7 @@ var updateProfile = function(req, res) {
       }
     ], function (err) {
       if (err) {
-        console.log(err);
+        next(err);
       }
     });
   });

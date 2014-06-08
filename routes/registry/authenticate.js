@@ -1,14 +1,11 @@
 'use strict';
 require('rootpath')();
-var express = require('express');
-var app = module.exports = express();
 var bcrypt = require('bcrypt-nodejs');
-var configs = require('config/index');
-configs.configure(app);
 
 var async = require('async');
 var User = require('libs/cassandra/user');
 
+var configs = require('config/index');
 var cql = configs.cassandra.cql;
 
 var passport = require('passport');
@@ -31,16 +28,13 @@ var messages = {
 
 function localStrategyVerify(username, password, done) {
   User.select('username', username, function (err, result) {
-    //console.log(result);
     if (err) {
       return done(err);
     }
     if (!result) {
       return done(null, false, {message: messages.incorrect_username});
     }
-    //do bcrypt compare here
     bcrypt.compare(password, result.password, function(err, res) {
-      //console.log(res);
       if (res) {
         return done(null, result);
       } else {
