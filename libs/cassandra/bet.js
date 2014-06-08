@@ -5,6 +5,69 @@ var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
+var INSERT_PENDING_BET_CQL_1 = multiline(function() {/*
+  INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?);
+*/});
+var INSERT_PENDING_BET_CQL_2 = multiline(function() {/*
+  INSERT INTO pending_bets (
+    bet_id, user_id, long_position, player_id, bet_value, multiplier, game_id,
+    expiration
+  ) VALUES 
+    (?, ?, ?, ?, ?, ?, ?, ?);
+*/});
+exports.insertPending = function (params, callback) {
+  var query = [
+  {
+    query: INSERT_PENDING_BET_CQL_1,
+    params: [params[1], params[0]]
+  },
+  {
+    query: INSERT_PENDING_BET_CQL_2,
+    params: params
+  }
+  ];
+
+  cassandra.queryBatch(query, cql.types.consistencies.one,
+    function (err) {
+      callback(err);
+    });
+};
+
+
+var INSERT_CURRENT_BET_CQL_1 = multiline(function() {/*
+  DELETE FROM pending_bets WHERE bet_id = ?;
+*/});
+var INSERT_CURRENT_BET_CQL_2 = multiline(function() {/*
+  INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?);
+*/});
+var INSERT_CURRENT_BET_CQL_3 = multiline(function() {/*
+  INSERT INTO current_bets (
+    bet_id, long_better_id, short_better_id, player_id, bet_value, multiplier,
+    game_id, expiration
+  ) VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?);
+*/});
+exports.insertCurrent = function(taker_user_id, params, callback) {
+  var query = [
+    {
+      query: INSERT_CURRENT_BET_CQL_1,
+      params: [params[0]]
+    },
+    {
+      query: INSERT_CURRENT_BET_CQL_2,
+      params: [taker_user_id, params[0]]
+    },
+    {
+      query: INSERT_CURRENT_BET_CQL_3,
+      params: params
+    }
+  ];
+  cassandra.queryBatch(query, cql.types.consistencies.one,
+    function(err) {
+      callback(err);
+    });
+}
+
 var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */});

@@ -466,6 +466,7 @@ input {
   padding: 10px;
   box-shadow: 0px 4px 0px #B6B69E;
   -webkit-transition:all 0.1s ease-in-out;
+  -moz-transition:all 0.1s ease-in-out;
 }
 #indiv-bet-container:hover{
   background: #efefef;
@@ -473,6 +474,7 @@ input {
 #indiv-bet-container:active{
   box-shadow: 0px 1px 0px #D6D6C1;
   -webkit-transform: translateY(3px);
+  -moz-transform: translateY(3px);
 }
 
 #bet-player-image-cell{

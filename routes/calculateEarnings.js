@@ -107,7 +107,7 @@ function calculateBet(bet, fantasyPoints, callback) {
   var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
   console.log(longWinnings);
   console.log(shortWinnings);
-  User.updateCash([longWinnings, shortWinnings], [rows.long_better_id, rows.short_better_id],
+  User.updateMoney([longWinnings, shortWinnings], [rows.long_better_id, rows.short_better_id],
     function(err) {
       if (err) {
         console.log(err);
@@ -261,7 +261,7 @@ exports.processArrayBets = processArrayBets;
 exports.calculateAllFantasyPoints = calculateAllFantasyPoints;
 exports.checkEndGames = checkEndGames;
 
-checkEndGames(2013, 1);
+//checkEndGames(2013, 1);
 //async.map schedules -> closed schedules
 //async.map closed schedules -> player objects
 //async.each player objects -> get bets and update

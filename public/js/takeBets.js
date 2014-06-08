@@ -10,7 +10,7 @@ $(function() {
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
-        url: 'addBets/' + player_id
+        url: '../addBets/' + player_id
       });
     });
   });

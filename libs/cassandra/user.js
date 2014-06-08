@@ -12,9 +12,9 @@ var INSERT_USER_CQL = multiline(function() {/*
   ) VALUES 
     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 */});
-exports.insert = function (fields, callback) {
+exports.insert = function (params, callback) {
   //parse values
-  cassandra.query(INSERT_USER_CQL, fields, cql.types.consistencies.one,
+  cassandra.query(INSERT_USER_CQL, params, cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
@@ -64,10 +64,10 @@ exports.update = function (user_id, fields, params, callback) {
     });
 };
 
-var UPDATE_CASH_CQL = multiline(function() {/*
+var UPDATE_MONEY_CQL = multiline(function() {/*
   UPDATE users SET money = ? WHERE user_id = ?;
 */});
-exports.updateCash = function (money_values, user_id_values, callback) {
+exports.updateMoney = function (money_values, user_id_values, callback) {
   var money_values_length = money_values.length;
   var user_id_values_length = user_id_values.length;
   var old_money_values = {};
@@ -88,7 +88,7 @@ exports.updateCash = function (money_values, user_id_values, callback) {
     for (i = 0; i < money_values_length; i++) {
       current_user_id = user_id_values[i];
       query[i] = {
-        query: UPDATE_CASH_CQL,
+        query: UPDATE_MONEY_CQL,
         params: [old_money_values[current_user_id] + money_values[i], current_user_id]
       }
     }
@@ -114,10 +114,8 @@ exports.select = function (field, value, callback) {
     callback(new Error(field + ' is not a searchable field.'));
   }
   else {
-    cassandra.queryOneRow(
-      SELECT_USER_CQL + ' ' + field + ' = ?;',
-      [value], 
-      cql.types.consistencies.one, 
+    cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
+      [value], cql.types.consistencies.one, 
       function(err, result) {
         callback(err, result);
     });

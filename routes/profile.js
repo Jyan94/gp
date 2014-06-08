@@ -41,8 +41,6 @@ var retrieveProfile = function(req, res) {
             }
           }
 
-          console.log(userInfo)
-
           callback(null, result.user_id);
         }
         else {
@@ -66,7 +64,7 @@ var retrieveProfile = function(req, res) {
       console.log(err);
       return;
     }
-    console.log(betInfo);
+
     res.render('profile', { userInfo: userInfo, 
                             pendingBetInfo: betInfo.pending_bets,
                             currentBetInfo: betInfo.current_bets,
@@ -120,12 +118,12 @@ var updateProfile = function(req, res) {
               res.send(messages.delete_error);
             }
 
-            upload_file.pipe(fs.createWriteStream(__dirname + '/' + upload_username + '.' + upload_mimetype));
+            upload_file.pipe(fs.createWriteStream(__dirname + '/../tmp/' + upload_username + '.' + upload_mimetype));
             callback(null);
           });
         }
         else {
-          upload_file.pipe(fs.createWriteStream(__dirname + '/' + upload_username + '.' + upload_mimetype));
+          upload_file.pipe(fs.createWriteStream(__dirname + '/../tmp/' + upload_username + '.' + upload_mimetype));
           callback(null);
         }
       },
@@ -152,7 +150,7 @@ var updateProfile = function(req, res) {
 
 var pictureNotFound = function (req, res) {
   var file = req.params.file;
-  fs.readFile(__dirname + '/' + file, function (err, result) {
+  fs.readFile(__dirname + '/../tmp/' + file, function (err, result) {
     if (result) {
       res.send(result);
     }

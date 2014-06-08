@@ -12,7 +12,7 @@ data = json.load(json_data)
 length = len(data["assetlist"]["asset"])
 print length
 for num in range(240, length):
-  title = data["assetlist"]["asset"][num]["title"]
+  title = data["assetlist"]["asset"][num]["title"][1: -1]
   print title
   href = data["assetlist"]["asset"][num]["links"]["link"][0]["@href"]
   url = 'http://api.sportsdatallc.org/nfl-images-t2/usat' + href + '?api_key=3khf4k9vsw7tmkzf7f56ej8u'

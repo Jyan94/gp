@@ -75,10 +75,8 @@ exports.select = function (field, value, callback) {
   if (allowed_fields.indexOf(field) < 0) {
     callback(new Error('Field is not a searchable field.'));
   } else {
-    cassandra.queryOneRow(
-      SELECT_PLAYER_CQL + ' ' + field + ' = ?;',
-      [value],
-      cql.types.consistencies.one,
+    cassandra.queryOneRow(SELECT_PLAYER_CQL + ' ' + field + ' = ?;',
+      [value], cql.types.consistencies.one,
       function(err, result) {
         callback(err, result);
     });
@@ -98,16 +96,14 @@ exports.selectUsingTeam = function (team, callback) {
     });
 }
 
-var SELECT_IMAGES_USING_PLAYERNAME = multiline(function() {/*
-  SELECT image_url FROM player_images WHERE player_name = ?;
+var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
+  SELECT * FROM player_images WHERE player_name = ?;
 */})
 
-exports.selectImagesUsingPlayersName = function(player_name, callback) {
-  var query = SELECT_IMAGES_USING_PLAYERNAME;
-  cassandra.query(
-    query,
-    [player_name],
-    cql.types.consistencies.one,
+exports.selectImagesUsingPlayerName = function(player_name, callback) {
+  var query = SELECT_PLAYER_IMAGES_USING_PLAYERNAME;
+
+  cassandra.query(query, [player_name], cql.types.consistencies.one,
     function(err, result) {
       callback(err, result);
     }

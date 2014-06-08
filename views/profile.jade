@@ -64,9 +64,9 @@ html(lang="en")
                             div#bet-player-name
                               h1 Bet on #{item.bet_id}
                             div#bet-info
-                              | Price: TBD
+                              | Price: #{item.bet_value}
                             div#bet-info
-                              | Multiplier: TBD
+                              | Multiplier: #{item.multiplier}
           div#current-bets-tab.tab-content
             h1 Current Bets
             div#bet-container
@@ -82,9 +82,9 @@ html(lang="en")
                             div#bet-player-name
                               h1 Bet on #{item.bet_id}
                             div#bet-info
-                              | Price: TBD
+                              | Price: #{item.bet_value}
                             div#bet-info
-                              | Multiplier: TBD
+                              | Multiplier: #{item.multiplier}
           div#past-bets-tab.tab-content
             h1 Past Bets
             div#bet-container
@@ -100,9 +100,9 @@ html(lang="en")
                             div Bet on #{item.player_id}
                               h1=item.bet_id
                             div#bet-info
-                              | Price: TBD
+                              | Price: #{item.bet_value}
                             div#bet-info
-                              | Multiplier: TBD
+                              | Multiplier: #{item.multiplier}
 
       script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
       script(type='application/javascript' src='/js/profile.js')
