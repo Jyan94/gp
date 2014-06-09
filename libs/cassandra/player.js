@@ -7,7 +7,8 @@ var multiline = require('multiline');
 
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO football_player (
-    player_id, currvalue, full_name, first_name, last_name, team, age, biography
+    player_id, current_value, full_name, 
+    first_name, last_name, team, age, biography
   ) VALUES
     (?, ?, ?, ?, ?, ?, ?, ?);
 */});
@@ -67,8 +68,6 @@ exports.update = function (player_id, fields, params, callback) {
 var SELECT_PLAYER_CQL = multiline(function () {/*
   SELECT * FROM football_player WHERE player_id = ?;
 */});
-
-var allowed_fields = ['player_id', 'team_id'];
 
 exports.select = function (player_id, callback) {
   cassandra.queryOneRow(SELECT_PLAYER_CQL,
