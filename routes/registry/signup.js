@@ -15,8 +15,8 @@ var responseValues = {
 
 function insertUser(body, res, next) {
   /*
-    user_id, email, verified, verified_time, username, password, first_name,
-    last_name, age, address, payment_info, money, fbid, VIP_status, image
+    userId, email, verified, verifiedTime, username, password, firstName,
+    lastName, age, address, paymentInfo, money, fbid, vipStatus, image
    */
   bcrypt.hash(body.password, null, null, function(err, hash) {
     if (err) {
@@ -24,20 +24,20 @@ function insertUser(body, res, next) {
     }
     var fields = 
     [
-      cql.types.uuid(), //user_id
+      cql.types.uuid(), //userId
       body.email, //email
       true, //verified
-      null, //verfied_time
+      null, //verfiedTime
       body.username, //username
       hash, //password
-      body.first_name, //first_name
-      body.last_name,  //last_name
+      body.firstName, //firstName
+      body.lastName,  //lastName
       null, //age
       null, //address
-      null, //payment_info
+      null, //paymentInfo
       {value: 0.0, hint: 'double'}, //money
       null, //fbid
-      0,  //VIP_status
+      0,  //vipStatus
       null //image
     ];
     User.insert(fields, function(err) {

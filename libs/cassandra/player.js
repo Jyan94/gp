@@ -66,7 +66,7 @@ var SELECT_PLAYER_CQL = multiline(function () {/*
   SELECT * FROM footballPlayer WHERE
 */});
 
-var allowedFields = ['playerId', 'teamId'];
+var allowedFields = ['playerId', 'team'];
 
 exports.select = function (field, value, callback) {
   if (allowedFields.indexOf(field) < 0) {
@@ -82,7 +82,7 @@ exports.select = function (field, value, callback) {
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
   SELECT * FROM footballPlayer WHERE team = ?;
-*/})
+*/});
 exports.selectUsingTeam = function (team, callback) {
   console.log(callback);
 
@@ -95,8 +95,7 @@ exports.selectUsingTeam = function (team, callback) {
 
 var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
   SELECT * FROM playerImages WHERE playerName = ?;
-*/})
-
+*/});
 exports.selectImagesUsingPlayerName = function(playerName, callback) {
   var query = SELECT_PLAYER_IMAGES_USING_PLAYERNAME;
 
