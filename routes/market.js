@@ -11,13 +11,13 @@ var Bet = require('libs/cassandra/bet.js');
 var Player = require('libs/cassandra/player.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 
-var defaultImage = configs.constants.defaultPlayerImage;
+var default_image = configs.constants.defaultPlayerImage;
 
-var getBetInfosFromPlayerId = function (req, res, next, callback) {
+var getBetInfosFromPlayerID = function (req, res, next, callback) {
   var rows = null;
   var betInfo = [];
 
-  Bet.selectUsingPlayerId('pendingBets', req.params.playerId,
+  Bet.selectUsingPlayerID('pending_bets', req.params.player_id,
     function(err, result) {
       if (err) {
         next(err);
@@ -27,9 +27,9 @@ var getBetInfosFromPlayerId = function (req, res, next, callback) {
         
         for (var i = 0; i < rows.length; i++) {
           betInfo[i] = {
-            betId: rows[i].betId,
-            longPosition: rows[i].longPosition,
-            betValue: rows[i].betValue,
+            bet_id: rows[i].bet_id,
+            long_position: rows[i].long_position,
+            bet_value: rows[i].bet_value,
             multiplier: rows[i].multiplier
           }
         }
@@ -39,26 +39,26 @@ var getBetInfosFromPlayerId = function (req, res, next, callback) {
     });
 }
 
-var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
-  var fullName = null; 
+var getImageFromPlayerID = function (req, res, next, betInfo, callback) {
+  var full_name = null; 
 
-  Player.select(req.params.playerId, function(err, result) {
+  Player.select('player_id', req.params.player_id, function(err, result) {
     if (err) {
       next(err);
     }
     else {
-      fullName = result.fullName;
+      full_name = result.full_name;
 
-      Player.selectImagesUsingPlayerName(fullName, function(err, result) {
+      Player.selectImagesUsingPlayerName(full_name, function(err, result) {
         if (result.length === 0) {
-          res.render('market', {betInfo: betInfo,
-            imageUrl: defaultImage,
-            playerId: req.params.playerId});
+          res.render('market', {betinfo: betInfo,
+            image_url: default_image,
+            player_id: req.params.player_id});
         }
         else {
-          res.render('market', {betInfo: betInfo,
-            imageUrl: result[0].imageUrl,
-            playerId: req.params.playerId});
+          res.render('market', {betinfo: betInfo,
+            image_url: result[0].image_url,
+            player_id: req.params.player_id});
         }
       });
     }
@@ -70,8 +70,8 @@ var renderPlayerPage = function (req, res, next) {
     function (callback) {
       callback(null, req, res, next);
     },
-    getBetInfosFromPlayerId,
-    getImageFromPlayerId,
+    getBetInfosFromPlayerID,
+    getImageFromPlayerID,
     ],
     function (err) {
       if (err) {
@@ -80,40 +80,40 @@ var renderPlayerPage = function (req, res, next) {
     });
 }
 
-//post to '/submitForm/:playerId'
+//post to '/submitForm/:player_id'
 var submitBet = function (req, res, next) {
-  var betId = cql.types.timeuuid();
-  var longPosition = null;
+  var bet_id = cql.types.timeuuid();
+  var long_position = null;
 
   if (req.body.longOrShort === 'Above') {
-    longPosition = true;
+    long_position = true;
   }
   else {
-    longPosition = false;
+    long_position = false;
   }
 
   if (typeof(req.user) === 'undefined') {
     res.redirect('/login');
   }
   else {
-    Bet.insertPending([betId, req.user.userId, longPosition, 
-      req.params.playerId, {value: parseFloat(req.body.price), hint: 'double'},
+    Bet.insertPending([bet_id, req.user.user_id, long_position, 
+      req.params.player_id, {value: parseFloat(req.body.price), hint: 'double'},
       {value: parseFloat(req.body.shareNumber), hint: 'double'}, null, null],
       function(err){
         if (err) {
           next(err);
         }
         else {
-          res.redirect('/market/' + req.params.playerId)
+          res.redirect('/market/' + req.params.player_id)
         }
       });
   }
 }
 
 var getBet = function (req, res, next, callback) {
-  var betId = req.body.betId;
+  var bet_id = req.body.bet_id;
 
-  Bet.selectMultiple('pendingBets', [betId],
+  Bet.selectMultiple('pending_bets', [bet_id],
     function(err, result) {
       if (err) {
         next(err);
@@ -128,31 +128,31 @@ var getBet = function (req, res, next, callback) {
 }
 
 var insertBet = function (req, res, next, result, callback) {
-  var currentBet = result[0];
-  var longBetterId = null;
-  var shortBetterId = null;
+  var current_bet = result[0];
+  var long_better_id = null;
+  var short_better_id = null;
 
-  if (currentBet.longPosition === 'true') {
-    longBetterId = currentBet.userId;
-    shortBetterId = req.user.userId;
+  if (current_bet.long_position === 'true') {
+    long_better_id = current_bet.user_id;
+    short_better_id = req.user.user_id;
   }
   else {
-    longBetterId = req.user.userId;
-    shortBetterId = currentBet.userId;
+    long_better_id = req.user.user_id;
+    short_better_id = current_bet.user_id;
   }
 
-  Bet.insertCurrent(req.user.userId, [currentBet.betId, longBetterId,
-    shortBetterId, currentBet.playerId,
-    {value: parseFloat(currentBet.betValue), hint: 'double'},
-    {value: parseFloat(currentBet.multiplier), hint: 'double'},
-    currentBet.gameId, currentBet.expiration],
+  Bet.insertCurrent(req.user.user_id, [current_bet.bet_id, long_better_id,
+    short_better_id, current_bet.player_id,
+    {value: parseFloat(current_bet.bet_value), hint: 'double'},
+    {value: parseFloat(current_bet.multiplier), hint: 'double'},
+    current_bet.game_id, current_bet.expiration],
     function (err) {
       if (err) {
         next(err);
       }
       else {
-        TimeseriesBets.insert(currentBet.playerId, 
-          parseFloat(currentBet.betValue), 
+        TimeseriesBets.insert(current_bet.player_id, 
+          parseFloat(current_bet.bet_value), 
           function(err){
             if (err) {
               next(err);
@@ -162,12 +162,12 @@ var insertBet = function (req, res, next, result, callback) {
     });
 }
 
-//post to '/addBets/:playerId'
+//post to '/addBets/:player_id'
 var takeBet = function (req, res, next) {
-  var betId = req.body.betId;
-  var currentBet = null;
-  var longBetterId = null;
-  var shortBetterId = null;
+  var bet_id = req.body.bet_id;
+  var current_bet = null;
+  var long_better_id = null;
+  var short_better_id = null;
 
   async.waterfall([
     function (callback) {

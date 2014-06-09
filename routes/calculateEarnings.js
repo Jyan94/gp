@@ -14,12 +14,12 @@ var User = require('../libs/cassandra/user.js');
 var Bet = require('../libs/cassandra/bet.js');
 var Player = require('../libs/cassandra/player.js');
 var calculate = require('../libs/calculateFantasyPoints.js');
-var sportsdataNfl = require('sportsdata').NFL;
-var sportsdataMlb = require('sportsdata').MLB;
+var sportsdata_nfl = require('sportsdata').NFL;
+var sportsdata_mlb = require('sportsdata').MLB;
 var async = require('async');
 
-sportsdataNfl.init('t', 1, 'rmbgzsxq9n4j2yyqx4g6vafy', 2013, 'REG');
-sportsdataMlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
+sportsdata_nfl.init('t', 1, 'rmbgzsxq9n4j2yyqx4g6vafy', 2013, 'REG');
+sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
 
 //result returned:
 /**
@@ -32,14 +32,14 @@ sportsdataMlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
 function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
   console.log(prefixSchedElement);
   var retArray = [];
-  var homeTeam = prefixSchedElement.$.home;
-  var awayTeam = prefixSchedElement.$.away;
+  var hometeam = prefixSchedElement.$.home;
+  var awayteam = prefixSchedElement.$.away;
   if (prefixSchedElement.$.status === 'closed') {
     async.waterfall([
 
       //pushes on the home players
       function (callback) {
-        Player.selectUsingTeam(homeTeam,
+        Player.selectUsingTeam(hometeam,
           function (err, result) {
             if (err) {
               console.log(err);
@@ -47,8 +47,8 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
             else {
               for (var i = 0; i < result.length; i++) {
                 retArray.push({
-                  'name': result[i].fullName,
-                  'id': result[i].playerId,
+                  'name': result[i].full_name,
+                  'id': result[i].player_id,
                   'isOnHomeTeam': true,
                   'prefixSchedule': prefixSchedElement
                 });
@@ -60,7 +60,7 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
 
       //pushes on the away players
       function (arr, callback) {
-        Player.selectUsingTeam(awayTeam,
+        Player.selectUsingTeam(awayteam,
           function(err, result) {
             if (err) {
               console.log(err);
@@ -68,8 +68,8 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
             else {
               for (var i = 0; i < result.length; i++) {
                 arr.push({
-                  'name': result[i].fullName,
-                  'id': result[i].playerId,
+                  'name': result[i].full_name,
+                  'id': result[i].player_id,
                   'isOnHomeTeam': false,
                   'prefixSchedule': prefixSchedElement
                 });
@@ -84,8 +84,8 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
   }
 }
 
-function getBetsFromPlayerId(playerId, callback) {
-  Bet.selectUsingPlayerId('currentBets', playerId, function (err, result) {
+function getBetsFromPlayerId(player_id, callback) {
+  Bet.selectUsingPlayerID('current_bets', player_id, function (err, result) {
       if (err) {
         console.log(err);
       }
@@ -104,12 +104,12 @@ function getBetsFromPlayerId(playerId, callback) {
  */
 function calculateBet(bet, fantasyPoints, callback) {
   var rows = bet;
-  var longWinnings = rows.multiplier * (fantasyPoints - rows.betValue);
-  var shortWinnings = rows.multiplier * (rows.betValue - fantasyPoints);
+  var longWinnings = rows.multiplier * (fantasyPoints - rows.bet_value);
+  var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
   console.log(longWinnings);
   console.log(shortWinnings);
   User.updateMoney([longWinnings, shortWinnings],
-    [rows.longBetterId, rows.shortBetterId],
+    [rows.long_better_id, rows.short_better_id],
     function(err) {
       if (err) {
         console.log(err);
@@ -123,7 +123,7 @@ function calculateBet(bet, fantasyPoints, callback) {
 //Waterfall functions start here
 
 //first waterfall function
-//gets list of players + playerId
+//gets list of players + player_id
 function getPlayers(prefixSchedule, year, week, callback) {
   async.map(
     prefixSchedule,
@@ -222,11 +222,11 @@ function calculateAllFantasyPoints(schedule, year, week) {
       callback(null, prefixSchedule, year, week);
     },
     //first waterfall function
-    //gets list of players + playerId
+    //gets list of players + player_id
     getPlayers,
     //second waterfall function
     //get all bet ids associated with player
-    //result.rows is list of players and playerId queried from database
+    //result.rows is list of players and player_id queried from database
     getBetIds,
     //third waterfall function
     //get all bet ids corresponding to given player id
@@ -243,7 +243,7 @@ function calculateAllFantasyPoints(schedule, year, week) {
 
 function checkEndGames(year, week) {
   var rows;
-  sportsdataNfl.getWeeklySchedule(week, function(err, schedule) {
+  sportsdata_nfl.getWeeklySchedule(week, function(err, schedule) {
     if (err) {
       console.log(err);
     }
@@ -269,11 +269,11 @@ exports.checkEndGames = checkEndGames;
 //async.each player objects -> get bets and update
 //app.listen(3000);
 
-//sportsdataNfl.getWeeklySchedule(1, function(err, schedule) {
+//sportsdata_nfl.getWeeklySchedule(1, function(err, schedule) {
   //console.log(JSON.stringify(schedule));
 //});
 
-//sportsdataNfl.getGameStats(1, 'BAL', 'DEN', function(err, schedule) {
+//sportsdata_nfl.getGameStats(1, 'BAL', 'DEN', function(err, schedule) {
   //console.log(JSON.stringify(schedule));
 //});
 //tests

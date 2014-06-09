@@ -45,9 +45,9 @@ app.all('*', login.checkUser);
 
 //market
 var market = require('routes/market');
-app.get('/market/:playerId', market.renderPlayerPage);
-app.post('/submitForm/:playerId', market.submitBet);
-app.post('/addBets/:playerId', market.takeBet);
+app.get('/market/:player_id', market.renderPlayerPage);
+app.post('/submitForm/:player_id', market.submitBet);
+app.post('/addBets/:player_id', market.takeBet);
 
 //profile
 var profile = require('routes/profile');

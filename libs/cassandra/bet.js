@@ -6,11 +6,11 @@ var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
 var INSERT_PENDING_BET_CQL_1 = multiline(function() {/*
-  INSERT INTO userIdToBetId (userId, betId) VALUES (?, ?);
+  INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?);
 */});
 var INSERT_PENDING_BET_CQL_2 = multiline(function() {/*
-  INSERT INTO pendingBets (
-    betId, userId, longPosition, playerId, betValue, multiplier, gameId,
+  INSERT INTO pending_bets (
+    bet_id, user_id, long_position, player_id, bet_value, multiplier, game_id,
     expiration
   ) VALUES 
     (?, ?, ?, ?, ?, ?, ?, ?);
@@ -35,19 +35,19 @@ exports.insertPending = function (params, callback) {
 
 
 var INSERT_CURRENT_BET_CQL_1 = multiline(function() {/*
-  DELETE FROM pendingBets WHERE betId = ?;
+  DELETE FROM pending_bets WHERE bet_id = ?;
 */});
 var INSERT_CURRENT_BET_CQL_2 = multiline(function() {/*
-  INSERT INTO userIdToBetId (userId, betId) VALUES (?, ?);
+  INSERT INTO user_id_to_bet_id (user_id, bet_id) VALUES (?, ?);
 */});
 var INSERT_CURRENT_BET_CQL_3 = multiline(function() {/*
-  INSERT INTO currentBets (
-    betId, longBetterId, shortBetterId, playerId, betValue, multiplier,
-    gameId, expiration
+  INSERT INTO current_bets (
+    bet_id, long_better_id, short_better_id, player_id, bet_value, multiplier,
+    game_id, expiration
   ) VALUES
     (?, ?, ?, ?, ?, ?, ?, ?);
 */});
-exports.insertCurrent = function(takerUserId, params, callback) {
+exports.insertCurrent = function(taker_user_id, params, callback) {
   var query = [
     {
       query: INSERT_CURRENT_BET_CQL_1,
@@ -55,7 +55,7 @@ exports.insertCurrent = function(takerUserId, params, callback) {
     },
     {
       query: INSERT_CURRENT_BET_CQL_2,
-      params: [takerUserId, params[0]]
+      params: [taker_user_id, params[0]]
     },
     {
       query: INSERT_CURRENT_BET_CQL_3,
@@ -72,12 +72,13 @@ var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */});
 var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {/*
-  WHERE betId IN
+  WHERE bet_id IN
 */});
+
 /**
  * [selectMultiple description]
  * @param  {String}   bets_table [Must be one of the fields in allowed_tables]
- * @param  {[String]}   params     [Must be an array of betId's]
+ * @param  {[String]}   params     [Must be an array of bet_id's]
  * @param  {Function} callback   [Description]
  * @return 
  * {[Object] or 
@@ -89,20 +90,20 @@ var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {/*
  * [An array of bet_info's if bets_table is not 'all_bets', 
  * the object described above if otherwise]
  */
-exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
-  var allowedTables = 
-    ['pendingBets', 'currentBets', 'pastBets', 'allBets'];
+exports.selectMultiple = function selectMultiple(bets_table, params, callback) {
+  var allowed_tables = 
+    ['pending_bets', 'current_bets', 'past_bets', 'all_bets'];
   var paramsLength = params.length;
   var filter = '';
   var query = '';
-  var allBetsResult = {
-    pendingBets: [],
-    currentBets: [],
-    pastBets: []
+  var all_bets_result = {
+    pending_bets: [],
+    current_bets: [],
+    past_bets: []
   };
 
-  if (allowedTables.indexOf(betsTable) < 0) {
-    callback(new Error(betsTable + ' is not an allowed table.'));
+  if (allowed_tables.indexOf(bets_table) < 0) {
+    callback(new Error(bets_table + ' is not an allowed table.'));
   }
 
   for (var i = 0; i < paramsLength; i++) {
@@ -113,33 +114,33 @@ exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
     }
   }
 
-  if (betsTable === 'allBets') {
-    selectMultiple('pastBets', params, function (err, result) {
+  if (bets_table === 'all_bets') {
+    selectMultiple('past_bets', params, function (err, result) {
       if (err) {
         callback(err);
       }
 
-      allBetsResult.pastBets = result;
-      selectMultiple('currentBets', params, function (err, result) {
+      all_bets_result.past_bets = result;
+      selectMultiple('current_bets', params, function (err, result) {
         if (err) {
           callback(err);
         }
 
-        allBetsResult.currentBets = result;
-        selectMultiple('pendingBets', params, function (err, result) {
+        all_bets_result.current_bets = result;
+        selectMultiple('pending_bets', params, function (err, result) {
           if (err) {
             callback(err);
           }
 
-          allBetsResult.pendingBets = result;
-          callback(err, allBetsResult);
+          all_bets_result.pending_bets = result;
+          callback(err, all_bets_result);
         });
       });
     });
   } else {
     query = 
       SELECT_BETS_MULTIPLE_CQL_1 + ' ' + 
-      betsTable + ' ' + 
+      bets_table + ' ' + 
       SELECT_BETS_MULTIPLE_CQL_2 + ' (' + 
       filter + ');';
     cassandra.query(query, params, cql.types.consistencies.one,
@@ -151,13 +152,14 @@ exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
 }
 
 var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {/*
-  SELECT * FROM userIdToBetId WHERE
-    userId = ?;
+  SELECT * FROM user_id_to_bet_id WHERE
+    user_id = ?;
 */});
+
 /**
- * [selectUsingUserId description]
+ * [selectUsingUserID description]
  * @param  {String}   bets_table [Must be one of the fields in allowed_tables]
- * @param  {String}   userId    [Must be a userId]
+ * @param  {String}   user_id    [Must be a user_id]
  * @param  {Function} callback   [Description]
  * @return 
  * {[Object] or 
@@ -167,14 +169,14 @@ var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {/*
  * past_bets: [Object]
  * }}
  * [An array of bet_info's if bets_table is not 'all_bets', 
- * the object described above if otherwise, corresponding to userId]
+ * the object described above if otherwise, corresponding to user_id]
  */
-exports.selectUsingUserId = function (betsTable, userId, callback) {
+exports.selectUsingUserID = function (bets_table, user_id, callback) {
   console.log(callback);
-  var betIds = [];
+  var betIDs = [];
 
   cassandra.query(SELECT_BETS_USING_USER_ID_CQL,
-      [userId], cql.types.consistencies.one,
+      [user_id], cql.types.consistencies.one,
       function(err, result) {
         if (err) {
           callback(err);
@@ -182,13 +184,12 @@ exports.selectUsingUserId = function (betsTable, userId, callback) {
 
         if (result) {
           for (var i = 0; i < result.length; i++) {
-            betIds[i] = result[i].betId;
+            betIDs[i] = result[i].bet_id;
           }
 
-          exports.selectMultiple(betsTable, betIds,
-            function (err, result) {
-              callback(err, result);
-            });
+          exports.selectMultiple(bets_table, betIDs, function (err, result) {
+            callback(err, result);
+          });
         }
     });
 }
@@ -197,21 +198,21 @@ var SELECT_BETS_USING_PLAYER_ID_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */})
 var SELECT_BETS_USING_PLAYER_ID_CQL_2 = multiline(function () {/*
-  WHERE playerId = ?;
+  WHERE player_id = ?;
 */})
-exports.selectUsingPlayerId = function (betsTable, playerId, callback) {
+exports.selectUsingPlayerID = function (bets_table, player_id, callback) {
   var query = null;
-  var allowedTables = ['pendingBets', 'currentBets', 'pastBets'];
+  var allowed_tables = ['pending_bets', 'current_bets', 'past_bets'];
 
-  if (allowedTables.indexOf(betsTable) < 0) {
-    callback(new Error(betsTable + ' is not an allowed table.'));
+  if (allowed_tables.indexOf(bets_table) < 0) {
+    callback(new Error(bets_table + ' is not an allowed table.'));
   }
 
   query = 
     SELECT_BETS_USING_PLAYER_ID_CQL_1 + ' ' + 
-    betsTable + ' ' + 
+    bets_table + ' ' + 
     SELECT_BETS_USING_PLAYER_ID_CQL_2;
-  cassandra.query(query, [playerId], cql.types.consistencies.one,
+  cassandra.query(query, [player_id], cql.types.consistencies.one,
       function(err, result) {
         callback(err, result);
     });

@@ -11,7 +11,7 @@ html(lang="en")
 
       div.feed
         center
-          form#betForm.pure-form(action='/submitForm/'+playerId method='post')
+          form#betForm.pure-form(action='/submitForm/'+player_id method='post')
             input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width: 100px')
             input(type='number' name='shareNumber' placeholder='Number of Shares' required=true style='width: 100px')
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
@@ -20,18 +20,18 @@ html(lang="en")
             | Under
             input.pure-button.button-primary(type='submit')
       center
-        div#prof-pic(style='background-image: url(#{imageUrl})')
+        div#prof-pic(style='background-image: url(#{image_url})')
 
-      each item in betInfo
-        if (item.longPosition===false)
+      each item in betinfo
+        if (item.long_position===false)
           div.linkcontainer
             div.leftsidehome
               center
-                a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer').
+                a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
                   Take Bet!
             div.rightsidehome
               center
-                h5="price: " + item.betValue
+                h5="price: " + item.bet_value
                 h5="multiplier: " + item.multiplier
 
 
@@ -39,11 +39,11 @@ html(lang="en")
           div.linkcontainer
             div.leftsidehome
               center
-                h5="price: " + item.betValue
+                h5="price: " + item.bet_value
                 h5="multiplier: " + item.multiplier
             div.rightsidehome
               center
-                a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer').
+                a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
                   Take Bet!
 
     script(type='application/javascript' src='/js/takeBets.js')

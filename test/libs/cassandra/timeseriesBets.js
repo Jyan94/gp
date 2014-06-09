@@ -2,12 +2,12 @@
 require('rootpath')();
 
 var async = require('async');
-var Tsb = require('libs/cassandra/timeseriesBets');
+var tsb = require('libs/cassandra/timeseriesBets');
 var TESTID = '12000000-0000-0000-0000-000000005eb7';
 var arrlength = 100; // > 0
 
 function testInsertEach(index, callback) {
-  Tsb.insert(TESTID, index, function (err) {
+  tsb.insert(TESTID, index, function (err) {
     callback(err);
   });
 }
@@ -26,7 +26,7 @@ function testInsert(callback) {
 }
 
 function testSelectBeforeDelete(callback) {
-  Tsb.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
+  tsb.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
     if (err) {
       callback(err);
     }
@@ -35,26 +35,26 @@ function testSelectBeforeDelete(callback) {
     result[0].should.have.property('price', 0);
     result[arrlength - 1].should.have.property('price', arrlength - 1);
     callback(null);
-  });
+  })
 }
 
 function testDelete(callback) {
-  Tsb.deletePrices(TESTID, function (err) {
+  tsb.deletePrices(TESTID, function (err) {
     if (err) {
       callback(err);
     }
     callback(null);
-  });
+  })
 }
 
 function testSelectAfterDelete(callback) {
-  Tsb.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
+  tsb.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
     if (err) {
       callback(err);
     }
     result.should.have.length(0);
     callback(null);
-  });
+  })
 }
 
 describe('insert, select, delete', function () {

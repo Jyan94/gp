@@ -13,7 +13,7 @@ html(lang="en")
         div.panel(style='height:210px;width:1080px')
           div.left_panel
             h1 #{userInfo.username}'s Profile
-            h2 ID: #{userInfo.userId}
+            h2 ID: #{userInfo.user_id}
         div#prof-behind
           div#prof-pic(style='background-image: url(#{userInfo.image})')
             div.fileUpload
@@ -21,7 +21,7 @@ html(lang="en")
                 span.fui-photo
                 span Edit profile photo
               form#prof-upload(enctype='multipart/form-data' action='/upload/image/#{userInfo.username}' method='post')
-                input.upload(type='file' name='filefield' onchange='changeAsync()')
+                input.upload(type='file' name='filefield' onchange='change_async()')
         div.bounding-box.rounded(style='width:1080px')
           div.padded
             h3 Profile Information
@@ -29,7 +29,7 @@ html(lang="en")
               tr
                 td(style='width:150px', align='right')
                   b Name:
-                td #{userInfo.firstName} #{userInfo.lastName}
+                td #{userInfo.first_name} #{userInfo.last_name}
               tr
                 td(style='width:150px', align='right')
                   b Money:
@@ -37,11 +37,11 @@ html(lang="en")
               tr
                 td(style='width:150px', align='right')
                   b User since:
-                td= userInfo.verifiedTime
+                td= userInfo.verified_time
               tr
                 td(style='width:150px', align='right')
                   b VIP Status:
-                td= userInfo.vipStatus
+                td= userInfo.vip_status
         div#tab-container
           ul.tab-menu
             li#pending-bets.active Pending Bets
@@ -62,9 +62,9 @@ html(lang="en")
                             div#bet-player-image(style='background-image: url(#{userInfo.image})')
                           td#bet-info-cell
                             div#bet-player-name
-                              h1 Bet on #{item.playerId}
+                              h1 Bet on #{item.player_id}
                             div#bet-info
-                              | Price: #{item.betValue}
+                              | Price: #{item.bet_value}
                             div#bet-info
                               | Multiplier: #{item.multiplier}
           div#current-bets-tab.tab-content
@@ -80,9 +80,9 @@ html(lang="en")
                             div#bet-player-image(style='background-image: url(#{userInfo.image})')
                           td#bet-info-cell
                             div#bet-player-name
-                              h1 Bet on #{item.playerId}
+                              h1 Bet on #{item.player_id}
                             div#bet-info
-                              | Price: #{item.betValue}
+                              | Price: #{item.bet_value}
                             div#bet-info
                               | Multiplier: #{item.multiplier}
           div#past-bets-tab.tab-content
@@ -97,10 +97,10 @@ html(lang="en")
                           td#bet-player-image-cell(style='width:100px', align='right')
                             div#bet-player-image(style='background-image: url(#{userInfo.image})')
                           td#bet-info-cell
-                            div Bet on #{item.playerId}
-                              h1=item.betId
+                            div Bet on #{item.player_id}
+                              h1=item.bet_id
                             div#bet-info
-                              | Price: #{item.betValue}
+                              | Price: #{item.bet_value}
                             div#bet-info
                               | Multiplier: #{item.multiplier}
 

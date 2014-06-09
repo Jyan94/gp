@@ -4,108 +4,121 @@ CREATE KEYSPACE IF NOT EXISTS "goprophet"
 USE goprophet;
 
 CREATE TABLE IF NOT EXISTS users(
-    userId uuid PRIMARY KEY,
+    user_id uuid PRIMARY KEY,
     email text,
     verified boolean,
-    verifiedTime timeuuid,
+    verified_time timeuuid,
     username text,
     password text,
-    firstName text,
-    lastName text,
+    first_name text,
+    last_name text,
     age int,
     address text,
-    paymentInfo text,
+    payment_info text,
     money double,
     fbid text,
-    vipStatus int,
+    vip_status int,
     image text
 );
 CREATE INDEX IF NOT EXISTS ON users (username);
 CREATE INDEX IF NOT EXISTS ON users (email);
 
-CREATE TABLE IF NOT EXISTS userIdToBetId (
-    userId uuid,
-    betId timeuuid,
-    PRIMARY KEY (userId, betId)
+CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
+    user_id uuid,
+    bet_id timeuuid,
+    PRIMARY KEY (user_id, bet_id)
 );
 
-CREATE TABLE IF NOT EXISTS pendingBets (
-    betId timeuuid PRIMARY KEY,
-    userId uuid,
-    longPosition boolean,
-    playerId uuid,
-    betValue double,
+CREATE TABLE IF NOT EXISTS pending_bets (
+    bet_id timeuuid PRIMARY KEY,
+    user_id uuid,
+    long_position boolean,
+    player_id uuid,
+    bet_value double,
     multiplier double,
-    gameId uuid,
+    game_id uuid,
     expiration timeuuid,
 );
 
-CREATE INDEX IF NOT EXISTS ON pendingBets(playerId);
+CREATE INDEX IF NOT EXISTS ON pending_bets(player_id);
 
-CREATE TABLE IF NOT EXISTS currentBets (
-    betId timeuuid PRIMARY KEY,
-    longBetterId uuid,
-    shortBetterId uuid,
-    playerId uuid,
-    betValue double,
+CREATE TABLE IF NOT EXISTS current_bets (
+    bet_id timeuuid PRIMARY KEY,
+    long_better_id uuid,
+    short_better_id uuid,
+    player_id uuid,
+    bet_value double,
     multiplier double,
-    gameId uuid,
+    game_id uuid,
     expiration timeuuid
 );
 
-CREATE INDEX IF NOT EXISTS ON currentBets(playerId);
+CREATE INDEX IF NOT EXISTS ON current_bets(player_id);
 
-CREATE TABLE IF NOT EXISTS pastBets (
-    betId timeuuid PRIMARY KEY,
-    longBetterId uuid,
-    shortBetterId uuid,
-    playerId uuid,
-    betValue double,
+CREATE TABLE IF NOT EXISTS past_bets (
+    bet_id timeuuid PRIMARY KEY,
+    long_better_id uuid,
+    short_better_id uuid,
+    player_id uuid,
+    bet_value double,
     multiplier double,
-    longBetterPayoff bigint,
-    shortBetterPayoff bigint,
-    gameId uuid,
+    long_better_payoff bigint,
+    short_better_payoff bigint,
+    game_id uuid,
     expiration timeuuid
 );
 
-CREATE INDEX IF NOT EXISTS ON pastBets(playerId);
+CREATE INDEX IF NOT EXISTS ON past_bets(player_id);
 
-CREATE TABLE IF NOT EXISTS footballPlayer (
-    playerId uuid PRIMARY KEY,
-    currentValue double,
-    fullName text,
-    firstName text,
-    lastName text,
+CREATE TABLE IF NOT EXISTS all_bets (
+    bet_id timeuuid PRIMARY KEY,
+    long_better_id uuid,
+    short_better_id uuid,
+    player_id uuid,
+    bet_value double,
+    multiplier double,
+    long_better_payoff bigint,
+    short_better_payoff bigint,
+    game_id uuid,
+    expiration timeuuid
+);
+
+CREATE TABLE IF NOT EXISTS football_player (
+    player_id uuid PRIMARY KEY,
+    currvalue double,
+    full_name text,
+    first_name text,
+    last_name text,
     team text,
     status text,
     position text,
-    profileUrl text,
-    uniformNumber int,
+    profile_url text,
+    uniform_number int,
     height int,
     weight int,
     image text
 );
 
-CREATE INDEX IF NOT EXISTS ON footballPlayer (team);
+CREATE INDEX IF NOT EXISTS ON football_player (team);
 
-CREATE TABLE IF NOT EXISTS footballTeam (
-    teamId uuid PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS football_team (
+    team_id uuid PRIMARY KEY,
     city text,
     name text
 );
 
-CREATE TABLE IF NOT EXISTS footballGame (
-    gsisId uuid PRIMARY KEY,
-    startTime timeuuid,
-    endTime timeuuid,
+CREATE TABLE IF NOT EXISTS football_game (
+    gsis_id uuid PRIMARY KEY,
+    start_time timeuuid,
+    end_time timeuuid,
     week int,
-    seasonYear int,
-    seasonType text,
+    season_year int,
+    season_type text,
     finished boolean,
-    homeTeam text,
-    awayTeam text,
-    homeScore int,
-    awayScore int
+    home_team text,
+    away_team text,
+    home_score int,
+    away_score int
 );
 
 CREATE TABLE IF NOT EXISTS football_meta (
@@ -147,9 +160,9 @@ CREATE TABLE IF NOT EXISTS football_market_value (
     finished boolean
 );
 
-CREATE TABLE IF NOT EXISTS playerImages (
-    playerName text PRIMARY KEY,
-    imageUrl text
+CREATE TABLE IF NOT EXISTS player_images (
+    player_name text PRIMARY KEY,
+    image_url text
 );
 
 CREATE TABLE IF NOT EXISTS timeseriesBets (

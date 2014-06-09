@@ -19,13 +19,13 @@ function localStrategyVerify(username, password, done) {
       return done(err);
     }
     if (!result) {
-      return done(null, false, {message: messages.incorrectUsername});
+      return done(null, false, {message: messages.incorrect_username});
     }
     bcrypt.compare(password, result.password, function(err, res) {
       if (res) {
         return done(null, result);
       } else {
-        return done(null, false, {message: messages.incorrectPassword});
+        return done(null, false, {message: messages.incorrect_password});
       }
     });
   });
@@ -40,11 +40,11 @@ function(username, password, done) {
 }));
 
 passport.serializeUser(function (user, done) {
-  done(null, user.userId);
+  done(null, user.user_id);
 });
 
 passport.deserializeUser(function (id, done) {
-  User.select('userId', id, function(err, result){
+  User.select('user_id', id, function(err, result){
     done(err, result);
   });
 });

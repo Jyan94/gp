@@ -37,15 +37,15 @@ var retrieveProfile = function(req, res, next) {
             }
           }
 
-          callback(null, result.userId);
+          callback(null, result.user_id);
         }
         else {
-          res.send(messages.incorrectUsername);
+          res.send(messages.incorrect_username);
         }
       });
     },
-    function (userId, callback) {
-      Bet.selectUsingUserID('allBets', userId, function (err, result) {
+    function (user_id, callback) {
+      Bet.selectUsingUserID('all_bets', user_id, function (err, result) {
         if (err) {
           next(err);
         }
@@ -62,19 +62,19 @@ var retrieveProfile = function(req, res, next) {
     }
 
     res.render('profile', { userInfo: userInfo, 
-                            pendingBetInfo: betInfo.pendingBets,
-                            currentBetInfo: betInfo.currentBets,
-                            pastBetInfo: betInfo.pastBets
+                            pendingBetInfo: betInfo.pending_bets,
+                            currentBetInfo: betInfo.current_bets,
+                            pastBetInfo: betInfo.past_bets
     });
   });
 }
 
 var updateProfile = function(req, res, next) {
-  var uploadUsername = req.params.username;
-  var uploadFile = null;
-  var uploadFilename = null;
-  var uploadMimetype = null;
-  var uploadUserId = null;
+  var upload_username = req.params.username;
+  var upload_file = null;
+  var upload_filename = null;
+  var upload_mimetype = null;
+  var upload_user_id = null;
 
   req.busboy.on('file', function(fieldname, file, filename, encoding, 
                                  mimetype) {
@@ -87,23 +87,23 @@ var updateProfile = function(req, res, next) {
             res.send(500, 'Not a valid file.');
           }
           else {
-            uploadFile = file;
-            uploadFilename = filename;
-            uploadMimetype = mimetype.substring(6);
+            upload_file = file;
+            upload_filename = filename;
+            upload_mimetype = mimetype.substring(6);
             callback(null);
           }
         },
       function (callback) {
-        User.select('username', uploadUsername, function (err, result) {
+        User.select('username', upload_username, function (err, result) {
           if (err) {
             res.send(500, 'Database error.');
           }
           else if (result) {
-            uploadUserId = result.userId;
+            upload_user_id = result.user_id;
             callback(null, result.image);
           }
           else {
-            res.send(404, messages.incorrectUsername);
+            res.send(404, messages.incorrect_username);
           }
         });
       },
@@ -111,30 +111,30 @@ var updateProfile = function(req, res, next) {
         if (image && (1===0)) {
           fs.unlink(image, function (err) {
             if (err) {
-              res.send(messages.deleteError);
+              res.send(messages.delete_error);
             }
 
-            uploadFile.pipe(fs.createWriteStream(
-              __dirname + '/../tmp/' + uploadUsername + '.' + uploadMimetype)
+            upload_file.pipe(fs.createWriteStream(
+              __dirname + '/../tmp/' + upload_username + '.' + upload_mimetype)
             );
             callback(null);
           });
         } else {
-          uploadFile.pipe(fs.createWriteStream(
-            __dirname + '/../tmp/' + uploadUsername + '.' + uploadMimetype)
+          upload_file.pipe(fs.createWriteStream(
+            __dirname + '/../tmp/' + upload_username + '.' + upload_mimetype)
           );
           callback(null);
         }
       },
       function (callback) {
         User.update(
-          uploadUserId, ['image'], 
-          ['/images/' + uploadUsername + '.' + uploadMimetype], 
+          upload_user_id, ['image'], 
+          ['/images/' + upload_username + '.' + upload_mimetype], 
           function (err, result) {
             if (err) {
               res.send(500, 'Database error.');
             } else {
-              res.send('/images/' + uploadUsername + '.' + uploadMimetype);
+              res.send('/images/' + upload_username + '.' + upload_mimetype);
               callback(null);
             }
         });

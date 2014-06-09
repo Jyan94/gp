@@ -29,6 +29,7 @@ exports.queryOneRow = function(cql, params, consistency, callback) {
 };
 
 exports.queryBatch = function(cql, consistency, callback) {
+  //console.log(callback.toString());
   client.executeBatch(cql, consistency, function(err, result) {
     if (result) {
       result = result.rows;
