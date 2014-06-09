@@ -23,7 +23,7 @@ for player in q.as_players():
     desired = int(player.player_id[0:2] + player.player_id[3:11])
     session.execute(
     	"""
-    	INSERT INTO football_player (player_id, full_name)
+    	INSERT INTO footballPlayer (playerId, fullName)
     	VALUES (%s, %s)
     	"""
     	,(uuid.UUID(int=desired), a)

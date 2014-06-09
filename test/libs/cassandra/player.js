@@ -33,8 +33,11 @@ TESTID, //id
 'mybio' //biography
 ];
 function testInsert(callback) {
-  Player.insert(TESTID, fields, function (err) {
-    callback(err);
+  Player.insert(fields, function (err) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
   });
 }
 
@@ -80,7 +83,7 @@ function compareAgainstUpdateFields(result) {
 }
 
 function testSelectByPlayerId(callback) {
-  Player.select('playerId', TESTID, function(err, result) {
+  Player.selectUsingPlayerId('playerId', TESTID, function(err, result) {
     if (err) {
       callback(err);
     }
@@ -90,7 +93,7 @@ function testSelectByPlayerId(callback) {
 }
 
 function testSelectByTeamId(callback) {
-  Player.select('team', updateFields[teamIndex], function(err, result) {
+  Player.selectUsingTeam(updateFields[teamIndex], function(err, result) {
     if (err) {
       callback(err);
     }
@@ -99,40 +102,32 @@ function testSelectByTeamId(callback) {
   });
 }
 
-function testSelectBeforeDelete(callback) {
-  Player.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
+function testAutocomplete(callback) {
+  Player.selectAllPlayerNames(function(err, result) {
     if (err) {
       callback(err);
     }
-    result.should.have.length(arrlength);
-    result[0].should.have.property('dateOf(time)');
-    result[0].should.have.property('price', 0);
-    result[arrlength - 1].should.have.property('price', arrlength - 1);
-    callback(null);
-  })
+    result.should.have.property('playerId');
+    result.should.have.property('fullName');
+  });
 }
 
-function testSelectAfterDelete(callback) {
-  Player.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
-    if (err) {
-      callback(err);
-    }
-    result.should.have.length(0);
-    callback(null);
-  })
-}
-
-describe('insert, select, delete', function () {
-  it('should return '+arrlength +' results and then delete all', 
+describe('footballPlayer module test', function () {
+  it('test all functions except selectImages', 
     function(done) {
       async.waterfall([
         testDelete,
         testInsert,
-        testSelectBeforeDelete,
-        testDelete,
-        testSelectAfterDelete
+        testUpdate,
+        testSelectByPlayerId,
+        testSelectByTeamId,
+        testAutocomplete
         ],
         function (err) {
+          if (err) {
+            console.log(err);
+            console.log(err.stack);
+          }
           (err == null).should.be.true;
           done();
         });

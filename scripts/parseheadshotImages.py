@@ -18,7 +18,7 @@ for num in range(240, length):
   url = 'http://api.sportsdatallc.org/nfl-images-t2/usat' + href + '?api_key=3khf4k9vsw7tmkzf7f56ej8u'
   session.execute(
         """
-        INSERT INTO player_images (player_name, image_url)
+        INSERT INTO playerImages (playerName, imageUrl)
         VALUES (%s, %s)
         """
         ,(title, url)

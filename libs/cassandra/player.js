@@ -1,6 +1,5 @@
 'use strict';
-require('rootpath')();
-//var cql = require('libs/database/cassandra/cassandraClient.js').cql;
+(require('rootpath')());
 
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
