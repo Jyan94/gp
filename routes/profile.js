@@ -77,7 +77,7 @@ var updateProfile = function(req, res, next) {
   var upload_user_id = null;
 
   req.busboy.on('file', function(fieldname, file, filename, encoding, 
-                                     mimetype) {
+                                 mimetype) {
     async.waterfall([
       function (callback) {
           // Check that the user posted an appropriate photo
@@ -128,8 +128,7 @@ var updateProfile = function(req, res, next) {
       },
       function (callback) {
         User.update(
-          upload_user_id, 
-          ['image'], 
+          upload_user_id, ['image'], 
           ['/images/' + upload_username + '.' + upload_mimetype], 
           function (err, result) {
             if (err) {

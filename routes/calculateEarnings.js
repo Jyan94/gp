@@ -108,7 +108,8 @@ function calculateBet(bet, fantasyPoints, callback) {
   var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
   console.log(longWinnings);
   console.log(shortWinnings);
-  User.updateMoney([longWinnings, shortWinnings], [rows.long_better_id, rows.short_better_id],
+  User.updateMoney([longWinnings, shortWinnings],
+    [rows.long_better_id, rows.short_better_id],
     function(err) {
       if (err) {
         console.log(err);
@@ -277,7 +278,9 @@ exports.checkEndGames = checkEndGames;
 //});
 //tests
 //for calculating fantasy points
-/*calculate.calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false, '2013', 1, function(err, result) {
+/*calculate.calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false,
+'2013', 1,
+function(err, result) {
   if (err) {
     console.log(err);
     return;
