@@ -147,9 +147,8 @@ var takeBet = function (req, res, next) {
           if (err) {
             next(err);
           }
-          var player_id = current_bet.player_id.split('-').join('');
           TimeseriesBets.insert(
-            player_id, 
+            current_bet.player_id, 
             parseFloat(current_bet.bet_value), 
             function(err){
             if (err) {

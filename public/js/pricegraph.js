@@ -2,7 +2,6 @@
 
 //get the player id from url (last element after split)
 var playerId = document.URL.split('/')[document.URL.split('/').length - 1];
-playerId = playerId.split('-').join('');
 
 //real time updates
 function getRealTimeData() {

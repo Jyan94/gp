@@ -6,6 +6,8 @@ var cql = require('config/index.js').cassandra.cql;
 var async = require('async');
 var multiline = require('multiline');
 
+var DELIM = '-';
+
 var INSERT_PRICE_CQL = multiline(function() {/*
   INSERT INTO timeseriesBets (
     playerId, time, price
@@ -15,13 +17,13 @@ var INSERT_PRICE_CQL = multiline(function() {/*
 
 /**
  * inserts prices into timeseries 
+ * need to take out '-' in playerId in order to place it as key in database
  */
 exports.insert = function (playerId, price, callback) {
-  //parse values
   cassandra.query(
     INSERT_PRICE_CQL, 
     [
-    playerId, 
+    playerId.split(DELIM).join(''), 
     cql.types.timeuuid(), 
     {value: price, hint: 'double'}
     ], 
@@ -40,7 +42,7 @@ var DELETE_PRICE_CQL = multiline(function() {/*
 exports.deletePrices = function (playerId, callback) {
   cassandra.query(
     DELETE_PRICE_CQL,
-    [playerId],
+    [playerId.split(DELIM).join('')],
     cql.types.consistencies.one,
     function (err) {
       callback(err);
@@ -75,7 +77,7 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
 exports.selectTimeRange = function (playerId, start, end, callback) {
   cassandra.query(
     SELECT_TIMERANGE_CQL,
-    [playerId, start, end], 
+    [playerId.split(DELIM).join(''), start, end], 
     cql.types.consistencies.one, 
     function(err, result) {
       callback(err, result);
@@ -109,7 +111,7 @@ var UNTIL_NOW_CQL = multiline(function () {/*
 exports.selectSinceTime = function (playerId, start, callback) {
   cassandra.query(
     UNTIL_NOW_CQL,
-    [playerId, start], 
+    [playerId.split(DELIM).join(''), start], 
     cql.types.consistencies.one, 
     function(err, result) {
       callback(err, result);

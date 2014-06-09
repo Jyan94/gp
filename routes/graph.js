@@ -5,16 +5,14 @@ var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var DEFAULTID = 'hello';
 
 //query between lastUpdate and now and send to client
-//get'/update'
+//get '/update'
 var updateGraph = function(req, res){
   var lastUpdate = new Date(req.query.lastUpdate);
   var playerId = req.query.playerId || DEFAULTID;
-  console.log(playerId);
   TimeseriesBets.selectSinceTime(playerId, lastUpdate, function (err, result) {
     if (err) {
       res.send([]);
     } else {
-      console.log(result);
       res.send(result);
     }
   });
@@ -29,7 +27,6 @@ var getData = function(req, res) {
     if (err) {
       res.send([]);
     } else {
-      console.log(result);
       res.send(result);
     }
   });

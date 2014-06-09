@@ -3,7 +3,7 @@ require('rootpath')();
 
 var async = require('async');
 var tsb = require('libs/cassandra/timeseriesBets');
-var TESTID = 'testuser123456789';
+var TESTID = '12000000-0000-0000-0000-000000005eb7';
 var arrlength = 100; // > 0
 
 function testInsertEach(index, callback) {
