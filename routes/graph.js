@@ -8,11 +8,13 @@ var DEFAULTID = 'hello';
 //get'/update'
 var updateGraph = function(req, res){
   var lastUpdate = new Date(req.query.lastUpdate);
-  var player_id = req.query.player_id || DEFAULTID;
-  TimeseriesBets.selectSinceTime(player_id, lastUpdate, function (err, result) {
+  var playerId = req.query.playerId || DEFAULTID;
+  console.log(playerId);
+  TimeseriesBets.selectSinceTime(playerId, lastUpdate, function (err, result) {
     if (err) {
       res.send([]);
     } else {
+      console.log(result);
       res.send(result);
     }
   });
@@ -22,11 +24,12 @@ var updateGraph = function(req, res){
 var getData = function(req, res) {
   var prevDay = new Date();
   prevDay = new Date(prevDay.setDate(prevDay.getDate() - 1));
-  var player_id = req.query.player_id || DEFAULTID;
-  TimeseriesBets.selectSinceTime(player_id, prevDay, function(err, result) {
+  var playerId = req.query.playerId || DEFAULTID;
+  TimeseriesBets.selectSinceTime(playerId, prevDay, function(err, result) {
     if (err) {
       res.send([]);
     } else {
+      console.log(result);
       res.send(result);
     }
   });

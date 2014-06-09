@@ -18,14 +18,18 @@ function testInsert(callback) {
     arr.push(i);
   }
   async.each(arr, testInsertEach, function(err) {
-    (err !== undefined).should.be.false;
+    if (err) {
+      callback(err);
+    }
     callback(null);
   });
 }
 
 function testSelectBeforeDelete(callback) {
   tsb.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
-    (err === null).should.be.true;
+    if (err) {
+      callback(err);
+    }
     result.should.have.length(arrlength);
     result[0].should.have.property('dateOf(time)');
     result[0].should.have.property('price', 0);
@@ -36,14 +40,18 @@ function testSelectBeforeDelete(callback) {
 
 function testDelete(callback) {
   tsb.deletePrices(TESTID, function (err) {
-    (err === null).should.be.true;
+    if (err) {
+      callback(err);
+    }
     callback(null);
   })
 }
 
 function testSelectAfterDelete(callback) {
   tsb.selectSinceTime(TESTID, new Date(2014, 5, 2), function (err, result) {
-    (err !== undefined).should.be.false;
+    if (err) {
+      callback(err);
+    }
     result.should.have.length(0);
     callback(null);
   })
@@ -60,7 +68,7 @@ describe('insert, select, delete', function () {
         testSelectAfterDelete
         ],
         function (err) {
-          (err === null).should.be.true;
+          (err == null).should.be.true;
           done();
         });
     }

@@ -1,7 +1,8 @@
 //real time updates query database every few seconds
 
 //get the player id from url (last element after split)
-var player_id = document.URL.split('/')[document.URL.split('/').length - 1];
+var playerId = document.URL.split('/')[document.URL.split('/').length - 1];
+playerId = playerId.split('-').join('');
 
 //real time updates
 function getRealTimeData() {
@@ -17,12 +18,13 @@ function getRealTimeData() {
       type: 'GET',
       data: {
         'lastUpdate': lastUpdate,
-        'player_id': player_id
+        'playerId': playerId
       },
 
       //accepts an array with elements that have fields:
       //'dateOf(time)' and price
       success: function(data) {
+        console.log(JSON.stringify(data));
         lastUpdate = new Date();
         for (var i = 0; i !== data.length; ++i) {
           x = (new Date(data[i][TIMEFIELD])).getTime();
@@ -151,7 +153,7 @@ $(function() {
     url: '/data',
     type: 'GET',
     data: {
-      'player_id': player_id
+      'playerId': playerId
     },
     success: function (data) {
       createGraph(data);
