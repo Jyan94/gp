@@ -13,71 +13,71 @@ var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 
 var default_image = configs.constants.defaultPlayerImage;
 
-var renderPlayerPage = function (req, res, next) {
-  if (typeof(req.user) === 'undefined') {
-    res.redirect('/login');
-  }
-  else {
-    async.waterfall([
-      function (callback) {
-        var rows = null;
-        var betInfo = [];
+var getBetInfosFromPlayerID = function (req, res, next, callback) {
+  var rows = null;
+  var betInfo = [];
 
-        Bet.selectUsingPlayerID('pending_bets', req.params.player_id, function(err, result) {
-          if (err) {
-            next(err);
+  Bet.selectUsingPlayerID('pending_bets', req.params.player_id,
+    function(err, result) {
+      if (err) {
+        next(err);
+      }
+      else {
+        rows = result;
+        
+        for (var i = 0; i < rows.length; i++) {
+          betInfo[i] = {
+            bet_id: rows[i].bet_id,
+            long_position: rows[i].long_position,
+            bet_value: rows[i].bet_value,
+            multiplier: rows[i].multiplier
           }
-          else {
-            rows = result;
-            
-            for (var i = 0; i < rows.length; i++) {
-              betInfo[i] = {
-                bet_id: rows[i].bet_id,
-                long_position: rows[i].long_position,
-                bet_value: rows[i].bet_value,
-                multiplier: rows[i].multiplier
-              }
-            }
+        }
 
-            callback(null, betInfo);
-          }
-        });
-      },
-      function(betInfo, callback) {
-        var full_name = null; 
+        callback(null, req, res, next, betInfo);
+      }
+    });
+}
 
-        Player.select('player_id', req.params.player_id, function(err, result) {
-          if (err) {
-            next(err);
-          }
-          else {
-            full_name = result.full_name;
+var getImageFromPlayerID = function (req, res, next, betInfo, callback) {
+  var full_name = null; 
 
-            Player.selectImagesUsingPlayerName(full_name, function(err, result) {
-              if (result.length === 0) {
-                res.render('market', {betinfo: betInfo,
-                  image_url: default_image,
-                  player_id: req.params.player_id});
-              }
-              else {
-                res.render('market', {betinfo: betInfo,
-                  image_url: result[0].image_url,
-                  player_id: req.params.player_id});
-              }
-            });
-          }
-        });
-      }],
-      function (err, arr) {
-        if (err) {
-          next(err);
+  Player.select('player_id', req.params.player_id, function(err, result) {
+    if (err) {
+      next(err);
+    }
+    else {
+      full_name = result.full_name;
+
+      Player.selectImagesUsingPlayerName(full_name, function(err, result) {
+        if (result.length === 0) {
+          res.render('market', {betinfo: betInfo,
+            image_url: default_image,
+            player_id: req.params.player_id});
         }
         else {
-          return arr;
+          res.render('market', {betinfo: betInfo,
+            image_url: result[0].image_url,
+            player_id: req.params.player_id});
         }
+      });
+    }
+  });
+}
+
+var renderPlayerPage = function (req, res, next) {
+  async.waterfall([
+    function (callback) {
+      callback(null, req, res, next);
+    },
+    getBetInfosFromPlayerID,
+    getImageFromPlayerID,
+    ],
+    function (err) {
+      if (err) {
+        next(err);
       }
-    );
-  }
+    });
 }
 
 //post to '/submitForm/:player_id'
@@ -110,6 +110,58 @@ var submitBet = function (req, res, next) {
   }
 }
 
+var getBet = function (req, res, next, callback) {
+  var bet_id = req.body.bet_id;
+
+  Bet.selectMultiple('pending_bets', [bet_id],
+    function(err, result) {
+      if (err) {
+        next(err);
+      }
+      else if (result.length === 0) {
+        console.log('Bet Already Taken');
+      }
+      else {
+        callback(null, req, res, next, result);
+      }
+    });
+}
+
+var insertBet = function (req, res, next, result, callback) {
+  var current_bet = result[0];
+  var long_better_id = null;
+  var short_better_id = null;
+
+  if (current_bet.long_position === 'true') {
+    long_better_id = current_bet.user_id;
+    short_better_id = req.user.user_id;
+  }
+  else {
+    long_better_id = req.user.user_id;
+    short_better_id = current_bet.user_id;
+  }
+
+  Bet.insertCurrent(req.user.user_id, [current_bet.bet_id, long_better_id,
+    short_better_id, current_bet.player_id,
+    {value: parseFloat(current_bet.bet_value), hint: 'double'},
+    {value: parseFloat(current_bet.multiplier), hint: 'double'},
+    current_bet.game_id, current_bet.expiration],
+    function (err) {
+      if (err) {
+        next(err);
+      }
+      else {
+        TimeseriesBets.insert(current_bet.player_id, 
+          parseFloat(current_bet.bet_value), 
+          function(err){
+            if (err) {
+              next(err);
+          }
+        });
+      }
+    });
+}
+
 //post to '/addBets/:player_id'
 var takeBet = function (req, res, next) {
   var bet_id = req.body.bet_id;
@@ -117,47 +169,18 @@ var takeBet = function (req, res, next) {
   var long_better_id = null;
   var short_better_id = null;
 
-  Bet.selectMultiple('pending_bets', [bet_id], function(err, result) {
-    if (err) {
-      next(err);
-    }
-    else if (result.length === 0) {
-      console.log('Bet Already Taken');
-    }
-    else {
-      current_bet = result[0];
-
-      //console.log(current_bet.long_position);
-
-      if (current_bet.long_position === 'true') {
-        long_better_id = current_bet.user_id;
-        short_better_id = req.user.user_id;
+  async.waterfall([
+    function (callback) {
+      callback(null, req, res, next);
+    },
+    getBet,
+    insertBet
+    ],
+    function (err) {
+      if (err) {
+        next(err);
       }
-      else {
-        long_better_id = req.user.user_id;
-        short_better_id = current_bet.user_id;
-      }
-
-      Bet.insertCurrent(req.user.user_id, [current_bet.bet_id, long_better_id,
-        short_better_id, current_bet.player_id,
-        {value: parseFloat(current_bet.bet_value), hint: 'double'},
-        {value: parseFloat(current_bet.multiplier), hint: 'double'},
-        current_bet.game_id, current_bet.expiration],
-        function (err) {
-          if (err) {
-            next(err);
-          }
-          TimeseriesBets.insert(
-            current_bet.player_id, 
-            parseFloat(current_bet.bet_value), 
-            function(err){
-            if (err) {
-              next(err);
-            }
-          });
-        });
-     }
-  });
+    });
 }
 
 //exports above functions
