@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS all_bets (
 
 CREATE TABLE IF NOT EXISTS football_player (
     player_id uuid PRIMARY KEY,
-    currvalue double,
+    current_value double,
     full_name text,
     first_name text,
     last_name text,
