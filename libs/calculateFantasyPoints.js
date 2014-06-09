@@ -28,8 +28,7 @@ exports.calculateFantasyPoints = function(playerObject, callback) {
   if (boolHome === true) {
     away_team = opponent_name;
     home_team = team_name;
-  }
-  else {
+  } else {
     away_team = team_name;
     home_team = opponent_name;
   }
@@ -41,8 +40,7 @@ exports.calculateFantasyPoints = function(playerObject, callback) {
       var arrayIndex;
       if (boolHome === true) {
         arrayIndex = 0;
-      }
-      else {   
+      } else {   
         arrayIndex = 1;
       }
       var points = 0.0;
@@ -79,7 +77,6 @@ exports.calculateFantasyPoints = function(playerObject, callback) {
           stats.game.team[arrayIndex].two_point_conversion[0].player;
         for (var l = 0; l < prefixTwoPointConv.length; l++) {
           if (prefixTwoPointConv[l].$.name === player_name) {
-            console.log(points);
             points = 
               points + 
               2*
@@ -96,15 +93,14 @@ exports.calculateFantasyPoints = function(playerObject, callback) {
           if (prefixFumbles[m].$.name === player_name) {
             points = 
               points - 
-              2*(prefixFumbles[m].$.lost)
+              2*(prefixFumbles[m].$.lost);
           }
         }
       }
 
       callback(null, points);
-    }
-    else {
+    } else {
       callback(err);
     }
-  })
+  });
 }

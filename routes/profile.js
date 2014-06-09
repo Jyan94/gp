@@ -4,17 +4,14 @@ require('rootpath')();
 var configs = require('config/index');
 
 var async = require('async');
+var Bet = require('libs/cassandra/bet');
 var User = require('libs/cassandra/user');
-var bet = require('libs/cassandra/bet');
 var cql = configs.cassandra.cql;
 var fs = require('fs');
 var url = require('url');
+var multiline = require('multiline');
 
-var messages = {
-  incorrect_username: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }',
-  delete_error: '{ "title": "Delete error", "parts": ["Something went wrong while deleting a file."] }',
-  upload_error:'{ "title": "Upload error", "parts": ["Something went wrong while uploading a file."] }'
-  };
+var messages = configs.constants.profileStrings;
 
 var retrieveProfile = function(req, res, next) {
   var userInfo = {};
@@ -48,7 +45,7 @@ var retrieveProfile = function(req, res, next) {
       });
     },
     function (user_id, callback) {
-      bet.selectUsingUserID('all_bets', user_id, function (err, result) {
+      Bet.selectUsingUserID('all_bets', user_id, function (err, result) {
         if (err) {
           next(err);
         }
@@ -117,24 +114,30 @@ var updateProfile = function(req, res, next) {
               res.send(messages.delete_error);
             }
 
-            upload_file.pipe(fs.createWriteStream(__dirname + '/../tmp/' + upload_username + '.' + upload_mimetype));
+            upload_file.pipe(fs.createWriteStream(
+              __dirname + '/../tmp/' + upload_username + '.' + upload_mimetype)
+            );
             callback(null);
           });
-        }
-        else {
-          upload_file.pipe(fs.createWriteStream(__dirname + '/../tmp/' + upload_username + '.' + upload_mimetype));
+        } else {
+          upload_file.pipe(fs.createWriteStream(
+            __dirname + '/../tmp/' + upload_username + '.' + upload_mimetype)
+          );
           callback(null);
         }
       },
       function (callback) {
-        User.update(upload_user_id, ['image'], ['/images/' + upload_username + '.' + upload_mimetype], function (err, result) {
-          if (err) {
-            res.send(500, 'Database error.');
-          }
-          else {
-            res.send('/images/' + upload_username + '.' + upload_mimetype);
-            callback(null);
-          }
+        User.update(
+          upload_user_id, 
+          ['image'], 
+          ['/images/' + upload_username + '.' + upload_mimetype], 
+          function (err, result) {
+            if (err) {
+              res.send(500, 'Database error.');
+            } else {
+              res.send('/images/' + upload_username + '.' + upload_mimetype);
+              callback(null);
+            }
         });
       }
     ], function (err) {

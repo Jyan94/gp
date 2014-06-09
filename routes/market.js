@@ -8,10 +8,10 @@ var client = configs.cassandra.client;
 var async = require('async');
 
 var Bet = require('libs/cassandra/bet.js');
-var Player = require('libs/cassandra/player.js')
-var Cql = require('libs/cassandra/cql.js')
+var Player = require('libs/cassandra/player.js');
+var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 
-var get = function (req, res, next) {
+var renderPlayerPage = function (req, res, next) {
   if (typeof(req.user) === 'undefined') {
     res.redirect('/login');
   }
@@ -152,6 +152,6 @@ var takeBet = function (req, res, next) {
 }
 
 //exports above functions
-exports.get = get;
+exports.renderPlayerPage = renderPlayerPage;
 exports.submitBet = submitBet;
 exports.takeBet = takeBet;

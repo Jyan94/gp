@@ -1,4 +1,6 @@
 'use strict';
+(require('rootpath')());
+var constants = require('config/constants');
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
 var cookieparser = require('cookie-parser');
@@ -8,6 +10,7 @@ var flash = require('connect-flash');
 var methodOverride = require('method-override');
 var session = require('express-session');
 var path = require('path');
+var multiline = require('multiline');
 
 //cassandra configurations
 var cassandraConfig = {
@@ -48,13 +51,7 @@ var config = {
     cql: cql,
     client: client
   },
-  facebookStrategy: function(app){
-    return {
-      clientID: '656697897711155',
-      clientSecret: 'da59fa7c8e4cc617c40793b45ac31b97',
-      callbackURL: app.locals.domain + '/auth/facebook/callback'
-    };
-  }
+  constants: constants
 }
 
 module.exports = config;

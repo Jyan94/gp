@@ -1,7 +1,22 @@
 'use strict';
 require('rootpath')();
 
-var checkUser = function(req, res, next) {
+/**
+ * redirects to login if not logged in
+ */
+var checkUser = function (req, res, next) {
+  if (req.user) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+}
+
+/**
+ * checks if user session is still active
+ * if it is, redirects to market
+ */
+var redirectLogin = function(req, res, next) {
   if (req.user) {
     res.redirect('/market');
   } else {
@@ -15,4 +30,5 @@ var renderLogin = function(req, res) {
 }
 
 exports.checkUser = checkUser;
+exports.redirectLogin = redirectLogin;
 exports.renderLogin = renderLogin;

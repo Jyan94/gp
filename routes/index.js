@@ -26,7 +26,7 @@ app.get('/autocomp', autocomplete.autocomp);
 //login
 var login = require('routes/registry/login');
 app.route('/login')
-.get(login.checkUser)
+.get(login.redirectLogin)
 .get(login.renderLogin)
 .post(passport.authenticate('local', 
   { successRedirect: '/market',
@@ -36,13 +36,16 @@ app.route('/login')
 //signup
 var signup = require('routes/registry/signup');
 app.route('/signup')
-.get(login.checkUser)
+.get(login.redirectLogin)
 .get(signup.renderSignup)
 .post(signup.processSignup);
 
+//redirects to login if not logged in
+app.all('*', login.checkUser);
+
 //market
 var market = require('routes/market');
-app.get('/market/:player_id', market.get);
+app.get('/market/:player_id', market.renderPlayerPage);
 app.post('/submitForm/:player_id', market.submitBet);
 app.post('/addBets/:player_id', market.takeBet);
 

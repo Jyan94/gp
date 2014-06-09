@@ -9,7 +9,6 @@ var client = configs.cassandra.client;
 var cql = configs.cassandra.cql;
 
 exports.query = function(cql, params, consistency, callback) {
-  //console.log(callback.toString());
   client.executeAsPrepared(cql, params, consistency, function(err, result) {
     if (result) {
       result = result.rows;

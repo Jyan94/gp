@@ -89,10 +89,12 @@ var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
 exports.selectUsingTeam = function (team, callback) {
   console.log(callback);
 
-  cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, [team], cql.types.consistencies.one,
-      function(err, result) {
-        console.log(result);
-        callback(err, result);
+  cassandra.query(
+    SELECT_PLAYERS_USING_TEAM_CQL, 
+    [team], 
+    cql.types.consistencies.one,
+    function(err, result) {
+      callback(err, result);
     });
 }
 
@@ -103,7 +105,24 @@ var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
 exports.selectImagesUsingPlayerName = function(player_name, callback) {
   var query = SELECT_PLAYER_IMAGES_USING_PLAYERNAME;
 
-  cassandra.query(query, [player_name], cql.types.consistencies.one,
+  cassandra.query(
+    query, 
+    [player_name], 
+    cql.types.consistencies.one,
+    function(err, result) {
+      callback(err, result);
+    }
+  );
+}
+
+var AUTOCOMPLETE_QUERY = multiline(function() {/*
+  SELECT player_id, full_name FROM football_player
+*/});
+exports.selectAllPlayerNames = function(callback) {
+  cassandra.query(
+    AUTOCOMPLETE_QUERY, 
+    [], 
+    cql.types.consistencies.one,
     function(err, result) {
       callback(err, result);
     }

@@ -112,8 +112,7 @@ var allowed_fields = ['user_id', 'username', 'email'];
 exports.select = function (field, value, callback) {
   if (allowed_fields.indexOf(field) < 0) {
     callback(new Error(field + ' is not a searchable field.'));
-  }
-  else {
+  } else {
     cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
       [value], cql.types.consistencies.one, 
       function(err, result) {
