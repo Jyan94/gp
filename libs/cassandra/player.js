@@ -64,20 +64,17 @@ exports.update = function (playerId, fields, params, callback) {
 var SELECT_PLAYER_CQL = multiline(function () {/*
   SELECT * FROM footballPlayer WHERE playerId = ?;
 */});
-
-exports.selectUsingPlayerId = function (playerId, callback) {
-  cassandra.queryOneRow(
-    SELECT_PLAYER_CQL,
-    [playerId], 
-    cql.types.consistencies.one,
+exports.select = function (playerId, callback) {
+  cassandra.queryOneRow(SELECT_PLAYER_CQL,
+    [playerId], cql.types.consistencies.one,
     function(err, result) {
       callback(err, result);
-  });
-};
+    });
+}
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
   SELECT * FROM footballPlayer WHERE team = ?;
-*/})
+*/});
 exports.selectUsingTeam = function (team, callback) {
   cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, 
     [team], cql.types.consistencies.one,
@@ -88,8 +85,7 @@ exports.selectUsingTeam = function (team, callback) {
 
 var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
   SELECT * FROM playerImages WHERE playerName = ?;
-*/})
-
+*/});
 exports.selectImagesUsingPlayerName = function(playerName, callback) {
   var query = SELECT_PLAYER_IMAGES_USING_PLAYERNAME;
 
