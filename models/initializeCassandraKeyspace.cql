@@ -165,9 +165,9 @@ CREATE TABLE IF NOT EXISTS player_images (
     image_url text
 );
 
-CREATE TABLE IF NOT EXISTS timeseries_bets (
-    player_id text,
+CREATE TABLE IF NOT EXISTS timeseriesBets (
+    playerId text,
     time timeuuid,
     price double,
-    PRIMARY KEY (player_id, time)
+    PRIMARY KEY (playerId, time)
 ) WITH CLUSTERING ORDER BY (time ASC);

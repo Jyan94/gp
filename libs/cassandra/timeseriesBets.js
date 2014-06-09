@@ -7,8 +7,8 @@ var async = require('async');
 var multiline = require('multiline');
 
 var INSERT_PRICE_CQL = multiline(function() {/*
-  INSERT INTO timeseries_bets (
-    player_id, time, price
+  INSERT INTO timeseriesBets (
+    playerId, time, price
   ) VALUES 
     (?, ?, ?);
 */});
@@ -16,11 +16,15 @@ var INSERT_PRICE_CQL = multiline(function() {/*
 /**
  * inserts prices into timeseries 
  */
-exports.insert = function (player_id, price, callback) {
+exports.insert = function (playerId, price, callback) {
   //parse values
   cassandra.query(
     INSERT_PRICE_CQL, 
-    [player_id, cql.types.timeuuid(), {value: price, hint: 'double'}], 
+    [
+    playerId, 
+    cql.types.timeuuid(), 
+    {value: price, hint: 'double'}
+    ], 
     cql.types.consistencies.one,
     function (err) {
       callback(err);
@@ -28,15 +32,15 @@ exports.insert = function (player_id, price, callback) {
 };
 
 var DELETE_PRICE_CQL = multiline(function() {/*
-  DELETE FROM timeseries_bets WHERE
-    player_id
+  DELETE FROM timeseriesBets WHERE
+    playerId
   IN
     (?);
 */});
-exports.deletePrices = function (player_id, callback) {
+exports.deletePrices = function (playerId, callback) {
   cassandra.query(
     DELETE_PRICE_CQL,
-    [player_id],
+    [playerId],
     cql.types.consistencies.one,
     function (err) {
       callback(err);
@@ -47,9 +51,9 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
   SELECT  
     price, dateOf(time) 
   FROM 
-    timeseries_bets
+    timeseriesBets
   WHERE
-    player_id=?
+    playerId=?
   AND
     time > maxTimeuuid(?)
   AND
@@ -60,7 +64,7 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
  * returns a list of rows for prices updated 
  * between two times: start and end
  * @param  {uuid}
- * player_id [player uniquely identified id]
+ * playerId [player uniquely identified id]
  * @param  {Date object}   
  * start     [start date]
  * @param  {Date object}   
@@ -68,10 +72,10 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
  * @param  {Function} 
  * callback  [callback function to pass results]
  */
-exports.selectTimeRange = function (player_id, start, end, callback) {
+exports.selectTimeRange = function (playerId, start, end, callback) {
   cassandra.query(
     SELECT_TIMERANGE_CQL,
-    [player_id, start, end], 
+    [playerId, start, end], 
     cql.types.consistencies.one, 
     function(err, result) {
       callback(err, result);
@@ -82,9 +86,9 @@ var UNTIL_NOW_CQL = multiline(function () {/*
   SELECT  
     price, dateOf(time) 
   FROM 
-    timeseries_bets
+    timeseriesBets
   WHERE
-    player_id=?
+    playerId=?
   AND
     time > maxTimeuuid(?)
   AND
@@ -94,7 +98,7 @@ var UNTIL_NOW_CQL = multiline(function () {/*
 /**
  * returns all rows for prices on a given player between start and now
  * @param  {uuid}
- * player_id [player uniquely identified id]
+ * playerId [player uniquely identified id]
  * @param  {Date object}   
  * start     [start date]
  * @param  {Date object}   
@@ -102,10 +106,10 @@ var UNTIL_NOW_CQL = multiline(function () {/*
  * @param  {Function} 
  * callback  [callback function to pass results]
  */
-exports.selectSinceTime = function (player_id, start, callback) {
+exports.selectSinceTime = function (playerId, start, callback) {
   cassandra.query(
     UNTIL_NOW_CQL,
-    [player_id, start], 
+    [playerId, start], 
     cql.types.consistencies.one, 
     function(err, result) {
       callback(err, result);
