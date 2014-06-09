@@ -42,7 +42,7 @@ var getBetInfosFromPlayerId = function (req, res, next, callback) {
 var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
   var fullName = null; 
 
-  Player.select('playerId', req.params.playerId, function(err, result) {
+  Player.select(req.params.playerId, function(err, result) {
     if (err) {
       next(err);
     }

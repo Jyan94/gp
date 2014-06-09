@@ -63,29 +63,20 @@ exports.update = function (playerId, fields, params, callback) {
 };
 
 var SELECT_PLAYER_CQL = multiline(function () {/*
-  SELECT * FROM footballPlayer WHERE
+  SELECT * FROM footballPlayer WHERE playerId = ?;
 */});
-
-var allowedFields = ['playerId', 'team'];
-
-exports.select = function (field, value, callback) {
-  if (allowedFields.indexOf(field) < 0) {
-    callback(new Error('Field is not a searchable field.'));
-  } else {
-    cassandra.queryOneRow(SELECT_PLAYER_CQL + ' ' + field + ' = ?;',
-      [value], cql.types.consistencies.one,
-      function(err, result) {
-        callback(err, result);
+exports.select = function (playerId, callback) {
+  cassandra.queryOneRow(SELECT_PLAYER_CQL,
+    [playerId], cql.types.consistencies.one,
+    function(err, result) {
+      callback(err, result);
     });
-  }
-};
+}
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
   SELECT * FROM footballPlayer WHERE team = ?;
 */});
 exports.selectUsingTeam = function (team, callback) {
-  console.log(callback);
-
   cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, 
     [team], cql.types.consistencies.one,
     function(err, result) {
