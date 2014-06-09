@@ -11,6 +11,8 @@ var Bet = require('libs/cassandra/bet.js');
 var Player = require('libs/cassandra/player.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 
+var default_image = configs.constants.defaultPlayerImage;
+
 var renderPlayerPage = function (req, res, next) {
   if (typeof(req.user) === 'undefined') {
     res.redirect('/login');
@@ -42,7 +44,6 @@ var renderPlayerPage = function (req, res, next) {
         });
       },
       function(betInfo, callback) {
-        var default_image = 'http://2.bp.blogspot.com/-6QyJDHjB5XE/Uscgo2DVBdI/AAAAAAAACS0/DFSFGLBK_fY/s1600/facebook-default-no-profile-pic.jpg';
         var full_name = null; 
 
         Player.select('player_id', req.params.player_id, function(err, result) {
