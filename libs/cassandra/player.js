@@ -79,7 +79,7 @@ exports.select = function (player_id, callback) {
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
   SELECT * FROM football_player WHERE team = ?;
-*/})
+*/});
 exports.selectUsingTeam = function (team, callback) {
   console.log(callback);
 
@@ -94,8 +94,7 @@ exports.selectUsingTeam = function (team, callback) {
 
 var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
   SELECT * FROM player_images WHERE player_name = ?;
-*/})
-
+*/});
 exports.selectImagesUsingPlayerName = function(player_name, callback) {
   var query = SELECT_PLAYER_IMAGES_USING_PLAYERNAME;
 
