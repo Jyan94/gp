@@ -34,7 +34,7 @@ function getRealTimeData() {
 
     });
 
-  }, 10000);
+  }, 1000);
 }
 
 //initialize series
@@ -105,7 +105,7 @@ function createGraph(initdata) {
     colors: colorArray,
 
     chart : chartFormatter,
-    
+
     credits: {
       enabled: false
     },
@@ -134,7 +134,7 @@ function createGraph(initdata) {
       name : 'Fantasy Value',
       data : loadData(initdata)
     }]
-  });  
+  });
 }
 
 

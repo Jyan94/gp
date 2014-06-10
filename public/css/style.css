@@ -55,6 +55,10 @@ h6 {
 p {
   font-family: 'sans-serif';
 }
+p.betTitle {
+  font-family: "Verdana";
+  font-size: 24px;
+}
 a {
   text-decoration: none;
   color: black;
@@ -298,6 +302,7 @@ input {
 /*----------------------------------------------------------------------------*/
 /* Profile page                                                               */
 /*----------------------------------------------------------------------------*/
+
 #prof-behind {
   position: relative;
   height: 180px;
@@ -314,7 +319,7 @@ input {
   position: relative;
   height: 180px;
   width: 180px;
-  background-position: center;
+  background-position: left;
   background-size: cover;
 }
 #prof-pic:hover .fileUpload {
@@ -1042,6 +1047,65 @@ input {
 /*----------------------------------------------------------------------------*/
 /* Homepage                                                                   */
 /*----------------------------------------------------------------------------*/
+
+.betcontainer {
+  width: 980px;
+  height: 547px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background-color: white;
+  box-shadow: 0px 1px 4px #888;
+  overflow: scroll;
+}
+
+.profilecontainer{
+  width: 980px;
+  height: 310px;
+  margin-bottom: 5px;
+  background-color: white;
+  box-shadow: 0px 1px 4px #888;
+  font-family: 'Roboto Condensed', 'Helvetica', 'Arial';
+}
+
+.profilebox {
+  padding: 0.1px 0.1px 0.1px 0.1px;
+  float:left;
+  border-color: #545454;
+  border-style: solid;
+  border-radius: 2px;
+}
+.profileleft {
+  padding: 20px 5px 5px 90px;
+  float: left;
+  width: 27.7%;
+  height: 200px;
+  border-bottom: 2px solid#cecece;
+  border-radius: 0px;
+}
+
+.profileright {
+  padding: 5px 5px 5px 5px;
+  float: right;
+  width: 61.5%;
+  height: 300px;
+  border-left: 2px solid #cecece;
+}
+
+table {
+  text-align: center;
+  border: 1px solid black;
+  overflow: scroll;
+  border-width: 2px;
+  border-spacing: 4px;
+  border-style: outset;
+  border-color: gray;
+  width: 980px;
+}
+
+td {
+  width: 980px;
+  padding: 15px;
+}
 .linkcontainer {
   width: 980px;
   height: 50px;
@@ -1061,23 +1125,17 @@ input {
 .leftsidehome {
   padding: 5px 5px 5px 10px;
   float: left;
-  width: 35%;
+  width: 48%;
   height: 40px;
   border-right: 2px solid #cecece;
-  border-radius: 0px;
+  border-radius: 2px;
 }
 .rightsidehome {
   padding: 5px 5px 5px 10px;
   float: right;
-  width: 35%;
+  width: 48%;
   height: 40px;
-  border-left: 2px solid #cecece;
-  border-radius: 0px;
-}
-.centersidehome {
-  padding: 5px 5px 5px 10px;
-  float: center;
-  height: 40px;
+  border-radius: 2px;
 }
 /*----------------------------------------------------------------------------*/
 /* Formatting Comments                                                        */
