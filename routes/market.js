@@ -24,7 +24,7 @@ var getBetInfosFromPlayerId = function (req, res, next, callback) {
       }
       else {
         rows = result;
-        
+
         for (var i = 0; i < rows.length; i++) {
           betInfo[i] = {
             betId: rows[i].bet_id,
@@ -41,7 +41,9 @@ var getBetInfosFromPlayerId = function (req, res, next, callback) {
 
 var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
   var playerId = req.params.playerId;
-  var fullName = null; 
+  var fullName = null;
+  var team;
+  var position;
 
   Player.select(playerId, function(err, result) {
     if (err) {
@@ -49,17 +51,25 @@ var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
     }
     else {
       fullName = result.full_name;
+      team = result.team;
+      position = result.position;
 
       Player.selectImagesUsingPlayerName(fullName, function(err, result) {
         if (result.length === 0) {
           res.render('market', {betinfo: betInfo,
             imageUrl: defaultImage,
-            playerId: playerId});
+            playerId: playerId,
+            fullName: fullName,
+            team: team,
+            position: position});
         }
         else {
           res.render('market', {betinfo: betInfo,
             imageUrl: result[0].image_url,
-            playerId: playerId});
+            playerId: playerId,
+            fullName: fullName,
+            team: team,
+            position: position});
         }
       });
     }
@@ -93,15 +103,16 @@ var submitBet = function (req, res, next) {
     longPosition = false;
   }
 
+
   Bet.insertPending(
     [
-    betId, 
-    req.user.user_id, 
-    longPosition, 
-    req.params.playerId, 
+    betId,
+    req.user.user_id,
+    longPosition,
+    req.params.playerId,
     {value: parseFloat(req.body.price), hint: 'double'},
-    {value: parseFloat(req.body.shareNumber), hint: 'double'}, 
-    null, 
+    {value: parseFloat(req.body.shareNumber), hint: 'double'},
+    null,
     null
     ],
     function(err){
@@ -155,8 +166,8 @@ var insertBet = function (req, res, next, result, callback) {
         next(err);
       }
       else {
-        TimeseriesBets.insert(currentBet.player_id, 
-          parseFloat(currentBet.bet_value), 
+        TimeseriesBets.insert(currentBet.player_id,
+          parseFloat(currentBet.bet_value),
           function(err){
             if (err) {
               next(err);

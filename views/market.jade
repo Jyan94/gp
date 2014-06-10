@@ -3,47 +3,63 @@ html(lang="en")
   head
     include base_head
   body
-    include graph
+    include banner
     div.content
-      //div#prof-behind
-        div(style='height: 250px; width: 600px; background-size: cover; background-position: center')
-        br
 
       div.feed
         center
           form#betForm.pure-form(action='/submitForm/'+playerId method='post')
-            input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width: 100px')
-            input(type='number' name='shareNumber' placeholder='Number of Shares' required=true style='width: 100px')
+            input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width:100px' min="0.1")
+            input(type='integer' name='shareNumber' placeholder='Quantity' required=true style='width: 100px' min="1")
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
             | Above
             input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
             | Under
             input.pure-button.button-primary(type='submit')
-      center
-        div#prof-pic(style='background-image: url(#{imageUrl})')
+      div.profilecontainer
+        div.profileleft
+          div.profilebox
+            div#prof-pic(style='background-image: url(#{imageUrl})')
+        div.profileright
+          include graph
+        div.profilebottom
+          center
+            h2=fullName
+            h4=team
+            h4=position
 
-      each item in betinfo
-        if (item.longPosition===false)
-          div.linkcontainer
-            div.leftsidehome
-              center
-                a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer').
-                  Take Bet!
-            div.rightsidehome
-              center
-                h5="price: " + item.betValue
-                h5="multiplier: " + item.multiplier
-
-
-        else
-          div.linkcontainer
-            div.leftsidehome
-              center
-                h5="price: " + item.betValue
-                h5="multiplier: " + item.multiplier
-            div.rightsidehome
-              center
-                a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer').
-                  Take Bet!
-
+      div.betcontainer
+        center
+          table(border="5" id='betTable')
+            thead
+              tr
+                th='Price'
+                th='Multiplier'
+                th='Take Bets'
+            tbody
+              each item in betinfo
+                if (item.longPosition===false)
+                  tr
+                    td
+                      h5=item.betValue
+                    td
+                      h5=item.multiplier
+                    td
+                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                        img(src='../uparrow.png' width='50' height='90')
+                else
+                  tr
+                    td
+                      h5=item.betValue
+                    td
+                      h5=item.multiplier
+                    td
+                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                        img(src='../downarrow.png' width='50' height='90')
+    script(src='../js/betTableFilter.js')
+    script(src='../js/search.js')
+    script(src='../js/jquery-ui-1.10.4.custom.js')
     script(type='application/javascript' src='/js/takeBets.js')
+    script(src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js")
+    script(src='../js/jquery-columnTables.js')
+    link(rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css")
