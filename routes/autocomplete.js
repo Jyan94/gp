@@ -18,7 +18,7 @@ var autocomp = function(req, res, next) {
         for (var i = 0; i < result.length; i++) {
           search[i] = {
             label: result[i].full_name,
-            player_id: result[i].player_id
+            playerId: result[i].player_id
           };
         }
       }

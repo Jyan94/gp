@@ -26,7 +26,7 @@ exports.insertPending = function (params, callback) {
     params: params
   }
   ];
-
+  
   cassandra.queryBatch(query, cql.types.consistencies.one,
     function (err) {
       callback(err);
@@ -62,6 +62,9 @@ exports.insertCurrent = function(takerUserId, params, callback) {
       params: params
     }
   ];
+
+  console.log(query);
+
   cassandra.queryBatch(query, cql.types.consistencies.one,
     function(err) {
       callback(err);
@@ -91,8 +94,7 @@ var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {/*
  * the object described above if otherwise]
  */
 exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
-  var allowedTables = 
-    ['pending_bets', 'current_bets', 'past_bets', 'all_bets'];
+  var allowedTables = ['pending_bets', 'current_bets', 'past_bets', 'all_bets'];
   var paramsLength = params.length;
   var filter = '';
   var query = '';
@@ -171,7 +173,7 @@ var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {/*
  * [An array of betInfo's if betsTable is not 'all_bets', 
  * the object described above if otherwise, corresponding to userId]
  */
-exports.selectUsingUserID = function (betsTable, userId, callback) {
+exports.selectUsingUserId = function (betsTable, userId, callback) {
   console.log(callback);
   var betIds = [];
 
@@ -200,7 +202,7 @@ var SELECT_BETS_USING_PLAYER_ID_CQL_1 = multiline(function () {/*
 var SELECT_BETS_USING_PLAYER_ID_CQL_2 = multiline(function () {/*
   WHERE player_id = ?;
 */})
-exports.selectUsingPlayerID = function (betsTable, playerId, callback) {
+exports.selectUsingPlayerId = function (betsTable, playerId, callback) {
   var query = null;
   var allowedTables = ['pending_bets', 'current_bets', 'past_bets'];
 

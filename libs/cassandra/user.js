@@ -90,8 +90,6 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
       }
     }
 
-    console.log(query);
-
     cassandra.queryBatch(query, cql.types.consistencies.one, 
       function(err, result) {
         callback(err, result);
@@ -139,7 +137,6 @@ exports.selectMultiple = function selectMultiple(params, callback) {
   query = SELECT_USERS_MULTIPLE_CQL + ' (' + filter + ');';
   cassandra.query(query, params, cql.types.consistencies.one,
     function (err, result) {
-      console.log(result);
       callback(err, result);
     });
 }
