@@ -13,63 +13,81 @@ var multiline = require('multiline');
 
 var messages = configs.constants.profileStrings;
 
-var redirectProfile = function(req, res) {
-  res.redirect('/user/' + req.user.user_id);
+var userImagePath = __dirname + '/../tmp/';
+
+var redirectProfile = function(req, res, next) {
+  User.select('user_id', req.user.user_id,
+    function (err, result) {
+      if (err) {
+        next(err);
+      }
+      else if (result) {
+        res.redirect('/user/' + result.username);
+      }
+      else {
+        res.send(500, 'How did you get here?');
+      }
+    });
+}
+
+var getUser = function(req, res, next, callback) {
+  var userInfo = {};
+  var field = '';
+
+  User.select('username', req.params.username, function (err, result) {
+    if (err) {
+      next(err);
+    }
+    else if (result) {
+      for (var i = 0; i < result.columns.length; i++) {
+        field = result.columns[i].name;
+
+        if (result[field] === null) {
+          userInfo[field] = 'Unavailable';
+        }
+        else {
+          userInfo[field] = result[field];
+        }
+      }
+
+      callback(null, req, res, next, userInfo);
+    }
+    else {
+      res.send(messages.incorrectUsername);
+    }
+  });
+}
+
+var getBetsFromUser = function(req, res, next, userInfo, callback) {
+  Bet.selectUsingUserId('all_bets', userInfo.user_id,
+    function (err, result) {
+      if (err) {
+        next(err);
+      }
+      else {
+        res.render('profile', { userInfo: userInfo, 
+                                pendingBetInfo: result.pendingBets,
+                                currentBetInfo: result.currentBets,
+                                pastBetInfo: result.pastBets
+        });
+      }
+  });
 }
 
 var retrieveProfile = function(req, res, next) {
-  var userInfo = {};
-  var betInfo = [];
-  var field = '';
-
   async.waterfall([
     function (callback) {
-      User.select('username', req.params.username, function (err, result) {
-        if (err) {
-          next(err);
-        }
-        else if (result) {
-          for (var i = 0; i < result.columns.length; i++) {
-            field = result.columns[i].name;
-
-            if (result[field] === null) {
-              userInfo[field] = 'Unavailable';
-            }
-            else {
-              userInfo[field] = result[field];
-            }
-          }
-
-          callback(null, result.user_id);
-        }
-        else {
-          res.send(messages.incorrectUsername);
-        }
-      });
+      callback(null, req, res, next);
     },
-    function (userId, callback) {
-      Bet.selectUsingUserId('all_bets', userId, function (err, result) {
-        if (err) {
-          next(err);
-        }
-        else {
-          betInfo = result;
-          callback(null, result);
-        }
-      });
-    }
-  ], function(err, result) {
-    if (err) {
-      next(err);
-      return;
-    }
-
-    res.render('profile', { userInfo: userInfo, 
-                            pendingBetInfo: betInfo.pendingBets,
-                            currentBetInfo: betInfo.currentBets,
-                            pastBetInfo: betInfo.pastBets
+    getUser,
+    getBetsFromUser
+    ],
+    function(err, result) {
+      if (err) {
+        next(err);
+        return;
+      }
     });
-  });
 }
 
 var updateProfile = function(req, res, next) {
@@ -118,13 +136,13 @@ var updateProfile = function(req, res, next) {
             }
 
             uploadFile.pipe(fs.createWriteStream(
-              __dirname + '/../tmp/' + uploadUsername + '.' + uploadMimetype)
+              userImagePath + uploadUsername + '.' + uploadMimetype)
             );
             callback(null);
           });
         } else {
           uploadFile.pipe(fs.createWriteStream(
-            __dirname + '/../tmp/' + uploadUsername + '.' + uploadMimetype)
+            userImagePath + uploadUsername + '.' + uploadMimetype)
           );
           callback(null);
         }
@@ -154,7 +172,7 @@ var updateProfile = function(req, res, next) {
 
 var pictureNotFound = function (req, res) {
   var file = req.params.file;
-  fs.readFile(__dirname + '/../tmp/' + file, function (err, result) {
+  fs.readFile(userImagePath + file, function (err, result) {
     if (result) {
       res.send(result);
     }
