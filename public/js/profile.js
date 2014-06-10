@@ -1,4 +1,4 @@
-function change_async () {
+function changeAsync () {
   var data = new FormData($('#prof-upload')[0]);
   console.log(data);
   $.ajax({

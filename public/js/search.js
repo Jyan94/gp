@@ -16,7 +16,7 @@ $(function() {
     minLength : 3,
     source: searchCache,
     select: function(e, ui) {
-      id = ui.item.player_id;
+      id = ui.item.playerId;
     }
   })
 

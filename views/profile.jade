@@ -21,7 +21,7 @@ html(lang="en")
                 span.fui-photo
                 span Edit profile photo
               form#prof-upload(enctype='multipart/form-data' action='/upload/image/#{userInfo.username}' method='post')
-                input.upload(type='file' name='filefield' onchange='change_async()')
+                input.upload(type='file' name='filefield' onchange='changeAsync()')
         div.bounding-box.rounded(style='width:1080px')
           div.padded
             h3 Profile Information

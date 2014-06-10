@@ -13,7 +13,8 @@ var autocomp = function(req, res, next) {
   Player.selectAllPlayerNames(function(err, result) {
     if (err) {
       next(err);
-    } else {
+    }
+    else {
       if (result) {
         for (var i = 0; i < result.length; i++) {
           search[i] = {
