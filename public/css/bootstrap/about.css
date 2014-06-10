@@ -68,7 +68,7 @@ body {
 ------------------------- */
 
 .featurette-divider {
-  margin: 0px 10; /* Space out the Bootstrap <hr> more */
+  margin: 0 10; /* Space out the Bootstrap <hr> more */
 }
 
 /* Thin out the marketing headings */
