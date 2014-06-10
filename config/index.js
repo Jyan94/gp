@@ -27,6 +27,8 @@ var config = {
   configure: function(app) {
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
+    app.engine('jade', require('jade').__express);
+    app.engine('html', require('ejs').renderFile);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
     app.use(flash());
@@ -34,10 +36,6 @@ var config = {
     app.use(cookieparser());
     app.use(methodOverride());
     //basic error handler
-    app.use(function(err, req, res, next) {
-      console.error(err.stack);
-      res.send(500, 'Something broke!');
-    });
     app.use(session({
       secret: 'secret-key',
       cookie: {

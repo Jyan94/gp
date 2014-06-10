@@ -15,10 +15,18 @@ app.use(passport.session());
 
 //root path
 //FOR TESTING PURPOSES
-app.get('/', function(req, res) {
-  res.render('banner');
-});
+var staticPages = require('routes/static/routes');
+app.get('/', staticPages.home);
+app.get('/about', staticPages.about);
+app.get('/contact', staticPages.contact);
+app.get('/faq', staticPages.faq);
+app.get('/features', staticPages.features);
+app.get('/home', staticPages.home);
+app.get('/rules', staticPages.rules);
 
+app.get('/about', function(req, res) {
+  res.render('login/about.html');
+});
 //login
 var login = require('routes/registry/login');
 app.route('/login')
