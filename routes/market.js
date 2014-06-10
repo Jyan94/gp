@@ -93,22 +93,25 @@ var submitBet = function (req, res, next) {
     longPosition = false;
   }
 
-  if (typeof(req.user) === 'undefined') {
-    res.redirect('/login');
-  }
-  else {
-    Bet.insertPending([betId, req.user.user_id, longPosition, 
-      req.params.playerId, {value: parseFloat(req.body.price), hint: 'double'},
-      {value: parseFloat(req.body.shareNumber), hint: 'double'}, null, null],
-      function(err){
-        if (err) {
-          next(err);
-        }
-        else {
-          res.redirect('/market/' + req.params.playerId)
-        }
-      });
-  }
+  Bet.insertPending(
+    [
+    betId, 
+    req.user.user_id, 
+    longPosition, 
+    req.params.playerId, 
+    {value: parseFloat(req.body.price), hint: 'double'},
+    {value: parseFloat(req.body.shareNumber), hint: 'double'}, 
+    null, 
+    null
+    ],
+    function(err){
+      if (err) {
+        next(err);
+      }
+      else {
+        res.redirect('/market/' + req.params.playerId)
+      }
+    });
 }
 
 var getBet = function (req, res, next, callback) {
