@@ -1077,7 +1077,7 @@ input {
 .profileleft {
   padding: 20px 5px 5px 90px;
   float: left;
-  width: 27.7%;
+  width: 27.883%;
   height: 200px;
   border-bottom: 2px solid#cecece;
   border-radius: 0px;
@@ -1086,25 +1086,29 @@ input {
 .profileright {
   padding: 5px 5px 5px 5px;
   float: right;
-  width: 61.5%;
+  width: 61.2%;
   height: 300px;
   border-left: 2px solid #cecece;
+  border-radius: 0px;
 }
 
-table {
+#betTable {
   text-align: center;
   border: 1px solid black;
   overflow: scroll;
-  border-width: 2px;
-  border-spacing: 4px;
-  border-style: outset;
+  border-style: solid;
   border-color: gray;
   width: 980px;
 }
 
-td {
+#tableBetth {
+  border: 1px;
+}
+
+#tableBettd {
   width: 980px;
   padding: 15px;
+  border: 0px;
 }
 .linkcontainer {
   width: 980px;

@@ -5,12 +5,11 @@ html(lang="en")
   body
     include banner
     div.content
-
       div.feed
         center
           form#betForm.pure-form(action='/submitForm/'+playerId method='post')
-            input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width:100px' min="0.1")
-            input(type='integer' name='shareNumber' placeholder='Quantity' required=true style='width: 100px' min="1")
+            input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width:100px' min="0" step="0.01")
+            input(type='integer' name='shareNumber' placeholder='Quantity' required=true style='width: 100px' min="1" step="1")
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
             | Above
             input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
@@ -30,7 +29,7 @@ html(lang="en")
 
       div.betcontainer
         center
-          table(border="5" id='betTable')
+          table#betTable(border="5")
             thead
               tr
                 th='Price'
@@ -46,7 +45,7 @@ html(lang="en")
                       h5=item.multiplier
                     td
                       a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
-                        img(src='../uparrow.png' width='50' height='90')
+                        img(src='../uparrow.png' width='50' height='70')
                 else
                   tr
                     td
@@ -55,7 +54,7 @@ html(lang="en")
                       h5=item.multiplier
                     td
                       a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
-                        img(src='../downarrow.png' width='50' height='90')
+                        img(src='../downarrow.png' width='50' height='70')
     script(src='../js/betTableFilter.js')
     script(src='../js/search.js')
     script(src='../js/jquery-ui-1.10.4.custom.js')
