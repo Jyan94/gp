@@ -56,6 +56,7 @@ app.post('/addBets/:playerId', market.takeBet);
 //profile
 var profile = require('routes/profile');
 app.get('/user', profile.redirectProfile);
+app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);

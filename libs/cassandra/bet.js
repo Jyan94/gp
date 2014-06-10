@@ -63,8 +63,6 @@ exports.insertCurrent = function(takerUserId, params, callback) {
     }
   ];
 
-  console.log(query);
-
   cassandra.queryBatch(query, cql.types.consistencies.one,
     function(err) {
       callback(err);
@@ -147,7 +145,6 @@ exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
       filter + ');';
     cassandra.query(query, params, cql.types.consistencies.one,
       function (err, result) {
-        console.log(result);
         callback(err, result);
       });
   }
@@ -174,7 +171,6 @@ var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {/*
  * the object described above if otherwise, corresponding to userId]
  */
 exports.selectUsingUserId = function (betsTable, userId, callback) {
-  console.log(callback);
   var betIds = [];
 
   cassandra.query(SELECT_BETS_USING_USER_ID_CQL,
