@@ -21,13 +21,10 @@ exports.insert = function (params, callback) {
 };
 
 var DELETE_USER_CQL = multiline(function() {/*
-  DELETE FROM users WHERE
-    user_id
-  IN
-    (?);
+  DELETE FROM users WHERE user_id = ?;
 */});
-exports.delete = function (user_id, callback) {
-  cassandra.query(DELETE_USER_CQL, [user_id], cql.types.consistencies.one,
+exports.delete = function (userId, callback) {
+  cassandra.query(DELETE_USER_CQL, [userId], cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
@@ -40,7 +37,7 @@ var UPDATE_USER_CQL_2 = multiline(function() {/*
   WHERE
     user_id = ?;
 */});
-exports.update = function (user_id, fields, params, callback) {
+exports.update = function (userId, fields, params, callback) {
   var fieldsLength = fields.length;
   var paramsLength = params.length;
   var updates = '';
@@ -58,7 +55,7 @@ exports.update = function (user_id, fields, params, callback) {
   }
 
   cassandra.query(UPDATE_USER_CQL_1 + ' ' + updates + ' ' + UPDATE_USER_CQL_2,
-    params.concat([user_id]), cql.types.consistencies.one,
+    params.concat([userId]), cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
@@ -67,29 +64,29 @@ exports.update = function (user_id, fields, params, callback) {
 var UPDATE_MONEY_CQL = multiline(function() {/*
   UPDATE users SET money = ? WHERE user_id = ?;
 */});
-exports.updateMoney = function (money_values, user_id_values, callback) {
-  var money_values_length = money_values.length;
-  var user_id_values_length = user_id_values.length;
-  var old_money_values = {};
-  var current_user_id = null;
+exports.updateMoney = function (moneyValues, userIdValues, callback) {
+  var moneyValuesLength = moneyValues.length;
+  var userIdValuesLength = userIdValues.length;
+  var oldMoneyValues = {};
+  var currentUserId = null;
   var query = [];
 
-  if (money_values_length !== user_id_values_length) {
+  if (moneyValuesLength !== userIdValuesLength) {
     callback(new Error('Number of money values and user id values are not the same.'));
   }
 
-  exports.selectMultiple(user_id_values, function (err, result) {
+  exports.selectMultiple(userIdValues, function (err, result) {
 
     for (var i = 0; i < result.length; i++) {
-      current_user_id = result[i].user_id;
-      old_money_values[current_user_id] = result[i].money;
+      currentUserId = result[i].user_id;
+      oldMoneyValues[currentUserId] = result[i].money;
     }
 
-    for (i = 0; i < money_values_length; i++) {
-      current_user_id = user_id_values[i];
+    for (i = 0; i < moneyValuesLength; i++) {
+      currentUserId = userIdValues[i];
       query[i] = {
         query: UPDATE_MONEY_CQL,
-        params: [old_money_values[current_user_id] + money_values[i], current_user_id]
+        params: [oldMoneyValues[currentUserId] + moneyValues[i], currentUserId]
       }
     }
 
@@ -107,12 +104,13 @@ var SELECT_USER_CQL = multiline(function () {/*
   SELECT * FROM users WHERE
 */});
 
-var allowed_fields = ['user_id', 'username', 'email'];
+var allowedFields = ['user_id', 'username', 'email'];
 
 exports.select = function (field, value, callback) {
-  if (allowed_fields.indexOf(field) < 0) {
+  if (allowedFields.indexOf(field) < 0) {
     callback(new Error(field + ' is not a searchable field.'));
-  } else {
+  }
+  else {
     cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
       [value], cql.types.consistencies.one, 
       function(err, result) {
