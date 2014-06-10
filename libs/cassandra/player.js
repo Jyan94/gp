@@ -14,7 +14,6 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
 */});
 
 exports.insert = function (fields, callback) {
-  //parse values
   cassandra.query(INSERT_PLAYER_CQL, fields, cql.types.consistencies.one,
     function (err) {
       callback(err);
