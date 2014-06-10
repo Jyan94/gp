@@ -9,8 +9,14 @@ var fullNameIndex = 1;
 var firstNameIndex = 2;
 var lastNameIndex = 3;
 var teamIndex = 4;
-var ageIndex = 5;
-var biographyIndex = 6;
+var statusIndex = 5;
+var positionIndex = 6;
+var profileUrlIndex = 7;
+var uniformNumberIndex = 8;
+var heightIndex = 9;
+var weightIndex = 10;
+var ageIndex = 11;
+var imageIndex = 12;
 
 function testDelete(callback) {
   Player.delete(TESTID, function (err) {
@@ -24,13 +30,19 @@ function testDelete(callback) {
 var fields = 
 [
 TESTID, //id
-100,  //currentValue
-'hello world', //fullName
-'hello',  //firstName
-'world',  //lastName
+{value: 100, hint: 'double'},  //current_value
+'hello world', //full_name
+'hello',  //first_name
+'world',  //last_name
 'worldteam',  //team
-'10',  //age
-'mybio' //biography
+'healthy', //status
+'quarterback', //position
+'url', //profile url
+1, //uniform number
+61, //height
+2000, //weight
+10,  //age
+'the image' //biography
 ];
 function testInsert(callback) {
   Player.insert(fields, function (err) {
@@ -44,22 +56,35 @@ function testInsert(callback) {
 
 var updateParams = 
 [
-'currentValue',
-'fullName',
-'lastName',
+'current_value',
+'full_name',
+'first_name',
+'last_name',
 'team',
+'status',
+'position',
+'profile_url',
+'uniform_number',
+'height',
+'weight',
 'age',
-'biography'
-];
+'image'
+]
 var updateFields = 
 [
-100,  //currentValue
-'world hello', //fullName
-'hello',  //firstName
-'world',  //lastName
+{value: 100, hint: 'double'},  //current_value
+'world hello', //full_name
+'hello',  //first_name
+'world',  //last_name
 'worldteam',  //team
-'20',  //age
-'mybio' //biography
+'injured', //status
+'quaterback', //position
+'hello world', //profile_url
+1, //uniform_number
+70, //height
+4000, //weight
+20,  //age
+'img.txt', //image
 ];
 
 function testUpdate(callback) {
@@ -72,18 +97,26 @@ function testUpdate(callback) {
 }
 
 function compareAgainstUpdateFields(result) {
-  result.should.have.property('playerId', TESTID);
-  result.should.have.property('currentValue', updateFields[currentValueIndex]);
-  result.should.have.property('fullName', updateFields[fullNameIndex]);
-  result.should.have.property('firstName', updateFields[firstNameIndex]);
-  result.should.have.property('lastName', updateFields[lastNameIndex]);
+  result.should.have.property('player_id', TESTID);
+  result.should.have.property('current_value', updateFields[currentValueIndex]);
+  result.should.have.property('full_name', updateFields[fullNameIndex]);
+  result.should.have.property('first_name', updateFields[firstNameIndex]);
+  result.should.have.property('last_name', updateFields[lastNameIndex]);
+  result.should.have.property('team', updateFields[teamIndex]);
+  result.should.have.property('status', updateFields[statusIndex]);
+  result.should.have.property('position', updateFields[positionIndex]);
+  result.should.have.property('position_url', updateFields[profileUrlIndex]);
+  result.should.have.property(
+    'uniform_number', updateFields[uniformNumberIndex]);
   result.should.have.property('team', updateFields[teamIndex]);
   result.should.have.property('age', updateFields[ageIndex]);
-  result.should.have.property('biography', updateFields[biographyIndex]);
+  result.should.have.property('height', updateFields[heightIndex]);
+  result.should.have.property('weight', updateFields[weightIndex]);
+  result.should.have.property('image', updateFields[imageIndex]);
 }
 
 function testSelectByPlayerId(callback) {
-  Player.selectUsingPlayerId('playerId', TESTID, function(err, result) {
+  Player.select('playerId', TESTID, function(err, result) {
     if (err) {
       callback(err);
     }
@@ -107,8 +140,8 @@ function testAutocomplete(callback) {
     if (err) {
       callback(err);
     }
-    result.should.have.property('playerId');
-    result.should.have.property('fullName');
+    result.should.have.property('player_id');
+    result.should.have.property('full_name');
   });
 }
 
