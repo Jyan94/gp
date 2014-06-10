@@ -14,12 +14,12 @@ var User = require('../libs/cassandra/user.js');
 var Bet = require('../libs/cassandra/bet.js');
 var Player = require('../libs/cassandra/player.js');
 var calculate = require('../libs/calculateFantasyPoints.js');
-var sportsdata_nfl = require('sportsdata').NFL;
-var sportsdata_mlb = require('sportsdata').MLB;
+var sportsdataNfl = require('sportsdata').NFL;
+var sportsdataMlb = require('sportsdata').MLB;
 var async = require('async');
 
-sportsdata_nfl.init('t', 1, 'rmbgzsxq9n4j2yyqx4g6vafy', 2013, 'REG');
-sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
+sportsdataNfl.init('t', 1, 'rmbgzsxq9n4j2yyqx4g6vafy', 2013, 'REG');
+sportsdataMlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
 
 //result returned:
 /**
@@ -32,14 +32,14 @@ sportsdata_mlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
 function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
   console.log(prefixSchedElement);
   var retArray = [];
-  var hometeam = prefixSchedElement.$.home;
-  var awayteam = prefixSchedElement.$.away;
+  var homeTeam = prefixSchedElement.$.home;
+  var awayTeam = prefixSchedElement.$.away;
   if (prefixSchedElement.$.status === 'closed') {
     async.waterfall([
 
       //pushes on the home players
       function (callback) {
-        Player.selectUsingTeam(hometeam,
+        Player.selectUsingTeam(homeTeam,
           function (err, result) {
             if (err) {
               console.log(err);
@@ -60,7 +60,7 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
 
       //pushes on the away players
       function (arr, callback) {
-        Player.selectUsingTeam(awayteam,
+        Player.selectUsingTeam(awayTeam,
           function(err, result) {
             if (err) {
               console.log(err);
@@ -84,8 +84,9 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
   }
 }
 
-function getBetsFromPlayerId(player_id, callback) {
-  Bet.selectUsingPlayerID('current_bets', player_id, function (err, result) {
+function getBetsFromPlayerId(playerId, callback) {
+  Bet.selectUsingPlayerId('current_bets', playerId,
+    function (err, result) {
       if (err) {
         console.log(err);
       }
@@ -166,25 +167,27 @@ function getBetIds(players, year, week, callback) {
   //returns an array of fantasy points as result
   //matches playerIds array
   console.log(mapArray);
-  async.map(mapArray, calculate.calculateFantasyPoints, function (err, result) {
-    if (err) {
-      console.log(err);
-    } else {
-      callback(null, playerIds, result);
-    }
-  });
+  async.map(mapArray, calculate.calculateFantasyPoints,
+    function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        callback(null, playerIds, result);
+      }
+    });
 }
 
 function getBetsPlayerId(playerIds, fantasyPointsArray, callback) {
-  async.map(playerIds, getBetsFromPlayerId, function (err, result) {
-    //result is an array of bet arrays
-    if (err) {
-      console.log(err);
-    }
-    else {
-      callback(null, result, fantasyPointsArray);
-    }
-  });
+  async.map(playerIds, getBetsFromPlayerId,
+    function (err, result) {
+      //result is an array of bet arrays
+      if (err) {
+        console.log(err);
+      }
+      else {
+        callback(null, result, fantasyPointsArray);
+      }
+    });
 }
 
 /**
@@ -243,7 +246,7 @@ function calculateAllFantasyPoints(schedule, year, week) {
 
 function checkEndGames(year, week) {
   var rows;
-  sportsdata_nfl.getWeeklySchedule(week, function(err, schedule) {
+  sportsdataNfl.getWeeklySchedule(week, function(err, schedule) {
     if (err) {
       console.log(err);
     }
@@ -263,7 +266,8 @@ exports.processArrayBets = processArrayBets;
 exports.calculateAllFantasyPoints = calculateAllFantasyPoints;
 exports.checkEndGames = checkEndGames;
 
-//checkEndGames(2013, 1);
+
+checkEndGames(2013, 1);
 //async.map schedules -> closed schedules
 //async.map closed schedules -> player objects
 //async.each player objects -> get bets and update

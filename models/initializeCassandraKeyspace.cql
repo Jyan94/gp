@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS all_bets (
 
 CREATE TABLE IF NOT EXISTS football_player (
     player_id uuid PRIMARY KEY,
-    currvalue double,
+    current_value double,
     full_name text,
     first_name text,
     last_name text,
@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS football_player (
     uniform_number int,
     height int,
     weight int,
+    age int,
     image text
 );
 
@@ -165,9 +166,9 @@ CREATE TABLE IF NOT EXISTS player_images (
     image_url text
 );
 
-CREATE TABLE IF NOT EXISTS timeseriesBets (
-    playerId text,
+CREATE TABLE IF NOT EXISTS timeseries_bets (
+    player_id text,
     time timeuuid,
     price double,
-    PRIMARY KEY (playerId, time)
+    PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);

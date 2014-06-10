@@ -16,7 +16,7 @@ var responseValues = {
 function insertUser(body, res, next) {
   /*
     user_id, email, verified, verified_time, username, password, first_name,
-    last_name, age, address, payment_info, money, fbid, VIP_status, image
+    last_name, age, address, payment_info, money, fbid, vip_status, image
    */
   bcrypt.hash(body.password, null, null, function(err, hash) {
     if (err) {
@@ -30,14 +30,14 @@ function insertUser(body, res, next) {
       null, //verfied_time
       body.username, //username
       hash, //password
-      body.first_name, //first_name
-      body.last_name,  //last_name
+      body.firstName, //first_name
+      body.lastName,  //last_name
       null, //age
       null, //address
       null, //payment_info
       {value: 0.0, hint: 'double'}, //money
       null, //fbid
-      0,  //VIP_status
+      0,  //vip_status
       null //image
     ];
     User.insert(fields, function(err) {

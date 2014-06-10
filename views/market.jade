@@ -8,7 +8,7 @@ html(lang="en")
 
       div.feed
         center
-          form#betForm.pure-form(action='/submitForm/'+player_id method='post')
+          form#betForm.pure-form(action='/submitForm/'+playerId method='post')
             input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width:100px' min="0.1")
             input(type='integer' name='shareNumber' placeholder='Quantity' required=true style='width: 100px' min="1")
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
@@ -19,12 +19,12 @@ html(lang="en")
       div.profilecontainer
         div.profileleft
           div.profilebox
-            div#prof-pic(style='background-image: url(#{image_url})')
+            div#prof-pic(style='background-image: url(#{imageUrl})')
         div.profileright
           include graph
         div.profilebottom
           center
-            h2=full_name
+            h2=fullName
             h4=team
             h4=position
 
@@ -38,25 +38,24 @@ html(lang="en")
                 th='Take Bets'
             tbody
               each item in betinfo
-                if (item.long_position===false)
+                if (item.longPosition===false)
                   tr
                     td
-                      h5=item.bet_value
+                      h5=item.betValue
                     td
                       h5=item.multiplier
                     td
-                      a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer')
+                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
                         img(src='../uparrow.png' width='50' height='90')
                 else
                   tr
                     td
-                      h5=item.bet_value
+                      h5=item.betValue
                     td
                       h5=item.multiplier
                     td
-                      a(href=player_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer')
+                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
                         img(src='../downarrow.png' width='50' height='90')
-
     script(src='../js/betTableFilter.js')
     script(src='../js/search.js')
     script(src='../js/jquery-ui-1.10.4.custom.js')

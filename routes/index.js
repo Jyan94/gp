@@ -19,17 +19,13 @@ app.get('/', function(req, res) {
   res.render('banner');
 });
 
-//autocomplete
-var autocomplete = require('routes/autocomplete');
-app.get('/autocomp', autocomplete.autocomp);
-
 //login
 var login = require('routes/registry/login');
 app.route('/login')
 .get(login.redirectLogin)
 .get(login.renderLogin)
 .post(passport.authenticate('local', 
-  { successRedirect: '/market',
+  { successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true }));
 
@@ -40,17 +36,26 @@ app.route('/signup')
 .get(signup.renderSignup)
 .post(signup.processSignup);
 
+//logout
+var logout = require('routes/registry/logout');
+app.get('/logout', logout.logout);
+
 //redirects to login if not logged in
 app.all('*', login.checkUser);
 
+//autocomplete
+var autocomplete = require('routes/autocomplete');
+app.get('/autocomp', autocomplete.autocomp);
+
 //market
 var market = require('routes/market');
-app.get('/market/:player_id', market.renderPlayerPage);
-app.post('/submitForm/:player_id', market.submitBet);
-app.post('/addBets/:player_id', market.takeBet);
+app.get('/market/:playerId', market.renderPlayerPage);
+app.post('/submitForm/:playerId', market.submitBet);
+app.post('/addBets/:playerId', market.takeBet);
 
 //profile
 var profile = require('routes/profile');
+app.get('/user', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
