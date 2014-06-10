@@ -7,11 +7,26 @@ var multiline = require('multiline');
 
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO football_player (
-    player_id, current_value, full_name, 
-    first_name, last_name, team, age, biography
+    player_id, 
+    current_value, 
+    full_name, 
+    first_name, 
+    last_name, 
+    team, 
+    status, 
+    position, 
+    profile_url, 
+    uniform_number, 
+    height, 
+    weight, 
+    player_age, 
+    image
   ) VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?);
+    (?, ?, ?, ?, ?, 
+     ?, ?, ?, ?, ?, 
+     ?, ?, ?, ?);
 */});
+
 exports.insert = function (fields, callback) {
   //parse values
   cassandra.query(INSERT_PLAYER_CQL, fields, cql.types.consistencies.one,
@@ -70,8 +85,10 @@ var SELECT_PLAYER_CQL = multiline(function () {/*
 */});
 
 exports.select = function (player_id, callback) {
-  cassandra.queryOneRow(SELECT_PLAYER_CQL,
-    [player_id], cql.types.consistencies.one,
+  cassandra.queryOneRow(
+    SELECT_PLAYER_CQL,
+    [player_id], 
+    cql.types.consistencies.one,
     function(err, result) {
       callback(err, result);
   });

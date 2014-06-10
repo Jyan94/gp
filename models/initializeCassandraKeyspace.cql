@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS football_player (
     uniform_number int,
     height int,
     weight int,
+    age int,
     image text
 );
 
