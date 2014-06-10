@@ -79,18 +79,20 @@ var zoom = [
   text: 'All'
 }];
 
+var colorArray = ["#00ff00"];
+
 var chartFormatter = {
   backgroundColor: {
      linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
      stops: [
-        [0, '#229999'],
-        [1, '#FFFFFF']
+        [0, '#2a2a2b'],
+        [1, '#3e3e40']
      ]
   },
   style: {
     fontFamily: "'Unica One', sans-serif"
   },
-  plotBorderColor: '#FFFFF',
+  plotBorderColor: '#606063',
   events : {
     load : getRealTimeData
   }
@@ -98,7 +100,8 @@ var chartFormatter = {
 
 function createGraph(initdata) {
   // Create the chart
-  $('#container').highcharts('StockChart', {
+  $('#container').highcharts(/*'StockChart', */{
+    colors: colorArray,
 
     chart : chartFormatter,
 
@@ -118,7 +121,7 @@ function createGraph(initdata) {
 
     plotOptions: {
       series: {
-        animation: false
+        animation: true
       }
     },
 
@@ -128,7 +131,6 @@ function createGraph(initdata) {
 
     series : [{
       name : 'Fantasy Value',
-      color: '#000000',
       data : loadData(initdata)
     }]
   });
