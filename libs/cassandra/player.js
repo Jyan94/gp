@@ -19,7 +19,7 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
     uniform_number, 
     height, 
     weight, 
-    player_age, 
+    age, 
     image
   ) VALUES
     (?, ?, ?, ?, ?, 
@@ -28,7 +28,6 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
 */});
 
 exports.insert = function (fields, callback) {
-  //parse values
   cassandra.query(INSERT_PLAYER_CQL, fields, cql.types.consistencies.one,
     function (err) {
       callback(err);

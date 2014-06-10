@@ -98,14 +98,15 @@ function testUpdate(callback) {
 
 function compareAgainstUpdateFields(result) {
   result.should.have.property('player_id', TESTID);
-  result.should.have.property('current_value', updateFields[currentValueIndex]);
+  result.should.have.property(
+    'current_value', updateFields[currentValueIndex].value);
   result.should.have.property('full_name', updateFields[fullNameIndex]);
   result.should.have.property('first_name', updateFields[firstNameIndex]);
   result.should.have.property('last_name', updateFields[lastNameIndex]);
   result.should.have.property('team', updateFields[teamIndex]);
   result.should.have.property('status', updateFields[statusIndex]);
   result.should.have.property('position', updateFields[positionIndex]);
-  result.should.have.property('position_url', updateFields[profileUrlIndex]);
+  result.should.have.property('profile_url', updateFields[profileUrlIndex]);
   result.should.have.property(
     'uniform_number', updateFields[uniformNumberIndex]);
   result.should.have.property('team', updateFields[teamIndex]);
@@ -115,8 +116,9 @@ function compareAgainstUpdateFields(result) {
   result.should.have.property('image', updateFields[imageIndex]);
 }
 
+
 function testSelectByPlayerId(callback) {
-  Player.select('playerId', TESTID, function(err, result) {
+  Player.select(TESTID, function(err, result) {
     if (err) {
       callback(err);
     }
@@ -130,6 +132,8 @@ function testSelectByTeamId(callback) {
     if (err) {
       callback(err);
     }
+    result.should.have.length(1);
+    result = result[0];
     compareAgainstUpdateFields(result);
     callback(null);
   });
@@ -140,8 +144,7 @@ function testAutocomplete(callback) {
     if (err) {
       callback(err);
     }
-    result.should.have.property('player_id');
-    result.should.have.property('full_name');
+    callback(null);
   });
 }
 
@@ -154,15 +157,17 @@ describe('footballPlayer module test', function () {
         testUpdate,
         testSelectByPlayerId,
         testSelectByTeamId,
-        testAutocomplete
+        testAutocomplete,
+        testDelete
         ],
         function (err) {
           if (err) {
             console.log(err);
             console.log(err.stack);
           }
-          (err == null).should.be.true;
-          done();
+          else {
+            done();
+          }
         });
     }
   );
