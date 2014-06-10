@@ -38,7 +38,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #eeeeee;
+  background-color: #229999;
   font-family: 'Helvetica', 'Arial', 'sans-serif';
 }
 div {
@@ -684,6 +684,28 @@ input {
 #passmatch p {
   margin: 0;
 }
+#badusername {
+  display: none;
+  position: absolute;
+  left: 90%;
+  padding: 8px;
+  color: #fff;
+  background-color: #cc0704;
+  box-shadow: 0px 2px 4px #888;
+  white-space: nowrap;
+  top: 171px;
+}
+#badusername:before {
+  content: ' ';
+  position: absolute;
+  top: 2px;
+  left: -24px;
+  border: 15px solid transparent;
+  border-right-color: #cc0704;
+}
+#badusername p {
+  margin: 0;
+}
 #bademail {
   display: none;
   position: absolute;
@@ -749,6 +771,7 @@ input {
 .button-align > form > input {
   width: 90px;
 }
+
 /*----------------------------------------------------------------------------*/
 /* Popup Window                                                               */
 /*----------------------------------------------------------------------------*/

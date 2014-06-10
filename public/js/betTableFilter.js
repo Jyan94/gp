@@ -5,6 +5,6 @@ $(document).ready(function() {
                 {type: "number-range"},
                 {type: "number-range"},
                 null
-                ]
+               ]
   });
 });
