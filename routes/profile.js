@@ -13,6 +13,10 @@ var multiline = require('multiline');
 
 var messages = configs.constants.profileStrings;
 
+var redirectProfile = function(req, res) {
+  res.redirect('/user/' + req.user.user_id);
+}
+
 var retrieveProfile = function(req, res, next) {
   var userInfo = {};
   var betInfo = [];
@@ -161,6 +165,7 @@ var pictureNotFound = function (req, res) {
 }
 
 //exports
+exports.redirectProfile = redirectProfile;
 exports.retrieveProfile = retrieveProfile;
 exports.updateProfile = updateProfile;
 exports.pictureNotFound = pictureNotFound;

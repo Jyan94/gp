@@ -1,5 +1,6 @@
 'use strict';
 (require('rootpath')());
+
 var constants = require('config/constants');
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
