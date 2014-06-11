@@ -15,7 +15,7 @@
     "connect-flash": "~0.1.1",
     "debug": "0.8.x",
     "express": "4.x",
-    "express3-handlebars": "x",
+    "ejs": "x",
     "cookie-parser": "1.1.x",
     "express-session": "1.2.x",
     "express-mailer": "^0.2.3",
