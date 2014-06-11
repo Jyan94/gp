@@ -27,10 +27,10 @@ exports.faq = function (req, res) {
 
 exports.features = function (req, res) {
   if (req.user) {
-    res.render('logout/faq.html');
+    res.render('logout/features.html');
   }
   else {
-    res.render('login/faq.html');
+    res.render('login/features.html');
   }
 }
 
