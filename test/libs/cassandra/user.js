@@ -39,7 +39,7 @@ null,  //verified_time
 'test_password',  //password
 'foo', //first_name
 'bar', //last_name
-'7500', //age
+7500, //age
 '9001 Test Drive Centralia, PA 00000', //address
 'some card', //payment_info
 { value: 10000, hint: 'double' }, //money
@@ -82,7 +82,7 @@ true, //verified
 'new_password',  //password
 'foofoobar', //first_name
 'foobarbar', //last_name
-'7500', //age
+7500, //age
 '8999 Test Drive Centralia, PA 00000', //address
 'some different card', //payment_info
 { value: -100, hint: 'double' }, //money
@@ -124,7 +124,8 @@ function testSelectByUserId(callback) {
 }
 
 function testSelectByUsername(callback) {
-  User.select('username', updateFields[usernameIndex], function(err, result) {
+  User.select('username', updateParams[usernameIndex], function(err, result) {
+
     if (err) {
       callback(err);
     }
@@ -134,7 +135,7 @@ function testSelectByUsername(callback) {
 }
 
 function testSelectByEmail(callback) {
-  User.select('email', updateFields[emailIndex], function(err, result) {
+  User.select('email', updateParams[emailIndex], function(err, result) {
     if (err) {
       callback(err);
     }
@@ -143,7 +144,7 @@ function testSelectByEmail(callback) {
   });
 }
 
-var newMoney = { value: 5000, hint: 'double' };
+var newMoney = 5000;
 
 var updateParamsNewMoney = 
 [
@@ -154,16 +155,16 @@ true, //verified
 'new_password',  //password
 'foofoobar', //first_name
 'foobarbar', //last_name
-'7500', //age
+7500, //age
 '8999 Test Drive Centralia, PA 00000', //address
 'some different card', //payment_info
-{ value: 5000, hint: 'double' }, //money
+{ value: 4900, hint: 'double' }, //money
 'foo.bar.7000',  //fbid
 5, //vip_status
 '../tmp/images/new_username.jpeg'//image
 ];
 function testUpdateMoney(callback) {
-  User.updateMoney([TESTIDFIRST], [newMoney], function(err, result) {
+  User.updateMoney([newMoney], [TESTIDFIRST], function(err, result) {
     if (err) {
       callback(err);
     }
@@ -186,7 +187,7 @@ function compareAgainstUpdateParamsNewMoney(result) {
 }
 
 function testSelectMultiple(callback) {
-  User.select([TESTIDFIRST, TESTIDSECOND], function(err, result) {
+  User.selectMultiple([TESTIDFIRST, TESTIDSECOND], function(err, result) {
     if (err) {
       callback(err);
     }
