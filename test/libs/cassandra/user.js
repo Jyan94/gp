@@ -3,25 +3,25 @@ require('rootpath')();
 
 var async = require('async');
 var User = require('libs/cassandra/user');
-var TESTID = '451bd553-0ec2-4c1b-a14b-25eaab441458';
-var userIdIndex = 0;
-var emailIndex = 1;
-var verifiedIndex = 2;
-var verifiedTimeIndex = 3;
-var usernameIndex = 4;
-var passwordIndex = 5;
-var firstNameIndex = 6;
-var lastNameIndex = 7;
-var ageIndex = 8;
-var addressIndex = 9;
-var paymentInfoIndex = 10;
-var moneyIndex = 11;
-var fbidIndex = 12;
-var vipStatusIndex = 13;
-var imageIndex = 14;
+var TESTIDFIRST = '451bd553-0ec2-4c1b-a14b-25eaab441457';
+var TESTIDSECOND = '451bd553-0ec2-4c1b-a14b-25eaab441458';
+var emailIndex = 0;
+var verifiedIndex = 1;
+var verifiedTimeIndex = 2;
+var usernameIndex = 3;
+var passwordIndex = 4;
+var firstNameIndex = 5;
+var lastNameIndex = 6;
+var ageIndex = 7;
+var addressIndex = 8;
+var paymentInfoIndex = 9;
+var moneyIndex = 10;
+var fbidIndex = 11;
+var vipStatusIndex = 12;
+var imageIndex = 13;
 
 function testDelete(callback) {
-  User.delete(TESTID, function (err) {
+  User.delete(TESTIDFIRST, function (err) {
     if (err) {
       callback(err);
     }
@@ -29,25 +29,26 @@ function testDelete(callback) {
   });
 }
 
-var fields = 
+var params = 
 [
-TESTID, //id
-{value: 100, hint: 'double'},  //current_value
-'hello world', //full_name
-'hello',  //first_name
-'world',  //last_name
-'worldteam',  //team
-'healthy', //status
-'quarterback', //position
-'url', //profile url
-1, //uniform number
-61, //height
-2000, //weight
-10,  //age
-'the image' //biography
+TESTIDFIRST, //id
+'test@email.com',  //email
+false, //verified
+null,  //verified_time
+'test_username',  //username
+'test_password',  //password
+'foo', //first_name
+'bar', //last_name
+'7500', //age
+'9001 Test Drive Centralia, PA 00000', //address
+'some card', //payment_info
+{ value: 10000, hint: 'double' }, //money
+'foo.bar.7000',  //fbid
+2, //vip_status
+'../tmp/images/test_username.jpeg'//image
 ];
 function testInsert(callback) {
-  Player.insert(fields, function (err) {
+  User.insert(params, function (err) {
     if (err) {
       callback(err);
     }
@@ -55,42 +56,43 @@ function testInsert(callback) {
   });
 }
 
-
-var updateParams = 
-[
-'current_value',
-'full_name',
-'first_name',
-'last_name',
-'team',
-'status',
-'position',
-'profile_url',
-'uniform_number',
-'height',
-'weight',
-'age',
-'image'
-]
 var updateFields = 
 [
-{value: 100, hint: 'double'},  //current_value
-'world hello', //full_name
-'hello',  //first_name
-'world',  //last_name
-'worldteam',  //team
-'injured', //status
-'quaterback', //position
-'hello world', //profile_url
-1, //uniform_number
-70, //height
-4000, //weight
-20,  //age
-'img.txt', //image
+'email',
+'verified',
+'verified_time',
+'username',
+'password',
+'first_name',
+'last_name',
+'age',
+'address',
+'payment_info',
+'money',
+'fbid',
+'vip_status',
+'image'
+]
+var updateParams = 
+[
+'email@test.com',  //email
+true, //verified
+'ce3c0eb0-f04c-11e3-a570-c5b492d64738',  //verified_time
+'new_username',  //username
+'new_password',  //password
+'foofoobar', //first_name
+'foobarbar', //last_name
+'7500', //age
+'8999 Test Drive Centralia, PA 00000', //address
+'some different card', //payment_info
+{ value: -100, hint: 'double' }, //money
+'foo.bar.7000',  //fbid
+5, //vip_status
+'../tmp/images/new_username.jpeg'//image
 ];
 
 function testUpdate(callback) {
-  Player.update(TESTID, updateParams, updateFields, function (err) {
+  User.update(TESTIDFIRST, updateFields, updateParams, function (err) {
     if (err) {
       callback(err);
     }
@@ -98,68 +100,115 @@ function testUpdate(callback) {
   });
 }
 
-function compareAgainstUpdateFields(result) {
-  result.should.have.property('player_id', TESTID);
-  result.should.have.property(
-    'current_value', updateFields[currentValueIndex].value);
-  result.should.have.property('full_name', updateFields[fullNameIndex]);
-  result.should.have.property('first_name', updateFields[firstNameIndex]);
-  result.should.have.property('last_name', updateFields[lastNameIndex]);
-  result.should.have.property('team', updateFields[teamIndex]);
-  result.should.have.property('status', updateFields[statusIndex]);
-  result.should.have.property('position', updateFields[positionIndex]);
-  result.should.have.property('profile_url', updateFields[profileUrlIndex]);
-  result.should.have.property(
-    'uniform_number', updateFields[uniformNumberIndex]);
-  result.should.have.property('team', updateFields[teamIndex]);
-  result.should.have.property('age', updateFields[ageIndex]);
-  result.should.have.property('height', updateFields[heightIndex]);
-  result.should.have.property('weight', updateFields[weightIndex]);
-  result.should.have.property('image', updateFields[imageIndex]);
+function compareAgainstUpdateParams(result) {
+  result.should.have.property('user_id', TESTIDFIRST);
+
+  for (var i = 0; i < updateFields.length; i++) {
+    if (i === moneyIndex) {
+      result.should.have.property(updateFields[i], updateParams[i].value);
+    }
+    else {
+      result.should.have.property(updateFields[i], updateParams[i]);
+    }
+  }
 }
 
-
-function testSelectByPlayerId(callback) {
-  Player.select(TESTID, function(err, result) {
+function testSelectByUserId(callback) {
+  User.select('user_id', TESTIDFIRST, function(err, result) {
     if (err) {
       callback(err);
     }
-    compareAgainstUpdateFields(result);
+    compareAgainstUpdateParams(result);
     callback(null);
   }); 
 }
 
-function testSelectByTeamId(callback) {
-  Player.selectUsingTeam(updateFields[teamIndex], function(err, result) {
+function testSelectByUsername(callback) {
+  User.select('username', updateFields[usernameIndex], function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    compareAgainstUpdateParams(result);
+    callback(null);
+  }); 
+}
+
+function testSelectByEmail(callback) {
+  User.select('email', updateFields[emailIndex], function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    compareAgainstUpdateParams(result);
+    callback(null);
+  });
+}
+
+var newMoney = { value: 5000, hint: 'double' };
+
+var updateParamsNewMoney = 
+[
+'email@test.com',  //email
+true, //verified
+'ce3c0eb0-f04c-11e3-a570-c5b492d64738',  //verified_time
+'new_username',  //username
+'new_password',  //password
+'foofoobar', //first_name
+'foobarbar', //last_name
+'7500', //age
+'8999 Test Drive Centralia, PA 00000', //address
+'some different card', //payment_info
+{ value: 5000, hint: 'double' }, //money
+'foo.bar.7000',  //fbid
+5, //vip_status
+'../tmp/images/new_username.jpeg'//image
+];
+function testUpdateMoney(callback) {
+  User.updateMoney([TESTIDFIRST], [newMoney], function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  });
+}
+
+function compareAgainstUpdateParamsNewMoney(result) {
+  result.should.have.property('user_id', TESTIDFIRST);
+
+  for (var i = 0; i < updateFields.length; i++) {
+    if (i === moneyIndex) {
+      result.should.have.property(updateFields[i],
+                                  updateParamsNewMoney[i].value);
+    }
+    else {
+      result.should.have.property(updateFields[i], updateParamsNewMoney[i]);
+    }
+  }
+}
+
+function testSelectMultiple(callback) {
+  User.select([TESTIDFIRST, TESTIDSECOND], function(err, result) {
     if (err) {
       callback(err);
     }
     result.should.have.length(1);
     result = result[0];
-    compareAgainstUpdateFields(result);
+    compareAgainstUpdateParamsNewMoney(result);
     callback(null);
   });
 }
 
-function testAutocomplete(callback) {
-  Player.selectAllPlayerNames(function(err, result) {
-    if (err) {
-      callback(err);
-    }
-    callback(null);
-  });
-}
-
-describe('footballPlayer module test', function () {
-  it('test all functions except selectImages', 
+describe('user module test', function () {
+  it('test all functions', 
     function(done) {
       async.waterfall([
         testDelete,
         testInsert,
         testUpdate,
-        testSelectByPlayerId,
-        testSelectByTeamId,
-        testAutocomplete,
+        testSelectByUserId,
+        testSelectByUsername,
+        testSelectByEmail,
+        testUpdateMoney,
+        testSelectMultiple,
         testDelete
         ],
         function (err) {
