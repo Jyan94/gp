@@ -83,8 +83,8 @@ var chartFormatter = {
   backgroundColor: {
      linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
      stops: [
-        [0, '#229999'],
-        [1, '#FFFFFF']
+        [0, '#005C99'],
+        [1, '#B2CEE0']
      ]
   },
   style: {
