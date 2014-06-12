@@ -76,7 +76,6 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
   }
 
   exports.selectMultiple(userIdValues, function (err, result) {
-
     for (var i = 0; i < result.length; i++) {
       currentUserId = result[i].user_id;
       oldMoneyValues[currentUserId] = result[i].money;
@@ -86,7 +85,8 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
       currentUserId = userIdValues[i];
       query[i] = {
         query: UPDATE_MONEY_CQL,
-        params: [oldMoneyValues[currentUserId] + moneyValues[i], currentUserId]
+        params: [{ value: oldMoneyValues[currentUserId] + moneyValues[i],
+                   hint: 'double' }, currentUserId]
       }
     }
 

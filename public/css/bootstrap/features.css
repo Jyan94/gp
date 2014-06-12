@@ -26,7 +26,6 @@ body {
   display: inline-block;
 }
 .masthead-nav > li + li {
-  right: 100px;
   margin-left: 20px;
 }
 .masthead-nav > li > a {
@@ -46,7 +45,6 @@ body {
 .masthead-nav > .active > a,
 .masthead-nav > .active > a:hover,
 .masthead-nav > .active > a:focus {
-  right: 100px;
   color: #fff;
   border-bottom-color: #fff;
 }
