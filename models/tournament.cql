@@ -1,4 +1,7 @@
+
 CREATE TYPE IF NOT EXISTS bet {
+  athlete_id uuid,
+  user_id uuid,
   predicted_value double,
   amount_risked int
 }
@@ -9,12 +12,14 @@ CREATE TYPE IF NOT EXISTS athlete {
   most_recent_fantasy_value double,
   market_value double
 }
-//maybe add list of bets values??
+
+CREATE TYPE IF NOT EXISTS contestant_instance {
+  virtual_money_remaining int,
+  bets map<int, bet>
+}
 
 CREATE TYPE IF NOT EXISTS contestant {
-  virtual_money_remaining int,
-  number_of_entries int,
-  bets map<int, bet>
+  instances list<contestant_instance>
 }
 //maps athlete tournament ids to bets, stored under contestant
 
@@ -25,7 +30,7 @@ CREATE TABLE IF NOT EXISTS contest_B {
   buy_in int,
   pay_out_rankings list<int>,
   pay_out_values list<int>,
-  pot_value_after_commision int,
+  pot_value_after_commission int,
   commission int,
   current_entries int,
   minimum_entries int,
@@ -35,11 +40,34 @@ CREATE TABLE IF NOT EXISTS contest_B {
   end_time timestamp,
   contestants map<text, contestant>,
   athletes map<int, athlete>
-  // not sure PRIMARY KEY (contest_id, sport, start_time)
+  PRIMARY KEY (sport, start_time, maximum_entries, contest_id)
 }
 
-//use username as key for contestants map
+CREATE INDEX IF NOT EXISTS on contest_B(contest_id);
+
+//use int as key for contestants map
 //use int as key for athletes in game as tournament ids
+CREATE TABLE IF NOT EXISTS baseball_player_game_statistic {
+  game_id uuid,
+  player_id uuid,
+  sport text,
+  date timestamp,
+  season_year int,
+  season_type text,
+  position_in_game text,
+  singles int,
+  doubles int,
+  triples int,
+  home runs int,
+  runs int,
+  rbis int,
+  stolen_bases int,
+  caught_stealing_bases int,
+  walks int,
+  earned_runs_allowed int,
+  strikeouts int,
+  walks_and_hits_allowed int
+}
 
 CREATE TABLE IF NOT EXISTS baseball_player {
   player_id uuid,
@@ -54,9 +82,8 @@ CREATE TABLE IF NOT EXISTS baseball_player {
   height text,
   weight text,
   age int,
-  image text
-}
-
-CREATE TABLE IF NOT EXISTS baseball_statistics {
-  
+  image text,
+  importance_rank int,
+  playing_today boolean,
+  statistics list<game_id>
 }
