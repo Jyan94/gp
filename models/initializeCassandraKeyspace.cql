@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS pending_bets (
     game_id uuid,
     expiration timeuuid,
 );
-
 CREATE INDEX IF NOT EXISTS ON pending_bets(player_id);
 
 CREATE TABLE IF NOT EXISTS current_bets (
@@ -52,7 +51,6 @@ CREATE TABLE IF NOT EXISTS current_bets (
     game_id uuid,
     expiration timeuuid
 );
-
 CREATE INDEX IF NOT EXISTS ON current_bets(player_id);
 
 CREATE TABLE IF NOT EXISTS past_bets (

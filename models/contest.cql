@@ -1,29 +1,30 @@
 
-CREATE TYPE IF NOT EXISTS bet {
+CREATE TYPE IF NOT EXISTS bet (
   athlete_id uuid,
   user_id uuid,
   predicted_value double,
   amount_risked int
-}
+);
 
-CREATE TYPE IF NOT EXISTS athlete {
+CREATE TYPE IF NOT EXISTS athlete (
   athlete_id uuid,
   athlete_name text,
   most_recent_fantasy_value double,
   market_value double
-}
+);
 
-CREATE TYPE IF NOT EXISTS contestant_instance {
+CREATE TYPE IF NOT EXISTS contestant_instance (
   virtual_money_remaining int,
   bets map<int, bet>
-}
+);
 
-CREATE TYPE IF NOT EXISTS contestant {
+CREATE TYPE IF NOT EXISTS contestant (
   instances list<contestant_instance>
-}
+);
+
 //maps athlete tournament ids to bets, stored under contestant
 
-CREATE TABLE IF NOT EXISTS contest_B {
+CREATE TABLE IF NOT EXISTS contest_B (
   contest_id uuid,
   sport text,
   starting_virtual_money int,
@@ -39,16 +40,15 @@ CREATE TABLE IF NOT EXISTS contest_B {
   start_time timestamp,
   end_time timestamp,
   contestants map<text, contestant>,
-  athletes map<int, athlete>
+  athletes map<int, athlete>,
   PRIMARY KEY (sport, start_time, maximum_entries, contest_id)
-}
-
-CREATE INDEX IF NOT EXISTS on contest_B(contest_id);
-
-//use int as key for contestants map
+);
+CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
+//use username as key for contestants map
 //use int as key for athletes in game as tournament ids
-CREATE TABLE IF NOT EXISTS baseball_player_game_statistic {
-  game_id uuid,
+
+CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
+  game_id uuid PRIMARY KEY,
   player_id uuid,
   sport text,
   date timestamp,
@@ -67,11 +67,13 @@ CREATE TABLE IF NOT EXISTS baseball_player_game_statistic {
   earned_runs_allowed int,
   strikeouts int,
   walks_and_hits_allowed int
-}
+);
+CREATE INDEX IF NOT EXISTS ON baseball_player_game_statistics(player_id);
 
-CREATE TABLE IF NOT EXISTS baseball_player {
-  player_id uuid,
+CREATE TABLE IF NOT EXISTS baseball_player (
+  player_id uuid PRIMARY KEY,
   full_name text,
+  nickname text,
   first_name text,
   last_name text,
   team text,
@@ -86,4 +88,7 @@ CREATE TABLE IF NOT EXISTS baseball_player {
   importance_rank int,
   playing_today boolean,
   statistics list<uuid>
-}
+);
+CREATE INDEX IF NOT EXISTS ON baseball_player(team, full_name);
+
+//statistics is list of baseball_player_game_statistics
