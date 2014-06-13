@@ -3,8 +3,11 @@ require('rootpath')();
 
 var async = require('async');
 var Bet = require('libs/cassandra/bet');
-var TESTIDFIRST = '12000000-0000-0000-0000-000000005eb8';
-var TESTIDSECOND = '12000000-0000-0000-0000-000000005eb9';
+var BETIDFIRST = '10cf667c-24e2-11df-8924-001ff3591711';
+var BETIDSECOND = '10cf667c-24e2-11df-8924-001ff3591712';
+var USERIDFIRST = '12000000-0000-0000-0000-000000005eb5';
+var USERIDSECOND = '12000000-0000-0000-0000-000000005eb6';
+var PLAYERID = '00000000-0000-0000-0000-000000000001';
 var userIdIndex = 0;
 var longPositionIndex = 1;
 var playerIdIndex = 2;
@@ -13,39 +16,40 @@ var MultiplierIndex = 4;
 var gameIdIndex = 5;
 var expirationIndex = 6;
 
-function testDelete(callback) {
-  User.delete(TESTIDFIRST, function (err) {
-    if (err) {
-      callback(err);
-    }
-    callback(null);
-  });
-}
-
-var params = 
+var paramsFirst =
 [
-TESTIDFIRST, //id
-'test@email.com',  //email
-false, //verified
-null,  //verified_time
-'test_username',  //username
-'test_password',  //password
-'foo', //first_name
-'bar', //last_name
-7500, //age
-'9001 Test Drive Centralia, PA 00000', //address
-'some card', //payment_info
-{ value: 10000, hint: 'double' }, //money
-'foo.bar.7000',  //fbid
-2, //vip_status
-'../tmp/images/test_username.jpeg'//image
-];
-function testInsert(callback) {
-  User.insert(params, function (err) {
+BETIDFIRST, //bet_id
+USERIDFIRST, //user_id
+true, //long_position
+PLAYERID, //player_id
+{ value: 100, hint: 'double' }, //bet_value
+{ value: 10, hint: 'double' }, // multiplier
+'10000000-0000-0000-0000-000000000001', //game_id
+'10cf667c-24e2-11df-8924-001ff3591715' //expiration
+]
+
+var paramsSecond =
+[
+BETIDSECOND, //bet_id
+USERIDSECOND, //user_id
+false, //long_position
+PLAYERID, //player_id
+{ value: 200, hint: 'double' }, //bet_value
+{ value: 3, hint: 'double' }, // multiplier
+'10000000-0000-0000-0000-000000000001', //game_id
+'10cf667c-24e2-11df-8924-001ff3591716' //expiration
+]
+function testInsertPending(callback) {
+  Bet.insertPending(paramsFirst, function (err) {
     if (err) {
       callback(err);
     }
-    callback(null);
+    Bet.insertPending(paramsSecond, function (err) {
+      if (err) {
+        callback(err);
+      }
+      callback(null);
+    });
   });
 }
 
