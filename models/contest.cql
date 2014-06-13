@@ -66,14 +66,14 @@ CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   walks int,
   earned_runs_allowed int,
   strikeouts int,
-  walks_and_hits_allowed int
+  walks_and_hits_allowed int,
+  fantasy_points double
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player_game_statistics(player_id);
 
 CREATE TABLE IF NOT EXISTS baseball_player (
   player_id uuid PRIMARY KEY,
   full_name text,
-  nickname text,
   first_name text,
   last_name text,
   team text,
