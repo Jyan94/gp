@@ -23,6 +23,7 @@ app.get('/faq', staticPages.faq);
 app.get('/features', staticPages.features);
 app.get('/home', staticPages.home);
 app.get('/rules', staticPages.rules);
+app.get('/terms', staticPages.terms);
 
 app.get('/about', function(req, res) {
   res.render('login/about.html');

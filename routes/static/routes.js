@@ -51,3 +51,12 @@ exports.rules = function (req, res) {
     res.render('login/rules.html');
   }
 }
+
+exports.terms = function (req, res) {
+  if (req.user) {
+    res.render('logout/terms.html');
+  }
+  else {
+    res.render('login/terms.html');
+  }
+}
