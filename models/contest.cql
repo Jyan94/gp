@@ -85,10 +85,10 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   weight text,
   age int,
   image text,
+  current_value double,
   importance_rank int,
   playing_today boolean,
   statistics list<uuid>
 );
-CREATE INDEX IF NOT EXISTS ON baseball_player(team, full_name);
-
+CREATE INDEX IF NOT EXISTS ON baseball_player(team);
 //statistics is list of baseball_player_game_statistics
