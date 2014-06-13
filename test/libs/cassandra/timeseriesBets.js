@@ -57,7 +57,7 @@ function testSelectAfterDelete(callback) {
   })
 }
 
-describe('insert, select, delete', function () {
+describe('timeseries module: insert, select, delete', function () {
   it('should return '+arrlength +' results and then delete all', 
     function(done) {
       async.waterfall([
