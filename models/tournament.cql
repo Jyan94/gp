@@ -85,5 +85,5 @@ CREATE TABLE IF NOT EXISTS baseball_player {
   image text,
   importance_rank int,
   playing_today boolean,
-  statistics list<game_id>
+  statistics list<uuid>
 }
