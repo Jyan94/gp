@@ -12,7 +12,7 @@ app.use('/', require('../app.js'));
 
 var User = require('../libs/cassandra/user.js');
 var Bet = require('../libs/cassandra/bet.js');
-var Player = require('../libs/cassandra/player.js');
+var Player = require('../libs/cassandra/footballPlayer.js');
 var calculate = require('../libs/calculateFantasyPoints.js');
 var sportsdataNfl = require('sportsdata').NFL;
 var sportsdataMlb = require('sportsdata').MLB;
