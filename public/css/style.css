@@ -285,7 +285,7 @@ input {
   margin-left: auto;
   margin-right: auto;
   padding-top: 55px;
-  max-width: 980px;
+  max-width: 1080px;
 }
 /*----------------------------------------------------------------------------*/
 /* Newsfeed                                                                   */
@@ -771,7 +771,12 @@ input {
 .button-align > form > input {
   width: 90px;
 }
-
+#login-box-wrapper {
+  width: 480px;
+}
+#login-box {
+  width: 100%;
+}
 /*----------------------------------------------------------------------------*/
 /* Popup Window                                                               */
 /*----------------------------------------------------------------------------*/
