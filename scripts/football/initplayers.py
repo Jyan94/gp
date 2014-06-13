@@ -10,7 +10,6 @@ session = cluster.connect('goprophet')
 #for football_player_row in rows:
 #	print football_player_row.player_id, football_player_row.full_name
 
-
 db = nfldb.connect()
 q = nfldb.Query(db)
 
