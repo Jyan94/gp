@@ -18,6 +18,22 @@ var multiplierIndex = 5;
 var gameIdIndex = 6;
 var expirationIndex = 7;
 
+function testDelete(callback) {
+  Bet.delete('current_bets', BETIDFIRST,
+    function (err, result) {
+      if (err) {
+        callback(err);
+      }
+      Bet.delete('current_bets', BETIDSECOND,
+        function (err, result) {
+          if (err) {
+            callback(err);
+          }
+          callback(null);
+        });
+    });
+}
+
 var pendingFields =
 [
 'bet_id',
@@ -69,7 +85,7 @@ function testInsertPending(callback) {
       });
 }
 
-var currentfields =
+var currentFields =
 [
 'bet_id',
 'long_better_id',
@@ -104,13 +120,13 @@ PLAYERID, //player_id
 '10000000-0000-0000-0000-000000000001', //game_id
 '10cf667c-24e2-11df-8924-001ff3591716' //expiration
 ]
-function testCurrentPending(callback) {
-  Bet.currentPending(USERIDSECOND, currentParamsFirst,
+function testInsertCurrent(callback) {
+  Bet.insertCurrent(USERIDSECOND, currentParamsFirst,
     function (err) {
       if (err) {
         callback(err);
       }
-      Bet.currentPending(USERIDTHIRD, currentParamsSecond,
+      Bet.insertCurrent(USERIDTHIRD, currentParamsSecond,
         function (err) {
           if (err) {
             callback(err);
@@ -126,7 +142,7 @@ function compareAgainstPendingParams(result) {
   if (result.bet_id === BETIDFIRST) {
     testAgainst = pendingParamsFirst;
   }
-  else if (result.user_id === BETIDSECOND) {
+  else if (result.bet_id === BETIDSECOND) {
     testAgainst = pendingParamsSecond;
   }
 
@@ -153,93 +169,61 @@ function testSelectMultiple(callback) {
     }); 
 }
 
-function testSelectByUsername(callback) {
-  User.select('username', updateParams[usernameIndex], function(err, result) {
+function compareAgainstCurrentParams(result) {
+  var testAgainst = null;
 
-    if (err) {
-      callback(err);
-    }
-    compareAgainstUpdateParams(result);
-    callback(null);
-  }); 
-}
+  if (result.bet_id === BETIDFIRST) {
+    testAgainst = currentParamsFirst;
+  }
+  else if (result.bet_id === BETIDSECOND) {
+    testAgainst = currentParamsSecond;
+  }
 
-function testSelectByEmail(callback) {
-  User.select('email', updateParams[emailIndex], function(err, result) {
-    if (err) {
-      callback(err);
-    }
-    compareAgainstUpdateParams(result);
-    callback(null);
-  });
-}
-
-var newMoney = 5000;
-
-var updateParamsNewMoney = 
-[
-'email@test.com',  //email
-true, //verified
-'ce3c0eb0-f04c-11e3-a570-c5b492d64738',  //verified_time
-'new_username',  //username
-'new_password',  //password
-'foofoobar', //first_name
-'foobarbar', //last_name
-7500, //age
-'8999 Test Drive Centralia, PA 00000', //address
-'some different card', //payment_info
-{ value: 4900, hint: 'double' }, //money
-'foo.bar.7000',  //fbid
-5, //vip_status
-'../tmp/images/new_username.jpeg'//image
-];
-function testUpdateMoney(callback) {
-  User.updateMoney([newMoney], [TESTIDFIRST], function(err, result) {
-    if (err) {
-      callback(err);
-    }
-    callback(null);
-  });
-}
-
-function compareAgainstUpdateParamsNewMoney(result) {
-  result.should.have.property('user_id', TESTIDFIRST);
-
-  for (var i = 0; i < updateFields.length; i++) {
-    if (i === moneyIndex) {
-      result.should.have.property(updateFields[i],
-                                  updateParamsNewMoney[i].value);
+  for (var i = 0; i < currentFields.length; i++) {
+    if ((i === betValueIndex) || (i === multiplierIndex)) {
+      result.should.have.property(currentFields[i], testAgainst[i].value);
     }
     else {
-      result.should.have.property(updateFields[i], updateParamsNewMoney[i]);
+      result.should.have.property(currentFields[i], testAgainst[i]);
     }
   }
 }
 
-function testSelectMultiple(callback) {
-  User.selectMultiple([TESTIDFIRST, TESTIDSECOND], function(err, result) {
-    if (err) {
-      callback(err);
-    }
-    result.should.have.length(1);
-    result = result[0];
-    compareAgainstUpdateParamsNewMoney(result);
-    callback(null);
-  });
+function testSelectUsingUserId(callback) {
+  Bet.selectUsingUserId('current_bets', USERIDTHIRD,
+    function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      result.should.have.length(1);
+      compareAgainstCurrentParams(result[0]);
+      callback(null);
+  }); 
 }
 
-describe('user module test', function () {
+function testSelectUsingPlayerId(callback) {
+  Bet.selectUsingPlayerId('current_bets', PLAYERID,
+    function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      result.should.have.length(2);
+      compareAgainstCurrentParams(result[0]);
+      compareAgainstCurrentParams(result[1]);
+      callback(null);
+  });  
+}
+
+describe('bet module test', function () {
   it('test all functions', 
     function(done) {
       async.waterfall([
+        testDelete,
         testInsertPending,
-        testInsert,
-        testUpdate,
-        testSelectByUserId,
-        testSelectByUsername,
-        testSelectByEmail,
-        testUpdateMoney,
         testSelectMultiple,
+        testInsertCurrent,
+        testSelectUsingUserId,
+        testSelectUsingPlayerId,
         testDelete
         ],
         function (err) {
