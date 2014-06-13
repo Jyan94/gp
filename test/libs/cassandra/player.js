@@ -2,7 +2,7 @@
 require('rootpath')();
 
 var async = require('async');
-var Player = require('libs/cassandra/player');
+var Player = require('libs/cassandra/footballPlayer');
 var TESTID = '00000000-0000-0000-0000-000000000005';
 var currentValueIndex = 0;
 var fullNameIndex = 1;
