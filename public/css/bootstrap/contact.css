@@ -64,6 +64,7 @@ body {
 .masthead-brand {
   margin-top: 10px;
   margin-bottom: 10px;
+  left: 20px;
 }
 
 .masthead-nav > li {
@@ -156,6 +157,5 @@ body {
   .masthead,
   .mastfoot,
   .cover-container {
-    width: 700px;
   }
 }

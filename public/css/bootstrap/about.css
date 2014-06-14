@@ -6,12 +6,21 @@ body {
   padding-bottom: 40px;
   color: #fffffa;
   background-color: #229999;
+  box-shadow: inset 0 0 100px rgba(110,110,0,.5);
 }
 
 
 
 /* CUSTOMIZE THE NAVBAR
 -------------------------------------------------- */
+.masthead{
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+
+/* Padding for spacing */
+.inner {
+  padding: 10px;
+}
 
 /*
  * Header
@@ -26,7 +35,6 @@ body {
   display: inline-block;
 }
 .masthead-nav > li + li {
-  right: 100px;
   margin-left: 20px;
 }
 .masthead-nav > li > a {
@@ -46,7 +54,6 @@ body {
 .masthead-nav > .active > a,
 .masthead-nav > .active > a:hover,
 .masthead-nav > .active > a:focus {
-  right: 100px;
   color: #fff;
   border-bottom-color: #fff;
 }
