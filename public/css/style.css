@@ -1099,7 +1099,7 @@ input {
   padding: 20px 5px 5px 90px;
   float: left;
   background-color: white;
-  width: 29.4%;
+  width: 26.25%;
   height: 200px;
   opacity: 0.7;
   border-radius: 4px 4px 0px 0px;
@@ -1107,7 +1107,7 @@ input {
 
 .profilebottom {
   height: 75px;
-  width: 39.1%;
+  width: 35%;
   float: left;
   background-color: white;
   opacity: 0.7;
@@ -1117,8 +1117,7 @@ input {
 
 .profileright {
   float: right;
-  background-color: white;
-  width: 61%;
+  width: 65%;
   height: 300px;
   margin-bottom: 20px;
 }

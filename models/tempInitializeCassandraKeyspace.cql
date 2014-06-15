@@ -159,3 +159,11 @@ CREATE TABLE IF NOT EXISTS player_images (
     player_name text PRIMARY KEY,
     image_url text
 );
+
+CREATE TABLE IF NOT EXISTS player_images_Mlb (
+    player_id uuid PRIMARY KEY,
+    player_name text,
+    image_url text
+);
+
+CREATE INDEX IF NOT EXISTS ON player_images_Mlb(player_name);
