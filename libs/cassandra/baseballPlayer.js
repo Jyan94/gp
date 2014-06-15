@@ -5,33 +5,32 @@ var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
-//17 fields
+//15 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
-    player_id uuid,
-    full_name text,
-    first_name text,
-    last_name text,
-    team text,
-    status text,
-    position text,
-    profile_url text,
-    uniform_number text,
-    height text,
-    weight text,
-    age int,
-    image text,
-    current_value double,
-    importance_rank int,
-    playing_today boolean,
-    statistics list<uuid>
+    player_id,
+    current_value,
+    full_name,
+    first_name,
+    last_name,
+    team,
+    status,
+    position,
+    profile_url,
+    uniform_number,
+    height,
+    weight,
+    age,
+    image,
+    statistics
   ) VALUES
     (?, ?, ?, ?, ?, 
      ?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?, 
-     ?, ?);
+     ?, ?, ?, ?, ?);
 */});
 
+var INSERT_CURRENT_VALUE_INDEX = 1;
+var INSERT_STATISTICS_INDEX = 14;
 exports.insert = function (fields, callback) {
   cassandra.query(INSERT_PLAYER_CQL, fields, cql.types.consistencies.one,
     function (err) {
@@ -116,16 +115,30 @@ exports.selectAllPlayerNames = function(callback) {
   );
 }
 
-var UPDATE_STATISTICS_QUERY = multiline(function() {/*
+var ADD_STATISTICS_QUERY = multiline(function() {/*
   UPDATE baseball_player SET statistics = statistics + ? WHERE player_id = ?
 */});
-exports.addStatistics = function (playerId, statistics, callback) {
+exports.addStatistics = function (playerId, statisticsId, callback) {
   cassandra.query(
-    UPDATE_STATISTICS_QUERY, 
-    [statistics, playerId], 
+    ADD_STATISTICS_QUERY, 
+    [[statisticsId], playerId], 
     cql.types.consistencies.one,
-    function(err, result) {
-      callback(err, result);
+    function(err) {
+      callback(err);
+    }
+  );
+}
+
+var DELETE_SPECIFIC_STATISTICS_QUERY = multiline(function() {/*
+  UPDATE baseball_player SET statistics = statistics - ? WHERE player_id = ?
+*/});
+exports.deleteStatistics = function (playerId, statisticsId, callback) {
+  cassandra.query(
+    DELETE_SPECIFIC_STATISTICS_QUERY, 
+    [[statisticsId], playerId], 
+    cql.types.consistencies.one,
+    function(err) {
+      callback(err);
     }
   );
 }
