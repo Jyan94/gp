@@ -73,6 +73,7 @@ CREATE INDEX IF NOT EXISTS ON baseball_player_game_statistics(player_id);
 
 CREATE TABLE IF NOT EXISTS baseball_player (
   player_id uuid PRIMARY KEY,
+  current_value double,
   full_name text,
   first_name text,
   last_name text,
@@ -80,14 +81,11 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   status text,
   position text,
   profile_url text,
-  uniform_number text,
-  height text,
-  weight text,
+  uniform_number int,
+  height int,
+  weight int,
   age int,
   image text,
-  current_value double,
-  importance_rank int,
-  playing_today boolean,
   statistics list<uuid>
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(team);
