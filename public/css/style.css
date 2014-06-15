@@ -39,6 +39,7 @@ body {
   margin: 0;
   padding: 0;
   background-image: url(../stadium_night.jpg);
+  background-size: 100%;
   font-family: 'Helvetica', 'Arial', 'sans-serif';
 }
 div {
