@@ -8,7 +8,7 @@ var client = configs.cassandra.client;
 var async = require('async');
 
 var Bet = require('libs/cassandra/bet.js');
-var Player = require('libs/cassandra/player.js');
+var Player = require('libs/cassandra/footballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 
 var defaultImage = configs.constants.defaultPlayerImage;

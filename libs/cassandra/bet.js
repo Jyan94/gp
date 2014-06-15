@@ -69,6 +69,54 @@ exports.insertCurrent = function(takerUserId, params, callback) {
     });
 }
 
+var DELETE_BET_CQL_1 = multiline(function () {/*
+  DELETE FROM user_id_to_bet_id WHERE user_id = ?;
+*/});
+var DELETE_BET_CQL_2 = multiline(function () {/*
+  DELETE FROM
+*/});
+var DELETE_BET_CQL_3 = multiline(function () {/*
+  WHERE bet_id = ?;
+*/});
+exports.delete = function(betsTable, betId, callback) {
+  var allowedTables = ['pending_bets', 'current_bets', 'past_bets', 'all_bets'];
+
+  if (allowedTables.indexOf(betsTable) < 0) {
+    callback(new Error(betsTable + ' is not an allowed table.'));
+  }
+
+  exports.selectMultiple(betsTable, [betId],
+    function (err, result) {
+      if (result.length === 0) {
+        callback(null);
+      }
+      else if (result.length > 1) {
+        callback(new Error('WTF'));
+      }
+      else {
+        var query = [
+          {
+            query: DELETE_BET_CQL_1,
+            params: [result[0].long_better_id]
+          },
+          {
+            query: DELETE_BET_CQL_1,
+            params: [result[0].short_better_id]
+          },
+          {
+            query: DELETE_BET_CQL_2 + ' ' + betsTable + ' ' + DELETE_BET_CQL_3,
+            params: [betId]
+          },
+        ];
+
+        cassandra.queryBatch(query, cql.types.consistencies.one,
+          function(err) {
+            callback(err);
+          });
+      }
+    });
+}
+
 var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */});

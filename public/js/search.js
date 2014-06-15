@@ -2,10 +2,8 @@ $(function() {
   var searchCache = [];
   var id;
   $.getJSON("/autocomp", function (data) {
-    console.log(data);
     for (var i = 0; i < data.length; i++) {
       searchCache.push(data[i]);
-      console.log(JSON.stringify(data[i]));
     }
   });
   $('#autocomplete').on('input', function () {
