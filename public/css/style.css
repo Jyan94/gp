@@ -38,7 +38,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #229999;
+  background-image: url(../stadium_night.jpg);
+  background-size: 100%;
   font-family: 'Helvetica', 'Arial', 'sans-serif';
 }
 div {
@@ -276,6 +277,46 @@ input {
 }
 #updates a {
   display: block;
+}
+.dropdown-menu {
+  background-color: #ffffff;
+  border: 0px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  box-shadow: 0px 2px 4px #888;
+  display: block;
+  height: 0px;
+  list-style: none;
+  margin: 0px 0px 0px;
+  padding: 0px 0px;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-transition: all 0.2s ease-in-out, border 0s linear 0.2s;
+  -moz-transition: all 0.2s ease-in-out, border 0s linear 0.2s;
+}
+.dropdown-menu.active {
+  border: 1px solid #ddc;
+  height: 151px;
+  padding: 5px 0px;
+  -webkit-transition: all 0.2s ease-in-out, border-top-width 0s;
+  -moz-transition: all 0.2s ease-in-out, border-top-width 0s;
+}
+.dropdown-entry {
+  line-height: 18px;
+}
+.dropdown-entry a {
+  display: block;
+  padding: 4px 10px;
+}
+.dropdown-entry:hover, .dropdown-entry:hover a {
+  background-color: #2460a0;
+  color: #ffffff;
+}
+.dropdown-divider {
+  background-color: #ddc;
+  height: 1px;
+  margin: 4px 4px 4px;
 }
 /*----------------------------------------------------------------------------*/
 /* Body content                                                               */
@@ -1084,40 +1125,42 @@ input {
   background-color: white;
   box-shadow: 0px 1px 4px #888;
   overflow: scroll;
+  opacity: 0.85;
 }
 
-.profilecontainer{
-  width: 980px;
-  height: 310px;
-  margin-bottom: 5px;
-  background-color: white;
-  box-shadow: 0px 1px 4px #888;
-  font-family: 'Roboto Condensed', 'Helvetica', 'Arial';
-}
 
 .profilebox {
   padding: 0.1px 0.1px 0.1px 0.1px;
   float:left;
-  border-color: #545454;
+  border-color: #000;
   border-style: solid;
-  border-radius: 2px;
 }
+
 .profileleft {
   padding: 20px 5px 5px 90px;
   float: left;
-  width: 27.883%;
+  background-color: white;
+  width: 26.25%;
   height: 200px;
-  border-bottom: 2px solid#cecece;
-  border-radius: 0px;
+  opacity: 0.7;
+  border-radius: 4px 4px 0px 0px;
+}
+
+.profilebottom {
+  height: 75px;
+  width: 35%;
+  float: left;
+  background-color: white;
+  opacity: 0.7;
+  border-radius: 0px 0px 4px 4px;
+  margin-bottom: 20px;
 }
 
 .profileright {
-  padding: 5px 5px 5px 5px;
   float: right;
-  width: 61.2%;
+  width: 65%;
   height: 300px;
-  border-left: 2px solid #cecece;
-  border-radius: 0px;
+  margin-bottom: 20px;
 }
 
 #betTable {
@@ -1125,7 +1168,7 @@ input {
   border: 1px solid black;
   overflow: scroll;
   border-style: solid;
-  border-color: gray;
+  border-color: black;
   width: 980px;
 }
 

@@ -12,7 +12,8 @@ var updateGraph = function(req, res){
   TimeseriesBets.selectSinceTime(playerId, lastUpdate, function (err, result) {
     if (err) {
       res.send([]);
-    } else {
+    } 
+    else {
       res.send(result);
     }
   });
@@ -26,7 +27,8 @@ var getData = function(req, res) {
   TimeseriesBets.selectSinceTime(playerId, prevDay, function(err, result) {
     if (err) {
       res.send([]);
-    } else {
+    } 
+    else {
       res.send(result);
     }
   });

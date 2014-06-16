@@ -27,7 +27,9 @@ a:hover {
 html,
 body {
   height: 100%;
-  background-color: #229999;
+  background-image: url(../../stadiumBack.jpg);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 body {
   color: #fff;
@@ -58,12 +60,23 @@ body {
 }
 
 
+.adrianPeterson {
+  position: absolute;
+  top: 250px;
+  left: 250px;
+}
+
+.adrianPetersonSil {
+  position: absolute;
+  top: 252px;
+  left: 244px;
+}
 /*
  * Header
  */
 .masthead-brand {
-  margin-top: 10px;
   margin-bottom: 10px;
+  margin-top: -15px;
 }
 
 .masthead-nav > li {
@@ -156,6 +169,5 @@ body {
   .masthead,
   .mastfoot,
   .cover-container {
-    width: 700px;
   }
 }

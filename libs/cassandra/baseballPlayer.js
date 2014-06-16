@@ -1,59 +1,36 @@
 'use strict';
 require('rootpath')();
 
-/*
-CREATE TABLE IF NOT EXISTS baseball_player (
-  player_id uuid,
-  full_name text,
-  first_name text,
-  last_name text,
-  team text,
-  status text,
-  position text,
-  profile_url text,
-  uniform_number text,
-  height text,
-  weight text,
-  age int,
-  image text,
-  current_value double,
-  importance_rank int,
-  playing_today boolean,
-  statistics list<uuid>,
-  PRIMARY KEY (team, full_name)
-);
- */
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
-//17 fields
+//15 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
-    player_id uuid,
-    full_name text,
-    first_name text,
-    last_name text,
-    team text,
-    status text,
-    position text,
-    profile_url text,
-    uniform_number text,
-    height text,
-    weight text,
-    age int,
-    image text,
-    current_value double,
-    importance_rank int,
-    playing_today boolean,
-    statistics list<uuid>
+    player_id,
+    current_value,
+    full_name,
+    first_name,
+    last_name,
+    team,
+    status,
+    position,
+    profile_url,
+    uniform_number,
+    height,
+    weight,
+    age,
+    image,
+    statistics
   ) VALUES
     (?, ?, ?, ?, ?, 
      ?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?, 
-     ?, ?);
+     ?, ?, ?, ?, ?);
 */});
 
+var INSERT_CURRENT_VALUE_INDEX = 1;
+var INSERT_STATISTICS_INDEX = 14;
 exports.insert = function (fields, callback) {
   cassandra.query(INSERT_PLAYER_CQL, fields, cql.types.consistencies.one,
     function (err) {
@@ -82,11 +59,9 @@ exports.update = function (playerId, fields, params, callback) {
   var fieldsLength = fields.length;
   var paramsLength = params.length;
   var updates = '';
-
   if (fields.length !== params.length) {
     callback(new Error('Number of fields and parameters are not the same.'));
   }
-
   for (var i = 0; i < fieldsLength; i++) {
     updates += (fields[i] + ' = ?');
 
@@ -94,7 +69,6 @@ exports.update = function (playerId, fields, params, callback) {
       updates += ', ';
     }
   }
-
   cassandra.query(
     UPDATE_PLAYER_CQL_1 + ' ' + updates + ' ' + UPDATE_PLAYER_CQL_2,
     params.concat([playerId]), 
@@ -130,30 +104,41 @@ exports.selectUsingTeam = function (team, callback) {
     });
 }
 
-var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
-  SELECT * FROM player_images WHERE full_name = ?;
+var AUTOCOMPLETE_QUERY = multiline(function() {/*
+  SELECT player_id, full_name FROM baseball_player
 */});
-var SELECT_PLAYER_IMAGES_USING_NICKNAME = multiline(function() {/*
-  SELECT * FROM player_images WHERE nickname = ?;
-*/});
-exports.selectImagesUsingPlayerName = function(playerName, callback) {
-  cassandra.query(
-    SELECT_PLAYER_IMAGES_USING_PLAYERNAME,
-    [playerName], 
-    cql.types.consistencies.one,
+exports.selectAllPlayerNames = function(callback) {
+  cassandra.query(AUTOCOMPLETE_QUERY, [], cql.types.consistencies.one,
     function(err, result) {
       callback(err, result);
     }
   );
 }
 
-var AUTOCOMPLETE_QUERY = multiline(function() {/*
-  SELECT player_id, full_name, nickname FROM football_player
+var ADD_STATISTICS_QUERY = multiline(function() {/*
+  UPDATE baseball_player SET statistics = statistics + ? WHERE player_id = ?
 */});
-exports.selectAllPlayerNames = function(callback) {
-  cassandra.query(AUTOCOMPLETE_QUERY, [], cql.types.consistencies.one,
-    function(err, result) {
-      callback(err, result);
+exports.addStatistics = function (playerId, statisticsId, callback) {
+  cassandra.query(
+    ADD_STATISTICS_QUERY, 
+    [[statisticsId], playerId], 
+    cql.types.consistencies.one,
+    function(err) {
+      callback(err);
+    }
+  );
+}
+
+var DELETE_SPECIFIC_STATISTICS_QUERY = multiline(function() {/*
+  UPDATE baseball_player SET statistics = statistics - ? WHERE player_id = ?
+*/});
+exports.deleteStatistics = function (playerId, statisticsId, callback) {
+  cassandra.query(
+    DELETE_SPECIFIC_STATISTICS_QUERY, 
+    [[statisticsId], playerId], 
+    cql.types.consistencies.one,
+    function(err) {
+      callback(err);
     }
   );
 }
