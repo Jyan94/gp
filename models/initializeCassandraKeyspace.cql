@@ -68,18 +68,7 @@ CREATE TABLE IF NOT EXISTS past_bets (
 
 CREATE INDEX IF NOT EXISTS ON past_bets(player_id);
 
-CREATE TABLE IF NOT EXISTS all_bets (
-    bet_id timeuuid PRIMARY KEY,
-    long_better_id uuid,
-    short_better_id uuid,
-    player_id uuid,
-    bet_value double,
-    multiplier double,
-    long_better_payoff bigint,
-    short_better_payoff bigint,
-    game_id uuid,
-    expiration timeuuid
-);
+/*to-do condense bet tables by giving bet an int as state*/
 
 CREATE TABLE IF NOT EXISTS football_player (
     player_id uuid PRIMARY KEY,

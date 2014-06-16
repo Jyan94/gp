@@ -24,9 +24,6 @@ app.get('/features', staticPages.features);
 app.get('/home', staticPages.home);
 app.get('/rules', staticPages.rules);
 
-app.get('/about', function(req, res) {
-  res.render('login/about.html');
-});
 //login
 var login = require('routes/registry/login');
 app.route('/login')
