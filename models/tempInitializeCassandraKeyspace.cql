@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 CREATE KEYSPACE IF NOT EXISTS "goprophet"
     WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};
 
@@ -167,3 +169,4 @@ CREATE TABLE IF NOT EXISTS player_images_Mlb (
 );
 
 CREATE INDEX IF NOT EXISTS ON player_images_Mlb(player_name);
+>>>>>>> 1cff78ed752ee14abbfb23bd33a968416eef440f

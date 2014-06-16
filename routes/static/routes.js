@@ -51,3 +51,12 @@ exports.rules = function (req, res) {
     res.render('static/rules.ejs', {link: 'login', display: 'Login'});
   }
 }
+
+exports.terms = function (req, res) {
+  if (req.user) {
+    res.render('static/terms.ejs', {link: 'logout', display: 'Logout'});
+  }
+  else {
+    res.render('static/terms.ejs', {link: 'login', display: 'Login'});
+  }
+}
