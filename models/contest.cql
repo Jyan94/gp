@@ -47,8 +47,34 @@ CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
 //use username as key for contestants map
 //use int as key for athletes in game as tournament ids
 
+CREATE TYPE IF NOT EXISTS baseball_team (
+  team_id uuid,
+  team_name text,
+  team_abbreviation
+);
+
+CREATE TYPE IF NOT EXISTS baseball_team_table (
+  team_id uuid,
+  team_name text,
+  team_abbreviation
+);
+
+CREATE TABLE IF NOT EXISTS baseball_game (
+  gsis_id uuid PRIMARY KEY,
+  start_time timeuuid,
+  end_time timeuuid,
+  week int,
+  season_year int,
+  season_type text,
+  finished boolean,
+  home_team list<uuid>
+  away_team list<uuid>,
+  home_score int,
+  away_score int
+);
+
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
-  game_id uuid PRIMARY KEY,
+  statistic_id uuid PRIMARY KEY,
   player_id uuid,
   sport text,
   date timestamp,
@@ -88,5 +114,5 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   image text,
   statistics list<uuid>
 );
-CREATE INDEX IF NOT EXISTS ON baseball_player(team);
+CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics
