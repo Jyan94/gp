@@ -1,0 +1,1 @@
+Views rendered by the server to the client (e.g. Handlebars) 
