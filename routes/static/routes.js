@@ -1,53 +1,53 @@
 exports.about = function (req, res) {
   if (req.user) {
-    res.render('logout/about.html');
+    res.render('static/about.ejs', {link: 'logout', display: 'Logout'});
   }
   else {
-    res.render('login/about.html');
+    res.render('static/about.ejs', {link: 'login', display: 'Login'});
   }
 }
 
 exports.contact = function (req, res) {
   if (req.user) {
-    res.render('logout/contact.html');
+    res.render('static/contact.ejs', {link: 'logout', display: 'Logout'});
   }
   else {
-    res.render('login/contact.html');
+    res.render('static/contact.ejs', {link: 'login', display: 'Login'});
   }
 }
 
 exports.faq = function (req, res) {
   if (req.user) {
-    res.render('logout/faq.html');
+    res.render('static/faq.ejs', {link: 'logout', display: 'Logout'});
   }
   else {
-    res.render('login/faq.html');
+    res.render('static/faq.ejs', {link: 'login', display: 'Login'});
   }
 }
 
 exports.features = function (req, res) {
   if (req.user) {
-    res.render('logout/features.html');
+    res.render('static/features.ejs', {link: 'logout', display: 'Logout'});
   }
   else {
-    res.render('login/features.html');
+    res.render('static/features.ejs', {link: 'login', display: 'Login'});
   }
 }
 
 exports.home = function (req, res) {
   if (req.user) {
-    res.render('logout/home.html');
+    res.render('static/home.ejs', {link: 'logout', display: 'Logout'});
   }
   else {
-    res.render('login/home.html');
+    res.render('static/home.ejs', {link: 'login', display: 'Login'});
   }
 }
 
 exports.rules = function (req, res) {
   if (req.user) {
-    res.render('logout/rules.html');
+    res.render('static/rules.ejs', {link: 'logout', display: 'Logout'});
   }
   else {
-    res.render('login/rules.html');
+    res.render('static/rules.ejs', {link: 'login', display: 'Login'});
   }
 }

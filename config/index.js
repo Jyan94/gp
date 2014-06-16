@@ -28,7 +28,7 @@ var config = {
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
-    app.engine('html', require('ejs').renderFile);
+    app.engine('ejs', require('ejs').renderFile);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
     app.use(flash());
