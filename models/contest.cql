@@ -79,7 +79,8 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   home_team list<uuid>
   away_team list<uuid>,
   home_score int,
-  away_score int
+  away_score int,
+  play_by_play list<text>
 );
 
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
