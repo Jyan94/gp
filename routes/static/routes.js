@@ -60,3 +60,12 @@ exports.terms = function (req, res) {
     res.render('static/terms.ejs', {link: 'login', display: 'Login'});
   }
 }
+
+exports.tournamenttables = function (req, res) {
+  if (req.user) {
+    res.render('static/tournamenttables.ejs', {link: 'logout', display: 'Logout'});
+  }
+  else {
+    res.render('static/tournamenttables.ejs', {link: 'login', display: 'Login'});
+  }
+}
