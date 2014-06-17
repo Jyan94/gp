@@ -32,7 +32,7 @@ function createRequest(url, callback) {
             });
         } else {
 
-            console.log("boo: " + response)
+            console.log("boo: " + response.statusCode)
             callback(error, body);
         }
     });
@@ -75,15 +75,16 @@ function getDailyEventInfoAndLineups(year, month, day, callback) {
   createRequest(url, callback);
 }
 */
+/*
 function getEventInfoAndLineups(event_id, callback) {
   var url = urlHelper.getEventInfoAndLineups(event_id);
   createRequest(url, callback);
 }
-/*
+
 getEventInfoAndLineups('1c3275f1-1988-4937-8670-9562c024ec83', function (err, result) {
   console.log(result.event.scheduled_start_time[0]);
 })
-*/
+
 function getDailyBoxscore(year, month, day, callback) {
   var url = urlHelper.getDailyBoxscoreUrl(year, month, day);
   createRequest(url, callback);
@@ -92,14 +93,11 @@ function getDailyBoxscore(year, month, day, callback) {
 function getNameAndScore(boxscore, callback) {
   var retVal;
   if (boxscore.$.status === 'scheduled') {
-    getEventInfoAndLineups(boxscore.$.id, function (err, result) {
-      var startTime = result.event.scheduled_start_time[0];
-      retVal = {
-        'homeName': boxscore.home[0].$.abbr,
-        'visitorName': boxscore.visitor[0].$.abbr,
-        'startTime': startTime
-      }
-    });
+    retVal = {
+      'homeName': boxscore.home[0].$.abbr,
+      'visitorName': boxscore.visitor[0].$.abbr,
+      'startTime': 'Not Started'
+    }
   }
   else {
     retVal = {
@@ -112,16 +110,11 @@ function getNameAndScore(boxscore, callback) {
   callback(null, retVal);
 }
 
-function delayGetNameAndScore(boxscore, callback) {
-  setTimeout(function() {
-    getNameAndScore(boxscore, callback);
-  }, 2000);
-}
 
 
 var getEachBoxScore = function(year, month, day, callback) {
   getDailyBoxscore(year, month, day, function(err, result) {
-    async.map(result.boxscores.boxscore, delayGetNameAndScore, function(err, result){
+    async.map(result.boxscores.boxscore, getNameAndScore, function(err, result){
       if (err) {
         console.log(err);
       }
@@ -131,7 +124,7 @@ var getEachBoxScore = function(year, month, day, callback) {
     });
   });
 }
-
+*/
 /*
 function getGameStatistics(event, callback) {
   var url = urlHelper.getGameStatisticsUrl(event);
@@ -151,17 +144,25 @@ function calculateFantasyPoints(playerId) {
 
 }
 */
-/*
+
 var calculateMlbFantasyPoints = function(playerObject, callback) {
   var playerId = playerObject.playerId; //player is id not name
   var isOnHomeTeam = playerObject.isOnHomeTeam;
   var gameId = playerObject.prefixSchedule.$.id
+
+  var homeOrAway;
+  if (isOnHomeTeam === true) {
+    homeOrAway = 'home';
+  }
+  else {
+    homeOrAway = 'visitor'
+  }
   var count;
 
   sportsdataMlb.getGameStatistics(gameId, function(err, stats){
     if (!err) {
-      if (isOnHomeTeam === true) {
-        var prefixHitting = stats.statistics.home[0].hitting[0].players[0].player;
+      if (isOnHomeTeam === true) {  // no need
+        var prefixHitting = stats.statistics.homeOrAway[0].hitting[0].players[0].player;
         var length = prefixHitting.length;
         for (var i = 0; i < length; i++) {
           if (playerId === prefixHitting[i].id) {
@@ -175,7 +176,7 @@ var calculateMlbFantasyPoints = function(playerObject, callback) {
                           + 2 * prefixHitting[i].steal.stolen;
           }
         }
-        var prefixPitching = stats.statistics.home[0].pitching[0].players[0].player;
+        var prefixPitching = stats.statistics.homeOrAway[0].pitching[0].players[0].player;
         length = prefixHitting.length;
         for (var j = 0; j < length; j++) {
           if (playerId === prefixPitching[j].id && prefixPitching[j].games.start == 1) {
@@ -209,29 +210,31 @@ function getDailyEventInfoAndLineups(year, month, day, callback) {
   var url = urlHelper.getDailyEventInfoAndLineups(year, month, day);
   createRequest(url, callback);
 }
-
+/*
 getDailyEventInfoAndLineups('2014', '06', '11', function(err, result) {
   console.log(result.events.event[1].game[0].visitor[0].roster[0].player[2].$);
 });
-
+*/
 function getAllPlayerIdForGame(prefixScheduleElement, callback) {
   var retArray = [];
   if (prefixScheduleElement.$.status === 'closed') {
-
-    var result = prefixScheduleElement.game[0].home[0].lineup[0].player;
+    console.log(prefixScheduleElement.game[0].home[0].roster[0].player[0].$)
+    var result = prefixScheduleElement.game[0].home[0].roster[0].player;
     for (var i = 0; i < result.length; i++) {
+      console.log(result[j].$.preferred_name);
       retArray.push({
-        'name': result[i].preferred_name + " " + result[i].last_name,
-        'playerId': result[i].player_id,
+        'name': result[i].$.preferred_name + " " + result[i].$.last_name,
+        'playerId': result[i].$.id,
         'isOnHomeTeam': true,
         'prefixSchedule': prefixScheduleElement
       })
     }
-    result = prefixScheduleElement.game[0].visitor[0].lineup[0].player;
+    result = prefixScheduleElement.game[0].visitor[0].roster[0].player;
     for (var j = 0; j < result.length; j++) {
+      console.log(result[j].$.preferred_name);
       retArray.push({
-        'name': result[j].preferred_name + " " + result[j].last_name,
-        'playerId': result[j].player_id,
+        'name': result[j].$.preferred_name + " " + result[j].$.last_name,
+        'playerId': result[j].$.id,
         'isOnHomeTeam': false,
         'prefixSchedule': prefixScheduleElement
       })
@@ -361,6 +364,7 @@ function checkEndGames(year, week, day) {
     }
   })
 }
-*/
 
-exports.getEachBoxScore = getEachBoxScore;
+checkEndGames('2014', '06', '15')
+
+//exports.getEachBoxScore = getEachBoxScore;
