@@ -27,15 +27,17 @@ a:hover {
 html,
 body {
   height: 100%;
+  background-color: #000;
   background-image: url(../../stadiumBack.jpg);
+  background-position: center top;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: auto;
 }
 body {
   color: #fff;
   text-align: center;
   text-shadow: 0 1px 3px rgba(0,0,0,.5);
-  box-shadow: inset 0 0 100px rgba(110,110,0,.5);
+  /*box-shadow: inset 0 0 100px rgba(110,110,0,.5);*/
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
@@ -52,6 +54,8 @@ body {
 .cover-container {
   margin-right: auto;
   margin-left: auto;
+  position: relative;
+  z-index: 100;
 }
 
 /* Padding for spacing */
@@ -59,18 +63,61 @@ body {
   padding: 10px;
 }
 
-
-.adrianPeterson {
-  position: fixed;
-  top: 250px;
-  left: 250px;
+@-webkit-keyframes aaronRodgersFadeInOut {
+  0% {
+    opacity:0;
+  }
+  30% {
+    opacity:0;
+  }
+  70% {
+    opacity:1;
+  }
+  100% {
+    opacity:1;
+  }
 }
 
-.adrianPetersonSil {
-  position: fixed;
-  top: 252px;
-  left: 244px;
+.aaronRodgers {
+  height: 0px;
+  position: absolute;
+  left: 40%;
+  top: 300px;
+  z-index: 0;
+  -webkit-animation-name: aaronRodgersFadeInOut;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-duration: 10s;
+  -webkit-filter: drop-shadow(3px 3px 1px #222);
 }
+
+@-webkit-keyframes aaronRodgersSilFadeInOut {
+  0% {
+    opacity:1;
+  }
+  30% {
+    opacity:1;
+  }
+  70% {
+    opacity:0;
+  }
+  100% {
+    opacity:0;
+  }
+}
+
+.aaronRodgersSil {
+  height: 0px;
+  position: absolute;
+  left: 40%;
+  opacity: 0;
+  top: 300px;
+  z-index: 0;
+  -webkit-animation-name: aaronRodgersSilFadeInOut;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-duration: 10s;
+  -webkit-filter: drop-shadow(1px 1px 1px #222);
+}
+
 /*
  * Header
  */
