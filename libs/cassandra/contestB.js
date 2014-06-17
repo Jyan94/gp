@@ -11,21 +11,40 @@ exports.insert = function(fields, callback) {
 
 }
 
-exports.delete = function(contestId) {
+exports.delete = function(contestId, callback) {
 
 }
 
+exports.selectById = function(contestId, callback) {
+
+}
+
+exports.selectByUsername = function(username, callback) {
+
+}
+
+exports.selectCancelled = function(sport, callback) {
+
+}
+
+exports.selectOpenContests = function(sport) {
+
+}
 /**
  * first checks if tournament is full
  * checks if username is already in contest and if it is, appends another
  * newly initialized contestant instance
  * @param {[type]} username [description]
  */
-exports.addContestant = function(username, contestId) {
+exports.addContestant = function(username, contestId, callback) {
 
 }
 
-exports.removeContestant = function(contestantInstanceId, username, contestId) {
+exports.removeContestant = function(
+  contestantInstanceId, 
+  username, 
+  contestId,
+  callback) {
 
 }
 
@@ -33,6 +52,7 @@ exports.updateContestant = function(
   contestantInstanceObject,
   contestantInstanceIndex,
   username,
-  contestId) {
+  contestId,
+  callback) {
 
 }
