@@ -21,23 +21,24 @@ CREATE TABLE IF NOT EXISTS contest_B (
   athletes map<int, athlete>,
   cancelled boolean,
   commission_earned int,
-  contest_id uuid,
-  contest_start_time timestamp,
   contest_deadline_time timestamp,
   contest_end_time timestamp,
+  contest_id uuid,
+  contest_start_time timestamp,
+  contest_open boolean,
   contestants map<text, contestant>,
   current_entries int,
   entry_fee int,
   game_type text,
   maximum_entries int,
   minimum_entries int,
-  pay_outs map<int, int>,
+  pay_outs map<int, double>,
   processed_payouts boolean,
   processed_payouts_time timestamp,
   sport text,
   starting_virtual_money int,
   total_prize_pool int,
-  PRIMARY KEY (sport, contest_start_time, contest_deadline_time, contest_id)
+  PRIMARY KEY (sport, contest_open, contest_id)
 );
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
 CREATE INDEX IF NOT EXISTS ON contest_B(
@@ -45,7 +46,7 @@ CREATE INDEX IF NOT EXISTS ON contest_B(
   contest_deadline_time, 
   processed_payouts, 
   contest_id);
-CREATE INDEX IF NOT EXISTS ON contest_B(cancelled);
+CREATE INDEX IF NOT EXISTS ON contest_B(sport, cancelled);
 CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
 
 //sport is lowercase text
@@ -79,7 +80,8 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   home_team list<uuid>
   away_team list<uuid>,
   home_score int,
-  away_score int
+  away_score int,
+  play_by_play list<text>
 );
 
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
