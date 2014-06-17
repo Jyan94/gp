@@ -10,8 +10,27 @@ var async = require('async');
 var Bet = require('libs/cassandra/bet.js');
 var Player = require('libs/cassandra/footballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
+var mlbData = require('libs/mlbData.js');
 
 var defaultImage = configs.constants.defaultPlayerImage;
+
+var getDailyScores = function(req, res, next) {
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  month = (month < 10 ? "0" : "") + month;
+  var day = date.getDate();
+  day = (day < 10 ? "0" : "") + day;
+
+  mlbData.getEachBoxScore(year, month, day, function(err, result) {
+    if (err) {
+      next(err);
+    }
+    else {
+      res.render('marketHome', {result: result});
+    }
+  });
+}
 
 var getBetInfosFromPlayerId = function (req, res, next, callback) {
   var rows = null;
@@ -201,3 +220,4 @@ var takeBet = function (req, res, next) {
 exports.renderPlayerPage = renderPlayerPage;
 exports.submitBet = submitBet;
 exports.takeBet = takeBet;
+exports.getDailyScores = getDailyScores;

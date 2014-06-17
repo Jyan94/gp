@@ -1,51 +1,60 @@
-
-CREATE TYPE IF NOT EXISTS bet (
-  athlete_id uuid,
-  user_id uuid,
+CREATE TYPE IF NOT EXISTS contest_B_bet (
   predicted_value double,
   amount_risked int
 );
 
-CREATE TYPE IF NOT EXISTS athlete (
-  athlete_id uuid,
-  athlete_name text,
-  most_recent_fantasy_value double,
-  market_value double
-);
-
 CREATE TYPE IF NOT EXISTS contestant_instance (
   virtual_money_remaining int,
-  bets map<int, bet>
+  bets map<int, contest_B_bet>
 );
 
 CREATE TYPE IF NOT EXISTS contestant (
   instances list<contestant_instance>
 );
 
-//maps athlete tournament ids to bets, stored under contestant
+CREATE TYPE IF NOT EXISTS athlete (
+  athlete_id uuid,
+  athlete_name text
+);
 
 CREATE TABLE IF NOT EXISTS contest_B (
+  athletes map<int, athlete>,
+  cancelled boolean,
+  commission_earned int,
   contest_id uuid,
+  contest_start_time timestamp,
+  contest_deadline_time timestamp,
+  contest_end_time timestamp,
+  contestants map<text, contestant>,
+  current_entries int,
+  entry_fee int,
+  game_type text,
+  maximum_entries int,
+  minimum_entries int,
+  pay_outs map<int, double>,
+  processed_payouts boolean,
+  processed_payouts_time timestamp,
   sport text,
   starting_virtual_money int,
-  buy_in int,
-  pay_out_rankings list<int>,
-  pay_out_values list<int>,
-  pot_value_after_commission int,
-  commission int,
-  current_entries int,
-  minimum_entries int,
-  maximum_entries int,
-  open_time timestamp,
-  start_time timestamp,
-  end_time timestamp,
-  contestants map<text, contestant>,
-  athletes map<int, athlete>,
-  PRIMARY KEY (sport, start_time, maximum_entries, contest_id)
+  total_prize_pool int,
+  PRIMARY KEY (sport, contest_start_time, contest_deadline_time, contest_id)
 );
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
+CREATE INDEX IF NOT EXISTS ON contest_B(
+  sport, 
+  contest_deadline_time, 
+  processed_payouts, 
+  contest_id);
+CREATE INDEX IF NOT EXISTS ON contest_B(cancelled);
+CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
+
+//sport is lowercase text
 //use username as key for contestants map
 //use int as key for athletes in game as tournament ids
+//contest_end_time - is end time of the real-world event and after processing payouts
+//deadline_time - actually matters for contestants, deadline for submitting
+//contest_start_time - when we create the contest
+//commission earned, processed_payouts - updated after contest ends
 
 CREATE TYPE IF NOT EXISTS baseball_team (
   team_id uuid,
@@ -70,7 +79,8 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   home_team list<uuid>
   away_team list<uuid>,
   home_score int,
-  away_score int
+  away_score int,
+  play_by_play list<text>
 );
 
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (

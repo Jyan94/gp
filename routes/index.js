@@ -30,7 +30,7 @@ var login = require('routes/registry/login');
 app.route('/login')
 .get(login.redirectLogin)
 .get(login.renderLogin)
-.post(passport.authenticate('local', 
+.post(passport.authenticate('local',
   { successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true }));
@@ -58,6 +58,7 @@ var market = require('routes/market');
 app.get('/market/:playerId', market.renderPlayerPage);
 app.post('/submitForm/:playerId', market.submitBet);
 app.post('/addBets/:playerId', market.takeBet);
+app.get('/market', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');

@@ -1,8 +1,8 @@
 require('rootpath')();
-var express = require('express');
-var app = module.exports = express();
+//var express = require('express');
+//var app = module.exports = express();
 var configs = require('config/index');
-configs.configure(app);
+//configs.configure(app);
 
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
@@ -11,10 +11,10 @@ var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 var urlHelper = require('../libs/url_helper_mlb');
 var async = require('async');
-var Player = require('../libs/cassandra/player.js');
-app.use('/', require('../app.js'));
-var Bet = require('../libs/cassandra/bets.js');
-var User = require('../libs/cassandra/user/js');
+var Player = require('../libs/cassandra/baseballPlayer.js');
+//app.use('/', require('../app.js'));
+var Bet = require('../libs/cassandra/bet.js');
+var User = require('../libs/cassandra/user.js');
 
 var sportsdataMlb = require('sportsdata').MLB;
 
@@ -36,6 +36,81 @@ function createRequest(url, callback) {
     });
 }
 
+function getDailyEventInfoAndLineups(year, month, day, callback) {
+  var url = urlHelper.getDailyEventInfoAndLineups(year, month, day);
+  createRequest(url, callback);
+}
+
+function getPlayByPlay(event, callback) {
+  var url = urlHelper.getPlayByPlayUrl(event);
+  createRequest(url, callback);
+}
+
+function getPlayByPlayForGame(event, callback) {
+  getPlayByPlay('000c465f-7c8c-46bb-8ea7-c26b2bc7c296', function(err, result) {
+    var retArr = [];
+    var prefixInning = result.play_by_play.inning
+    var length = prefixInning.length;
+    console.log(prefixInning[7].inning_half[1].at_bat[0].description);
+    for (var i = length - 1; i >= 0; i--) {
+      var currentHalves = prefixInning[i].inning_half
+      var halvesLength = currentHalves.length
+      for (var j = halvesLength - 1; j >= 0; j--) {
+        if (currentHalves[j].at_bat !== undefined) {
+          var atbatLength = currentHalves[j].at_bat.length;
+          if (atbatLength > 0 ) {
+            for (var k = atbatLength - 1; k >= 0; k--) {
+              var description = result.play_by_play.inning[i].inning_half[j].at_bat[k].description;
+              if (description !== undefined) {
+                retArr.push(description[0]);
+              }
+            }
+          }
+        }
+      }
+    }
+    callback(null, retArr);
+  });
+}
+
+function getDailyBoxscore(year, month, day, callback) {
+  var url = urlHelper.getDailyBoxscoreUrl(year, month, day);
+  createRequest(url, callback);
+}
+
+function getNameAndScore(boxscore, callback) {
+  var retVal;
+  if (boxscore.$.status === 'scheduled') {
+    retVal = {
+      'homeName': boxscore.home[0].$.name,
+      'visitorName': boxscore.visitor[0].$.name,
+      'startTime': 'Not Yet Started'
+    }
+  }
+  else {
+    retVal = {
+      'homeName': boxscore.home[0].$.name,
+      'homeScore': boxscore.home[0].$.runs,
+      'visitorName': boxscore.visitor[0].$.name,
+      'visitorScore': boxscore.visitor[0].$.runs
+    }
+  }
+  callback(null, retVal);
+}
+
+var getEachBoxScore = function(year, month, day, callback) {
+  getDailyBoxscore(year, month, day, function(err, result) {
+    async.map(result.boxscores.boxscore, getNameAndScore, function(err, result){
+      if (err) {
+        console.log(err);
+      }
+      else {
+        callback(null, result);
+      }
+    });
+  });
+}
+
 /*
 function getGameStatistics(event, callback) {
   var url = urlHelper.getGameStatisticsUrl(event);
@@ -55,8 +130,8 @@ function calculateFantasyPoints(playerId) {
 
 }
 */
-/*
-calculateMlbFantasyPoints = function(playerObject, callback) {
+
+var calculateMlbFantasyPoints = function(playerObject, callback) {
   var playerId = playerObject.playerId; //player is id not name
   var isOnHomeTeam = playerObject.isOnHomeTeam;
   var gameId = playerObject.prefixSchedule.$.id
@@ -72,8 +147,10 @@ calculateMlbFantasyPoints = function(playerObject, callback) {
             count = count + prefixHitting[i].tb
                           + prefixHitting[i].rbi
                           + prefixHitting[i].onbase.bb
+                          + prefixHitting[i].onbase.hbp
                           + prefixHitting[i].runs.total
                           - prefixHitting[i].steal.caught
+                          - 0.5 * prefixHitting[i].outs.ktotal
                           + 2 * prefixHitting[i].steal.stolen;
           }
         }
@@ -82,71 +159,30 @@ calculateMlbFantasyPoints = function(playerObject, callback) {
         for (var j = 0; j < length; j++) {
           if (playerId === prefixPitching[j].id && prefixPitching[j].games.start == 1) {
             var tempCount;
-            if (prefixPitching[j].runs.earned == 0) {
-              tempCount = 7;
-            }
-            else if (prefixPitching[j].runs.earned == 1) {
-              tempCount = 5;
-            }
-            else if (prefixPitching[j].runs.earned == 2) {
-              tempCount = 3;
-            }
-            else if (prefixPitching[j].runs.earned == 3) {
-              tempCount = 2;
-            }
-            else if (prefixPitching[j].runs.earned == 4) {
-              tempCount = 1;
+
+            if (prefixPitching[j].games.win === 1) {
+              count = count + 7;
             }
             else {
-              tempCount = 0;
-            }
-            count = count + tempCount;
-
-            var tempCountK;
-            if (prefixPitching[j].outs.ktotal <= 5) {
-              tempCountK = 0;
-            }
-            else if (prefixPitching[j].outs.ktotal <= 7) {
-              tempCountK = 1;
-            }
-            else if (prefixPitching[j].outs.ktotal <= 9) {
-              tempCountK = 2;
-            }
-            else if (prefixPitching[j].outs.ktotal <= 12) {
-              tempCountK = 3;
-            }
-            else if (prefixPitching[j].outs.ktotal <= 15) {
-              tempCountK = 5;
-            }
-            else if (prefixPitching[j].out.ktotal <= 19) {
-              tempCountK = 7;
-            }
-            else {
-              tempCountK = 10;
+              count = count - 5;
             }
 
-            count = count + tempCountK;
-
-            var tempCountHS;
-            var hittingAndWalks = prefixPitching[j].onbase.h + prefixPitching[j].onbase.bb;
-            if (hittingAndWalks == 0) {
-              tempCountHS = 20;
+            count = count + 0.5 *prefixPitching[j].outs.ktotal;
+            count = count - prefixPitching[j].runs.earned;
+            count = count - prefixPitching[j].onbase.h
+                          - prefixPitching[j].onbase.bb
+                          - prefixPitching[j].onbase.hbp;
+            count = count + prefixPitching[j].ip_1;
+            if (prefixPitching[j].runs.earned <= 3 && prefixPitching[j].ip_1 > 21) {
+              count = count + 3;
             }
-            else if (hittingAndWalks == 1) {
-
-            }
-
-            count = count + 3*prefixPitching[j].games.win;
-
-            count = count +
-
           }
         }
       }
     }
   })
 }
-*/
+
 
 function getDailyEventInfoAndLineups(year, month, day, callback) {
   var url = urlHelper.getDailyEventInfoAndLineups(year, month, day);
@@ -174,7 +210,7 @@ function getAllPlayerIdForGame(prefixScheduleElement, callback) {
     for (var j = 0; j < result.length; j++) {
       retArray.push({
         'name': result[j].preferred_name + " " + result[j].last_name,
-        'plyaerId': result[j].player_id,
+        'playerId': result[j].player_id,
         'isOnHomeTeam': false,
         'prefixSchedule': prefixScheduleElement
       })
@@ -197,15 +233,6 @@ function getAllPlayerIds(prefixSchedule, year, week, day, callback) {
     }
   );
 }
-
-/**
- * [getBetIds description]
- * @param  array     players    array of players
- * @param  {[type]}   year     [description]
- * @param  {[type]}   week     [description]
- * @param  {Function} callback [description]
- * @return {[type]}            [description]
- */
 
 function getAllFantasyPoints(playerObjects, callback) {
   async.map(playerObjects, calculateMlbFantasyPoints, function(err, result) {
@@ -313,3 +340,6 @@ function checkEndGames(year, week, day) {
     }
   })
 }
+
+
+exports.getEachBoxScore = getEachBoxScore;
