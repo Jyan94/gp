@@ -135,6 +135,9 @@ function createPlayerProfiles(player_id) {
     return createUrlWithEndpointAndEvent('player/profile', player_id);
 }
 
+function createEventInfoAndLineups(event_id) {
+    return createUrlWithEndpointAndEvent('event', event_id);
+}
 
 module.exports = {
 
@@ -186,5 +189,8 @@ module.exports = {
     },
     getPlayerProfiles: function(player_id) {
         return createUrlWithEndpointAndEvent('player/profile', player_id);
+    },
+    getEventInfoAndLineups: function(event_id) {
+        return createEventInfoAndLineups(event_id);
     }
 }

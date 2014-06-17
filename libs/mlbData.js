@@ -31,16 +31,13 @@ function createRequest(url, callback) {
                 callback(err, result);
             });
         } else {
+
+            console.log("boo: " + response)
             callback(error, body);
         }
     });
 }
-
-function getDailyEventInfoAndLineups(year, month, day, callback) {
-  var url = urlHelper.getDailyEventInfoAndLineups(year, month, day);
-  createRequest(url, callback);
-}
-
+/*
 function getPlayByPlay(event, callback) {
   var url = urlHelper.getPlayByPlayUrl(event);
   createRequest(url, callback);
@@ -73,6 +70,20 @@ function getPlayByPlayForGame(event, callback) {
   });
 }
 
+function getDailyEventInfoAndLineups(year, month, day, callback) {
+  var url = urlHelper.getDailyEventInfoAndLineups(year, month, day);
+  createRequest(url, callback);
+}
+*/
+function getEventInfoAndLineups(event_id, callback) {
+  var url = urlHelper.getEventInfoAndLineups(event_id);
+  createRequest(url, callback);
+}
+/*
+getEventInfoAndLineups('1c3275f1-1988-4937-8670-9562c024ec83', function (err, result) {
+  console.log(result.event.scheduled_start_time[0]);
+})
+*/
 function getDailyBoxscore(year, month, day, callback) {
   var url = urlHelper.getDailyBoxscoreUrl(year, month, day);
   createRequest(url, callback);
@@ -81,26 +92,36 @@ function getDailyBoxscore(year, month, day, callback) {
 function getNameAndScore(boxscore, callback) {
   var retVal;
   if (boxscore.$.status === 'scheduled') {
-    retVal = {
-      'homeName': boxscore.home[0].$.name,
-      'visitorName': boxscore.visitor[0].$.name,
-      'startTime': 'Not Yet Started'
-    }
+    getEventInfoAndLineups(boxscore.$.id, function (err, result) {
+      var startTime = result.event.scheduled_start_time[0];
+      retVal = {
+        'homeName': boxscore.home[0].$.abbr,
+        'visitorName': boxscore.visitor[0].$.abbr,
+        'startTime': startTime
+      }
+    });
   }
   else {
     retVal = {
-      'homeName': boxscore.home[0].$.name,
+      'homeName': boxscore.home[0].$.abbr,
       'homeScore': boxscore.home[0].$.runs,
-      'visitorName': boxscore.visitor[0].$.name,
+      'visitorName': boxscore.visitor[0].$.abbr,
       'visitorScore': boxscore.visitor[0].$.runs
     }
   }
   callback(null, retVal);
 }
 
+function delayGetNameAndScore(boxscore, callback) {
+  setTimeout(function() {
+    getNameAndScore(boxscore, callback);
+  }, 2000);
+}
+
+
 var getEachBoxScore = function(year, month, day, callback) {
   getDailyBoxscore(year, month, day, function(err, result) {
-    async.map(result.boxscores.boxscore, getNameAndScore, function(err, result){
+    async.map(result.boxscores.boxscore, delayGetNameAndScore, function(err, result){
       if (err) {
         console.log(err);
       }
@@ -130,7 +151,7 @@ function calculateFantasyPoints(playerId) {
 
 }
 */
-
+/*
 var calculateMlbFantasyPoints = function(playerObject, callback) {
   var playerId = playerObject.playerId; //player is id not name
   var isOnHomeTeam = playerObject.isOnHomeTeam;
@@ -340,6 +361,6 @@ function checkEndGames(year, week, day) {
     }
   })
 }
-
+*/
 
 exports.getEachBoxScore = getEachBoxScore;
