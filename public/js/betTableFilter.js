@@ -1,3 +1,3 @@
 $(document).ready(function() {
-  $('#betTable').dataTable();
+  $('#tournaments').dataTable();
 });

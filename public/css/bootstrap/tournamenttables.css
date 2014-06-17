@@ -1,0 +1,17 @@
+body {
+  padding-bottom: 40px;
+  color: #fffffa;
+  background-color: #012148;
+  box-shadow: inset 0 0 100px rgba(110,110,0,.5);
+}
+
+
+
+table, td, th {
+    border: 1px solid green;
+}
+
+th {
+    background-color: green;
+    color: white;
+}

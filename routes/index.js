@@ -24,13 +24,14 @@ app.get('/features', staticPages.features);
 app.get('/home', staticPages.home);
 app.get('/rules', staticPages.rules);
 app.get('/terms', staticPages.terms);
+app.get('/tournamenttables', staticPages.tournamenttables);
 
 //login
 var login = require('routes/registry/login');
 app.route('/login')
 .get(login.redirectLogin)
 .get(login.renderLogin)
-.post(passport.authenticate('local', 
+.post(passport.authenticate('local',
   { successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true }));
