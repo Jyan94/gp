@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS contest_B (
   game_type text,
   maximum_entries int,
   minimum_entries int,
-  pay_outs map<int, int>,
+  pay_outs map<int, double>,
   processed_payouts boolean,
   processed_payouts_time timestamp,
   sport text,
