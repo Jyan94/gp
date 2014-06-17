@@ -38,3 +38,33 @@ exports.queryBatch = function(cql, consistency, callback) {
     callback(err, result);
   });
 };
+
+/**
+ * function to allow one to select multiple columns
+ * @param  {string}   cqlFirstHalf
+ * string for first part of query
+ * @param  {string}   cqlSecondHalf
+ * string for last part of query
+ * @param  {array}   fields
+ * columns to select
+ * @param  {[type]}   consistency   [description]
+ * @param  {Function} callback      [description]
+ */
+exports.queryMultipleFields = function(
+  cqlFirstHalf, 
+  cqlSecondHalf, 
+  fields,
+  params, 
+  consistency, 
+  callback) {
+  var query = cqlFirstHalf + ' ';
+  for (var i = 0; i !== fields.length; ++i) {
+    query += fields[i];
+    if (i === fields.length - 1) {
+      query += ','
+    }
+    query += ' ';
+  }
+  query += cqlSecondHalf;
+  exports.query(query, params, consistency, callback);
+}

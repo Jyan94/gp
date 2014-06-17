@@ -36,7 +36,7 @@ exports.features = function (req, res) {
 
 exports.home = function (req, res) {
   if (req.user) {
-    res.render('static/home.ejs', {link: 'logout', display: 'Logout'});
+    res.redirect('/user');
   }
   else {
     res.render('static/home.ejs', {link: 'login', display: 'Login'});
