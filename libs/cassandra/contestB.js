@@ -10,7 +10,6 @@ var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 
-
 /** 
  * ====================================================================
  *  INSERT QUERY
@@ -19,21 +18,19 @@ var multiline = require('multiline');
 var INSERT_CONTEST_QUERY = multiline(function() {/*
   INSERT INTO contest_B (
     athletes,
-    cancelled,
     commission,
     contest_deadline_time,
     contest_end_time,
     contest_id,
     contest_start_time,
+    contest_state,
     contestants,
     current_entries,
     entry_fee,
     game_type,
     maximum_entries,
     minimum_entries,
-    open,
     pay_outs,
-    processed_payouts,
     processed_payouts_time,
     sport,
     starting_virtual_money,
@@ -42,7 +39,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     (?, ?, ?, ?, ?, 
      ?, ?, ?, ?, ?, 
      ?, ?, ?, ?, ?,
-     ?, ?, ?, ?, ?);
+     ?, ?, ?);
 */});
 
 /* 
@@ -95,8 +92,25 @@ var SELECT_CONTESTS_TO_PROCESS_QUERY = multiline(function(){/*
 */});
 
 var ADD_CONTESTANT_QUERY = multiline(function(){/*
-  
+  UPDATE 
+    contest_B
+  SET 
+    contestants['?'].instances = contestant['?'].instances + ?
+  WHERE
+    contestId = ?
+  IF
+    current_entries < maximum_entries;
 */});
+
+var NEW_CONTESTANT_INSTANCE = {
+  virtual_money_remaining : 0,
+  bets : {}
+}
+
+/**
+ * batch query
+ * query1: update set 
+ */
 
 /**
  * takes an array of fields to insert, must be in order of the query
@@ -136,6 +150,8 @@ exports.selectContestsToProcessPayouts = function() {
  * first checks if tournament is full
  * checks if username is already in contest and if it is, appends another
  * newly initialized contestant instance
+ * performs a post check after adding user to make sure the contest 
+ * is not over capacity
  * @param {[type]}   username  [description]
  * @param {[type]}   contestId [description]
  * @param {Function} callback  [description]
