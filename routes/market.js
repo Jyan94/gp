@@ -22,6 +22,8 @@ var getDailyScores = function(req, res, next) {
   var day = date.getDate();
   day = (day < 10 ? "0" : "") + day;
 
+  console.log(year, month, day);
+
   mlbData.getEachBoxScore(year, month, day, function(err, result) {
     if (err) {
       next(err);

@@ -21,20 +21,18 @@ var sportsdataMlb = require('sportsdata').MLB;
 sportsdataMlb.init('t', 4, 'grnayxvqv4zxsamxhsc59agu', 2014, 'REG');
 
 function createRequest(url, callback) {
+  request(url, function (error, response, body) {
+    if (!error && (response.statusCode === 200)) {
 
-    request(url, function (error, response, body) {
-
-        if (!error && response.statusCode == 200) {
-
-            // Parse the XML to JSON
-            parser.parseString(body, function (err, result) {
-                callback(err, result);
-            });
-        } else {
-            console.log("code error: " + response.statusCode);
-            callback(error, body);
-        }
-    });
+        // Parse the XML to JSON
+        parser.parseString(body, function (err, result) {
+            callback(err, result);
+        });
+    } else {
+        console.log("code error: " + response.statusCode);
+        callback(error, body);
+    }
+  });
 }
 
 function getPlayByPlay(event, callback) {
@@ -71,6 +69,7 @@ function getPlayByPlayForGame(event, callback) {
 
 function getEventInfoAndLineups(event_id, callback) {
   var url = urlHelper.getEventInfoAndLineups(event_id);
+  console.log(url);
   createRequest(url, callback);
 }
 /*
@@ -91,15 +90,24 @@ function getDailyBoxscore(year, month, day, callback) {
 
 function getNameAndScore(boxscore, callback) {
   var retVal;
+  console.log(boxscore)
   if (boxscore.$.status === 'scheduled') {
+    while (1) {
+        
+    }
     getEventInfoAndLineups(boxscore.$.id, function(err, result) {
-      if (result === undefined || !result.hasOwnProperty('event')) {
+      console.log("OOGLYBOOGLY", result);
+      while (1) {
+
+      }
+      if ((result === undefined) || !(result.hasOwnProperty('event'))) {
         console.log("adasda")
         setTimeout(function() {
           getNameAndScore(boxscore, callback);
         }, 10001)
       }
       else {
+        console.log("QUAAAAA");
         var startTime = result.event.scheduled_start_time[0];
         retVal = {
           'homeName': boxscore.home[0].$.abbr,
@@ -123,7 +131,7 @@ function getNameAndScore(boxscore, callback) {
 
 var getEachBoxScore = function(year, month, day, callback) {
   getDailyBoxscore(year, month, day, function(err, result) {
-    async.map(result.boxscores.boxscore, getNameAndScore, function(err, result){
+    async.map([result.boxscores.boxscore[0]], getNameAndScore, function(err, result){
       if (err) {
         console.log(err);
       }
