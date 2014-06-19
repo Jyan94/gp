@@ -27,10 +27,7 @@ exports.insertPending = function (params, callback) {
   }
   ];
   
-  cassandra.queryBatch(query, cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+  cassandra.queryBatch(query, cql.types.consistencies.one, callback);
 };
 
 
@@ -63,10 +60,7 @@ exports.insertCurrent = function(takerUserId, params, callback) {
     }
   ];
 
-  cassandra.queryBatch(query, cql.types.consistencies.one,
-    function(err) {
-      callback(err);
-    });
+  cassandra.queryBatch(query, cql.types.consistencies.one, callback);
 }
 
 var DELETE_BET_CQL_1 = multiline(function () {/*
@@ -109,10 +103,7 @@ exports.delete = function(betsTable, betId, callback) {
           },
         ];
 
-        cassandra.queryBatch(query, cql.types.consistencies.one,
-          function(err) {
-            callback(err);
-          });
+        cassandra.queryBatch(query, cql.types.consistencies.one, callback);
       }
     });
 }
@@ -191,10 +182,7 @@ exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
       betsTable + ' ' + 
       SELECT_BETS_MULTIPLE_CQL_2 + ' (' + 
       filter + ');';
-    cassandra.query(query, params, cql.types.consistencies.one,
-      function (err, result) {
-        callback(err, result);
-      });
+    cassandra.query(query, params, cql.types.consistencies.one, callback);
   }
 }
 

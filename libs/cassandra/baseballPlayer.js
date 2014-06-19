@@ -32,20 +32,22 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
 var INSERT_CURRENT_VALUE_INDEX = 1;
 var INSERT_STATISTICS_INDEX = 14;
 exports.insert = function (fields, callback) {
-  cassandra.query(INSERT_PLAYER_CQL, fields, cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+  cassandra.query(
+    INSERT_PLAYER_CQL, 
+    fields, 
+    cql.types.consistencies.one, 
+    callback);
 };
 
 var DELETE_PLAYER_CQL = multiline(function() {/*
   DELETE FROM baseball_player WHERE player_id = ?;
 */});
 exports.delete = function (playerId, callback) {
-  cassandra.query(DELETE_PLAYER_CQL, [playerId], cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+  cassandra.query(
+    DELETE_PLAYER_CQL, 
+    [playerId], 
+    cql.types.consistencies.one, 
+    callback);
 };
 
 var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
@@ -73,9 +75,7 @@ exports.update = function (playerId, fields, params, callback) {
     UPDATE_PLAYER_CQL_1 + ' ' + updates + ' ' + UPDATE_PLAYER_CQL_2,
     params.concat([playerId]), 
     cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+    callback);
 };
 
 var SELECT_PLAYER_CQL = multiline(function () {/*
@@ -86,9 +86,7 @@ exports.select = function (playerId, callback) {
     SELECT_PLAYER_CQL,
     [playerId], 
     cql.types.consistencies.one,
-    function(err, result) {
-      callback(err, result);
-  });
+    callback);
 };
 
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
@@ -99,20 +97,18 @@ exports.selectUsingTeam = function (team, callback) {
     SELECT_PLAYERS_USING_TEAM_CQL, 
     [team], 
     cql.types.consistencies.one,
-    function(err, result) {
-      callback(err, result);
-    });
+    callback);
 }
 
 var AUTOCOMPLETE_QUERY = multiline(function() {/*
   SELECT player_id, full_name FROM baseball_player
 */});
 exports.selectAllPlayerNames = function(callback) {
-  cassandra.query(AUTOCOMPLETE_QUERY, [], cql.types.consistencies.one,
-    function(err, result) {
-      callback(err, result);
-    }
-  );
+  cassandra.query(
+    AUTOCOMPLETE_QUERY, 
+    [], 
+    cql.types.consistencies.one, 
+    callback);
 }
 
 var ADD_STATISTICS_QUERY = multiline(function() {/*
@@ -123,9 +119,7 @@ exports.addStatistics = function (playerId, statisticsId, callback) {
     ADD_STATISTICS_QUERY, 
     [[statisticsId], playerId], 
     cql.types.consistencies.one,
-    function(err) {
-      callback(err);
-    }
+    callback
   );
 }
 
@@ -137,8 +131,6 @@ exports.deleteStatistics = function (playerId, statisticsId, callback) {
     DELETE_SPECIFIC_STATISTICS_QUERY, 
     [[statisticsId], playerId], 
     cql.types.consistencies.one,
-    function(err) {
-      callback(err);
-    }
+    callback
   );
 }
