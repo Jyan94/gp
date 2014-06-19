@@ -94,10 +94,9 @@ function getNameAndScore(boxscore, callback) {
   if (boxscore.$.status === 'scheduled') {
     getEventInfoAndLineups(boxscore.$.id, function(err, result) {
       if (result === undefined || !result.hasOwnProperty('event')) {
-        console.log("adasda")
         setTimeout(function() {
           getNameAndScore(boxscore, callback);
-        }, 10001)
+        }, 1001);
       }
       else {
         var startTime = result.event.scheduled_start_time[0];
@@ -134,6 +133,69 @@ var getEachBoxScore = function(year, month, day, callback) {
   });
 }
 
+/*
+getDailyEventInfoAndLineups('2014', '06', '11', function(err, result) {
+  console.log(result.events.event[1].game[0].visitor[0].roster[0].player[2].$);
+});
+*/
+
+/*takes in a schedule object and returns all the player ids for the home team
+and away team for the particular game*/
+function getAllPlayerIdForGame(prefixScheduleElement, callback) {
+  var retArray = [];
+  if (prefixScheduleElement.$.status === 'closed') {
+    var result = prefixScheduleElement.game[0].home[0].roster[0].player;
+    for (var i = 0; i < result.length; i++) {
+      retArray.push({
+        'name': result[i].$.preferred_name + " " + result[i].$.last_name,
+        'playerId': result[i].$.id,
+        'isOnHomeTeam': true,
+        'prefixSchedule': prefixScheduleElement
+      })
+    }
+    result = prefixScheduleElement.game[0].visitor[0].roster[0].player;
+    for (var j = 0; j < result.length; j++) {
+      retArray.push({
+        'name': result[j].$.preferred_name + " " + result[j].$.last_name,
+        'playerId': result[j].$.id,
+        'isOnHomeTeam': false,
+        'prefixSchedule': prefixScheduleElement
+      })
+    }
+    callback(null, retArray);
+  }
+}
+
+/* goes through all the games in a particular day and gets the playerIds*/
+function getAllPlayerIds(prefixSchedule, year, week, day, callback) {
+  async.map(
+    prefixSchedule,
+    getAllPlayerIdForGame,
+    function(err, result) {
+      if (err) {
+        console.log(err);
+      }
+      else {
+        callback(null, result, year, week, day);
+      }
+    }
+  );
+}
+
+
+/* makes the formatting into an array of objects*/
+function reduceMatrixToArray(matrix, year, week, day, retCallback) {
+  async.reduce(matrix, [], function(memo, playerArray, callback) {
+    for (var i = 0; i !== playerArray.length; ++i) {
+      memo.push(playerArray[i]);
+    }
+    callback(null, memo);
+  }, function (err, result) {
+    retCallback(null, result, year, week, day);
+  });
+}
+
+/* calculates the fantasy points for a specific player*/
 var calculateMlbFantasyPoints = function(playerObject, callback) {
   var playerId = playerObject.playerId; //player is id not name
   var isOnHomeTeam = playerObject.isOnHomeTeam;
@@ -233,53 +295,9 @@ var calculateMlbFantasyPoints = function(playerObject, callback) {
   });
 }
 
-/*
-getDailyEventInfoAndLineups('2014', '06', '11', function(err, result) {
-  console.log(result.events.event[1].game[0].visitor[0].roster[0].player[2].$);
-});
-*/
-
-function getAllPlayerIdForGame(prefixScheduleElement, callback) {
-  var retArray = [];
-  if (prefixScheduleElement.$.status === 'closed') {
-    var result = prefixScheduleElement.game[0].home[0].roster[0].player;
-    for (var i = 0; i < result.length; i++) {
-      retArray.push({
-        'name': result[i].$.preferred_name + " " + result[i].$.last_name,
-        'playerId': result[i].$.id,
-        'isOnHomeTeam': true,
-        'prefixSchedule': prefixScheduleElement
-      })
-    }
-    result = prefixScheduleElement.game[0].visitor[0].roster[0].player;
-    for (var j = 0; j < result.length; j++) {
-      retArray.push({
-        'name': result[j].$.preferred_name + " " + result[j].$.last_name,
-        'playerId': result[j].$.id,
-        'isOnHomeTeam': false,
-        'prefixSchedule': prefixScheduleElement
-      })
-    }
-    callback(null, retArray);
-  }
-}
-
-
-function getAllPlayerIds(prefixSchedule, year, week, day, callback) {
-  async.map(
-    prefixSchedule,
-    getAllPlayerIdForGame,
-    function(err, result) {
-      if (err) {
-        console.log(err);
-      }
-      else {
-        callback(null, result, year, week, day);
-      }
-    }
-  );
-}
-
+/* calculates the fantasy points all the players score by using
+ calculateMlbFantasyPoints function which gets the fantasy point
+ for a specific player*/
 function getAllFantasyPoints(playerObjects, callback) {
 
   async.map(playerObjects, calculateMlbFantasyPoints, function(err, result) {
@@ -293,6 +311,7 @@ function getAllFantasyPoints(playerObjects, callback) {
   })
 }
 
+/* gets all the bets on a specific player*/
 function getBetsFromPlayerId (playerId, callback) {
   Bet.selectUsingPlayerId('current_bets', playerId, function(err, result) {
     if (err) {
@@ -305,6 +324,7 @@ function getBetsFromPlayerId (playerId, callback) {
   })
 }
 
+/* gets the bets on all the players*/
 function getBets(playerObjects, fantasyPointsArray, callback) {
   var playerIdArr = [];
   console.log("5");
@@ -321,6 +341,7 @@ function getBets(playerObjects, fantasyPointsArray, callback) {
   })
 }
 
+/* calculates the winnings for a better*/
 function calculateBet(bet, fantasyPoints, callback) {
   console.log("1");
   var rows = bet;
@@ -340,6 +361,7 @@ function calculateBet(bet, fantasyPoints, callback) {
   });
 }
 
+/* calculates all the winnings for all the players*/
 function processArrayBets(betsArray, fantasyPoints) {
 var errCallback = function(err) {
     if (err) {
@@ -357,17 +379,8 @@ var errCallback = function(err) {
   }
 }
 
-function reduceMatrixToArray(matrix, year, week, day, retCallback) {
-  async.reduce(matrix, [], function(memo, playerArray, callback) {
-    for (var i = 0; i !== playerArray.length; ++i) {
-      memo.push(playerArray[i]);
-    }
-    callback(null, memo);
-  }, function (err, result) {
-    retCallback(null, result, year, week, day);
-  });
-}
 
+/*updates everyone's totals after a game is finished*/
 function calculateAllWinnings(schedule, year, week, day) {
   var prefixSchedule = schedule.events.event;
 
@@ -382,9 +395,9 @@ function calculateAllWinnings(schedule, year, week, day) {
       reduceMatrixToArray,
       //get all FantasyPoints associated with the players
       getAllFantasyPoints,
-
+      //gets the bets on all the players(athletes)
       getBets,
-
+      //gets the bets placed on the athletes and updates the user winnings
       processArrayBets
     ],
     function(err) {
@@ -406,4 +419,5 @@ function checkEndGames(year, week, day) {
   })
 }
 
+checkEndGames('2014', '06', '15');
 exports.getEachBoxScore = getEachBoxScore;
