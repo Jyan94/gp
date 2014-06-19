@@ -1,6 +1,6 @@
-/*$(document).ready(function() {
-    console.log($('#tournaments').dataTable());
-  $('#tournaments').dataTable().columnFilter({
+$(document).ready(function() {
+  $('#tournaments').dataTable();
+  /*$('#tournaments').dataTable().columnFilter({
     sPlaceHolder: "head:after",
     aoColumns: [
                 {type: "text"},
@@ -12,5 +12,5 @@
                 {type: "text"},
                 null
                 ]
-  });
-});*/
+  });*/
+});
