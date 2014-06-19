@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS contest_capacity (
+  contest_id,
+  current_entries counter,
+  maximum_entries int,
+  PRIMARY KEY (contest_id, maximum_entries)
+);
+
 CREATE TYPE IF NOT EXISTS contest_B_bet (
   predicted_value double,
   amount_risked int
@@ -19,21 +26,19 @@ CREATE TYPE IF NOT EXISTS athlete (
 
 CREATE TABLE IF NOT EXISTS contest_B (
   athletes map<int, athlete>,
-  cancelled boolean,
   commission_earned int,
   contest_deadline_time timestamp,
   contest_end_time timestamp,
   contest_id uuid,
   contest_start_time timestamp,
+  contest_state int,
   contestants map<text, contestant>,
   current_entries int,
   entry_fee int,
   game_type text,
   maximum_entries int,
   minimum_entries int,
-  open boolean,
   pay_outs map<int, double>,
-  processed_payouts boolean,
   processed_payouts_time timestamp,
   sport text,
   starting_virtual_money int,
@@ -43,14 +48,21 @@ CREATE TABLE IF NOT EXISTS contest_B (
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
 CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
 
-//sport is lowercase text
-//use username as key for contestants map
-//use int as key for athletes in game as tournament ids
-//contest_start_time - when we create the contest
-//contest_deadline_time - actually matters for contestants, deadline for submitting
-//contest_end_time - is end time of the real-world event and after processing payouts
-//commission earned, processed_payouts - updated after contest ends
-//contest is not open when 
+/*
+sport is lowercase text
+use username as key for contestants map
+use int as key for athletes in game as tournament ids
+contest_start_time - when we create the contest
+contest_deadline_time - actually matters for contestants, deadline for submitting
+contest_end_time - is end time of the real-world event and after processing payouts
+commission earned, processed_payouts - updated after contest ends
+contest states:
+0: after created and before deadline
+1: filled
+2: after deadline
+3: processed payouts
+4: cancelled
+*/
 
 CREATE TYPE IF NOT EXISTS baseball_team (
   team_id uuid,

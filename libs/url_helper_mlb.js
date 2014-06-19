@@ -1,4 +1,5 @@
 var config = require('../config');
+var constant = require('../config/constants')
 
 function createUrlWithEndpointAndYear(endpoint) {
     // URL should look like: http://api.sportsdatallc.org/mlb-[access_level][version]/[endpoint]/[year].xml?api_key=[your_api_key]
@@ -10,7 +11,7 @@ function createUrlWithEndpointAndYear(endpoint) {
         + '/'
         + '2014'
         + '.xml?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlWithEndpointAndDate(endpoint, year, month, day) {
@@ -27,7 +28,7 @@ function createUrlWithEndpointAndDate(endpoint, year, month, day) {
         + '/'
         + day
         + '.xml?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlWithEndpointAndEvent(endpoint, event) {
@@ -40,7 +41,7 @@ function createUrlWithEndpointAndEvent(endpoint, event) {
         + '/'
         + event
         + '.xml?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlWithEndpoint(endpoint) {
@@ -51,7 +52,7 @@ function createUrlWithEndpoint(endpoint) {
         + '/'
         + endpoint
         + '?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlPlayerManifests() {
