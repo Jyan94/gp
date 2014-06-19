@@ -1,4 +1,5 @@
-$(document).ready(function() {
+/*$(document).ready(function() {
+    console.log($('#tournaments').dataTable());
   $('#tournaments').dataTable().columnFilter({
     sPlaceHolder: "head:after",
     aoColumns: [
@@ -12,4 +13,4 @@ $(document).ready(function() {
                 null
                 ]
   });
-});
+});*/
