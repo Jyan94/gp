@@ -1,13 +1,25 @@
-// Something happens
-$('.editbtn').on('click', function() {
 
-  // State changes
-  $('body').toggleClass('dialogIsOpen');
+
+// Something happens
+$('#tournaments tbody tr').on('click', function (e) {
+  console.log(e);
+
+  if (e.target.className === 'editbtn') {
+    e.stopPropagation();
+  }
+  else {
+    // State changes
+    $('body').toggleClass('dialogIsOpen');
+  }
+});
+
+$('.editbtn').on('click', function () {
 
 });
 
+
 // Something happens
-$('.tournament-dialog-box-backdrop').on('click', function() {
+$('.tournament-dialog-box-backdrop').on('click', function () {
 
   // State changes
   $('body').toggleClass('dialogIsOpen');
