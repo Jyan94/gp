@@ -29,12 +29,7 @@ exports.queryOneRow = function(cql, params, consistency, callback) {
 };
 
 exports.queryBatch = function(cql, consistency, callback) {
-  //console.log(callback.toString());
   client.executeBatch(cql, consistency, function(err, result) {
-    if (result) {
-      result = result.rows;
-    }
-
     callback(err, result);
   });
 };
@@ -51,12 +46,7 @@ exports.queryBatch = function(cql, consistency, callback) {
  * @param  {Function} callback      [description]
  */
 exports.queryMultipleFields = function(
-  cqlFirstHalf, 
-  cqlSecondHalf, 
-  fields,
-  params, 
-  consistency, 
-  callback) {
+  cqlFirstHalf, cqlSecondHalf, fields, params, consistency, callback) {
   var query = cqlFirstHalf + ' ';
   for (var i = 0; i !== fields.length; ++i) {
     query += fields[i];

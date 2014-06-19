@@ -1,8 +1,9 @@
-CREATE TABLE IF NOT EXISTS contest_capacity (
-  contest_id,
+CREATE TABLE IF NOT EXISTS contest_count_entries (
+  contest_id uuid,
   current_entries counter,
   maximum_entries int,
-  PRIMARY KEY (contest_id, maximum_entries)
+  minimum_entries int,
+  PRIMARY KEY (contest_id, maximum_entries, minimum_entries)
 );
 
 CREATE TYPE IF NOT EXISTS contest_B_bet (
@@ -33,17 +34,14 @@ CREATE TABLE IF NOT EXISTS contest_B (
   contest_start_time timestamp,
   contest_state int,
   contestants map<text, contestant>,
-  current_entries int,
   entry_fee int,
   game_type text,
-  maximum_entries int,
-  minimum_entries int,
   pay_outs map<int, double>,
   processed_payouts_time timestamp,
   sport text,
   starting_virtual_money int,
   total_prize_pool int,
-  PRIMARY KEY (sport, open, cancelled, processed_payouts, contest_id)
+  PRIMARY KEY (sport, state, contest_id)
 );
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
 CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
