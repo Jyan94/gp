@@ -34,7 +34,6 @@ function createSettings(
   maximumEntries,
   minimumEntries,
   athletes,
-  commissionEarned,
   deadlineTime,
   entryFee,
   gameType,
@@ -45,11 +44,12 @@ function createSettings(
 
   return [
     [
-      minimumEntries,
-      maximumEntries
+      cql.types.uuid(),
+      maximumEntries,
+      minimumEntries
     ], [
       athletes,
-      commissionEarned,
+      0,
       deadlineTime,
       null,
       cql.types.uuid(),
@@ -72,15 +72,15 @@ function createType1Settings(athletes, deadlineTime, sport) {
     10,
     9,
     athletes,
-    15,
     deadlineTime,
     10,
-    'filler gametype',
+    'daily prophet',
     {
       1: 60,
       2: 25
     },
     sport,
-    10000
+    10000,
+    85
   );
 }

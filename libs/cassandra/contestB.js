@@ -105,7 +105,6 @@ exports.delete = function(contestId, callback) {
  * SELECT QUERIES
  * ====================================================================
  */
-
 function sortById(array, callback) {
   callback(
     null, 
