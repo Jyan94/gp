@@ -14,7 +14,7 @@ sportsdataMlb.init('t', 4, 'f8rhpkpxsxdvhzrr3vmxn8wk', 2014, 'REG');
           'week': week
     }
  */
-exports.calculateFantasyPoints = function(playerObject, callback) {
+exports.calculateNflFantasyPoints = function(playerObject, callback) {
   var playerName = playerObject.player;
   var teamName = playerObject.prefixSchedule.$.home;
   var opponentName = playerObject.prefixSchedule.$.away;

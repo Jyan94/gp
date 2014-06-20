@@ -13,7 +13,7 @@ app.use('/', require('../app.js'));
 var User = require('../libs/cassandra/user.js');
 var Bet = require('../libs/cassandra/bet.js');
 var Player = require('../libs/cassandra/footballPlayer.js');
-var calculate = require('../libs/calculateFantasyPoints.js');
+var calculate = require('../libs/calculateNflFantasyPoints.js');
 var sportsdataNfl = require('sportsdata').NFL;
 var sportsdataMlb = require('sportsdata').MLB;
 var async = require('async');
@@ -167,7 +167,7 @@ function getBetIds(players, year, week, callback) {
   //returns an array of fantasy points as result
   //matches playerIds array
   console.log(mapArray);
-  async.map(mapArray, calculate.calculateFantasyPoints,
+  async.map(mapArray, calculate.calculateNflFantasyPoints,
     function (err, result) {
       if (err) {
         console.log(err);
@@ -282,7 +282,7 @@ checkEndGames(2013, 1);
 //});
 //tests
 //for calculating fantasy points
-/*calculate.calculateFantasyPoints('Andre Johnson', 'HOU', 'SD', false,
+/*calculate.calculateNflFantasyPoints('Andre Johnson', 'HOU', 'SD', false,
 '2013', 1,
 function(err, result) {
   if (err) {
