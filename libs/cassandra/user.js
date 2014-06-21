@@ -72,7 +72,8 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
   var query = [];
 
   if (moneyValuesLength !== userIdValuesLength) {
-    callback(new Error('Number of money values and user id values are not the same.'));
+    callback(
+      new Error('Number of money values and user id values are not the same.'));
   }
 
   exports.selectMultiple(userIdValues, function (err, result) {
@@ -116,7 +117,6 @@ exports.select = function (field, value, callback) {
     });
   }
 };
-
 
 var SELECT_USERS_MULTIPLE_CQL = multiline(function () {/*
   SELECT * FROM users WHERE user_id IN

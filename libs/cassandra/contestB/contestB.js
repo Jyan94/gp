@@ -351,28 +351,7 @@ function addUserInstanceToContest(user, contest, callback) {
     callback(new Error('contest is full'));
   }
   else {
-    var parallelArray =
-    [
-      function(callback) {
-        setContestant(
-          user.username, 
-          contestant, 
-          contest.current_entries, 
-          contest.contest_id,
-          callback);
-      },
-      function(callback) {
-        subtractMoneyFromUser(user, contest, callback);
-      }
-    ];
-
     contest.current_entries = contest.current_entries + 1;
-    if (contest.current_entries === contest.maximum_entries) {
-      parallelArray.push(function(callback) {
-        exports.setFilled(contest.contest_id, callback);
-      });
-    }
-
     var newContestantInstance = createNewContestantInstance(
           contest.starting_virtual_money,
           Object.keys(contest.athletes).length);
@@ -386,7 +365,20 @@ function addUserInstanceToContest(user, contest, callback) {
     }
     contestant = JSON.stringify(contestant);
 
-    async.parallel(parallelArray, function (err) {
+    async.parallel([
+      function(callback) {
+        setContestant(
+          user.username, 
+          contestant, 
+          contest.current_entries, 
+          contest.contest_id,
+          callback);
+      },
+      function(callback) {
+        subtractMoneyFromUser(user, contest, callback);
+      }
+    ],
+    function (err) {
       if (err) {
         callback(err);
       }
@@ -399,7 +391,7 @@ function addUserInstanceToContest(user, contest, callback) {
 }
 
 function releaseLock(contestId, callback) {
-  cassandra.query(RELEASE_LOCK_QUERY, [contestId], quorum, callback);
+  cassandra.query(RELEASE_LOCK_QUERY, [contestId], quorum, callback)
 }
 
 /**
@@ -426,55 +418,25 @@ exports.addContestant = function(user, contestId, callback) {
   callback);
 }
 
+var REMOVE_CONTESTANT_QUERY = multiline(function() {/*
+  DELETE
+    contestants['?'].instances[?]
+  FROM
+    contest_B
+  WHERE
+    contest_id = ?;
+*/});
+
 function removeInstanceFromContest(user, contest, instanceIndex, callback) {
-  var contestant = JSON.parse(contest.contestants[user.username]);
-  if (!(contestant.instances.length > instanceIndex && instanceIndex >= 0)) {
-    callback(new Error('out of bounds instance index'));
+  var queries = [
+  {
+    query: REMOVE_CONTESTANT_QUERY,
+    params: [contest.contest_id]
+  },
+  {
+    query: 
   }
-  else {
-    var parallelArray = 
-    [
-      function(callback) {
-        setContestant(
-          user.username, 
-          contestant, 
-          contest.current_entries - 1, 
-          contest.contest_id,
-          callback);  
-      },
-      function(callback) {
-        User.updateMoney(
-          [user.money + contest.entry_fee], 
-          [user.user_id], 
-          callback);
-      }
-    ]
-    contestant.instances.splice(instanceIndex, 1);
-    contestant = JSON.stringify(contestant);
-
-    var beforeDeadline = (+(new Date()) < +contest.contest_deadline_time);
-    if (contest.current_entries === contest.maximum_entries && beforeDeadline) {
-      parallelArray.push(function(callback) {
-        exports.setOpen(contest.contest_id, callback);
-      });
-    }
-    else if (contest.current_entries < contest.minimum_entries && 
-             !beforeDeadline) {
-      parallelArray.push(function(callback) {
-        exports.setCancelled(contest.contest_id, callback);
-      });
-    }
-
-    async.parallel(parallelArray, function (err) {
-      if (err) {
-        callback(err);
-      }
-      else {
-        callback(null, contest.contest_id);
-      }
-    });
-
-  }
+  ];
 }
 
 exports.removeContestantInstance = function(
@@ -486,69 +448,22 @@ exports.removeContestantInstance = function(
     obtainLock,
     readContest,
     function(user, contest, callback) {
-      removeInstanceFromContest(user, contest, instanceIndex, callback);
+
     },
     releaseLock
   ],
   callback)
 }
 
-function verifyInstance(instance, contest, callback) {
-  if (Object.keys(contest.athletes).length !== instance.bets.length) {
-    callback(new Error('invalid number of athletes'));
-  }
-  else {
-    async.reduce(instance.bets, 0, function(memo, item, callback) {
-      callback(null, memo + item); 
-    }, function (err, result) {
-      if (err) {
-        callback(err);
-      }
-      else if ((Math.round(instance.virtualMoneyRemaining + result)) !== 
-                contest.starting_virtual_money){
-        callback(new Error('numbers do not add up'));
-      }
-      else {
-        callback(null, contest);
-      }
-    });
-  }
-}
-
 var UPDATE_CONTESTANT_QUERY = multiline(function() {/*
   UPDATE
     contest_B
   SET
-    contestants['?'] = ?
+    contestants['?'].instances[?] = ?
   WHERE
     contest_id = ?;
 */});
 
-function updateInstance(
-  user, instanceIndex, updatedInstance, contest, callback) {
-  var instances = contest.contestestants[user.username];
-  //do a diff on the updated instance and current instance
-  //insert prices into tables
-  cassandra.query(
-    UPDATE_CONTESTANT_QUERY,
-    [user.username, JSON.stringify(instances), contest],
-    one,
-    callback);
-}
+exports.updateContestantInstance = function(updatedInstance) {
 
-exports.updateContestantInstance = function(
-  user, instanceIndex, updatedInstance, contestId, callback) {
-  async.waterfall([
-    function(callback) {
-      callback(null, contestId);
-    },
-    exports.selectById,
-    function(contest, callback) {
-      verifyInstance(updatedInstance, contest, callback);
-    },
-    function(contest, callback) {
-      updateInstance(user, instanceIndex, updatedInstance, contest, callback);
-    }
-  ],
-  callback);
 }
