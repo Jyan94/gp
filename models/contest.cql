@@ -1,41 +1,20 @@
-CREATE TABLE IF NOT EXISTS contest_count_entries (
-  contest_id uuid,
-  current_entries counter,
-  maximum_entries int,
-  minimum_entries int,
-  PRIMARY KEY (contest_id, maximum_entries, minimum_entries)
-);
-
-CREATE TYPE IF NOT EXISTS contest_B_bet (
-  predicted_value double,
-  amount_risked int
-);
-
-CREATE TYPE IF NOT EXISTS contestant_instance (
-  virtual_money_remaining int,
-  bets map<int, contest_B_bet>
-);
-
-CREATE TYPE IF NOT EXISTS contestant (
-  instances list<contestant_instance>
-);
-
-CREATE TYPE IF NOT EXISTS athlete (
-  athlete_id uuid,
-  athlete_name text
-);
-
 CREATE TABLE IF NOT EXISTS contest_B (
-  athletes map<int, athlete>,
+  athletes map<int, text>,
   commission_earned int,
   contest_deadline_time timestamp,
   contest_end_time timestamp,
   contest_id uuid,
   contest_start_time timestamp,
   contest_state int,
-  contestants map<text, contestant>,
+  contestants map<text, text>,
+  current_entries int,
+  entries_allowed_per_contestant int,
   entry_fee int,
   game_type text,
+  last_locked timestamp,
+  lock_current_entries boolean,
+  maximum_entries int,
+  minimum_entries int,
   pay_outs map<int, double>,
   processed_payouts_time timestamp,
   sport text,
@@ -45,6 +24,25 @@ CREATE TABLE IF NOT EXISTS contest_B (
 );
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
 CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
+/*
+athletes map of int to stringified athlete object:
+{
+  athleteId: uuid of athlete
+  athleteName: name of athlete
+}
+
+contestants map of username to stringified contestant object:
+{
+  instances: [
+  {
+    virtualMoneyRemaining : money remaining
+    bets: array of bets, indexed 0 - num athletes initialized to 0's
+    [0, 0, 0, 0, 0, ...]
+  },
+  ...
+  ]
+}
+ */
 
 /*
 sport is lowercase text
@@ -54,6 +52,7 @@ contest_start_time - when we create the contest
 contest_deadline_time - actually matters for contestants, deadline for submitting
 contest_end_time - is end time of the real-world event and after processing payouts
 commission earned, processed_payouts - updated after contest ends
+lock_current_entries - lock on adding and subtracting from current_entries
 contest states:
 0: after created and before deadline
 1: filled
@@ -132,3 +131,12 @@ CREATE TABLE IF NOT EXISTS baseball_player (
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics
+
+CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
+    player_id uuid,
+    time timeuuid,
+    fantasy_value double,
+    virtual_money_wagered int,
+    contest_mode text,
+    PRIMARY KEY (player_id, time)
+) WITH CLUSTERING ORDER BY (time ASC);

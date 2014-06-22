@@ -28,6 +28,14 @@ exports.queryOneRow = function(cql, params, consistency, callback) {
   });
 };
 
+/**
+ * performs a batch query
+ * @param  {array}   cql
+ * batch queries
+ * @param  {cql.types.consistency}   consistency [description]
+ * @param  {Function} callback
+ * takes arguments err, result where result is number of retries
+ */
 exports.queryBatch = function(cql, consistency, callback) {
   client.executeBatch(cql, consistency, function(err, result) {
     callback(err, result);
