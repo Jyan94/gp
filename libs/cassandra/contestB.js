@@ -498,20 +498,22 @@ function verifyInstance(instance, contest, callback) {
     callback(new Error('invalid number of athletes'));
   }
   else {
-    async.reduce(instance.bets, 0, function(memo, item, callback) {
+    var reduceFunc = function(memo, item, callback) {
       callback(null, memo + item); 
-    }, function (err, result) {
+    };
+    var reduceCallback = function (err, result) {
       if (err) {
         callback(err);
       }
-      else if ((Math.round(instance.virtualMoneyRemaining + result)) !== 
+      else if ((instance.virtualMoneyRemaining + result) !== 
                 contest.starting_virtual_money){
         callback(new Error('numbers do not add up'));
       }
       else {
         callback(null, contest);
       }
-    });
+    };
+    async.reduce(instance.bets, 0, reduceFunc, reduceCallback);
   }
 }
 
@@ -524,16 +526,32 @@ var UPDATE_CONTESTANT_QUERY = multiline(function() {/*
     contest_id = ?;
 */});
 
+function getAthleteIds(contest, callback) {
+  async.reduce()
+}
+function compareInstances(oldInstance, newInstance, contest, callback) {
+  var parallelArray = [];
+}
+
 function updateInstance(
   user, instanceIndex, updatedInstance, contest, callback) {
-  var instances = contest.contestestants[user.username];
+  var contestant = contest.contestestants[user.username];
+  var oldInstance = contestant.instance[instanceIndex];
+  compareInstances(oldInstance, updatedInstance, contest, function(err) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      contestant.instances[instanceIndex] = updatedInstance;
+      cassandra.query(
+        UPDATE_CONTESTANT_QUERY,
+        [user.username, JSON.stringify(contestant), contest],
+        one,
+        callback);
+    }
+  });
   //do a diff on the updated instance and current instance
   //insert prices into tables
-  cassandra.query(
-    UPDATE_CONTESTANT_QUERY,
-    [user.username, JSON.stringify(instances), contest],
-    one,
-    callback);
 }
 
 exports.updateContestantInstance = function(

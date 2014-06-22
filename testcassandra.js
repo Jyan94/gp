@@ -58,6 +58,13 @@ cassandra.queryOneRow(
 );
 */
 
+var hello = {
+  0: 'hi',
+  1: 'hi1',
+  2: 'hi2',
+  3: 'hi3'
+};
+/*
 (function (callback){
   var a = function(callback) {
     callback('hello world');
@@ -68,3 +75,8 @@ cassandra.queryOneRow(
 }(function(err){
   console.log('hello');
 }));
+*/
+
+for (var i = 0; hello.hasOwnProperty(i); ++i) {
+  console.log(hello[i]);
+}

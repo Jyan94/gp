@@ -131,3 +131,12 @@ CREATE TABLE IF NOT EXISTS baseball_player (
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics
+
+CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
+    player_id uuid,
+    time timeuuid,
+    fantasy_value double,
+    virtual_money_wagered int,
+    contest_mode text,
+    PRIMARY KEY (player_id, time)
+) WITH CLUSTERING ORDER BY (time ASC);

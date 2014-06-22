@@ -16,7 +16,7 @@ var multiline = require('multiline');
 //cassandra configurations
 var cassandraConfig = {
   hosts: ['localhost'],
-  keyspace: 'test'
+  keyspace: 'goprophet'
 };
 var cql = require('node-cassandra-cql');
 var CassandraStore = require('connect-cassandra-cql')(session);

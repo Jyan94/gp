@@ -426,17 +426,12 @@ var REMOVE_CONTESTANT_QUERY = multiline(function() {/*
   WHERE
     contest_id = ?;
 */});
-
+/*
+      for (var i = 0; result.athletes.hasOwnProperty(i); ++i) {
+        result.athletes[i] = JSON.parse(result.athletes[i]);
+      }
+*/
 function removeInstanceFromContest(user, contest, instanceIndex, callback) {
-  var queries = [
-  {
-    query: REMOVE_CONTESTANT_QUERY,
-    params: [contest.contest_id]
-  },
-  {
-    query: 
-  }
-  ];
 }
 
 exports.removeContestantInstance = function(
