@@ -17,8 +17,8 @@ for line in f:
 		print desired
 		session.execute(
 			"""
-			INSERT INTO baseball_player (player_id, first_name, last_name)
-			VALUES (%s, %s, %s)
+			INSERT INTO baseball_player (player_id, full_name, first_name, last_name)
+			VALUES (%s, %s, %s, %s)
 			"""
-			,(uuid.UUID(desired), a[13], a[14])
+			,(uuid.UUID(desired), a[13] + ' ' + a[14], a[13], a[14])
 	)

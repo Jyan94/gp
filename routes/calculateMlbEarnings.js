@@ -84,14 +84,14 @@ function reduceMatrixToArray(matrix, year, week, day, retCallback) {
 function getAllFantasyPoints(playerObjects, callback) {
   console.log(playerObjects.length);
 
-  async.map([playerObjects[1]], calculate.calculateMlbFantasyPoints,
+  async.map(playerObjects, calculate.calculateMlbFantasyPoints,
     function(err, result) {
       if (err) {
         console.log(err);
       }
       else {
         console.log(result);
-        callback(null, [playerObjects[1]], result);
+        callback(null, playerObjects, result);
       }
   });
 }
@@ -137,12 +137,26 @@ function calculateBet(bet, fantasyPoints, callback) {
 
   User.updateMoney([longWinnings, shortWinnings],
     [rows.long_better_id, rows.short_better_id],
-    function(err) {
+    function (err) {
       if (err) {
         console.log(err);
       }
       else {
-        callback(null);
+        Bet.insertPast([rows.bet_id, rows.long_better_id, rows.short_better_id,
+                        rows.player_id,
+                        {value: parseFloat(rows.bet_value), hint: 'double'},
+                        {value: parseFloat(rows.multiplier), hint: 'double'},
+                        {value: parseFloat(longWinnings), hint: 'double'},
+                        {value: parseFloat(shortWinnings), hint: 'double'},
+                        rows.game_id, rows.expiration],
+          function (err) {
+            if (err) {
+              console.log(err);
+            }
+            else {
+              callback(null);
+            }
+        });
       }
   });
 }
@@ -200,7 +214,19 @@ function checkEndGames(year, week, day) {
     else {
       calculateAllWinnings(schedule, year, week, day);
     }
-  })
+  });
+}
+
+function checkCurrentBets () {
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  month = (month < 10 ? "0" : "") + month;
+  var day = date.getDate();
+  day = (day < 10 ? "0" : "") + day;
+
+  console.log(year, month, day);
+  checkEndGames(year, month, day);
 }
 
 exports.getAllPlayerIdForGame = getAllPlayerIdForGame;
@@ -213,3 +239,4 @@ exports.calculateBet = calculateBet;
 exports.processArrayBets = processArrayBets;
 exports.calculateAllWinnings = calculateAllWinnings;
 exports.checkEndGames = checkEndGames;
+exports.checkCurrentBets = checkCurrentBets;

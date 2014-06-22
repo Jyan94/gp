@@ -33,7 +33,7 @@ function getPlayByPlay(event, callback) {
   createRequest(url, callback);
 }
 
-function getPlayByPlayForGame(event, callback) {
+/*function getPlayByPlayForGame(event, callback) {
   getPlayByPlay('000c465f-7c8c-46bb-8ea7-c26b2bc7c296', function(err, result) {
     var retArr = [];
     var prefixInning = result.play_by_play.inning
@@ -58,7 +58,7 @@ function getPlayByPlayForGame(event, callback) {
     }
     callback(null, retArr);
   });
-}
+}*/
 
 function getEventInfoAndLineups(event_id, callback) {
   var url = urlHelper.getEventInfoAndLineups(event_id);
@@ -134,7 +134,7 @@ var getEachBoxScore = function(year, month, day, callback) {
 
 exports.createRequest = createRequest;
 exports.getPlayByPlay = getPlayByPlay;
-exports.getPlayByPlayForGame = getPlayByPlayForGame;
+//exports.getPlayByPlayForGame = getPlayByPlayForGame;
 exports.getEventInfoAndLineups = getEventInfoAndLineups;
 exports.getDailyEventInfoAndLineups = getDailyEventInfoAndLineups;
 exports.getDailyBoxscore = getDailyBoxscore;

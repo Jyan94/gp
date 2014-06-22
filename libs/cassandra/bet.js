@@ -63,6 +63,31 @@ exports.insertCurrent = function(takerUserId, params, callback) {
   cassandra.queryBatch(query, cql.types.consistencies.one, callback);
 }
 
+var INSERT_PAST_BET_CQL_1 = multiline(function() {/*
+  DELETE FROM current_bets WHERE bet_id = ?;
+*/});
+var INSERT_PAST_BET_CQL_2 = multiline(function() {/*
+  INSERT INTO past_bets (
+    bet_id, long_better_id, short_better_id, player_id, bet_value, multiplier,
+    long_better_payoff, short_better_payoff, game_id, expiration
+  ) VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+*/});
+exports.insertPast = function(params, callback) {
+  var query = [
+    {
+      query: INSERT_PAST_BET_CQL_1,
+      params: [params[0]]
+    },
+    {
+      query: INSERT_PAST_BET_CQL_2,
+      params: [params]
+    }
+  ];
+
+  cassandra.queryBatch(query, cql.types.consistencies.one, callback);
+}
+
 var DELETE_BET_CQL_1 = multiline(function () {/*
   DELETE FROM user_id_to_bet_id WHERE user_id = ?;
 */});

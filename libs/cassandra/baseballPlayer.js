@@ -100,6 +100,18 @@ exports.selectUsingTeam = function (team, callback) {
     callback);
 }
 
+var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
+  SELECT * FROM player_images WHERE player_name = ?;
+*/});
+exports.selectImagesUsingPlayerName = function(playerName, callback) {
+  cassandra.query(SELECT_PLAYER_IMAGES_USING_PLAYERNAME,
+    [playerName], cql.types.consistencies.one,
+    function(err, result) {
+      callback(err, result);
+    }
+  );
+}
+
 var AUTOCOMPLETE_QUERY = multiline(function() {/*
   SELECT player_id, full_name FROM baseball_player
 */});
