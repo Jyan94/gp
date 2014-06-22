@@ -50,7 +50,7 @@ var logout = require('routes/registry/logout');
 app.get('/logout', logout.logout);
 
 //redirects to login if not logged in
-app.all('*', login.checkUser);
+//app.all('*', login.checkUser);
 
 //autocomplete
 var autocomplete = require('routes/autocomplete');
@@ -64,6 +64,14 @@ app.post('/addBets/:playerId', market.takeBet);
 app.get('/market', market.getDailyScores);
 
 //profile
+// Redirect the user to Facebook for authentication
+app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+// Facebook will redirect the user to this URL after approval.
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { successRedirect: '/user/',
+                                      failureRedirect: '/login' }));
 var profile = require('routes/profile');
 app.get('/user', profile.redirectProfile);
 app.get('/user/', profile.redirectProfile);

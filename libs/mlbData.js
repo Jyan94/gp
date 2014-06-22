@@ -81,14 +81,17 @@ function getNameAndScore(boxscore, callback) {
 
   if (boxscore.$.status === 'scheduled') {
     getEventInfoAndLineups(boxscore.$.id, function(err, result) {
-    
+
       if ((result === undefined) || !(result.hasOwnProperty('event'))) {
         setTimeout(function() {
           getNameAndScore(boxscore, callback);
         }, 1001);
       }
       else {
-        var startTime = result.event.scheduled_start_time[0];
+        var tmpStartTime = result.event.scheduled_start_time[0];
+        var tmpLocalTime = new Date(tmpStartTime).split(" ")[4];
+        var startTime = tmpLocalTime.toLocaleTimeString().slice(0, 5);
+
         retVal = {
           'homeName': boxscore.home[0].$.abbr,
           'visitorName': boxscore.visitor[0].$.abbr,
@@ -106,7 +109,6 @@ function getNameAndScore(boxscore, callback) {
       'visitorName': boxscore.visitor[0].$.abbr,
       'visitorScore': boxscore.visitor[0].$.runs
     }
-
     console.log('retVal: ' + retVal);
     callback(null, retVal);
   }

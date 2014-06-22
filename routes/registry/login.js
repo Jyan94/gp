@@ -2,17 +2,6 @@
 require('rootpath')();
 
 /**
- * redirects to login if not logged in
- */
-var checkUser = function (req, res, next) {
-  if (req.user) {
-    next();
-  } else {
-    res.redirect('/login');
-  }
-}
-
-/**
  * checks if user session is still active
  * if it is, redirects to market
  */
@@ -29,6 +18,6 @@ var renderLogin = function(req, res) {
   res.render('login.jade', { flash: results });
 }
 
-exports.checkUser = checkUser;
+//exports.checkUser = checkUser;
 exports.redirectLogin = redirectLogin;
 exports.renderLogin = renderLogin;
