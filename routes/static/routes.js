@@ -1,3 +1,5 @@
+//commented out for purposes of making site public before ready
+/*
 exports.about = function (req, res) {
   if (req.user) {
     res.render('static/about.ejs', {link: 'logout', display: 'Logout'});
@@ -33,7 +35,7 @@ exports.features = function (req, res) {
     res.render('static/features.ejs', {link: 'login', display: 'Login'});
   }
 }
-
+*/
 exports.home = function (req, res) {
   if (req.user) {
     res.redirect('/user');
@@ -42,7 +44,7 @@ exports.home = function (req, res) {
     res.render('static/home.ejs', {link: 'login', display: 'Login'});
   }
 }
-
+/*
 exports.rules = function (req, res) {
   if (req.user) {
     res.render('static/rules.ejs', {link: 'logout', display: 'Logout'});
@@ -60,3 +62,4 @@ exports.terms = function (req, res) {
     res.render('static/terms.ejs', {link: 'login', display: 'Login'});
   }
 }
+*/
