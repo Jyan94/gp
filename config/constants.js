@@ -20,3 +20,4 @@ exports.auth = {
   }
 };
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
+exports.contestBType = 'daily prophet';

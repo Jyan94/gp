@@ -119,3 +119,41 @@ exports.setProcessed = function(contestId, callback) {
 exports.setCancelled = function(contestId, callback) {
   updateContestState(CANCELLED, contestId, callback);
 }
+
+
+var SET_CONTESTANT_QUERY = multiline(function() {/*
+  UPDATE 
+    contest_B
+  SET 
+    contestants['?'] = ?,
+    current_entries = ?
+  WHERE
+    contestId = ?
+*/});
+
+function setContestant(username, contestant, numEntries, contestId, callback) {
+  cassandra.query(
+    SET_CONTESTANT_QUERY, 
+    [username, contestant, numEntries, contestId],
+    quorum,
+    callback);
+}
+exports.setContestant = setContestant;
+
+var UPDATE_CONTESTANT_QUERY = multiline(function() {/*
+  UPDATE
+    contest_B
+  SET
+    contestants['?'] = ?
+  WHERE
+    contest_id = ?;
+*/});
+
+function updateContestant(username, contestantString, contestId, callback) {
+  cassandra.query(
+    UPDATE_CONTESTANT_QUERY,
+    [username, contestantString, contestId],
+    one,
+    callback);
+}
+exports.updateContestant = updateContestant;

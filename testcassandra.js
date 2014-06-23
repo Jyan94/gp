@@ -59,7 +59,7 @@ cassandra.queryOneRow(
 */
 
 var hello = {
-  0: 'hi',
+  0: ['hi', 2],
   1: 'hi1',
   2: 'hi2',
   3: 'hi3'
@@ -76,7 +76,16 @@ var hello = {
   console.log('hello');
 }));
 */
+/*
+var str = JSON.stringify(hello[4]);
+console.log(str);
+console.log(JSON.parse(str)[0][1]);
+*/
 
-for (var i = 0; hello.hasOwnProperty(i); ++i) {
-  console.log(hello[i]);
-}
+(function() {
+  var a = function() {
+    console.log(hello[0]);
+  }
+  hello[0] = 2;
+  a();
+}());
