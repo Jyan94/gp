@@ -1,3 +1,5 @@
+USE goprophet;
+
 CREATE TABLE IF NOT EXISTS contest_B (
   athletes map<int, text>,
   commission_earned int,
@@ -61,7 +63,7 @@ contest states:
 2: after deadline
 3: processed payouts
 4: cancelled
-*/
+
 
 CREATE TYPE IF NOT EXISTS baseball_team (
   team_id uuid,
@@ -73,7 +75,7 @@ CREATE TYPE IF NOT EXISTS baseball_team_table (
   team_id uuid,
   team_name text,
   team_abbreviation
-);
+);*/
 
 CREATE TABLE IF NOT EXISTS baseball_game (
   gsis_id uuid PRIMARY KEY,
@@ -83,7 +85,7 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   season_year int,
   season_type text,
   finished boolean,
-  home_team list<uuid>
+  home_team list<uuid>,
   away_team list<uuid>,
   home_score int,
   away_score int,
@@ -101,7 +103,7 @@ CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   singles int,
   doubles int,
   triples int,
-  home runs int,
+  home_runs int,
   runs int,
   rbis int,
   stolen_bases int,
