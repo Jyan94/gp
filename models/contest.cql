@@ -38,8 +38,10 @@ contestants map of username to stringified contestant object:
   instances: [
   {
     virtualMoneyRemaining : money remaining
-    bets: array of bets, indexed 0 - num athletes initialized to 0's
+    wagers: array of amounts wagered, indexed 0 - num athletes initialized to 0's
     [0, 0, 0, 0, 0, ...]
+    predictions: array of predicted fantasy values
+    [value0, value1, value2, ...]
   },
   ...
   ]
@@ -139,6 +141,6 @@ CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
     time timeuuid,
     fantasy_value double,
     virtual_money_wagered int,
-    contest_mode text,
+    contest_type text,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
