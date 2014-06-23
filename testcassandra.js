@@ -1,12 +1,13 @@
 var cassandra = require('./libs/cassandra/cql');
 var cql = require('./config/index.js').cassandra.cql;
 var multiline = require('multiline');
+var extend = require('node.extend');
 
-//var query = 'insert into birds (name, bird) VALUES (?, ?)';
-//var query = 'select * from birds where name = ?'
+var query = 'insert into birds (name, bird) VALUES (?, ?)';
+var query = 'select * from birds where name = ?'
 
-var query = 'update test42 set bool1 = false where name = ? if bool1 = false and num1 = 1';
-/*
+//var query = 'update test42 set bool1 = false where name = ? if bool1 = false and num1 = 1';
+
 cassandra.queryOneRow(
   query, 
   ['hello'],
@@ -18,10 +19,13 @@ cassandra.queryOneRow(
     } 
     else {
       console.log(result);
-      console.log(result['[applied]']);
+      //console.log(result['[applied]']);
+      if (!result) {
+        console.log('yoo');
+      }
     }
   }
-);*/
+);
 /*
 cassandra.query(
   query, 
@@ -83,8 +87,9 @@ console.log(JSON.parse(str)[0][1]);
 */
 
 (function() {
+  hello = extend(hello, {9 : 'one'});
   var a = function() {
-    console.log(hello[0]);
+    console.log(hello[9]);
   }
   hello[0] = 2;
   a();

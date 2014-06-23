@@ -20,4 +20,16 @@ exports.auth = {
   }
 };
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
-exports.contestBType = 'daily prophet';
+exports.contestB = {
+  gameType: 'daily prophet',
+  //for update.js states
+  OPEN: 0,
+  FILLED: 1,
+  TO_PROCESS: 2,
+  PROCESSED:3,
+  CANCELLED:4,
+  //for lock.js times and tries
+  MAX_MILLISECONDS: 20000,
+  MAX_TRIES: 20,
+  MAX_WAIT: 1000
+}

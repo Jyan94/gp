@@ -8,15 +8,16 @@
 
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
+var states = require('config/constants').contestB;
 var multiline = require('multiline');
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
-var OPEN = 0;
-var FILLED = 1;
-var TO_PROCESS = 2;
-var PROCESSED = 3;
-var CANCELLED = 4;
+var OPEN = states.OPEN;
+var FILLED = states.FILLED;
+var TO_PROCESS = states.TO_PROCESS;
+var PROCESSED = states.PROCESSED;
+var CANCELLED = states.CANCELLED;
 
 /** 
  * ====================================================================
@@ -91,11 +92,19 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
   UPDATE 
     contest_B
   SET 
-    state = ?
+    contest_state = ?
   WHERE
     contestId = ?
 */});
 
+/**
+ * [updateContestState description]
+ * @param  {int}   nextState 
+ * 0-4, defined in constants.contestB
+ * @param  {uuid}   contestId
+ * @param  {Function} callback
+ * args: (err)
+ */
 function updateContestState(nextState, contestId, callback) {
   cassandra.query(UPDATE_STATE_QUERY, [nextState, contestId], quorum, callback);
 }
@@ -131,6 +140,18 @@ var SET_CONTESTANT_QUERY = multiline(function() {/*
     contestId = ?
 */});
 
+/**
+ * @param {string}   username
+ * @param {string}   contestant 
+ * JSON.stringify({
+ *   instances: [{contestant instance}]
+ * })
+ * @param {int}   numEntries 
+ * number of current entries in contest
+ * @param {uuid}   contestId  
+ * @param {Function} callback
+ * args: (err)
+ */
 function setContestant(username, contestant, numEntries, contestId, callback) {
   cassandra.query(
     SET_CONTESTANT_QUERY, 
@@ -149,10 +170,20 @@ var UPDATE_CONTESTANT_QUERY = multiline(function() {/*
     contest_id = ?;
 */});
 
-function updateContestant(username, contestantString, contestId, callback) {
+/**
+ * @param {string}   username
+ * @param {string}   contestant 
+ * JSON.stringify({
+ *   instances: [{contestant instance}]
+ * })
+ * @param {uuid}   contestId  
+ * @param {Function} callback
+ * args: (err)
+ */
+function updateContestant(username, contestant, contestId, callback) {
   cassandra.query(
     UPDATE_CONTESTANT_QUERY,
-    [username, contestantString, contestId],
+    [username, contestant, contestId],
     one,
     callback);
 }

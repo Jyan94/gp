@@ -9,6 +9,7 @@ var compress = require('compression');
 var express = require('express');
 var flash = require('connect-flash');
 var methodOverride = require('method-override');
+var morgan = require('morgan');
 var session = require('express-session');
 var path = require('path');
 var multiline = require('multiline');
@@ -25,6 +26,8 @@ var client = new cql.Client(cassandraConfig);
 //exported configurations
 var config = {
   configure: function(app) {
+    //use helmet too
+    app.use(morgan('dev'));
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
