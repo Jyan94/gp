@@ -81,7 +81,7 @@ exports.insertPast = function(params, callback) {
     },
     {
       query: INSERT_PAST_BET_CQL_2,
-      params: [params]
+      params: params
     }
   ];
 

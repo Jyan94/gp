@@ -86,6 +86,7 @@ function getAllFantasyPoints(playerObjects, callback) {
 
   async.map(playerObjects, calculate.calculateMlbFantasyPoints,
     function(err, result) {
+      console.log(result);
       if (err) {
         console.log(err);
       }
@@ -132,7 +133,7 @@ function calculateBet(bet, fantasyPoints, callback) {
   var longWinnings = rows.multiplier * (fantasyPoints - rows.bet_value);
   var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
 
-  console.log(longWinnings);
+  console.log(longWinnings, rows);
   console.log(shortWinnings);
 
   User.updateMoney([longWinnings, shortWinnings],
@@ -169,8 +170,11 @@ function processArrayBets(betsArray, fantasyPoints, callback) {
     }
   };
 
+  console.log(betsArray.length);
   for (var i = 0; i !== betsArray.length; ++i) {
     var bets = betsArray[i];
+
+    console.log(bets.length);
     
     for (var j = 0; j !== bets.length; ++j) {
       calculateBet(bets[j], fantasyPoints[i], errCallback);
@@ -228,6 +232,8 @@ function checkCurrentBets () {
   console.log(year, month, day);
   checkEndGames(year, month, day);
 }
+
+//checkEndGames(2014, '06', '22');
 
 exports.getAllPlayerIdForGame = getAllPlayerIdForGame;
 exports.getAllPlayerIds = getAllPlayerIds;

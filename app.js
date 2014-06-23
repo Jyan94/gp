@@ -12,6 +12,6 @@ var calculate = require('routes/calculateMlbEarnings.js');
 //keep this file clean
 app.use('/', require('routes/index'));
 
-setInterval(calculate.checkCurrentBets, 600000);
+//setInterval(calculate.checkCurrentBets, 600000);
 
 app.listen(3000);
