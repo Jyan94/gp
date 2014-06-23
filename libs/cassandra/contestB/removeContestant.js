@@ -15,9 +15,25 @@ var User = require('libs/cassandra/user');
 var async = require('async');
 var multiline = require('multiline');
 
+/**
+ * removes contestant instance from contestant object
+ * updates the contest's current_entries
+ * opens and possibly cancels the contest, depending on deadline time
+ * @param  {object}   user
+ * from req.user
+ * @param  {object}   contest      
+ * database contest object
+ * @param  {int}   instanceIndex 
+ * index of contest to be removed
+ * @param  {Function} callback      
+ * args: (err)
+ */
 function removeInstanceFromContest(user, contest, instanceIndex, callback) {
   var contestant = JSON.parse(contest.contestants[user.username]);
-  if (!(contestant.instances.length > instanceIndex && instanceIndex >= 0)) {
+  if (!contestant) {
+    callback(new Error('contestant does not exist, should not ever happen!'));
+  } 
+  else if (!(contestant.instances.length>instanceIndex && instanceIndex>=0)) {
     callback(new Error('out of bounds instance index'));
   }
   else {
@@ -37,10 +53,12 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
           [user.user_id], 
           callback);
       }
-    ]
+    ];
+    //removes instanceIndex element
     contestant.instances.splice(instanceIndex, 1);
     contestant = JSON.stringify(contestant);
 
+    //update contest state
     var beforeDeadline = (+(new Date()) < +contest.contest_deadline_time);
     if (contest.current_entries === contest.maximum_entries && beforeDeadline) {
       parallelArray.push(function(callback) {
@@ -54,11 +72,24 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
       });
     }
 
+    //update in database
     async.parallel(parallelArray, callback);
 
   }
 }
 
+/**
+ * removes contestant instance
+ * obtains lock, selects the contest, removes the instance, release lock
+ * @param  {object}   user
+ * from req.user, MUST have fields user_id and username
+ * @param  {int}   instanceIndex 
+ * index to be removed from instances
+ * @param  {uuid}   contestId
+ * id of contest
+ * @param  {Function} callback      
+ * args: (err)
+ */
 function removeContestantInstance(user, instanceIndex, contestId, callback) {
 
   var waterfallCallback = function (waterfallErr) {

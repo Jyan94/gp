@@ -9,14 +9,25 @@
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
 
-var CONTEST_TYPE = require('configs/constants').contestBType;
+var CONTEST_TYPE = require('configs/constants').contestB.gameType;
 var TimeSeries = require('libs/cassandra/timeseriesFantasyValues');
 
 var async = require('async');
 var multiline = require('multiline');
 
+/**
+ * verifies if the instance
+ * @param  {[type]}   instance [description]
+ * @param  {[type]}   contest  [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
 function verifyInstance(instance, contest, callback) {
-  if (Object.keys(contest.athletes).length !== instance.predictions.length) {
+  if (!(instance && instance.predictions)) {
+    callback(new Error('instance format'));
+  }
+  else if (Object.keys(contest.athletes).length 
+          !== instance.predictions.length) {
     callback(new Error('invalid number of athletes'));
   }
   else {
@@ -38,15 +49,6 @@ function verifyInstance(instance, contest, callback) {
     async.reduce(instance.predictions, 0, reduceFunc, reduceCallback);
   }
 }
-
-var UPDATE_CONTESTANT_QUERY = multiline(function() {/*
-  UPDATE
-    contest_B
-  SET
-    contestants['?'] = ?
-  WHERE
-    contest_id = ?;
-*/});
 
 function compareInstances(oldInstance, newInstance, contest, callback) {
   //convert all serialized json text fields of athlete map to object
