@@ -13,8 +13,10 @@ CREATE TABLE IF NOT EXISTS contest_B (
   entries_allowed_per_contestant int,
   entry_fee int,
   game_type text,
+  game_version int,
   last_locked timestamp,
   lock_current_entries boolean,
+  max_wager int,
   maximum_entries int,
   minimum_entries int,
   pay_outs map<int, double>,
@@ -42,6 +44,7 @@ contestants map of username to stringified contestant object:
     [0, 0, 0, 0, 0, ...]
     predictions: array of predicted fantasy values
     [value0, value1, value2, ...]
+    //should add timestamp too, prevent users from changing too frequently
   },
   ...
   ]

@@ -17,14 +17,19 @@ var multiline = require('multiline');
 
 /**
  * verifies if the instance
- * @param  {[type]}   instance [description]
- * @param  {[type]}   contest  [description]
- * @param  {Function} callback [description]
- * @return {[type]}            [description]
+ * @param  {object}   instance 
+ * updated instance to be inserted into the database
+ * @param  {object}   contest
+ * contest object obtained from the database
+ * @param  {Function} callback
+ * args: (err, contest)
  */
 function verifyInstance(instance, contest, callback) {
-  if (!(instance && instance.predictions)) {
+  if (!(instance && instance.predictions && instance.wagers)) {
     callback(new Error('instance format'));
+  }
+  else if (instance.predictions.length !== instance.wagers.length) {
+    callback(new Error('wagers length do not match with predictions length'));
   }
   else if (Object.keys(contest.athletes).length 
           !== instance.predictions.length) {
@@ -32,7 +37,15 @@ function verifyInstance(instance, contest, callback) {
   }
   else {
     var reduceFunc = function(memo, item, callback) {
-      callback(null, memo + item); 
+      if (item < 0) {
+        callback(new Error('negative wager'));
+      }
+      else if (item > contest.max_wager) {
+        callback(new Error('wager above max'));
+      }
+      else {
+        callback(null, memo + item); 
+      }
     };
     var reduceCallback = function (err, result) {
       if (err) {
@@ -46,15 +59,24 @@ function verifyInstance(instance, contest, callback) {
         callback(null, contest);
       }
     };
-    async.reduce(instance.predictions, 0, reduceFunc, reduceCallback);
+    async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
   }
 }
 
+/**
+ * compares two instances and inserts all updated bets into the database
+ * @param  {[type]}   oldInstance [description]
+ * @param  {[type]}   newInstance [description]
+ * @param  {[type]}   contest     [description]
+ * @param  {Function} callback    [description]
+ * @return {[type]}               [description]
+ */
 function compareInstances(oldInstance, newInstance, contest, callback) {
   //convert all serialized json text fields of athlete map to object
   var timeseriesUpdates = [];
   for (var i = 0; contest.athletes.hasOwnProperty(i); ++i) {
-    if (oldInstance.predictions[i] !== newInstance.predictions[i]) {
+    if (oldInstance.predictions[i] !== newInstance.predictions[i] ||
+        oldInstance.wagers[i] !== newInstance.wagers[i]) {
       timeseriesUpdates.push({
         athleteId: JSON.parse(contest.athletes[i]).athleteId,
         wager: newInstance.wagers[i],
