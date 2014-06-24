@@ -7,9 +7,11 @@
 (require('rootpath')());
 
 var cassandra = require('libs/cassandra/cql');
-var cql = require('config/index.js').cassandra.cql;
-var states = require('config/constants').contestB;
+var configs = require('config/index.js');
 var multiline = require('multiline');
+
+var cql = configs.cassandra.cql;
+var states = configs.constants.contestB;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
@@ -188,3 +190,28 @@ function updateContestant(username, contestant, contestId, callback) {
     callback);
 }
 exports.updateContestant = updateContestant;
+
+var DELETE_CONTESTANT_QUERY = multiline(function() {/*
+  DELETE
+    contestants['?']
+  FROM
+    contest_B
+  WHERE
+    contest_id = ?;
+*/});
+
+/**
+ * delete contestant from contest
+ * @param  {[type]}   username  [description]
+ * @param  {[type]}   contestId [description]
+ * @param  {Function} callback  [description]
+ * @return {[type]}             [description]
+ */
+function deleteContestant(username, contestId, callback) {
+  cassandra.query(
+    DELETE_CONTESTANT_QUERY,
+    [username, contestId],
+    one,
+    callback);
+}
+exports.deleteContestant = deleteContestant;

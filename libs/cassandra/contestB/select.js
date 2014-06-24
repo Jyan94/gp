@@ -7,9 +7,11 @@
 (require('rootpath')());
 
 var cassandra = require('libs/cassandra/cql');
-var cql = require('config/index.js').cassandra.cql;
-var states = require('config/constants').contestB;
+var configs = require('config/index.js');
 var multiline = require('multiline');
+
+var cql = configs.cassandra.cql;
+var states = configs.constants.contestB;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
