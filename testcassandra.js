@@ -2,6 +2,29 @@ var cassandra = require('./libs/cassandra/cql');
 var cql = require('./config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var extend = require('node.extend');
+var User = require('libs/cassandra/user');
+
+User.insert([
+  '12000000-0000-0000-0000-000000005eb3',
+  'test1@test.com',
+  true,
+  new Date(),
+  'hello1',
+  'world',
+  'first name',
+  'last name',
+  20,
+  'address',
+  'paymentinfo',
+  0,
+  'fbid',
+  0,
+  'image'
+], function(err) {
+  if (err) {
+    console.log(err);  
+  }
+})
 
 var query = 'insert into birds (name, bird) VALUES (?, ?)';
 var query = 'select * from birds where name = ?'

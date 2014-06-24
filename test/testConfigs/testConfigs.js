@@ -1,6 +1,6 @@
-exports.testUserParams = [
+exports.userParams = [
 [
-  '0000000-0000-0000-0000-000000000000',
+  '00000000-0000-0000-0000-000000000000',
   'test0@test.com',
   true,
   new Date(),
@@ -17,7 +17,7 @@ exports.testUserParams = [
   'image'
 ],
 [
-  '0000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000001',
   'test1@test.com',
   true,
   new Date(),
@@ -47,7 +47,7 @@ exports.contestSettings = [
   0,  //commission_earned
   new Date().setDate(new Date().getDate() + 1), //contest_deadline_time
   null, //contest_end_time
-  '0000000-0000-0000-0000-000000000000', //contest_id
+  '00000000-0000-0000-0000-000000000000', //contest_id
   new Date(), //contest_start_time
   0,  //contest_state
   {}, //contestants

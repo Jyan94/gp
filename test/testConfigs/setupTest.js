@@ -8,8 +8,8 @@ var ContestBUpdate = require('libs/cassandra/contestB/update');
 var UpdateContest = require('libs/cassandra/contestB/update');
 var async = require('async');
 
-var testUserParams = testConfigs.testUserParams;
-var testContestSettings = testConfigs.testContestSettings;
+var testUserParams = testConfigs.userParams;
+var testContestSettings = testConfigs.contestSettings;
 var ATHLETES_INDEX = 0;
 var COMMISSION_EARNED_INDEX = 1;
 var DEADLINETIME_INDEX =2 
@@ -36,12 +36,14 @@ var SETTINGS_LENGTH_OF_CONTEST = 22;
 
 function createUsers(callback) {
   async.each(testUserParams, function(params, callback) {
+    console.log(params);
     User.insert(params, callback);
   }, callback);
 }
 
 function createContests(callback) {
   async.each(testContestSettings, function(settings, callback) {
+    console.log(settings);
     settings[ATHLETES_INDEX] = JSON.stringify(settings[ATHLETES_INDEX]);
     settings[ATHLETES_INDEX].should.be.type('string');
     ContestBUpdate.insert(settings, callback);
@@ -53,7 +55,10 @@ function setup(callback) {
   [
     createUsers,
     createContests
-  ], callback);
+  ], function(err) {
+    err.should.be.false;
+    callback(null);
+  });
 }
 
 exports.testUserParams = testUserParams;

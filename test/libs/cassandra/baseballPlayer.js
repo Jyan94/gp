@@ -1,3 +1,4 @@
+/*
 'use strict';
 require('rootpath')();
 
@@ -253,4 +254,4 @@ describe('baseball_player module test', function () {
         });
     }
   );
-});
+});*/
