@@ -12,7 +12,7 @@ var User = require('libs/cassandra/user.js');
 var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var mlbData = require('libs/mlbData.js');
-var BaseballStatistics = require('libs/cassandra/BaseballStatistics');
+var BaseballStatistics = require('libs/cassandra/baseballStatistics');
 var SpendingPower = require('libs/calculateSpendingPower');
 
 var defaultImage = configs.constants.defaultPlayerImage;
