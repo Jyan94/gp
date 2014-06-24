@@ -10,6 +10,7 @@ var responseValues = configs.constants.signupResponseValues;
 
 function insertUser(body, res, next) {
   var bcryptHashCallback = function(err, hash) {
+    console.log(555);
     if (err) {
       next(err);
     }
@@ -34,7 +35,9 @@ function insertUser(body, res, next) {
         null //image
       ];
       var insertCallback = function(err) {
+        console.log(444);
         if (err) {
+          console.log(err);
           next(err);
         }
         else {

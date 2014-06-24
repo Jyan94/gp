@@ -9,7 +9,7 @@ $(function() {
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
-        url: '../delete/' + betId
+        url: '../deleteBets/' + betId
       });
     });
   });
