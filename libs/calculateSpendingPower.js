@@ -10,6 +10,7 @@ var Bet = require('libs/cassandra/bet.js');
 var User = require('libs/cassandra/user.js');
 var Calculate = require('libs/applicationServer/calculateSpendingPowerHelper')
 
+/* select all the current bets from the user */
 function selectFromCurrentBets (userId, money, callback) {
   Bet.selectUsingUserId('current_bets', userId, function(err, result) {
     if (err) {
@@ -21,6 +22,8 @@ function selectFromCurrentBets (userId, money, callback) {
   })
 }
 
+/* select all the pending bets from the user and add that to the user's
+current bets (previous function) */
 function selectFromPendingBets(result, userId, money, callback) {
   Bet.selectUsingUserId('pending_bets', userId, function(err, result1) {
     if (err) {
@@ -35,6 +38,7 @@ function selectFromPendingBets(result, userId, money, callback) {
   })
 }
 
+/* calculate the user's spending power */
 exports.calculateSpendingPower = function(userId, money, callback) {
   async.waterfall ([
     function(callback) {
@@ -54,6 +58,7 @@ exports.calculateSpendingPower = function(userId, money, callback) {
   })
 }
 
+/* update the user's spending power */
 exports.updateSpendingPower = function(userId, money) {
   exports.calculateSpendingPower(userId, money, function(err, result) {
     var spendingPower = result;
@@ -68,6 +73,7 @@ exports.updateSpendingPower = function(userId, money) {
   })
 }
 
+/* calculate the spending power if the user made or took another bet */
 exports.calculateSpendingPowerWithAddition = function(userId,
   money,
   playerId,

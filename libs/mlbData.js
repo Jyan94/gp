@@ -192,7 +192,7 @@ function calculateBoxScore() {
     day = (day < 10 ? "0" : "") + day;
 
     getEachBoxScore(year, month, day)
-  }, 3600000);
+  }, 360000);
 }
 
 calculateBoxScore();

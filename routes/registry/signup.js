@@ -29,7 +29,7 @@ function insertUser(body, res, next) {
         null, //address
         null, //payment_info
         {value: 10000.0, hint: 'double'}, //money
-        {value: 10000.0, hint: 'double'}. //spending_power
+        {value: 10000.0, hint: 'double'}, //spending_power
         null, //fbid
         0,  //vip_status
         null //image
@@ -47,10 +47,16 @@ function insertUser(body, res, next) {
       User.insert(fields, insertCallback);
     }
   };
+  /*
+  user_id, email, verified, verified_time, username, password, first_name,
+  last_name, age, address, payment_info, money, fbid, vip_status, image
+ */
+  bcrypt.hash(body.password, null, null, bcryptHashCallback);
 }
 
 var processSignup = function(req, res, next) {
   var body = req.body;
+  console.log("body: " + body.username);
   async.waterfall(
   [
     //username lookup
@@ -70,6 +76,7 @@ var processSignup = function(req, res, next) {
 
     //email lookup
     function(callback) {
+      console.log("email: " + body.email);
       User.select('email', body.email, function(err, result) {
         if (err) {
           callback(err);
