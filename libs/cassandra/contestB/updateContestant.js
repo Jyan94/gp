@@ -161,7 +161,7 @@ function updateInstance(
  * @param  {object}   updatedInstance
  * updated instance for contestant as an object
  * @param  {uuid}   contestId       
- * @param  {Function} callback        [description]
+ * @param  {Function} callback
  * args: (err)
  */
 function updateContestantInstance(

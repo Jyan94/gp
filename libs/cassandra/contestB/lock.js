@@ -27,11 +27,11 @@ var OBTAIN_LOCK_QUERY = multiline(function() {/*
     contest_B
   SET
     last_locked = now(),
-    lock_insert_delete = true
+    lock_current_entries = true
   WHERE
     contest_id = ?
   IF
-    lock_insert_delete = false;
+    lock_current_entries = false;
 */});
 
 var READ_LAST_LOCKED_QUERY = multiline(function(){/*
@@ -47,7 +47,7 @@ var OVERRIDE_LOCK_QUERY = multiline(function() {/*
   UPDATE
     contest_B
   SET
-    lock_insert_delete = true;
+    lock_current_entries = true;
   WHERE
     contest_id = ?
 */});
@@ -56,7 +56,7 @@ var RELEASE_LOCK_QUERY = multiline(function() {/*
   UPDATE
     contest_B
   SET
-    lock_insert_delete = false
+    lock_current_entries = false
   WHERE
     contest_id = ?
 */});
