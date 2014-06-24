@@ -63,7 +63,8 @@ passport.use(new FacebookStrategy({
             null, //age
             null, //address
             null, //payment_info
-            {value: 0.0, hint: 'double'}, //money
+            {value: 10000.0, hint: 'double'}, //money
+            {value: 10000.0, hint: 'double'}, //spending_power
             profile.id, //fb id
             0, //vip_status
             null //image

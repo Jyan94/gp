@@ -8,9 +8,12 @@ var client = configs.cassandra.client;
 var async = require('async');
 
 var Bet = require('libs/cassandra/bet.js');
+var User = require('libs/cassandra/user.js');
 var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var mlbData = require('libs/mlbData.js');
+var BaseballStatistics = require('libs/cassandra/BaseballStatistics');
+var SpendingPower = require('libs/calculateSpendingPower');
 
 var defaultImage = configs.constants.defaultPlayerImage;
 
@@ -22,14 +25,15 @@ var getDailyScores = function(req, res, next) {
   var day = date.getDate();
   day = (day < 10 ? "0" : "") + day;
 
-  console.log(year, month, day);
+  var gameDate = "" + year + "/" + month + "/" + day;
+  console.log(gameDate);
 
-  mlbData.getEachBoxScore(year, month, day, function(err, result) {
+  BaseballStatistics.selectGameUsingDate(gameDate, function(err, result) {
     if (err) {
       next(err);
     }
     else {
-      res.render('marketHome', {result: result});
+    res.render('marketHome', {result: result});
     }
   });
 }
@@ -124,8 +128,17 @@ var submitBet = function (req, res, next) {
     longPosition = false;
   }
 
-
-  Bet.insertPending(
+  SpendingPower.calculateSpendingPowerWithAddition(req.user.user_id,
+    req.user.money,
+    req.params.playerId,
+    longPosition,
+    parseFloat(req.body.price),
+    parseFloat(req.body.shareNumber),
+    function(err, result) {
+    var spendingPower = result;
+    console.log(spendingPower);
+    if (spendingPower >= 0) {
+    Bet.insertPending(
     [
     betId,
     req.user.user_id,
@@ -136,14 +149,19 @@ var submitBet = function (req, res, next) {
     null,
     null
     ],
-    function(err){
-      if (err) {
-        next(err);
-      }
-      else {
-        res.redirect('/market/' + req.params.playerId)
-      }
-    });
+      function(err){
+        if (err) {
+          next(err);
+        }
+        else {
+          res.redirect('/market/' + req.params.playerId)
+        }
+      });
+    }
+    else {
+      next(new Error('Spending Power Too Low'));
+    }
+  })
 }
 
 var getBet = function (req, res, next, callback) {
@@ -177,7 +195,17 @@ var insertBet = function (req, res, next, result, callback) {
     shortBetterId = currentBet.user_id;
   }
 
-  Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
+  SpendingPower.calculateSpendingPowerWithAddition(req.user.user_id,
+  req.user.money,
+  currentBet.player_id,
+  currentBet.long_position,
+  parseFloat(currentBet.multiplier),
+  parseFloat(currentBet.bet_value),
+  function(err, result) {
+    var spendingPower = result;
+    console.log(spendingPower);
+    if (spendingPower >= 0) {
+    Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
     shortBetterId, currentBet.player_id,
     {value: parseFloat(currentBet.bet_value), hint: 'double'},
     {value: parseFloat(currentBet.multiplier), hint: 'double'},
@@ -192,10 +220,15 @@ var insertBet = function (req, res, next, result, callback) {
           function(err){
             if (err) {
               next(err);
-          }
-        });
-      }
-    });
+            }
+          })
+        }
+      })
+    }
+    else {
+      next(new Error('Spending Power too low'));
+    }
+  })
 }
 
 //post to '/addBets/:playerId'

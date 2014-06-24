@@ -8,9 +8,10 @@ var multiline = require('multiline');
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
     user_id, email, verified, verified_time, username, password, first_name,
-    last_name, age, address, payment_info, money, fbid, vip_status, image
-  ) VALUES 
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    last_name, age, address, payment_info, money, spending_power, fbid,
+    vip_status, image
+  ) VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 */});
 exports.insert = function (params, callback) {
   //parse values
@@ -91,13 +92,27 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
       }
     }
 
-    cassandra.queryBatch(query, cql.types.consistencies.one, 
+    cassandra.queryBatch(query, cql.types.consistencies.one,
       function(err, result) {
         callback(err, result);
     });
   })
 };
 
+var UPDATE_SPENDINGPOWER_CQL = multiline(function() {/*
+  UPDATE users SET spending_power = ? WHERE user_id = ?
+*/})
+exports.updateSpendingPower = function(spendingPower, userId, callback) {
+  var params = [{value: spendingPower, hint: 'double'}, userId];
+  cassandra.query(UPDATE_SPENDINGPOWER_CQL,
+   params,
+  cql.types.consistencies.one,
+  function(err) {
+    if (err) {
+      console.log(err);
+    }
+  })
+}
 
 var SELECT_USER_CQL = multiline(function () {/*
   SELECT * FROM users WHERE
@@ -111,7 +126,7 @@ exports.select = function (field, value, callback) {
   }
   else {
     cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
-      [value], cql.types.consistencies.one, 
+      [value], cql.types.consistencies.one,
       function(err, result) {
         callback(err, result);
     });

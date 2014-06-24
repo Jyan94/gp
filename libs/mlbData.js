@@ -11,6 +11,7 @@ var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 var urlHelper = require('../libs/url_helper_mlb');
 var async = require('async');
+var BaseballStatistics = require('../libs/cassandra/baseballStatistics');
 
 function createRequest(url, callback) {
   console.log(url);
@@ -76,41 +77,84 @@ function getDailyBoxscore(year, month, day, callback) {
   createRequest(url, callback);
 }
 
-function getNameAndScore(boxscore, callback) {
-  var retVal;
-
-  if (boxscore.$.status === 'scheduled') {
-    getEventInfoAndLineups(boxscore.$.id, function(err, result) {
-
-      if ((result === undefined) || !(result.hasOwnProperty('event'))) {
-        setTimeout(function() {
-          getNameAndScore(boxscore, callback);
-        }, 1001);
-      }
-      else {
-        var tmpStartTime = result.event.scheduled_start_time[0];
-        var tmpLocalTime = new Date(tmpStartTime).split(" ")[4];
-        var startTime = tmpLocalTime.toLocaleTimeString().slice(0, 5);
-
-        retVal = {
-          'homeName': boxscore.home[0].$.abbr,
-          'visitorName': boxscore.visitor[0].$.abbr,
-          'startTime': startTime
+function updateOrInsert(gameId, startTime, date, homeName,
+  visitorName, homeScore, visitorScore, status, callback) {
+    var fields = [];
+    BaseballStatistics.selectGameUsingId(gameId, function(err, result) {
+    if (result) {
+      console.log("2");
+      console.log(startTime);
+      console.log(homeScore);
+      console.log(visitorScore);
+      console.log(status);
+      console.log(gameId);
+      fields = [
+        startTime,
+        homeScore,
+        visitorScore,
+        status,
+        gameId
+      ]
+      BaseballStatistics.updateGameSchedule(fields, function(err) {
+        if (err) {
+          console.log("failed")
+          callback(err);
         }
-        console.log('retVal: ' + retVal);
-        callback(null, retVal);
-      }
+        else {
+          console.log("Successfully Updated")
+        }
+      })
+    }
+    else {
+      console.log("1");
+      fields = [
+      gameId, //game id
+      startTime, //start time of the game
+      date, //date of game !!!should fix
+      homeName, //home team name
+      visitorName, //visitor team name
+      homeScore, //no home score yet
+      visitorScore, //no away score yet
+      status, //status = scheduled
+      ];
+      BaseballStatistics.insertGameSchedule(fields, function(err) {
+        if (err) {
+          console.log("failed inserted")
+          callback(err);
+        }
+        else {
+          console.log("Successfully Inserted")
+        }
+      })
+    }
+  })
+}
+function insertNameAndScore(boxscore, callback) {
+
+  var gameId = boxscore.$.id;
+  var startTime;
+  var date = boxscore.date;
+  var homeName = boxscore.home[0].$.abbr;
+  var visitorName = boxscore.visitor[0].$.abbr;
+  var homeScore;
+  var visitorScore;
+  var status = boxscore.$.status;
+  var fields = [];
+
+  if (status === 'scheduled') {
+    homeScore = null;
+    visitorScore = null;
+    getEventInfoAndLineups(boxscore.$.id, function(err, result) {
+      var tmpStartTime = result.event.scheduled_start_time[0];
+      startTime = String(new Date(tmpStartTime)).split(" ")[4];
+      updateOrInsert(gameId, startTime, date, homeName, visitorName, homeScore, visitorScore, status, callback);
     });
   }
   else {
-    retVal = {
-      'homeName': boxscore.home[0].$.abbr,
-      'homeScore': boxscore.home[0].$.runs,
-      'visitorName': boxscore.visitor[0].$.abbr,
-      'visitorScore': boxscore.visitor[0].$.runs
-    }
-    console.log('retVal: ' + retVal);
-    callback(null, retVal);
+    startTime = null;
+    homeScore = boxscore.home[0].$.runs;
+    visitorScore = boxscore.visitor[0].$.runs;
+    updateOrInsert(gameId, startTime, date, homeName, visitorName, homeScore, visitorScore, status, callback);
   }
 }
 
@@ -122,17 +166,37 @@ var getEachBoxScore = function(year, month, day, callback) {
       setTimeout(function () { getEachBoxScore(year, month, day, callback); }, 1001);
     }
     else {
-      async.map(result.boxscores.boxscore, getNameAndScore, function(err, result) {
+      var boxscore = result.boxscores.boxscore;
+      for (var i = 0; i !== boxscore.length; ++i) {
+        boxscore[i].date = '' + year +'/' + month + "/" + day;
+      }
+      async.map(boxscore, insertNameAndScore, function(err) {
         if (err) {
           console.log(err);
         }
         else {
-          callback(null, result);
+          console.log("Successfully Inserted");
         }
       });
     }
   });
 }
+
+function calculateBoxScore() {
+  setInterval(function() {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+    var day = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+
+    getEachBoxScore(year, month, day)
+  }, 3600000);
+}
+
+calculateBoxScore();
+
 
 exports.createRequest = createRequest;
 exports.getPlayByPlay = getPlayByPlay;
@@ -140,5 +204,4 @@ exports.getPlayByPlay = getPlayByPlay;
 exports.getEventInfoAndLineups = getEventInfoAndLineups;
 exports.getDailyEventInfoAndLineups = getDailyEventInfoAndLineups;
 exports.getDailyBoxscore = getDailyBoxscore;
-exports.getNameAndScore = getNameAndScore;
 exports.getEachBoxScore = getEachBoxScore;

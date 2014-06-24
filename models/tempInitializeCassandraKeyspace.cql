@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 CREATE KEYSPACE IF NOT EXISTS "goprophet"
     WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};
 
@@ -16,11 +18,11 @@ CREATE TABLE IF NOT EXISTS users(
     address text,
     payment_info text,
     money double,
-    spending_power double,
     fbid text,
     vip_status int,
     image text
 );
+
 CREATE INDEX IF NOT EXISTS ON users (username);
 CREATE INDEX IF NOT EXISTS ON users (email);
 
@@ -40,6 +42,7 @@ CREATE TABLE IF NOT EXISTS pending_bets (
     game_id uuid,
     expiration timeuuid,
 );
+
 CREATE INDEX IF NOT EXISTS ON pending_bets(player_id);
 
 CREATE TABLE IF NOT EXISTS current_bets (
@@ -52,7 +55,6 @@ CREATE TABLE IF NOT EXISTS current_bets (
     game_id uuid,
     expiration timeuuid
 );
-CREATE INDEX IF NOT EXISTS ON current_bets(player_id);
 
 CREATE TABLE IF NOT EXISTS past_bets (
     bet_id timeuuid PRIMARY KEY,
@@ -64,16 +66,25 @@ CREATE TABLE IF NOT EXISTS past_bets (
     long_better_payoff bigint,
     short_better_payoff bigint,
     game_id uuid,
-    expiration timeuuid
+    expiration timeuuid,
 );
 
-CREATE INDEX IF NOT EXISTS ON past_bets(player_id);
-
-/*to-do condense bet tables by giving bet an int as state*/
+CREATE TABLE IF NOT EXISTS all_bets (
+    bet_id timeuuid PRIMARY KEY,
+    long_better_id uuid,
+    short_better_id uuid,
+    player_id uuid,
+    bet_value double,
+    multiplier double,
+    long_better_payoff bigint,
+    short_better_payoff bigint,
+    game_id uuid,
+    expiration timeuuid,
+);
 
 CREATE TABLE IF NOT EXISTS football_player (
     player_id uuid PRIMARY KEY,
-    current_value double,
+    currvalue double,
     full_name text,
     first_name text,
     last_name text,
@@ -84,16 +95,13 @@ CREATE TABLE IF NOT EXISTS football_player (
     uniform_number int,
     height int,
     weight int,
-    age int,
     image text
 );
-
-CREATE INDEX IF NOT EXISTS ON football_player (team);
 
 CREATE TABLE IF NOT EXISTS football_team (
     team_id uuid PRIMARY KEY,
     city text,
-    name text
+    name text,
 );
 
 CREATE TABLE IF NOT EXISTS football_game (
@@ -107,14 +115,14 @@ CREATE TABLE IF NOT EXISTS football_game (
     home_team text,
     away_team text,
     home_score int,
-    away_score int
+    away_score int,
 );
 
 CREATE TABLE IF NOT EXISTS football_meta (
     version int PRIMARY KEY,
     season_type text,
     season_year int,
-    week int
+    week int,
 );
 
 CREATE TABLE IF NOT EXISTS football_player_stat (
@@ -133,7 +141,7 @@ CREATE TABLE IF NOT EXISTS football_player_stat (
     receiving_yds int,
     receiving_tds int,
     receiving_twoptm int,
-    fumbles_lost int
+    fumbles_lost int,
 );
 
 CREATE TABLE IF NOT EXISTS football_market_value (
@@ -146,7 +154,7 @@ CREATE TABLE IF NOT EXISTS football_market_value (
     season_year int,
     season_type text,
     week int,
-    finished boolean
+    finished boolean,
 );
 
 CREATE TABLE IF NOT EXISTS player_images (
@@ -154,10 +162,11 @@ CREATE TABLE IF NOT EXISTS player_images (
     image_url text
 );
 
-CREATE TABLE IF NOT EXISTS timeseries_bets (
-    player_id text,
-    time timeuuid,
-    price double,
-    PRIMARY KEY (player_id, time)
-) WITH CLUSTERING ORDER BY (time ASC);
+CREATE TABLE IF NOT EXISTS player_images_Mlb (
+    player_id uuid PRIMARY KEY,
+    player_name text,
+    image_url text
+);
 
+CREATE INDEX IF NOT EXISTS ON player_images_Mlb(player_name);
+>>>>>>> 1cff78ed752ee14abbfb23bd33a968416eef440f

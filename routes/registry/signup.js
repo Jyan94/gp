@@ -22,7 +22,7 @@ function insertUser(body, res, next) {
     if (err) {
       next(err);
     }
-    var fields = 
+    var fields =
     [
       cql.types.uuid(), //user_id
       body.email, //email
@@ -36,6 +36,7 @@ function insertUser(body, res, next) {
       null, //address
       null, //payment_info
       {value: 10000.0, hint: 'double'}, //money
+      {value: 10000.0, hint: 'double'}, //spending_power
       null, //fbid
       0,  //vip_status
       null //image
@@ -78,7 +79,7 @@ var processSignup = function(req, res, next) {
         }
       });
     }
-  ], 
+  ],
   //callback for when done
   function(err) {
     if (err) {

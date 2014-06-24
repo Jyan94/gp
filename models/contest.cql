@@ -75,18 +75,19 @@ CREATE TYPE IF NOT EXISTS baseball_team_table (
 
 CREATE TABLE IF NOT EXISTS baseball_game (
   gsis_id uuid PRIMARY KEY,
-  start_time timeuuid,
+  start_time text,
   end_time timeuuid,
-  week int,
-  season_year int,
+  date text,
   season_type text,
-  finished boolean,
-  home_team list<uuid>
-  away_team list<uuid>,
+  status text,
+  home_team text,
+  away_team text,
   home_score int,
   away_score int,
   play_by_play list<text>
 );
+
+CREATE INDEX IF NOT EXISTS on baseball_game(date);
 
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   statistic_id uuid PRIMARY KEY,
@@ -99,7 +100,7 @@ CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   singles int,
   doubles int,
   triples int,
-  home runs int,
+  home_runs int,
   runs int,
   rbis int,
   stolen_bases int,
