@@ -16,6 +16,8 @@ var multiline = require('multiline');
 
 /**
  * verifies if the instance
+ * @param  {object}   user 
+ * user object from req.user
  * @param  {object}   instance 
  * updated instance to be inserted into the database
  * @param  {object}   contest
@@ -23,8 +25,11 @@ var multiline = require('multiline');
  * @param  {Function} callback
  * args: (err, contest)
  */
-function verifyInstance(instance, contest, callback) {
-  if (!(instance && instance.predictions && instance.wagers)) {
+function verifyInstance(user, instance, contest, callback) {
+  if (!(contest.contestants.hasOwnProperty(user.username))) {
+    callback(new Error('username does not exist in contest'));
+  }
+  else if (!(instance && instance.predictions && instance.wagers)) {
     callback(new Error('instance format'));
   }
   else if (instance.predictions.length !== instance.wagers.length) {
@@ -120,31 +125,44 @@ function updateInstance(
   callback) {
 
   var contestant = JSON.parse(contest.contestestants[user.username]);
-  var oldInstance = contestant.instance[instanceIndex];
-  compareInstances(oldInstance, updatedInstance, contest, function(err) {
-    if (err) {
-      callback(err);
-    }
-    else {
-      contestant.instances[instanceIndex] = updatedInstance;
-      UpdateContest.updateContestant(
-        user.username, 
-        JSON.stringify(contestant), 
-        contest.contest_id, 
-        callback);
-    }
-  });
+  if (instanceIndex < contestant.instance.length) {
+
+    var compareCallback = function(err) {
+      if (err) {
+        callback(err);
+      }
+      else {
+        contestant.instances[instanceIndex] = updatedInstance;
+        UpdateContest.updateContestant(
+          user.username, 
+          JSON.stringify(contestant), 
+          contest.contest_id, 
+          callback);
+      }
+    };
+
+    var oldInstance = contestant.instance[instanceIndex];
+    compareInstances(oldInstance, updatedInstance, contest, compareCallback);
+
+  }
+  else {
+    callback(new Error('out of bounds index'));
+  }
 }
 
 /**
  * selects the contest
- * verifies that the new instance is a valid instance
- * @param  {[type]}   user            [description]
- * @param  {[type]}   instanceIndex   [description]
- * @param  {[type]}   updatedInstance [description]
- * @param  {[type]}   contestId       [description]
+ * verifies that the updated instance is a valid instance
+ * then updates the instance
+ * @param  {object}   user            
+ * user from req.user
+ * @param  {int}   instanceIndex   
+ * index of contestant instance 
+ * @param  {object}   updatedInstance
+ * updated instance for contestant as an object
+ * @param  {uuid}   contestId       
  * @param  {Function} callback        [description]
- * @return {[type]}                   [description]
+ * args: (err)
  */
 function updateContestantInstance(
   user, 
@@ -158,7 +176,7 @@ function updateContestantInstance(
       SelectContest.selectById(contestId, callback);
     },
     function(contest, callback) {
-      verifyInstance(updatedInstance, contest, callback);
+      verifyInstance(user, instanceIndex, updatedInstance, contest, callback);
     },
     function(contest, callback) {
       updateInstance(user, instanceIndex, updatedInstance, contest, callback);

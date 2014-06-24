@@ -86,12 +86,14 @@ console.log(str);
 console.log(JSON.parse(str)[0][1]);
 */
 
-(function() {
+var retval = (function() {
   hello = extend(hello, {9 : 'one'});
   var a = function() {
     console.log(hello[9]);
   }
   hello[0] = 2;
-  console.log(hello[0].length);
-  a();
+  return hello[0];
 }());
+
+console.log(retval);
+
