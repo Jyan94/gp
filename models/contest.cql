@@ -1,3 +1,5 @@
+USE goprophet;
+
 CREATE TABLE IF NOT EXISTS contest_B (
   athletes map<int, text>,
   commission_earned int,
@@ -11,8 +13,10 @@ CREATE TABLE IF NOT EXISTS contest_B (
   entries_allowed_per_contestant int,
   entry_fee int,
   game_type text,
+  game_version int,
   last_locked timestamp,
   lock_current_entries boolean,
+  max_wager int,
   maximum_entries int,
   minimum_entries int,
   pay_outs map<int, double>,
@@ -20,7 +24,7 @@ CREATE TABLE IF NOT EXISTS contest_B (
   sport text,
   starting_virtual_money int,
   total_prize_pool int,
-  PRIMARY KEY (sport, state, contest_id)
+  PRIMARY KEY (sport, contest_state, contest_id)
 );
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
 CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
@@ -36,8 +40,11 @@ contestants map of username to stringified contestant object:
   instances: [
   {
     virtualMoneyRemaining : money remaining
-    bets: array of bets, indexed 0 - num athletes initialized to 0's
+    wagers: array of amounts wagered, indexed 0 - num athletes initialized to 0's
     [0, 0, 0, 0, 0, ...]
+    predictions: array of predicted fantasy values
+    [value0, value1, value2, ...]
+    //should add timestamp too, prevent users from changing too frequently
   },
   ...
   ]
@@ -59,7 +66,7 @@ contest states:
 2: after deadline
 3: processed payouts
 4: cancelled
-*/
+
 
 CREATE TYPE IF NOT EXISTS baseball_team (
   team_id uuid,
@@ -71,7 +78,7 @@ CREATE TYPE IF NOT EXISTS baseball_team_table (
   team_id uuid,
   team_name text,
   team_abbreviation
-);
+);*/
 
 CREATE TABLE IF NOT EXISTS baseball_game (
   gsis_id uuid PRIMARY KEY,
@@ -138,6 +145,6 @@ CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
     time timeuuid,
     fantasy_value double,
     virtual_money_wagered int,
-    contest_mode text,
+    contest_type text,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);

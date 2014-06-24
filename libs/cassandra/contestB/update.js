@@ -8,15 +8,16 @@
 
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
+var states = require('config/constants').contestB;
 var multiline = require('multiline');
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
-var OPEN = 0;
-var FILLED = 1;
-var TO_PROCESS = 2;
-var PROCESSED = 3;
-var CANCELLED = 4;
+var OPEN = states.OPEN;
+var FILLED = states.FILLED;
+var TO_PROCESS = states.TO_PROCESS;
+var PROCESSED = states.PROCESSED;
+var CANCELLED = states.CANCELLED;
 
 /** 
  * ====================================================================
@@ -39,6 +40,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     game_type,
     last_locked,
     lock_insert_delete,
+    max_wager,
     maximum_entries,
     minimum_entries
     pay_outs,
@@ -51,7 +53,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?. ?. ?, ?, ?,
-    ?
+    ?, ?
   );
 */});
 
@@ -91,11 +93,19 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
   UPDATE 
     contest_B
   SET 
-    state = ?
+    contest_state = ?
   WHERE
     contestId = ?
 */});
 
+/**
+ * [updateContestState description]
+ * @param  {int}   nextState 
+ * 0-4, defined in constants.contestB
+ * @param  {uuid}   contestId
+ * @param  {Function} callback
+ * args: (err)
+ */
 function updateContestState(nextState, contestId, callback) {
   cassandra.query(UPDATE_STATE_QUERY, [nextState, contestId], quorum, callback);
 }
@@ -119,3 +129,62 @@ exports.setProcessed = function(contestId, callback) {
 exports.setCancelled = function(contestId, callback) {
   updateContestState(CANCELLED, contestId, callback);
 }
+
+var SET_CONTESTANT_QUERY = multiline(function() {/*
+  UPDATE 
+    contest_B
+  SET 
+    contestants['?'] = ?,
+    current_entries = ?
+  WHERE
+    contestId = ?
+*/});
+
+/**
+ * @param {string}   username
+ * @param {string}   contestant 
+ * JSON.stringify({
+ *   instances: [{contestant instance}]
+ * })
+ * @param {int}   numEntries 
+ * number of current entries in contest
+ * @param {uuid}   contestId  
+ * @param {Function} callback
+ * args: (err)
+ */
+function setContestant(username, contestant, numEntries, contestId, callback) {
+  cassandra.query(
+    SET_CONTESTANT_QUERY, 
+    [username, contestant, numEntries, contestId],
+    quorum,
+    callback);
+}
+exports.setContestant = setContestant;
+
+var UPDATE_CONTESTANT_QUERY = multiline(function() {/*
+  UPDATE
+    contest_B
+  SET
+    contestants['?'] = ?
+  WHERE
+    contest_id = ?;
+*/});
+
+/**
+ * @param {string}   username
+ * @param {string}   contestant 
+ * JSON.stringify({
+ *   instances: [{contestant instance}]
+ * })
+ * @param {uuid}   contestId  
+ * @param {Function} callback
+ * args: (err)
+ */
+function updateContestant(username, contestant, contestId, callback) {
+  cassandra.query(
+    UPDATE_CONTESTANT_QUERY,
+    [username, contestant, contestId],
+    one,
+    callback);
+}
+exports.updateContestant = updateContestant;

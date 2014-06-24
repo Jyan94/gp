@@ -8,15 +8,16 @@
 
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
+var states = require('config/constants').contestB;
 var multiline = require('multiline');
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
-var OPEN = 0;
-var FILLED = 1;
-var TO_PROCESS = 2;
-var PROCESSED = 3;
-var CANCELLED = 4;
+var OPEN = states.OPEN;
+var FILLED = states.FILLED;
+var TO_PROCESS = states.TO_PROCESS;
+var PROCESSED = states.PROCESSED;
+var CANCELLED = states.CANCELLED;
 
 /*
  * ====================================================================
@@ -31,7 +32,21 @@ var SELECT_CONTEST_ID_QUERY = multiline(function() {/*
 */});
 
 exports.selectById = function(contestId, callback) {
-  cassandra.queryOneRow(SELECT_CONTEST_ID_QUERY, [contestId], one, callback);
+  cassandra.queryOneRow(
+    SELECT_CONTEST_ID_QUERY, 
+    [contestId], 
+    one,
+    function (err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (!result) {
+        callback(new Error('contest not found'));
+      }
+      else {
+        callback(null, result);
+      }
+    });
 };
 
 var SELECT_USERNAME_QUERY = multiline(function() {/*
@@ -41,13 +56,27 @@ var SELECT_USERNAME_QUERY = multiline(function() {/*
 */});
 
 exports.selectByUsername = function(username, callback) {
-  cassandra.query(SELECT_USERNAME_QUERY, [username], one, callback);
+  cassandra.query(
+    SELECT_USERNAME_QUERY, 
+    [username], 
+    one,     
+    function (err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (!result) {
+        callback(new Error('contest not found'));
+      }
+      else {
+        callback(null, result);
+      }
+    });
 }
 
 var SELECT_BY_STATE_QUERY = multiline(function() {/*
   SELECT *
     FROM contest_B
-    WHERE sport = ? AND state = ?;
+    WHERE sport = ? AND contest_state = ?;
 */});
 
 function selectByState(sport, state, callback) {

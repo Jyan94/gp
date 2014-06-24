@@ -92,8 +92,8 @@ html(lang="en")
                         td#bet-player-image-cell(style='width:100px', align='right')
                           div#bet-player-image(style='background-image: url(#{userInfo.image})')
                         td#bet-info-cell
-                          div Bet on #{item.player_id}
-                            h1=item.bet_id
+                          div#bet-player-name
+                            h1 Bet on #{item.player_id}
                           div#bet-info
                             | Price: #{item.bet_value}
                           div#bet-info

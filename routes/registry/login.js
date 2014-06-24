@@ -14,8 +14,18 @@ var redirectLogin = function(req, res, next) {
 }
 
 var renderLogin = function(req, res) {
-  var results = [];
-  res.render('login.jade', { flash: results });
+  var errors = req.flash().error;
+  var errorsSend = [];
+
+  if (typeof(errors) !== 'undefined') {
+    for (var i = 0; i < errors.length; i++) {
+      errorsSend[i] = JSON.parse(errors[i]);
+    }
+  }
+
+  console.log(errorsSend);
+
+  res.render('login.jade', { errors: errorsSend });
 }
 
 //exports.checkUser = checkUser;

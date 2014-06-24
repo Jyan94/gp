@@ -5,7 +5,15 @@ html(lang='en')
   body
     div#login-box-wrapper.content
       div#login-box-wrapper.bounding-box.rounded
-        p
+        if errors.length > 0
+          each error in errors
+            div.padded
+              div.error.rounded
+                div.padded
+                  h3=error.title
+                  each part in error.parts
+                    p=part
+        div.padded
           a(href='/auth/facebook')
             img(src='login-with-facebook.png' width='154' height='22')
         div.padded

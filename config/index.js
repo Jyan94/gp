@@ -9,6 +9,7 @@ var compress = require('compression');
 var express = require('express');
 var flash = require('connect-flash');
 var methodOverride = require('method-override');
+var morgan = require('morgan');
 var session = require('express-session');
 var path = require('path');
 var multiline = require('multiline');
@@ -25,13 +26,14 @@ var client = new cql.Client(cassandraConfig);
 //exported configurations
 var config = {
   configure: function(app) {
+    //use helmet too
+    app.use(morgan('dev'));
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
     app.engine('ejs', require('ejs').renderFile);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
-    app.use(flash());
     app.use(bodyParser());
     app.use(cookieparser());
     app.use(methodOverride());
@@ -44,6 +46,7 @@ var config = {
       //make sure cassandra is running for this to work
       store: new CassandraStore({client: client})
     }));
+    app.use(flash());
     app.use(busboy());
   },
   cassandra: {
