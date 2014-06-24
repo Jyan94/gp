@@ -6,7 +6,7 @@ var UpdateContest = require('libs/cassandra/contestB/update');
 var User = require('/libs/cassandra/user');
 var async = require('async');
 
-var CONTESTIDINDEX = 4;
+var CONTEST_ID_INDEX = 4;
 
 var testUserParams = testConfigs.testUserParams;
 var testContestSettings = testConfigs.testContestSettings;
@@ -19,18 +19,16 @@ function takedownUsers(callback) {
 
 function deleteContest(callback) {
   async.each(testContestSettings, function(setting, callback) {
-    UpdateContest.delete(setting[CONTESTIDINDEX], callback);
+    UpdateContest.delete(setting[CONTEST_ID_INDEX], callback);
   }, callback);
   UpdateContest.delete(contestId, callback);
 }
 
-(function() {
-  async.waterfall([
+function takedown(callback) {
+  async.waterfall(
+  [
     takedownUsers,
     deleteContest
-  ], function (err) {
-    if (err) {
-      console.log(err);
-    }
-  })
-}());
+  ], callback);
+}
+exports.takedown = takedown;

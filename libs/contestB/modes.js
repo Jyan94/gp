@@ -18,6 +18,7 @@ var cql = configs.cassandra.cql;
   entry_fee int,
   game_type text,
   lock_current_entries boolean,
+  max_wager int,
   maximum_entries int,
   minimum_entries int,
   pay_outs map<int, double>,
@@ -43,6 +44,8 @@ var cql = configs.cassandra.cql;
  * @param  {int} entryFee
  * @param  {text} gameType             
  *         brief text describing gametype
+ * @param  {int} maxWager
+ *         maximum wager on any given athlete
  * @param  {int} maximumEntries
  * @param  {int} minimumEntries
  * @param  {Object} payouts
@@ -61,6 +64,7 @@ function createSettings(
   entriesAllowedPerContestant,
   entryFee,
   gameType,
+  maxWager,
   maximumEntries,
   minimumEntries,
   payouts,
@@ -83,6 +87,7 @@ function createSettings(
     gameType, //game_type
     null, //last_locked
     false,  //lock_current_entries
+    maxWager, //max_wager
     maximumEntries, //maximum_entries
     minimumEntries, //minimum_entries
     payouts,  //pay_outs
@@ -93,19 +98,13 @@ function createSettings(
   ];
 }
 
-/**
- * [createType1Settings description]
- * @param  {[type]} athletes     [description]
- * @param  {[type]} deadlineTime [description]
- * @param  {[type]} sport        [description]
- * @return {[type]}              [description]
- */
 /*
   athletes
   deadlineTime
   entriesAllowedPerContestant,
   entryFee,
   gameType,
+  maxWager
   maximumEntries,
   minimumEntries,
   payouts,
@@ -120,6 +119,7 @@ function createType1Settings(athletes, deadlineTime, sport) {
     10,
     10,
     'daily prophet',
+    8000,
     10,
     9,
     {

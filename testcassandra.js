@@ -7,7 +7,7 @@ var query = 'insert into birds (name, bird) VALUES (?, ?)';
 var query = 'select * from birds where name = ?'
 
 //var query = 'update test42 set bool1 = false where name = ? if bool1 = false and num1 = 1';
-
+/*
 cassandra.queryOneRow(
   query, 
   ['hello'],
@@ -25,7 +25,7 @@ cassandra.queryOneRow(
       }
     }
   }
-);
+);*/
 /*
 cassandra.query(
   query, 
@@ -92,5 +92,6 @@ console.log(JSON.parse(str)[0][1]);
     console.log(hello[9]);
   }
   hello[0] = 2;
+  console.log(hello[0].length);
   a();
 }());

@@ -1,4 +1,4 @@
-require('multiline');
+
 exports.defaultPlayerImage = 'http://2.bp.blogspot.com/-6QyJDHjB5XE/Uscgo2DVBdI/AAAAAAAACS0/DFSFGLBK_fY/s1600/facebook-default-no-profile-pic.jpg';
 exports.profileStrings = {
   incorrectUsername: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }',
@@ -11,15 +11,24 @@ exports.auth = {
 };
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
 exports.contestB = {
-  gameType: 'daily prophet',
   //for update.js states
   OPEN: 0,
   FILLED: 1,
   TO_PROCESS: 2,
-  PROCESSED:3,
-  CANCELLED:4,
+  PROCESSED: 3,
+  CANCELLED: 4,
   //for lock.js times and tries
   MAX_MILLISECONDS: 20000,
   MAX_TRIES: 20,
   MAX_WAIT: 1000
+};
+exports.FacebookStrategy = {
+    clientID: "855194074508903",
+    clientSecret: "f0eba05b866e9921a7d88071d800bb72",
+    callbackURL: "http://localhost:3000/auth/facebook/callback"
 }
+exports.signupResponseValues = {
+  userTaken: 1,
+  emailTaken: 2,
+  success: 3
+};

@@ -40,6 +40,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     game_type,
     last_locked,
     lock_insert_delete,
+    max_wager,
     maximum_entries,
     minimum_entries
     pay_outs,
@@ -52,7 +53,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?. ?. ?, ?, ?,
-    ?
+    ?, ?
   );
 */});
 
@@ -128,7 +129,6 @@ exports.setProcessed = function(contestId, callback) {
 exports.setCancelled = function(contestId, callback) {
   updateContestState(CANCELLED, contestId, callback);
 }
-
 
 var SET_CONTESTANT_QUERY = multiline(function() {/*
   UPDATE 
