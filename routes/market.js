@@ -33,7 +33,8 @@ var getDailyScores = function(req, res, next) {
       next(err);
     }
     else {
-    res.render('marketHome', {result: result});
+      console.log(result);
+      res.render('marketHome', {result: result});
     }
   });
 }
@@ -187,52 +188,58 @@ var insertBet = function (req, res, next, result, callback) {
   var longBetterId = null;
   var shortBetterId = null;
 
-  if (currentBet.long_position === 'true') {
-    longBetterId = currentBet.user_id;
-    shortBetterId = req.user.user_id;
+  if (req.user.user_id === currentBet.user_id) {
+    console.log('Can\'t take bet, same person'); //change to flash message
   }
   else {
-    longBetterId = req.user.user_id;
-    shortBetterId = currentBet.user_id;
-  }
-
-  SpendingPower.calculateSpendingPowerWithAddition(req.user.user_id,
-  req.user.money,
-  currentBet.player_id,
-  currentBet.long_position,
-  parseFloat(currentBet.multiplier),
-  parseFloat(currentBet.bet_value),
-  function(err, result) {
-    var spendingPower = result;
-    console.log(spendingPower);
-    if (spendingPower >= 0) {
-    Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
-    shortBetterId, currentBet.player_id,
-    {value: parseFloat(currentBet.bet_value), hint: 'double'},
-    {value: parseFloat(currentBet.multiplier), hint: 'double'},
-    currentBet.game_id, currentBet.expiration],
-    function (err) {
-      if (err) {
-        next(err);
-      }
-      else {
-        TimeseriesBets.insert(currentBet.player_id,
-          parseFloat(currentBet.bet_value),
-          function(err){
-            if (err) {
-              next(err);
-            }
-            else {
-              SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
-            }
-          })
-        }
-      })
+    if (currentBet.long_position === 'true') {
+      longBetterId = currentBet.user_id;
+      shortBetterId = req.user.user_id;
     }
     else {
-      next(new Error('Spending Power too low'));
+      longBetterId = req.user.user_id;
+      shortBetterId = currentBet.user_id;
     }
-  })
+
+    SpendingPower.calculateSpendingPowerWithAddition(
+    req.user.user_id,
+    req.user.money,
+    currentBet.player_id,
+    currentBet.long_position,
+    parseFloat(currentBet.multiplier),
+    parseFloat(currentBet.bet_value),
+    function(err, result) {
+      var spendingPower = result;
+      console.log(spendingPower);
+      if (spendingPower >= 0) {
+      Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
+      shortBetterId, currentBet.player_id,
+      {value: parseFloat(currentBet.bet_value), hint: 'double'},
+      {value: parseFloat(currentBet.multiplier), hint: 'double'},
+      currentBet.game_id, currentBet.expiration],
+      function (err) {
+        if (err) {
+          next(err);
+        }
+        else {
+          TimeseriesBets.insert(currentBet.player_id,
+            parseFloat(currentBet.bet_value),
+            function(err){
+              if (err) {
+                next(err);
+              }
+              else {
+                SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
+              }
+            })
+          }
+        })
+      }
+      else {
+        next(new Error('Spending Power too low'));
+      }
+    })
+  }
 }
 
 //post to '/addBets/:playerId'
