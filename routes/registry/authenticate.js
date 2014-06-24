@@ -20,13 +20,13 @@ function localStrategyVerify(username, password, done) {
       return done(err);
     }
     if (!result) {
-      return done(null, false, {message: messages.incorrect_username});
+      return done(null, false, {message: messages.incorrectUsername});
     }
     bcrypt.compare(password, result.password, function(err, res) {
       if (res) {
         return done(null, result);
       } else {
-        return done(null, false, {message: messages.incorrect_password});
+        return done(null, false, {message: messages.incorrectPassword});
       }
     });
   });

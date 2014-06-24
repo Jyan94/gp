@@ -34,7 +34,6 @@ var config = {
     app.engine('ejs', require('ejs').renderFile);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
-    app.use(flash());
     app.use(bodyParser());
     app.use(cookieparser());
     app.use(methodOverride());
@@ -47,6 +46,7 @@ var config = {
       //make sure cassandra is running for this to work
       store: new CassandraStore({client: client})
     }));
+    app.use(flash());
     app.use(busboy());
   },
   cassandra: {
