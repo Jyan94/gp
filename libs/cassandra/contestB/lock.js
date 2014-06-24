@@ -7,12 +7,14 @@
 (require('rootpath')());
 
 var cassandra = require('libs/cassandra/cql');
-var cql = require('config/index.js').cassandra.cql;
-var constants = require('config/constants').contestB;
-var multiline = require('multiline');
-var async = require('async');
-var TimeSeries = require('timeseriesValues');
+var configs = require('config/index.js');
 var User = require('libs/cassandra/user');
+
+var async = require('async');
+var multiline = require('multiline');
+
+var cql = configs.cassandra.cql;
+var constants = configs.constants.contestB;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
