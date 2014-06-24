@@ -24,10 +24,11 @@ CREATE TABLE IF NOT EXISTS contest_B (
   sport text,
   starting_virtual_money int,
   total_prize_pool int,
-  PRIMARY KEY (sport, contest_state, contest_id)
+  PRIMARY KEY (sport, contest_id)
 );
+CREATE INDEX IF NOT EXISTS ON contest_B(contest_state);
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
-CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
+//CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
 /*
 athletes map of int to stringified athlete object:
 {
