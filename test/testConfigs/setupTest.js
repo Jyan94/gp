@@ -36,7 +36,6 @@ var SETTINGS_LENGTH_OF_CONTEST = 22;
 
 function createUsers(callback) {
   async.each(testUserParams, function(params, callback) {
-    params.should.have.length(SETTINGS_LENGTH_OF_CONTEST);
     User.insert(params, callback);
   }, callback);
 }

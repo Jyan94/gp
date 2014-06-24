@@ -52,12 +52,13 @@ exports.contestSettings = [
   0,  //contest_state
   {}, //contestants
   0,  //current_entries
-  5, //entries_allowed_per_contestant
+  2, //entries_allowed_per_contestant
   1000, //entry_fee
   'daily prophet', //game_type
   null, //last_locked
   false,  //lock_current_entries
-  10, //maximum_entries
+  8000,   //max_wager
+  3, //maximum_entries
   1, //minimum_entries
   {1: 1000},  //pay_outs
   null, //processed_payouts_timestamp

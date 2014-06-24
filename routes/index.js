@@ -37,6 +37,14 @@ app.route('/login')
   { successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true }));
+// Redirect the user to Facebook for authentication
+app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+// Facebook will redirect the user to this URL after approval.
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { successRedirect: '/user/',
+                                      failureRedirect: '/login' }));
 
 //signup
 var signup = require('routes/registry/signup');
@@ -64,20 +72,13 @@ app.post('/addBets/:playerId', market.takeBet);
 app.get('/market', market.getDailyScores);
 
 //profile
-// Redirect the user to Facebook for authentication
-app.get('/auth/facebook',
-  passport.authenticate('facebook'));
-
-// Facebook will redirect the user to this URL after approval.
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { successRedirect: '/user/',
-                                      failureRedirect: '/login' }));
 var profile = require('routes/profile');
 app.get('/user', profile.redirectProfile);
 app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
+app.post('/delete/:betId', profile.deleteBets);
 
 //graph
 var graph = require('routes/graph');

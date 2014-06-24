@@ -40,22 +40,35 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     var parallelArray = 
     [
       function(callback) {
-        UpdateContest.setContestant(
-          user.username, 
-          contestant, 
-          contest.current_entries - 1, 
-          contest.contest_id,
-          callback);  
-      },
-      function(callback) {
         User.updateMoney(
           [user.money + contest.entry_fee], 
           [user.user_id], 
           callback);
       }
     ];
-    //removes instanceIndex element
+
+    //removes instanceIndex element and removes contestant from map if
+    //instance's length is 0
     contestant.instances.splice(instanceIndex, 1);
+    if (contestant.instances.length === 0) {
+      parallelArray.push(function(callback) {
+        UpdateContest.deleteContestant(
+          user.username, 
+          contest.contest_id, 
+          callback);
+      });
+    }
+    else {
+      parallelArray.push(function(callback) {
+        UpdateContest.setContestant(
+          user.username, 
+          contestant, 
+          contest.current_entries - 1, 
+          contest.contest_id,
+          callback);  
+      });
+    }
+
     contestant = JSON.stringify(contestant);
 
     //update contest state

@@ -7,63 +7,8 @@ var client = configs.cassandra.client;
 
 var async = require('async');
 var Bet = require('libs/cassandra/bet.js');
-
-function calculate(result, userId, money, callback) {
-  var increase = 0.0;
-  var playerCheckedArr = [];
-  for (var i = 0; i < result.length; i++) {
-    var player1 = result[i];
-    var templong = 0.0;
-    var tempshort = 0.0;
-    for (var j = i+1; j < result.length; j++) {
-      var player2 = result[j];
-      if (playerCheckedArr.indexOf(i) === -1 && player1.player_id === player2.player_id) {
-        if (player2.user_id === undefined) {
-          if (player2.long_better_id === userId) {
-            console.log()
-            templong = templong + player2.bet_value * player2.multiplier;
-          }
-          else {
-            tempshort = tempshort = player2.bet_value * player2.multiplier;
-          }
-        }
-        else {
-          if (player2.long_position === true) {
-            templong = templong + player2.bet_value * player2.multiplier;
-          }
-          else {
-            tempshort = tempshort = player2.bet_value * player2.multiplier;
-          }
-        }
-        playerCheckedArr.push(j)
-      }
-    }
-    if (playerCheckedArr.indexOf(i) === -1) {
-      if (player1.user_id === undefined) {
-        if (player1.long_better_id === userId) {
-          templong = templong + player1.bet_value * player1.multiplier;
-        }
-        else {
-          tempshort = tempshort + player1.bet_value * player1.multiplier;
-        }
-      }
-      else {
-        if (player1.long_position === true) {
-          templong = templong + player1.bet_value * player1.multiplier;
-        }
-        else {
-          tempshort = tempshort = player1.bet_value * player1.multiplier;
-        }
-      }
-    }
-    //console.log("templong: " + templong);
-    //console.log("tempshort: " + tempshort);
-    increase = increase + tempshort - templong;
-  }
-  var spendingPower = money + increase;
-  //console.log(spendingPower);
-  callback(null, spendingPower)
-}
+var User = require('libs/cassandra/user.js');
+var Calculate = require('libs/applicationServer/calculateSpendingPowerHelper')
 
 function selectFromCurrentBets (userId, money, callback) {
   Bet.selectUsingUserId('current_bets', userId, function(err, result) {
@@ -100,12 +45,26 @@ exports.calculateSpendingPower = function(userId, money, callback) {
 
     selectFromPendingBets,
 
-    calculate
+    Calculate.calculate
   ], function(err, spendingPower) {
     if (err) {
       callback(err);
     }
     callback(null, spendingPower)
+  })
+}
+
+exports.updateSpendingPower = function(userId, money) {
+  exports.calculateSpendingPower(userId, money, function(err, result) {
+    var spendingPower = result;
+    User.updateSpendingPower(spendingPower, userId, function(err) {
+      if (err) {
+        console.log(err);
+      }
+      else {
+        console.log("spending power: " + spendingPower);
+      }
+    })
   })
 }
 
@@ -138,7 +97,7 @@ exports.calculateSpendingPowerWithAddition = function(userId,
       callback(null, result, userId, money);
     },
 
-    calculate
+    Calculate.calculate
   ], function(err, spendingPower) {
     if (err) {
       callback(err);
@@ -148,11 +107,3 @@ exports.calculateSpendingPowerWithAddition = function(userId,
     }
   })
 }
-/*
-calculateSpendingPower('2e90767c-375c-40b6-9527-69a6a9cc5bea', 10000)
-calculateSpendingPowerWithAddition('2e90767c-375c-40b6-9527-69a6a9cc5bea',
- 10000, '77726967-6864-6130-3300-000000000000', false, 100, 100, function(err,result) {
-  if (err) {
-    console.log(err);
-  }
- })*/

@@ -95,5 +95,6 @@ var retval = (function() {
   return hello[0];
 }());
 
-console.log(retval);
-
+var a = [1]
+a.splice(0, 1);
+console.log(a);

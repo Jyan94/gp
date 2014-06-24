@@ -65,7 +65,7 @@ var getBetsFromUser = function(req, res, next, userInfo, callback) {
         next(err);
       }
       else {
-        res.render('profile', { userInfo: userInfo, 
+        res.render('profile', { userInfo: userInfo,
                                 pendingBetInfo: result.pendingBets,
                                 currentBetInfo: result.currentBets,
                                 pastBetInfo: result.pastBets
@@ -97,7 +97,7 @@ var updateProfile = function(req, res, next) {
   var uploadMimetype = null;
   var uploadUserId = null;
 
-  req.busboy.on('file', function(fieldname, file, filename, encoding, 
+  req.busboy.on('file', function(fieldname, file, filename, encoding,
                                  mimetype) {
     async.waterfall([
       function (callback) {
@@ -149,8 +149,8 @@ var updateProfile = function(req, res, next) {
       },
       function (callback) {
         User.update(
-          uploadUserId, ['image'], 
-          ['/images/' + uploadUsername + '.' + uploadMimetype], 
+          uploadUserId, ['image'],
+          ['/images/' + uploadUsername + '.' + uploadMimetype],
           function (err, result) {
             if (err) {
               res.send(500, 'Database error.');
@@ -182,8 +182,39 @@ var pictureNotFound = function (req, res) {
   });
 }
 
+var deleteBet = function(req, res, next, callback) {
+  var betId = req.params.betId;
+  console.log("betId in deleteBet: " + betId);
+  Bet.deletePending(betId, function(err) {
+    if (err) {
+      next(err);
+    }
+    else {
+      console.log("Deleted!");
+    }
+  })
+}
+
+var deleteBets = function(req, res, next) {
+
+  async.waterfall([
+    function (callback) {
+      callback(null, req, res, next);
+    },
+
+    deleteBet
+
+    ],
+    function(err) {
+      if (err) {
+        next(err);
+      }
+    })
+}
+
 //exports
 exports.redirectProfile = redirectProfile;
 exports.retrieveProfile = retrieveProfile;
 exports.updateProfile = updateProfile;
 exports.pictureNotFound = pictureNotFound;
+exports.deleteBets = deleteBets;
