@@ -21,63 +21,44 @@ var UpdateContestant = require('libs/cassandra/contestB/updateContestant');
 var async = require('async');
 
 var ATHLETES_INDEX = 0;
-var COMMISSION_EARNED_INDEX = 1;
-var DEADLINE_TIME_INDEX = 2 
-var CONTEST_END_TIME_INDEX = 3;
 var CONTEST_ID_INDEX = 4;
-var CONTEST_START_TIME_INDEX = 5;
-var CONTEST_STATE_INDEX = 6;
-var CONTESTANTS_INDEX = 7;
-var CURRENT_ENTRIES_INDEX = 8;
-var ENTRIES_ALLOWED_PER_CONTESTANT = 9;
-var ENTRY_FEE_INDEX = 10;
-var GAME_TYPE_INDEX = 11;
-var LAST_LOCKED_INDEX = 12;
-var LOCK_CURRENT_ENTRIES_INDEX = 13;
-var MAXIMUM_ENTRIES_INDEX = 14;
-var MINIMUM_ENTRIES_INDEX = 15;
-var PAYOUTS_INDEX = 16;
-var PROCESSED_PAYOUTS_TIMESTAMP_INDEX = 17;
-var SPORT_INDEX = 18;
-var STARTING_VIRTUAL_MONEY_INDEX = 19;
-var TOTAL_PRIZE_POOL_INDEX = 20;
-
-var SETTINGS_LENGTH_OF_CONTEST = 21;
+var contestId = testContestSettings[CONTEST_ID_INDEX];
 
 function verifyContestEssentials(queryResult) {
   queryResult.should.have.property(
     'athletes', 
     JSON.stringify(testContestSettings[ATHLETES_INDEX]));
-  queryResult.should.have.property('commission_earned');
-  queryResult.should.have.property('contest_deadline_time');
-  queryResult.should.have.property('contest_end_time');
   queryResult.should.have.property(
     'contest_id', 
     testContestSettings[CONTEST_ID_INDEX]);
-  queryResult.should.have.property('contest_start_time');
-  queryResult.should.have.property('contest_state');
-  queryResult.should.have.property('contestants');
-  queryResult.should.have.property('current_entries');
-  queryResult.should.have.property('entries_allowed_per_contestant');
-  queryResult.should.have.property('entry_fee');
-  queryResult.should.have.property('game_type');
-  queryResult.should.have.property('last_locked');
-  queryResult.should.have.property('lock_current_entries');
-  queryResult.should.have.property('maximum_entries');
-  queryResult.should.have.property('minimum_entries');
-  queryResult.should.have.property('pay_outs');
-  queryResult.should.have.property('processed_payouts_time');
-  queryResult.should.have.property('sport');
-  queryResult.should.have.property('starting_virtual_money');
-  queryResult.should.have.property('total_prize_pool');
+  queryResult.should.have.keys(
+    'athletes', 
+    'commission_earned', 
+    'contest_deadline_time',
+    'contest_id',
+    'contest_start_time',
+    'contest_state',
+    'contestants',
+    'current_entries',
+    'entries_allowed_per_contestant',
+    'entry_fee',
+    'game_type',
+    'last_locked',
+    'lock_current_entries',
+    'max_wager',
+    'maximum_entries',
+    'minimum_entries',
+    'pay_outs',
+    'processed_payouts_time',
+    'sport',
+    'starting_virtual_money',
+    'total_prize_pool');
 }
 
-var contestId = testContestSettings[CONTEST_ID_INDEX];
-
-
-/*
-functionality to test:
-
+/**
+ * functionality to test:
+ * select by id, username
+ * select by state, set state
  */
 
 /**
@@ -85,8 +66,9 @@ functionality to test:
  * Tests for queries
  * ====================================================================
  */
-//select and update
 function testSelectAndUpdate(callback) {
+
+
   var selectById = function(callback) {
     SelectContest.selectById(
       testContestSettings[CONTEST_ID_INDEX], 

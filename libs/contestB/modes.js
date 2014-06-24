@@ -44,6 +44,8 @@ var cql = configs.cassandra.cql;
  * @param  {int} entryFee
  * @param  {text} gameType             
  *         brief text describing gametype
+ * @param  {int} maxWager
+ *         maximum wager on any given athlete
  * @param  {int} maximumEntries
  * @param  {int} minimumEntries
  * @param  {Object} payouts
