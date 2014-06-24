@@ -154,6 +154,7 @@ var submitBet = function (req, res, next) {
           next(err);
         }
         else {
+          SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
           res.redirect('/market/' + req.params.playerId)
         }
       });
@@ -220,6 +221,9 @@ var insertBet = function (req, res, next, result, callback) {
           function(err){
             if (err) {
               next(err);
+            }
+            else {
+              SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
             }
           })
         }

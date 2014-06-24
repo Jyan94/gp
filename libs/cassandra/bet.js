@@ -12,7 +12,7 @@ var INSERT_PENDING_BET_CQL_2 = multiline(function() {/*
   INSERT INTO pending_bets (
     bet_id, user_id, long_position, player_id, bet_value, multiplier, game_id,
     expiration
-  ) VALUES 
+  ) VALUES
     (?, ?, ?, ?, ?, ?, ?, ?);
 */});
 exports.insertPending = function (params, callback) {
@@ -26,7 +26,7 @@ exports.insertPending = function (params, callback) {
     params: params
   }
   ];
-  
+
   cassandra.queryBatch(query, cql.types.consistencies.one, callback);
 };
 
@@ -89,7 +89,7 @@ exports.insertPast = function(params, callback) {
 }
 
 var DELETE_BET_CQL_1 = multiline(function () {/*
-  DELETE FROM user_id_to_bet_id WHERE user_id = ?;
+  DELETE FROM user_id_to_bet_id WHERE user_id = ? AND bet_id = ?;
 */});
 var DELETE_BET_CQL_2 = multiline(function () {/*
   DELETE FROM
@@ -133,6 +133,33 @@ exports.delete = function(betsTable, betId, callback) {
     });
 }
 
+var DELETE_FROM_PENDING = multiline(function(){/*
+  DELETE FROM pending_bets WHERE bet_id = ?
+*/})
+exports.deletePending = function(betId, callback) {
+  exports.selectMultiple('pending_bets', [betId], function(err, result) {
+    console.log(result);
+    if (result.length === 0) {
+      callback(null);
+    }
+    else if (result.length > 1) {
+      callback(new Error('WTF'));
+    }
+    else {
+      var query = [
+      {
+        query: DELETE_BET_CQL_1,
+        params: [result[0].user_id, betId]
+      },
+      {
+        query: DELETE_FROM_PENDING,
+        params: [betId]
+      }
+      ]
+      cassandra.queryBatch(query, cql.types.consistencies.one, callback);
+    }
+  })
+}
 var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */});
@@ -145,14 +172,14 @@ var SELECT_BETS_MULTIPLE_CQL_2 = multiline(function () {/*
  * @param  {String}   betsTable [Must be one of the fields in allowedTables]
  * @param  {[String]}   params     [Must be an array of bet_id's]
  * @param  {Function} callback   [Description]
- * @return 
- * {[Object] or 
+ * @return
+ * {[Object] or
  * {
- * pending_bets: [Object], 
- * current_bets: [Object], 
+ * pending_bets: [Object],
+ * current_bets: [Object],
  * past_bets: [Object]
  * }}
- * [An array of bet_info's if bets_table is not 'all_bets', 
+ * [An array of bet_info's if bets_table is not 'all_bets',
  * the object described above if otherwise]
  */
 exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
@@ -202,10 +229,10 @@ exports.selectMultiple = function selectMultiple(betsTable, params, callback) {
       });
     });
   } else {
-    query = 
-      SELECT_BETS_MULTIPLE_CQL_1 + ' ' + 
-      betsTable + ' ' + 
-      SELECT_BETS_MULTIPLE_CQL_2 + ' (' + 
+    query =
+      SELECT_BETS_MULTIPLE_CQL_1 + ' ' +
+      betsTable + ' ' +
+      SELECT_BETS_MULTIPLE_CQL_2 + ' (' +
       filter + ');';
     cassandra.query(query, params, cql.types.consistencies.one, callback);
   }
@@ -221,14 +248,14 @@ var SELECT_BETS_USING_USER_ID_CQL = multiline(function () {/*
  * @param  {String}   betsTable [Must be one of the fields in allowedTables]
  * @param  {String}   userId    [Must be a user_id]
  * @param  {Function} callback   [Description]
- * @return 
- * {[Object] or 
+ * @return
+ * {[Object] or
  * {
- * pendingBets: [Object], 
- * currentBets: [Object], 
+ * pendingBets: [Object],
+ * currentBets: [Object],
  * pastBets: [Object]
  * }}
- * [An array of betInfo's if betsTable is not 'all_bets', 
+ * [An array of betInfo's if betsTable is not 'all_bets',
  * the object described above if otherwise, corresponding to userId]
  */
 exports.selectUsingUserId = function (betsTable, userId, callback) {
@@ -267,9 +294,9 @@ exports.selectUsingPlayerId = function (betsTable, playerId, callback) {
     callback(new Error(betsTable + ' is not an allowed table.'));
   }
 
-  query = 
-    SELECT_BETS_USING_PLAYER_ID_CQL_1 + ' ' + 
-    betsTable + ' ' + 
+  query =
+    SELECT_BETS_USING_PLAYER_ID_CQL_1 + ' ' +
+    betsTable + ' ' +
     SELECT_BETS_USING_PLAYER_ID_CQL_2;
   cassandra.query(query, [playerId], cql.types.consistencies.one,
     function(err, result) {

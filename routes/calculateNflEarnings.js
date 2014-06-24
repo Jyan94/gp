@@ -12,8 +12,8 @@ app.use('/', require('../app.js'));
 
 var User = require('../libs/cassandra/user.js');
 var Bet = require('../libs/cassandra/bet.js');
-var Player = require('../libs/cassandra/footballPlayer.js');
-var calculate = require('../libs/calculateNflFantasyPoints.js');
+var Player = require('libs/applicationServer/cassandra/footballPlayer.js');
+var calculate = require('libs/applicationServer/calculateNflFantasyPoints.js');
 var sportsdataNfl = require('sportsdata').NFL;
 var sportsdataMlb = require('sportsdata').MLB;
 var async = require('async');
@@ -236,7 +236,7 @@ function calculateAllFantasyPoints(schedule, year, week) {
     getBetsPlayerId,
     //fourth waterfall function
     processArrayBets
-    ], 
+    ],
     function (err) {
       if (err) {
         console.log(err);
