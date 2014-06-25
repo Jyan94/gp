@@ -184,35 +184,54 @@ var pictureNotFound = function (req, res) {
   });
 }
 
-var deleteBet = function(req, res, next, callback) {
+var cancelCheck = function(req, res, next, callback) {
   var betId = req.params.betId;
-  console.log("betId in deleteBet: " + betId);
-  Bet.deletePending(betId, function(err) {
+
+  Bet.selectMultiple('pending_bets', [betId], function (err, result) {
     if (err) {
       next(err);
+    }
+    else if (result.length === 0) {
+      next(new Error('Bet does not exist.'));
+    }
+    else if (result.length === 1) {
+      console.log(1);
+
+      if (result[0].user_id !== req.user.user_id) {
+        next(new Error('Can\'t delete someone else\'s bet.'));
+      }
+      else {
+        callback(null, req, res, next, betId);
+      }
     }
     else {
       SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
       console.log("Deleted!");
     }
-  })
+  });
 }
 
-var deleteBets = function(req, res, next) {
+var deletePendingBet = function(req, res, next, betId, callback) {
+  Bet.delete('pending_bets', betId, function (err, result) {
+    if (err) {
+      next(err);
+    }
+  });
+}
 
+var cancelPendingBet = function(req, res, next) {
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
     },
-
-    deleteBet
-
+    cancelCheck,
+    deletePendingBet
     ],
     function(err) {
       if (err) {
         next(err);
       }
-    })
+    });
 }
 
 //exports
@@ -220,4 +239,4 @@ exports.redirectProfile = redirectProfile;
 exports.retrieveProfile = retrieveProfile;
 exports.updateProfile = updateProfile;
 exports.pictureNotFound = pictureNotFound;
-exports.deleteBets = deleteBets;
+exports.cancelPendingBet = cancelPendingBet;

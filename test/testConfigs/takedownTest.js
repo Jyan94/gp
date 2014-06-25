@@ -3,7 +3,7 @@ require('rootpath')();
 
 var testConfigs = require('test/testConfigs/testConfigs');
 var UpdateContest = require('libs/cassandra/contestB/update');
-var User = require('/libs/cassandra/user');
+var User = require('libs/cassandra/user');
 var async = require('async');
 
 var CONTEST_ID_INDEX = 4;

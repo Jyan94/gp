@@ -7,13 +7,76 @@
 (require('rootpath')());
 
 var setupTest = require('test/testConfigs/setupTest');
-var testConfigs = require('test/testConfigs/testConfigs');
-var testUserParams0 = testConfigs.testUserParams[0];
-var testUserParams1 = testConfigs.testUserParams[1];
-var testContestSettings = testConfigs.testContestSettings[0];
-console.log(testContestSettings);
+var testUserParams0 = 
+[
+  '00000000-0000-0000-0000-000000000000',
+  'test0@test.com',
+  true,
+  new Date(),
+  'hello0',
+  'world',
+  'first name',
+  'last name',
+  20,
+  'address',
+  'paymentinfo',
+  {value: 1000, hint: 'double'},
+  'fbid',
+  0,
+  'image'
+];
+
+var testUserParams1 = 
+[
+  '00000000-0000-0000-0000-000000000001',
+  'test1@test.com',
+  true,
+  new Date(),
+  'hello1',
+  'world',
+  'first name',
+  'last name',
+  20,
+  'address',
+  'paymentinfo',
+  0,
+  'fbid',
+  0,
+  'image'
+];
+
+var testContestSettings =
+[
+  {
+    0: 'a',
+    1: 'b',
+    2: 'c',
+    3: 'd',
+    4: '5'
+  }, //athletes
+  0,  //commission_earned
+  new Date().setDate(new Date().getDate() + 1), //contest_deadline_time
+  null, //contest_end_time
+  '00000000-0000-0000-0000-000000000000', //contest_id
+  new Date(), //contest_start_time
+  0,  //contest_state
+  {}, //contestants
+  0,  //current_entries
+  2, //entries_allowed_per_contestant
+  1000, //entry_fee
+  'daily prophet', //game_type
+  null, //last_locked
+  false,  //lock_current_entries
+  8000,   //max_wager
+  3, //maximum_entries
+  1, //minimum_entries
+  {1: 1000},  //pay_outs
+  null, //processed_payouts_timestamp
+  'world',  //sport
+  10000, //starting_virtual_money
+  10  //total_prize_pool
+];
 var USER_ID_INDEX = 0;
-setupTest.setup();
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
 var Lock = require('libs/cassandra/contestB/lock');
@@ -99,7 +162,18 @@ var testStates = function(callback) {
   async.waterfall(
   [
     function(callback) {
-      UpdateContestant.setFilled(CONTESTID, callback);
+      console.log(1);
+      User.insert(testUserParams0, callback);
+    },
+    function(callback) {
+      console.log(2);
+      User.insert(testUserParams1, callback);
+    },
+    function(callback) {
+      UpdateContest.insert(testContestSettings, callback);
+    },
+    function(callback) {
+      UpdateContest.setFilled(CONTESTID, callback);
     },
     function(callback) {
       SelectContest.selectFilled(CONTESTID, function(err, result) {
@@ -114,7 +188,7 @@ var testStates = function(callback) {
       });
     },
     function(callback) {
-      UpdateContestant.setToProcess(CONTESTID, callback);
+      UpdateContest.setToProcess(CONTESTID, callback);
     },
     function(callback) {
       SelectContest.selectContestsToProcess(CONTESTID, function(err, result) {
@@ -129,7 +203,7 @@ var testStates = function(callback) {
       });
     },
     function(callback) {
-      UpdateContestant.setProcessed(CONTESTID, callback);
+      UpdateContest.setProcessed(CONTESTID, callback);
     },
     function(callback) {
       SelectContest.selectProcessed(CONTESTID, function(err, result) {
@@ -144,7 +218,7 @@ var testStates = function(callback) {
       });
     },
     function(callback) {
-      UpdateContestant.setCancelled(CONTESTID, callback);
+      UpdateContest.setCancelled(CONTESTID, callback);
     },
     function(callback) {
       SelectContest.selectCancelled(CONTESTID, function(err, result) {
@@ -159,7 +233,7 @@ var testStates = function(callback) {
       });
     },    
     function(callback) {
-      UpdateContestant.setOpen(CONTESTID, callback);
+      UpdateContest.setOpen(CONTESTID, callback);
     },
     function(callback) {
       SelectContest.selectFilled(CONTESTID, function(err, result) {
@@ -191,6 +265,7 @@ function testContestant(callback) {
         [testUserParams0[USER_ID_INDEX]], 
         function (err, result) {
           if (err) {
+            err.should.be.false;
             callback(err);
           }
           else {
@@ -205,6 +280,7 @@ function testContestant(callback) {
         [testUserParams1[USER_ID_INDEX]], 
         function (err, result) {
           if (err) {
+            err.should.be.false;
             callback(err);
           }
           else {
@@ -216,6 +292,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -232,6 +309,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -251,6 +329,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -270,6 +349,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -288,6 +368,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -305,6 +386,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -324,6 +406,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -342,6 +425,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else {
@@ -357,9 +441,11 @@ function testContestant(callback) {
     function(callback) {
       selectById(CONTESTID, function(err, result) {
         if (err) {
+          err.should.be.false;
           callback(err);
         }
         else if (!result){
+          console.log(11);
           callback(null);
         }
         else {
@@ -381,7 +467,11 @@ function tests(callback) {
 describe('contestB', function () {
   it('should test queries then modify contestants', function(done) {
     tests(function (err) {
-      (!err).should.be.true;
+      if(err) {
+        console.log(err);
+        console.log(err.stack);
+        err.should.be.false;
+      }
       done();
     }); 
   });

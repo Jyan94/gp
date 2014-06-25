@@ -78,7 +78,7 @@ app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
-app.post('/delete/:betId', profile.deleteBets);
+app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
 //graph
 var graph = require('routes/graph');

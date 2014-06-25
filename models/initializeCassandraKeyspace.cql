@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS users(
     address text,
     payment_info text,
     money double,
-    spending_power double,
     fbid text,
     vip_status int,
     image text

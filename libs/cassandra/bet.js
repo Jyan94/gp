@@ -99,6 +99,7 @@ var DELETE_BET_CQL_3 = multiline(function () {/*
 */});
 exports.delete = function(betsTable, betId, callback) {
   var allowedTables = ['pending_bets', 'current_bets', 'past_bets', 'all_bets'];
+  var query =[];
 
   if (allowedTables.indexOf(betsTable) < 0) {
     callback(new Error(betsTable + ' is not an allowed table.'));
@@ -113,53 +114,40 @@ exports.delete = function(betsTable, betId, callback) {
         callback(new Error('WTF'));
       }
       else {
-        var query = [
-          {
-            query: DELETE_BET_CQL_1,
-            params: [result[0].long_better_id]
-          },
-          {
-            query: DELETE_BET_CQL_1,
-            params: [result[0].short_better_id]
-          },
-          {
-            query: DELETE_BET_CQL_2 + ' ' + betsTable + ' ' + DELETE_BET_CQL_3,
-            params: [betId]
-          },
-        ];
+        if (betsTable === 'pending_bets') {
+          query = [
+            {
+              query: DELETE_BET_CQL_1,
+              params: [result[0].user_id, betId]
+            },
+            {
+              query: DELETE_BET_CQL_2 + ' ' + betsTable + ' ' + DELETE_BET_CQL_3,
+              params: [betId]
+            },
+          ];
+        }
+        else {
+          query = [
+            {
+              query: DELETE_BET_CQL_1,
+              params: [result[0].long_better_id, betId]
+            },
+            {
+              query: DELETE_BET_CQL_1,
+              params: [result[0].short_better_id, betId]
+            },
+            {
+              query: DELETE_BET_CQL_2 + ' ' + betsTable + ' ' + DELETE_BET_CQL_3,
+              params: [betId]
+            },
+          ];
+        }
 
         cassandra.queryBatch(query, cql.types.consistencies.one, callback);
       }
     });
 }
 
-var DELETE_FROM_PENDING = multiline(function(){/*
-  DELETE FROM pending_bets WHERE bet_id = ?
-*/})
-exports.deletePending = function(betId, callback) {
-  exports.selectMultiple('pending_bets', [betId], function(err, result) {
-    console.log(result);
-    if (result.length === 0) {
-      callback(null);
-    }
-    else if (result.length > 1) {
-      callback(new Error('WTF'));
-    }
-    else {
-      var query = [
-      {
-        query: DELETE_BET_CQL_1,
-        params: [result[0].user_id, betId]
-      },
-      {
-        query: DELETE_FROM_PENDING,
-        params: [betId]
-      }
-      ]
-      cassandra.queryBatch(query, cql.types.consistencies.one, callback);
-    }
-  })
-}
 var SELECT_BETS_MULTIPLE_CQL_1 = multiline(function () {/*
   SELECT * FROM
 */});

@@ -97,7 +97,7 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
   SET 
     contest_state = ?
   WHERE
-    contestId = ?
+    contest_id = ?
 */});
 
 /**
@@ -139,7 +139,7 @@ var SET_CONTESTANT_QUERY = multiline(function() {/*
     contestants['?'] = ?,
     current_entries = ?
   WHERE
-    contestId = ?
+    contest_id = ?
 */});
 
 /**

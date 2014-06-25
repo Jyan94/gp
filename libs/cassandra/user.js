@@ -11,7 +11,10 @@ var INSERT_USER_CQL = multiline(function() {/*
     last_name, age, address, payment_info, money, spending_power, fbid,
     vip_status, image
   ) VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    (?, ?, ?, ?, ?, 
+     ?, ?, ?, ?, ?, 
+     ?, ?, ?, ?, ?,
+     ?);
 */});
 exports.insert = function (params, callback) {
   //parse values
