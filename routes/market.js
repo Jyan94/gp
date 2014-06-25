@@ -33,7 +33,6 @@ var getDailyScores = function(req, res, next) {
       next(err);
     }
     else {
-      console.log(result);
       res.render('marketHome', {result: result});
     }
   });

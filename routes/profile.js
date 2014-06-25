@@ -10,6 +10,7 @@ var cql = configs.cassandra.cql;
 var fs = require('fs');
 var url = require('url');
 var multiline = require('multiline');
+var SpendingPower = require('libs/calculateSpendingPower')
 
 var messages = configs.constants.profileStrings;
 
@@ -65,6 +66,7 @@ var getBetsFromUser = function(req, res, next, userInfo, callback) {
         next(err);
       }
       else {
+        SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
         res.render('profile', { userInfo: userInfo,
                                 pendingBetInfo: result.pendingBets,
                                 currentBetInfo: result.currentBets,
@@ -190,6 +192,7 @@ var deleteBet = function(req, res, next, callback) {
       next(err);
     }
     else {
+      SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
       console.log("Deleted!");
     }
   })

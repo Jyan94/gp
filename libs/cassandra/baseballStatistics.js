@@ -29,6 +29,9 @@ exports.insertGameSchedule = function(fields, callback) {
 
 var UPDATE_GAME_CQL = multiline(function() {/*
   UPDATE baseball_game SET start_time = ?,
+  date = ?,
+  home_team = ?,
+  away_team = ?,
   home_score = ?,
   away_score = ?,
   status = ?

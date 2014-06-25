@@ -53,7 +53,6 @@ function insertUser(body, res, next) {
 
 var processSignup = function(req, res, next) {
   var body = req.body;
-  console.log("body: " + body.username);
   async.waterfall(
   [
     //username lookup
@@ -73,7 +72,6 @@ var processSignup = function(req, res, next) {
 
     //email lookup
     function(callback) {
-      console.log("email: " + body.email);
       User.select('email', body.email, function(err, result) {
         if (err) {
           callback(err);

@@ -81,6 +81,7 @@ function updateOrInsert(gameId, startTime, date, homeName,
   visitorName, homeScore, visitorScore, status, callback) {
     var fields = [];
     BaseballStatistics.selectGameUsingId(gameId, function(err, result) {
+      console.log("care result: " + result);
     if (result) {
       console.log("2");
       console.log(startTime);
@@ -90,6 +91,9 @@ function updateOrInsert(gameId, startTime, date, homeName,
       console.log(gameId);
       fields = [
         startTime,
+        date,
+        homeName,
+        visitorName,
         homeScore,
         visitorScore,
         status,
@@ -97,7 +101,7 @@ function updateOrInsert(gameId, startTime, date, homeName,
       ]
       BaseballStatistics.updateGameSchedule(fields, function(err) {
         if (err) {
-          console.log("failed")
+          console.log("failed Updating: " + err);
           callback(err);
         }
         else {
@@ -110,7 +114,7 @@ function updateOrInsert(gameId, startTime, date, homeName,
       fields = [
       gameId, //game id
       startTime, //start time of the game
-      date, //date of game !!!should fix
+      date, //date of game
       homeName, //home team name
       visitorName, //visitor team name
       homeScore, //no home score yet
@@ -119,7 +123,7 @@ function updateOrInsert(gameId, startTime, date, homeName,
       ];
       BaseballStatistics.insertGameSchedule(fields, function(err) {
         if (err) {
-          console.log("failed inserted")
+          console.log("failed inserted: " + err);
           callback(err);
         }
         else {
@@ -145,6 +149,12 @@ function insertNameAndScore(boxscore, callback) {
     homeScore = null;
     visitorScore = null;
     getEventInfoAndLineups(boxscore.$.id, function(err, result) {
+      if ((result === undefined) || !(result.hasOwnProperty('event'))) {
+        setTimeout(function() {
+          insertNameAndScore(boxscore, callback);
+        },
+      2001)}
+      console.log(result);
       var tmpStartTime = result.event.scheduled_start_time[0];
       startTime = String(new Date(tmpStartTime)).split(" ")[4];
       updateOrInsert(gameId, startTime, date, homeName, visitorName, homeScore, visitorScore, status, callback);
@@ -152,17 +162,15 @@ function insertNameAndScore(boxscore, callback) {
   }
   else {
     startTime = null;
-    homeScore = boxscore.home[0].$.runs;
-    visitorScore = boxscore.visitor[0].$.runs;
+    homeScore = parseInt(boxscore.home[0].$.runs);
+    visitorScore = parseInt(boxscore.visitor[0].$.runs);
     updateOrInsert(gameId, startTime, date, homeName, visitorName, homeScore, visitorScore, status, callback);
   }
 }
 
 var getEachBoxScore = function(year, month, day, callback) {
   getDailyBoxscore(year, month, day, function(err, result) {
-
     if (!result.hasOwnProperty('boxscores')) {
-      console.log(result);
       setTimeout(function () { getEachBoxScore(year, month, day, callback); }, 1001);
     }
     else {
