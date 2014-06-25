@@ -67,7 +67,7 @@ exports.selectByUsername = function(username, callback) {
         callback(err);
       }
       else if (!result) {
-        callback(new Error('contest not found'));
+        callback(new Error('contests not found'));
       }
       else {
         callback(null, result);
@@ -78,29 +78,39 @@ exports.selectByUsername = function(username, callback) {
 var SELECT_BY_STATE_QUERY = multiline(function() {/*
   SELECT *
     FROM contest_B
-    WHERE sport = ? AND contest_state = ?;
+    WHERE contest_state = ?;
 */});
 
-function selectByState(sport, state, callback) {
-  cassandra.query(SELECT_BY_STATE_QUERY, [sport, state], one, callback);
+function selectByState(state, callback) {
+  cassandra.query(SELECT_BY_STATE_QUERY, [state], one, callback);
 }
 
-exports.selectOpen = function(sport, callback) {
-  selectByState(sport, OPEN, callback);
+exports.selectOpen = function(callback) {
+  selectByState(OPEN, callback);
 }
 
-exports.selectFilled = function(sport, callback) {
-  selectByState(sport, FILLED, callback);
+exports.selectFilled = function(callback) {
+  selectByState(FILLED, callback);
 }
 
-exports.selectContestsToProcess = function(sport, callback) {
-  selectByState(sport, TO_PROCESS, callback);
+exports.selectContestsToProcess = function(callback) {
+  selectByState(TO_PROCESS, callback);
 }
 
-exports.selectProcessed = function(sport, callback) {
-  selectByState(sport, PROCESSED, callback);
+exports.selectProcessed = function(callback) {
+  selectByState(PROCESSED, callback);
 }
 
-exports.selectCancelled = function(sport, callback) {
-  selectByState(sport, CANCELLED, callback);
+exports.selectCancelled = function(callback) {
+  selectByState(CANCELLED, callback);
+}
+
+var SELECT_BY_SPORT_QUERY = multiline(function() {/*
+  SELECT *
+    FROM contest_B
+    WHERE sport = ?;
+*/});
+
+exports.selectBySport = function(sport, callback) {
+  cassandra.query(SELECT_BY_SPORT_QUERY, [sport], one, callback);
 }

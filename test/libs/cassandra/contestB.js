@@ -7,6 +7,7 @@
 (require('rootpath')());
 
 var setupTest = require('test/testConfigs/setupTest');
+var cql = require('config/index').cassandra.cql;
 var testUserParams0 = 
 [
   '00000000-0000-0000-0000-000000000000',
@@ -20,6 +21,7 @@ var testUserParams0 =
   20,
   'address',
   'paymentinfo',
+  {value: 1000, hint: 'double'},
   {value: 1000, hint: 'double'},
   'fbid',
   0,
@@ -39,7 +41,8 @@ var testUserParams1 =
   20,
   'address',
   'paymentinfo',
-  0,
+  {value: 1000, hint: 'double'},
+  {value: 1000, hint: 'double'},
   'fbid',
   0,
   'image'
@@ -47,30 +50,35 @@ var testUserParams1 =
 
 var testContestSettings =
 [
-  {
+  {value: {
     0: 'a',
     1: 'b',
     2: 'c',
     3: 'd',
     4: '5'
-  }, //athletes
+  }, hint: 'map'}, //athletes
   0,  //commission_earned
-  new Date().setDate(new Date().getDate() + 1), //contest_deadline_time
+  null, //contest_deadline_time
   null, //contest_end_time
   '00000000-0000-0000-0000-000000000000', //contest_id
   new Date(), //contest_start_time
   0,  //contest_state
-  {}, //contestants
-  0,  //current_entries
+  {value: {}, hint: 'map'}, //contestants
+  0, //cooldown_minutes
+  0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
   'daily prophet', //game_type
-  null, //last_locked
-  false,  //lock_current_entries
   8000,   //max_wager
   3, //maximum_entries
   1, //minimum_entries
-  {1: 1000},  //pay_outs
+  {value: {
+    0: {value: 1.0, hint: 'double'},
+    1: {value: 10.0, hint: 'double'},
+    2: {value: 11.0, hint: 'double'},
+    3: {value: 12.0, hint: 'double'},
+    4: {value: 13.0, hint: 'double'}
+  }, hint: 'map'},  //pay_outs
   null, //processed_payouts_timestamp
   'world',  //sport
   10000, //starting_virtual_money
@@ -79,7 +87,6 @@ var testContestSettings =
 var USER_ID_INDEX = 0;
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
-var Lock = require('libs/cassandra/contestB/lock');
 var RemoveContestant = require('libs/cassandra/contestB/RemoveContestant');
 var SelectContest = require('libs/cassandra/contestB/select');
 var UpdateContest = require('libs/cassandra/contestB/update');
@@ -103,26 +110,25 @@ var CONTEST_ID_INDEX = 4;
 var CONTESTID = testContestSettings[CONTEST_ID_INDEX];
 
 function verifyContestEssentials(queryResult) {
-  queryResult.should.have.property(
-    'athletes', 
-    JSON.stringify(testContestSettings[ATHLETES_INDEX]));
+  queryResult.should.have.property('athletes');
   queryResult.should.have.property(
     'contest_id', 
     testContestSettings[CONTEST_ID_INDEX]);
   queryResult.should.have.keys(
+    'columns',
     'athletes', 
     'commission_earned', 
     'contest_deadline_time',
+    'contest_end_time',
     'contest_id',
     'contest_start_time',
     'contest_state',
     'contestants',
+    'cooldown_minutes',
     'current_entries',
     'entries_allowed_per_contestant',
     'entry_fee',
     'game_type',
-    'last_locked',
-    'lock_current_entries',
     'max_wager',
     'maximum_entries',
     'minimum_entries',
@@ -153,7 +159,7 @@ var selectById = function(callback) {
       }
       else {
         verifyContestEssentials(result);
-        callback(null);
+        callback(null, result);
       }
     });
 };
@@ -162,11 +168,9 @@ var testStates = function(callback) {
   async.waterfall(
   [
     function(callback) {
-      console.log(1);
       User.insert(testUserParams0, callback);
     },
     function(callback) {
-      console.log(2);
       User.insert(testUserParams1, callback);
     },
     function(callback) {
@@ -176,7 +180,7 @@ var testStates = function(callback) {
       UpdateContest.setFilled(CONTESTID, callback);
     },
     function(callback) {
-      SelectContest.selectFilled(CONTESTID, function(err, result) {
+      SelectContest.selectById(CONTESTID, function(err, result) {
         if (err) {
           callback(err);
         }
@@ -191,7 +195,7 @@ var testStates = function(callback) {
       UpdateContest.setToProcess(CONTESTID, callback);
     },
     function(callback) {
-      SelectContest.selectContestsToProcess(CONTESTID, function(err, result) {
+      SelectContest.selectById(CONTESTID, function(err, result) {
         if (err) {
           callback(err);
         }
@@ -206,7 +210,7 @@ var testStates = function(callback) {
       UpdateContest.setProcessed(CONTESTID, callback);
     },
     function(callback) {
-      SelectContest.selectProcessed(CONTESTID, function(err, result) {
+      SelectContest.selectById(CONTESTID, function(err, result) {
         if (err) {
           callback(err);
         }
@@ -221,7 +225,7 @@ var testStates = function(callback) {
       UpdateContest.setCancelled(CONTESTID, callback);
     },
     function(callback) {
-      SelectContest.selectCancelled(CONTESTID, function(err, result) {
+      SelectContest.selectById(CONTESTID, function(err, result) {
         if (err) {
           callback(err);
         }
@@ -236,7 +240,7 @@ var testStates = function(callback) {
       UpdateContest.setOpen(CONTESTID, callback);
     },
     function(callback) {
-      SelectContest.selectFilled(CONTESTID, function(err, result) {
+      SelectContest.selectById(CONTESTID, function(err, result) {
         if (err) {
           callback(err);
         }
@@ -261,11 +265,11 @@ function testContestant(callback) {
   [
     function(callback) {
       User.select(
-        ['user_id'], 
-        [testUserParams0[USER_ID_INDEX]], 
+        'user_id', 
+        testUserParams0[USER_ID_INDEX], 
         function (err, result) {
           if (err) {
-            err.should.be.false;
+            (!err).should.be.true;
             callback(err);
           }
           else {
@@ -276,8 +280,8 @@ function testContestant(callback) {
     },
     function(callback) {
       User.select(
-        ['user_id'], 
-        [testUserParams1[USER_ID_INDEX]], 
+        'user_id', 
+        testUserParams1[USER_ID_INDEX], 
         function (err, result) {
           if (err) {
             err.should.be.false;
@@ -290,7 +294,7 @@ function testContestant(callback) {
         });
     },
     function(callback) {
-      selectById(CONTESTID, function(err, result) {
+      selectById(function(err, result) {
         if (err) {
           err.should.be.false;
           callback(err);
@@ -307,17 +311,21 @@ function testContestant(callback) {
       AddContestant.addContestant(user0, contest.contest_id, callback);
     },
     function(callback) {
-      selectById(CONTESTID, function(err, result) {
+      selectById(function(err, result) {
         if (err) {
           err.should.be.false;
           callback(err);
         }
         else {
           result.contestants.should.have.property(user0.username);
-          JSON.parse(result.contestants[user0.username])
+          JSON.parse(result.contestants[user0.username]).instances
             .should.have.length(numInstances0);
-          JSON.parse(result.contestants[user0.username])[0]
-            .should.have.keys('wagers', 'predictions', 'virtualMoneyRemaining')
+          JSON.parse(result.contestants[user0.username]).instances[0]
+            .should.have.keys(
+              'wagers', 
+              'predictions', 
+              'virtualMoneyRemaining',
+              'lastModified');
           callback(null);
         }
       });
@@ -327,14 +335,14 @@ function testContestant(callback) {
       AddContestant.addContestant(user0, contest.contest_id, callback);
     },
     function(callback) {
-      selectById(CONTESTID, function(err, result) {
+      selectById(function(err, result) {
         if (err) {
           err.should.be.false;
           callback(err);
         }
         else {
           result.contestants.should.have.property(user0.username);
-          JSON.parse(result.contestants[user0.username])
+          JSON.parse(result.contestants[user0.username]).instances
             .should.have.length(numInstances0);
           Object.keys(result.contestants).should.have.length(numContestants);
           callback(null);
@@ -347,14 +355,14 @@ function testContestant(callback) {
       AddContestant.addContestant(user1, contest.contest_id, callback);
     },
     function(callback) {
-      selectById(CONTESTID, function(err, result) {
+      selectById(function(err, result) {
         if (err) {
           err.should.be.false;
           callback(err);
         }
         else {
           //maximum_entries is 3
-          result.maximum_entries.should.equal(numInstances0 + numInstances1);
+          //result.maximum_entries.should.equal(numInstances0 + numInstances1);
           result.contestants.should.have.property(user0.username);
           Object.keys(result.contestants).should.have.length(numContestants);
           callback(null);
@@ -366,32 +374,14 @@ function testContestant(callback) {
       RemoveContestant.removeContestantInstance(user0, 1, CONTESTID, callback);
     },
     function(callback) {
-      selectById(CONTESTID, function(err, result) {
+      selectById(function(err, result) {
         if (err) {
           err.should.be.false;
           callback(err);
         }
         else {
           result.contestants.should.have.property(user0.username);
-          JSON.parse(result.contestants[user0.username])
-            .should.have.length(numInstances0);
-          callback(null);
-        }
-      });
-    },
-    function(callback) {
-      --numInstances0;
-      RemoveContestant.removeContestantInstance(user0, 1, CONTESTID, callback);
-    },
-    function(callback) {
-      selectById(CONTESTID, function(err, result) {
-        if (err) {
-          err.should.be.false;
-          callback(err);
-        }
-        else {
-          result.contestants.should.have.property(user0.username);
-          JSON.parse(result.contestants[user0.username])
+          JSON.parse(result.contestants[user0.username]).instances
             .should.have.length(numInstances0);
           callback(null);
         }
@@ -400,18 +390,19 @@ function testContestant(callback) {
     function(callback) {
       --numInstances0;
       --numContestants;
-      numInstances0.should.be(0);
+      numInstances0.should.equal(0);
       RemoveContestant.removeContestantInstance(user0, 0, CONTESTID, callback);
     },
     function(callback) {
-      selectById(CONTESTID, function(err, result) {
+      selectById(function(err, result) {
         if (err) {
           err.should.be.false;
           callback(err);
         }
         else {
           result.contestants.should.not.have.property(user0.username);
-          Object.keys(result.contestants).should.have.length(numContestants);
+          JSON.parse(result.contestants[user1.username]).instances
+            .should.have.length(numInstances1);
           callback(null);
         }
       });
@@ -419,39 +410,24 @@ function testContestant(callback) {
     function(callback) {
       --numInstances1;
       --numContestants;
-      numInstances1.should.be(0);
-      RemoveContestant.removeContestantInstance(user0, 0, CONTESTID, callback);
+      numInstances1.should.equal(0);
+      RemoveContestant.removeContestantInstance(user1, 0, CONTESTID, callback);
     },
     function(callback) {
-      selectById(CONTESTID, function(err, result) {
+      selectById(function(err, result) {
         if (err) {
           err.should.be.false;
           callback(err);
         }
         else {
-          result.contestants.should.not.have.property(user1.username);
-          Object.keys(result.contestants).should.have.length(numContestants);
+          (result.contestants === null).should.be.true;
+          //Object.keys(result.contestants).should.have.length(numContestants);
           callback(null);
         }
       });
     },
     function(callback) {
       UpdateContest.delete(CONTESTID, callback);
-    },
-    function(callback) {
-      selectById(CONTESTID, function(err, result) {
-        if (err) {
-          err.should.be.false;
-          callback(err);
-        }
-        else if (!result){
-          console.log(11);
-          callback(null);
-        }
-        else {
-          callback(err);
-        }
-      });
     }
   ], callback);
 }
@@ -466,10 +442,12 @@ function tests(callback) {
 
 describe('contestB', function () {
   it('should test queries then modify contestants', function(done) {
+    this.timeout(1000000);
     tests(function (err) {
       if(err) {
         console.log(err);
         console.log(err.stack);
+        console.trace();
         err.should.be.false;
       }
       done();

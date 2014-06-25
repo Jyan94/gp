@@ -13,6 +13,7 @@ var cql = configs.cassandra.cql;
   contest_start_time timestamp,
   contest_state int,
   contestants map<text, text>,
+  cooldown_minutes int,
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
@@ -61,6 +62,7 @@ var cql = configs.cassandra.cql;
 function createSettings(
   athletes,
   deadlineTime,
+  cooldownMinutes,
   entriesAllowedPerContestant,
   entryFee,
   gameType,
@@ -81,6 +83,7 @@ function createSettings(
     new Date(), //contest_start_time
     0,  //contest_state
     {}, //contestants
+    cooldownMinutes, //cooldown_minutes
     0,  //current_entries
     entriesAllowedPerContestant, //entries_allowed_per_contestant
     entryFee, //entry_fee
@@ -101,6 +104,7 @@ function createSettings(
 /*
   athletes
   deadlineTime
+  cooldownMinutes
   entriesAllowedPerContestant,
   entryFee,
   gameType,
@@ -118,14 +122,12 @@ function createType1Settings(athletes, deadlineTime, sport) {
     deadlineTime,
     10,
     10,
+    10,
     'daily prophet',
     8000,
     10,
     9,
-    {
-      1: 60,
-      2: 25
-    },
+    {1: 60, 2: 25},
     sport,
     10000,
     85

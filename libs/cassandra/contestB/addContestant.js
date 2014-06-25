@@ -6,14 +6,18 @@
 'use strict';
 (require('rootpath')());
 
-var Lock = require('./lock');
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
+var UpdateContestants = require('./contestant');
 
+var configs = require('config/index');
 var User = require('libs/cassandra/user');
 
 var async = require('async');
 var multiline = require('multiline');
+
+var APPLIED = configs.constants.contestB.APPLIED;
+var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
 
 /**
  * creates a new contestant instance object
@@ -26,34 +30,17 @@ var multiline = require('multiline');
  */
 function createNewContestantInstance(startingVirtualMoney, numAthletes) {
   var predictions = [];
+  var wagers = [];
   for (var i = 0; i < numAthletes; ++i) {
     predictions[i] = 0;
+    wagers[i] = 0;
   }
   return {
     virtualMoneyRemaining : startingVirtualMoney,
-    predictions: predictions
+    predictions: predictions,
+    wagers: wagers,
+    lastModified: null
   };
-}
-
-/**
- * subtracts entry fee from user's current money, 
- * error if user doesn't have enough
- * @param  {object}   user
- * user object from req.user
- * MUST have user.money
- * @param  {object}   contest
- * contest object from database
- * @param  {Function} callback
- * args: (err)
- */
-function subtractMoneyFromUser(user, contest, callback) {
-  if (user.money < contest.entry_fee) {
-    callback(new Error('should never get here! bug!'));
-  }
-  else {
-    var leftoverMoney = user.money - contest.entry_fee;
-    User.updateMoney([leftoverMoney], [user.user_id], callback);
-  }
 }
 
 /**
@@ -69,7 +56,10 @@ function subtractMoneyFromUser(user, contest, callback) {
  * args: (err)
  */
 function addUserInstanceToContest(user, contest, callback) {
-  var contestant = JSON.parse(contest.contestants[user.username]);
+  var contestant = null;
+  if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
+    contestant = JSON.parse(contest.contestants[user.username]);
+  }
   if (user.money < contest.entry_fee) {
     callback(new Error('not enough money'));
   }
@@ -83,16 +73,22 @@ function addUserInstanceToContest(user, contest, callback) {
   else {
     var parallelArray =
     [
+      //subtract money from user's current money
       function(callback) {
-        UpdateContest.setContestant(
+        var leftoverMoney = user.money - contest.entry_fee;
+        User.updateMoney([leftoverMoney], [user.user_id], callback);
+      }
+    ];
+
+    var waterfallArray =
+    [
+      function(callback) {
+        UpdateContestants.addContestant(
           user.username, 
           contestant, 
           contest.current_entries, 
           contest.contest_id,
           callback);
-      },
-      function(callback) {
-        subtractMoneyFromUser(user, contest, callback);
       }
     ];
 
@@ -113,17 +109,24 @@ function addUserInstanceToContest(user, contest, callback) {
       contestant = {instances: [newContestantInstance]};
     }
     contestant = JSON.stringify(contestant);
+    
+    if (parallelArray.length > 1) {
+      waterfallArray.push(function(callback) {
+        async.parallel(parallelArray, callback);
+      });
+    }
+    else {
+      waterfallArray.push(parallelArray[0]);
+    }
 
-    async.parallel(parallelArray, callback);
-
+    async.waterfall(waterfallArray, callback);
   }
 }
 
 /**
- * obtains a lock on adding / removing users for a given contest
  * read the contest
  * adds user to the contest and subtracts money from user
- * releases lock
+ * if the update fails, delay and attempt later
  * @param {Object}   user
  * req.user passport object, contains username and money fields
  * @param {uuid}   contestId
@@ -132,24 +135,21 @@ function addUserInstanceToContest(user, contest, callback) {
  * args (err)
  */
 function addContestant(user, contestId, callback) {
-  var waterfallCallback = function (waterfallErr) {
-    Lock.releaseLock(contestId, function(err) {
-      if (waterfallErr) {
-        callback(waterfallErr);
-      }
-      if (err) {
-        callback(err);
-      }
-      else {
-        callback(null);
-      }
-    });
+  var waterfallCallback = function (err) {
+    if (err && err.message === APPLIED) {
+      setTimeout(function() {
+        addContestant(user, contestId, callback);
+      }, Math.random() * MAX_WAIT);
+    }
+    else if (err) {
+      callback(err);
+    }
+    else {
+      callback(null);
+    }
   };
 
   async.waterfall([
-    function(callback) {
-      Lock.tryObtainLock(user, contestId, callback);
-    },
     function(callback) {
       SelectContest.selectById(contestId, callback);
     },
@@ -166,7 +166,6 @@ function addContestant(user, contestId, callback) {
  * ====================================================================
  */
 exports.createNewContestantInstance = createNewContestantInstance;
-exports.subtractMoneyFromUser = subtractMoneyFromUser;
 exports.addUserInstanceToContest = addUserInstanceToContest;
 /**
  * ====================================================================

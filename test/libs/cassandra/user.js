@@ -1,3 +1,4 @@
+/*
 'use strict';
 require('rootpath')();
 
@@ -43,6 +44,7 @@ null,  //verified_time
 '9001 Test Drive Centralia, PA 00000', //address
 'some card', //payment_info
 { value: 10000, hint: 'double' }, //money
+{ value: 10000, hint: 'double'},
 'foo.bar.7000',  //fbid
 2, //vip_status
 '../tmp/images/test_username.jpeg'//image
@@ -69,13 +71,14 @@ var updateFields =
 'address',
 'payment_info',
 'money',
+'spending_power',
 'fbid',
 'vip_status',
 'image'
 ]
 var updateParams = 
 [
-'email@test.com',  //email
+'test@email.com',  //email
 true, //verified
 'ce3c0eb0-f04c-11e3-a570-c5b492d64738',  //verified_time
 'new_username',  //username
@@ -86,6 +89,7 @@ true, //verified
 '8999 Test Drive Centralia, PA 00000', //address
 'some different card', //payment_info
 { value: -100, hint: 'double' }, //money
+{ value: -100, hint: 'double'}, //spending_power
 'foo.bar.7000',  //fbid
 5, //vip_status
 '../tmp/images/new_username.jpeg'//image
@@ -159,6 +163,7 @@ true, //verified
 '8999 Test Drive Centralia, PA 00000', //address
 'some different card', //payment_info
 { value: 4900, hint: 'double' }, //money
+{ value: 4900, hint: 'double'}, //spending_power
 'foo.bar.7000',  //fbid
 5, //vip_status
 '../tmp/images/new_username.jpeg'//image
@@ -224,3 +229,4 @@ describe('user module test', function () {
     }
   );
 });
+*/

@@ -1,7 +1,7 @@
 USE goprophet;
 
 CREATE TABLE IF NOT EXISTS contest_B (
-  athletes map<int, text>,
+  athletes map<text, text>,
   commission_earned int,
   contest_deadline_time timestamp,
   contest_end_time timestamp,
@@ -9,27 +9,26 @@ CREATE TABLE IF NOT EXISTS contest_B (
   contest_start_time timestamp,
   contest_state int,
   contestants map<text, text>,
+  cooldown_minutes int,
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
   game_type text,
-  game_version int,
-  last_locked timestamp,
-  lock_current_entries boolean,
   max_wager int,
   maximum_entries int,
   minimum_entries int,
-  pay_outs map<int, double>,
+  pay_outs map<text, double>,
   processed_payouts_time timestamp,
   sport text,
   starting_virtual_money int,
   total_prize_pool int,
-  PRIMARY KEY (sport, contest_id)
+  PRIMARY KEY (contest_id)
 );
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_state);
-CREATE INDEX IF NOT EXISTS ON contest_B(contest_id);
-//CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
+CREATE INDEX IF NOT EXISTS ON contest_B(sport);
+CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
 /*
+last_locked is in milliseconds
 athletes map of int to stringified athlete object:
 {
   athleteId: uuid of athlete
@@ -46,6 +45,7 @@ contestants map of username to stringified contestant object:
     predictions: array of predicted fantasy values
     [value0, value1, value2, ...]
     //should add timestamp too, prevent users from changing too frequently
+    lastModified: timestamp formatted as milliseconds since jan 1, 1970
   },
   ...
   ]

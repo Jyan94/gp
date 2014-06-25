@@ -18,9 +18,11 @@ exports.contestB = {
   PROCESSED: 3,
   CANCELLED: 4,
   //for lock.js times and tries
-  MAX_MILLISECONDS: 20000,
+  MIN_MILLISECONDS: 30000,
   MAX_TRIES: 20,
-  MAX_WAIT: 1000
+  MAX_WAIT: 10000,
+  //for locking
+  APPLIED: '[applied]'
 };
 exports.FacebookStrategy = {
     clientID: "855194074508903",
