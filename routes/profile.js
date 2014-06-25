@@ -1,156 +1,242 @@
+'use strict';
 require('rootpath')();
-var express = require('express');
-var app = module.exports = express();
+
 var configs = require('config/index');
-configs.configure(app);
 
 var async = require('async');
-var User = require('models/user');
-var bet = require('models/bet');
+var Bet = require('libs/cassandra/bet');
+var User = require('libs/cassandra/user');
 var cql = configs.cassandra.cql;
-var busboy = require('connect-busboy');
+var fs = require('fs');
+var url = require('url');
+var multiline = require('multiline');
+var SpendingPower = require('libs/calculateSpendingPower')
 
-var messages = {
-  incorrect_username: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }'
-  };
+var messages = configs.constants.profileStrings;
 
-function retrieveProfile(req, res) {
+var userImagePath = __dirname + '/../tmp/';
+
+var redirectProfile = function(req, res, next) {
+  User.select('user_id', req.user.user_id,
+    function (err, result) {
+      if (err) {
+        next(err);
+      }
+      else if (result) {
+        res.redirect('/user/' + result.username);
+      }
+      else {
+        res.send(500, 'How did you get here?');
+      }
+    });
+}
+
+var getUser = function(req, res, next, callback) {
   var userInfo = {};
-  var betInfo = [];
   var field = '';
 
-  async.waterfall([
-    function (callback) {
-      User.select('username', req.params.username, function (err, result) {
-        if (err) {
-          console.log(err);
-        }
+  User.select('username', req.params.username, function (err, result) {
+    if (err) {
+      next(err);
+    }
+    else if (result) {
+      for (var i = 0; i < result.columns.length; i++) {
+        field = result.columns[i].name;
 
-        if (result) {
-          
-          for (var i = 0; i < result.columns.length; i++) {
-            field = result.columns[i].name;
-
-            if (result[field] === null) {
-              userInfo[field] = 'Unavailable';
-            }
-            else {
-              userInfo[field] = result[field];
-            }
-          }
-
-          console.log(userInfo)
-
-          callback(null, result);
+        if (result[field] === null) {
+          userInfo[field] = 'Unavailable';
         }
         else {
-          res.send(messages.incorrect_username);
+          userInfo[field] = result[field];
         }
-      });
+      }
+
+      callback(null, req, res, next, userInfo);
+    }
+    else {
+      res.send(messages.incorrectUsername);
+    }
+  });
+}
+
+var getBetsFromUser = function(req, res, next, userInfo, callback) {
+  Bet.selectUsingUserId('all_bets', userInfo.user_id,
+    function (err, result) {
+      if (err) {
+        next(err);
+      }
+      else {
+        SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
+        res.render('profile', { userInfo: userInfo,
+                                pendingBetInfo: result.pendingBets,
+                                currentBetInfo: result.currentBets,
+                                pastBetInfo: result.pastBets
+        });
+      }
+  });
+}
+
+var retrieveProfile = function(req, res, next) {
+  async.waterfall([
+    function (callback) {
+      callback(null, req, res, next);
     },
-    function (arg1, callback) {
-      bet.selectUsingUserID('all_bets', arg1.user_id, function (err, result) {
-        if (err) {
-          console.log(err);
+    getUser,
+    getBetsFromUser
+    ],
+    function(err, result) {
+      if (err) {
+        next(err);
+        return;
+      }
+    });
+}
+
+var updateProfile = function(req, res, next) {
+  var uploadUsername = req.params.username;
+  var uploadFile = null;
+  var uploadFilename = null;
+  var uploadMimetype = null;
+  var uploadUserId = null;
+
+  req.busboy.on('file', function(fieldname, file, filename, encoding,
+                                 mimetype) {
+    async.waterfall([
+      function (callback) {
+          // Check that the user posted an appropriate photo
+          if (mimetype !== 'image/gif' && mimetype !== 'image/jpeg' &&
+              mimetype !== 'image/png') {
+          // Again, clobber fraudulent requests
+            res.send(500, 'Not a valid file.');
+          }
+          else {
+            uploadFile = file;
+            uploadFilename = filename;
+            uploadMimetype = mimetype.substring(6);
+            callback(null);
+          }
+        },
+      function (callback) {
+        User.select('username', uploadUsername, function (err, result) {
+          if (err) {
+            res.send(500, 'Database error.');
+          }
+          else if (result) {
+            uploadUserId = result.user_id;
+            callback(null, result.image);
+          }
+          else {
+            res.send(404, messages.incorrectUsername);
+          }
+        });
+      },
+      function (image, callback) {
+        if (image && (1===0)) {
+          fs.unlink(image, function (err) {
+            if (err) {
+              res.send(messages.delete_error);
+            }
+
+            uploadFile.pipe(fs.createWriteStream(
+              userImagePath + uploadUsername + '.' + uploadMimetype)
+            );
+            callback(null);
+          });
+        } else {
+          uploadFile.pipe(fs.createWriteStream(
+            userImagePath + uploadUsername + '.' + uploadMimetype)
+          );
+          callback(null);
         }
-
-        betInfo = result;
-        callback(null, result);
-      });
-    }
-  ], function(err, result) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-
-    res.render('profile', { userInfo: userInfo, 
-                            betInfo: betInfo
+      },
+      function (callback) {
+        User.update(
+          uploadUserId, ['image'],
+          ['/images/' + uploadUsername + '.' + uploadMimetype],
+          function (err, result) {
+            if (err) {
+              res.send(500, 'Database error.');
+            } else {
+              res.send('/images/' + uploadUsername + '.' + uploadMimetype);
+              callback(null);
+            }
+        });
+      }
+    ], function (err) {
+      if (err) {
+        next(err);
+      }
     });
   });
+
+  req.pipe(req.busboy);
 }
 
-/*
-  Git commands if you forget:
-  git add -A
-  git commit -m
-  git push
- */
-
-function updateProfile(req, res) {
-  var profileInfo = {}
-
-  async.waterfall ([
-    function (callback) {
-      req.busboy.on('file', function(fieldname, file, filename, encoding, 
-                                     mimetype) {
-        // Check that the user posted an appropriate photo
-        if (mimetype !== 'image/gif' && mimetype !== 'image/jpeg' &&
-            mimetype !== 'image/png') {
-        // Again, clobber fraudulent requests
-          res.end();
-        }
-        else {
-          callback()
-
+var pictureNotFound = function (req, res) {
+  var file = req.params.file;
+  fs.readFile(userImagePath + file, function (err, result) {
+    if (result) {
+      res.send(result);
     }
-  ], )
-
-  async.waterfall([
-    function (callback) {
-      User.select('username', req.params.username, function (err, result) {
-        if (err) {
-          callback(err);
-        }
-
-        if (result) {
-          console.log(result);
-          profileInfo.userInfo = result;
-          callback(null, result);
-        }
-        else {
-          res.send(messages.incorrect_username);
-        }
-      });
-    },
-    function (userInfo, callback) {
-      bet.selectUsingUserID('pending_bets', userInfo.user_id, function (err, result) {
-        if (err) {
-          callback(err);
-        }
-
-        if (result) {
-          profileInfo.betInfo = result;
-          callback(null, result);
-        }
-      });
+    else {
+      res.send(404, 'Profile picture not found.');
     }
-  ], function(err, result) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-
-    res.send(profileInfo);
   });
 }
 
-app.use(busboy());
+var cancelCheck = function(req, res, next, callback) {
+  var betId = req.params.betId;
 
-app.route('/user')
-.get(function (req, res) {
-  req.params.username = '';
-  retrieveProfile(req, res);
-});
+  Bet.selectMultiple('pending_bets', [betId], function (err, result) {
+    if (err) {
+      next(err);
+    }
+    else if (result.length === 0) {
+      next(new Error('Bet does not exist.'));
+    }
+    else if (result.length === 1) {
+      console.log(1);
 
-app.route('/user/:username')
-.get(function (req, res) {
-  retrieveProfile(req, res);
-});
+      if (result[0].user_id !== req.user.user_id) {
+        next(new Error('Can\'t delete someone else\'s bet.'));
+      }
+      else {
+        callback(null, req, res, next, betId);
+      }
+    }
+    else {
+      SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
+      console.log("Deleted!");
+    }
+  });
+}
 
-app.route('/upload/image/:username')
-.post(function (req, res) {
-  updateProfile(req, res);
-});
+var deletePendingBet = function(req, res, next, betId, callback) {
+  Bet.delete('pending_bets', betId, function (err, result) {
+    if (err) {
+      next(err);
+    }
+  });
+}
 
-app.listen(3000);
+var cancelPendingBet = function(req, res, next) {
+  async.waterfall([
+    function (callback) {
+      callback(null, req, res, next);
+    },
+    cancelCheck,
+    deletePendingBet
+    ],
+    function(err) {
+      if (err) {
+        next(err);
+      }
+    });
+}
+
+//exports
+exports.redirectProfile = redirectProfile;
+exports.retrieveProfile = retrieveProfile;
+exports.updateProfile = updateProfile;
+exports.pictureNotFound = pictureNotFound;
+exports.cancelPendingBet = cancelPendingBet;

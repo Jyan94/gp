@@ -8,26 +8,27 @@ var multiline = require('multiline');
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
     user_id, email, verified, verified_time, username, password, first_name,
-    last_name, age, address, payment_info, money, fbid, vip_status, image
-  ) VALUES 
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    last_name, age, address, payment_info, money, spending_power, fbid,
+    vip_status, image
+  ) VALUES
+    (?, ?, ?, ?, ?, 
+     ?, ?, ?, ?, ?, 
+     ?, ?, ?, ?, ?,
+     ?);
 */});
-exports.insert = function (fields, callback) {
+exports.insert = function (params, callback) {
   //parse values
-  cassandra.query(INSERT_USER_CQL, fields, cql.types.consistencies.one,
+  cassandra.query(INSERT_USER_CQL, params, cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
 };
 
 var DELETE_USER_CQL = multiline(function() {/*
-  DELETE FROM users WHERE
-    user_id
-  IN
-    (?);
+  DELETE FROM users WHERE user_id = ?;
 */});
-exports.delete = function (user_id, callback) {
-  cassandra.query(DELETE_USER_CQL, [user_id], cql.types.consistencies.one,
+exports.delete = function (userId, callback) {
+  cassandra.query(DELETE_USER_CQL, [userId], cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
@@ -40,7 +41,7 @@ var UPDATE_USER_CQL_2 = multiline(function() {/*
   WHERE
     user_id = ?;
 */});
-exports.update = function (user_id, fields, params, callback) {
+exports.update = function (userId, fields, params, callback) {
   var fieldsLength = fields.length;
   var paramsLength = params.length;
   var updates = '';
@@ -58,28 +59,102 @@ exports.update = function (user_id, fields, params, callback) {
   }
 
   cassandra.query(UPDATE_USER_CQL_1 + ' ' + updates + ' ' + UPDATE_USER_CQL_2,
-    params.concat([user_id]), cql.types.consistencies.one,
+    params.concat([userId]), cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
 };
 
+var UPDATE_MONEY_CQL = multiline(function() {/*
+  UPDATE users SET money = ? WHERE user_id = ?;
+*/});
+exports.updateMoney = function (moneyValues, userIdValues, callback) {
+  var moneyValuesLength = moneyValues.length;
+  var userIdValuesLength = userIdValues.length;
+  var oldMoneyValues = {};
+  var currentUserId = null;
+  var query = [];
+
+  if (moneyValuesLength !== userIdValuesLength) {
+    callback(
+      new Error('Number of money values and user id values are not the same.'));
+  }
+
+  exports.selectMultiple(userIdValues, function (err, result) {
+    for (var i = 0; i < result.length; i++) {
+      currentUserId = result[i].user_id;
+      oldMoneyValues[currentUserId] = result[i].money;
+    }
+
+    for (i = 0; i < moneyValuesLength; i++) {
+      currentUserId = userIdValues[i];
+      query[i] = {
+        query: UPDATE_MONEY_CQL,
+        params: [{ value: oldMoneyValues[currentUserId] + moneyValues[i],
+                   hint: 'double' }, currentUserId]
+      }
+    }
+
+    cassandra.queryBatch(query, cql.types.consistencies.one,
+      function(err, result) {
+        callback(err, result);
+    });
+  })
+};
+
+var UPDATE_SPENDINGPOWER_CQL = multiline(function() {/*
+  UPDATE users SET spending_power = ? WHERE user_id = ?
+*/})
+exports.updateSpendingPower = function(spendingPower, userId, callback) {
+  var params = [{value: spendingPower, hint: 'double'}, userId];
+  cassandra.query(UPDATE_SPENDINGPOWER_CQL,
+   params,
+  cql.types.consistencies.one,
+  function(err) {
+    if (err) {
+      console.log(err);
+    }
+  })
+}
+
 var SELECT_USER_CQL = multiline(function () {/*
   SELECT * FROM users WHERE
 */});
 
-var allowed_fields = ['user_id', 'username', 'email'];
+var allowedFields = ['user_id', 'username', 'email'];
 
 exports.select = function (field, value, callback) {
-  if (allowed_fields.indexOf(field) < 0) {
+  if (allowedFields.indexOf(field) < 0) {
     callback(new Error(field + ' is not a searchable field.'));
-  } else {
-    cassandra.queryOneRow(
-      SELECT_USER_CQL + ' ' + field + ' = ?;',
-      [value], 
-      cql.types.consistencies.one, 
+  }
+  else {
+    cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
+      [value], cql.types.consistencies.one,
       function(err, result) {
         callback(err, result);
     });
   }
 };
+
+var SELECT_USERS_MULTIPLE_CQL = multiline(function () {/*
+  SELECT * FROM users WHERE user_id IN
+*/});
+exports.selectMultiple = function selectMultiple(params, callback) {
+  var paramsLength = params.length;
+  var filter = '';
+  var query = '';
+
+  for (var i = 0; i < paramsLength; i++) {
+    filter += '?';
+
+    if (i < (paramsLength - 1)) {
+      filter += ', ';
+    }
+  }
+
+  query = SELECT_USERS_MULTIPLE_CQL + ' (' + filter + ');';
+  cassandra.query(query, params, cql.types.consistencies.one,
+    function (err, result) {
+      callback(err, result);
+    });
+}

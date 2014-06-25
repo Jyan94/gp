@@ -1,4 +1,5 @@
 var config = require('../config');
+var constant = require('../config/constants')
 
 function createUrlWithEndpointAndYear(endpoint) {
     // URL should look like: http://api.sportsdatallc.org/mlb-[access_level][version]/[endpoint]/[year].xml?api_key=[your_api_key]
@@ -10,7 +11,7 @@ function createUrlWithEndpointAndYear(endpoint) {
         + '/'
         + '2014'
         + '.xml?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlWithEndpointAndDate(endpoint, year, month, day) {
@@ -27,7 +28,7 @@ function createUrlWithEndpointAndDate(endpoint, year, month, day) {
         + '/'
         + day
         + '.xml?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlWithEndpointAndEvent(endpoint, event) {
@@ -40,7 +41,7 @@ function createUrlWithEndpointAndEvent(endpoint, event) {
         + '/'
         + event
         + '.xml?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlWithEndpoint(endpoint) {
@@ -51,7 +52,7 @@ function createUrlWithEndpoint(endpoint) {
         + '/'
         + endpoint
         + '?api_key='
-        + 'f8rhpkpxsxdvhzrr3vmxn8wk';
+        + constant.mlbKey;
 }
 
 function createUrlPlayerManifests() {
@@ -126,7 +127,18 @@ function createTeamsHierarchyUrl() {
     // URL should look like: http://api.sportsdatallc.org/mlb-[access_level][version]/teams/[year].xml?api_key=[your_api_key]
     return createUrlWithEndpointAndYear('teams');
 }
+    //URL should look like: http://api.sportsdatallc.org/mlb-[access_level][version]/daily/event/[year]/[month]/[day].xml?api_key=[your_api_key]
+function createDailyEventInfoAndLineups(year, month, day) {
+    return createUrlWithEndpointAndDate('daily/event', year, month, day);
+}
 
+function createPlayerProfiles(player_id) {
+    return createUrlWithEndpointAndEvent('player/profile', player_id);
+}
+
+function createEventInfoAndLineups(event_id) {
+    return createUrlWithEndpointAndEvent('event', event_id);
+}
 
 module.exports = {
 
@@ -172,5 +184,14 @@ module.exports = {
 
     getTeamsHierarchyUrl: function() {
         return createTeamsHierarchyUrl();
+    },
+    getDailyEventInfoAndLineups: function(year, month, day) {
+        return createDailyEventInfoAndLineups(year, month, day);
+    },
+    getPlayerProfiles: function(player_id) {
+        return createUrlWithEndpointAndEvent('player/profile', player_id);
+    },
+    getEventInfoAndLineups: function(event_id) {
+        return createEventInfoAndLineups(event_id);
     }
 }

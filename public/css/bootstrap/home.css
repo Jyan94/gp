@@ -1,0 +1,216 @@
+/*
+ * Globals
+ */
+
+/* Links */
+a,
+a:focus,
+a:hover {
+  color: #fff;
+}
+
+/* Custom default button */
+.btn-default,
+.btn-default:hover,
+.btn-default:focus {
+  color: #333;
+  text-shadow: none; /* Prevent inheritence from `body` */
+  background-color: #fff;
+  border: 1px solid #fff;
+}
+
+
+/*
+ * Base structure
+ */
+
+html,
+body {
+  height: 100%;
+  background-color: #000;
+  background-image: url(../../stadiumBack.jpg);
+  background-position: center 100px;
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+body {
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+  /*box-shadow: inset 0 0 100px rgba(110,110,0,.5);*/
+}
+
+/* Extra markup and styles for table-esque vertical and horizontal centering */
+.site-wrapper {
+  display: table;
+  width: 100%;
+  height: 998px; /* For at least Firefox */
+  min-height: 100%;
+}
+.site-wrapper-inner {
+  display: table-cell;
+  padding-top: 35px;
+  vertical-align: top;
+}
+.cover-container {
+  margin-right: auto;
+  margin-left: auto;
+  position: relative;
+  z-index: 100;
+}
+
+/* Padding for spacing */
+.inner {
+  padding: 10px;
+}
+
+@-webkit-keyframes aaronRodgersFadeInOut {
+  0% {
+    opacity:0;
+  }
+  30% {
+    opacity:0;
+  }
+  70% {
+    opacity:1;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+.aaronRodgers {
+  height: 0px;
+  position: absolute;
+  left: 50%;
+  top: 400px;
+  margin-left: -180px;
+  z-index: 0;
+  -webkit-animation-name: aaronRodgersFadeInOut;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-duration: 10s;
+  -webkit-filter: drop-shadow(3px 3px 1px #222);
+}
+
+@-webkit-keyframes aaronRodgersSilFadeInOut {
+  0% {
+    opacity:1;
+  }
+  30% {
+    opacity:1;
+  }
+  70% {
+    opacity:0;
+  }
+  100% {
+    opacity:0;
+  }
+}
+
+.aaronRodgersSil {
+  height: 0px;
+  position: absolute;
+  left: 50%;
+  opacity: 0;
+  top: 400px;
+  margin-left: -180px;
+  z-index: 0;
+  -webkit-animation-name: aaronRodgersSilFadeInOut;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-duration: 10s;
+  -webkit-filter: drop-shadow(1px 1px 1px #222);
+}
+
+/*
+ * Header
+ */
+.masthead-brand {
+  margin-bottom: 10px;
+  margin-top: 0px;
+  margin-left: 30px;
+}
+
+.masthead-nav > li {
+  display: inline-block;
+}
+.masthead-nav > li + li {
+  margin-left: 20px;
+}
+.masthead-nav > li > a {
+  padding-right: 0;
+  padding-left: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff; /* IE8 proofing */
+  color: rgba(255,255,255,.75);
+  border-bottom: 2px solid transparent;
+}
+.masthead-nav > li > a:hover,
+.masthead-nav > li > a:focus {
+  background-color: transparent;
+  border-bottom-color: rgba(255,255,255,.25);
+}
+.masthead-nav > .active > a,
+.masthead-nav > .active > a:hover,
+.masthead-nav > .active > a:focus {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+@media (min-width: 768px) {
+  .masthead-brand {
+    float: left;
+  }
+  .masthead-nav {
+    float: right;
+  }
+}
+
+
+/*
+ * Cover
+ */
+
+.cover {
+  padding: 0 20px;
+}
+.cover .btn-lg {
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+
+/*
+ * Footer
+ */
+
+.mastfoot {
+  color: #999; /* IE8 proofing */
+  color: rgba(255,255,255,.5);
+}
+
+
+/*
+ * Affix and center
+ */
+
+@media (min-width: 768px) {
+  /* Pull out the header and footer */
+  .masthead {
+    position: relative;
+    top: 0;
+    z-index: 100;
+  }
+  .mastfoot {
+    position: relative;
+    bottom: 0;
+    z-index: 100;
+  }
+  /* Start the vertical centering */
+  /* Handle the widths */
+  .masthead,
+  .mastfoot,
+  .cover-container {
+    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+  }
+

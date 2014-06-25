@@ -5,48 +5,59 @@ html(lang="en")
   body
     include banner
     div.content
-      //div#prof-behind
-        div(style='height: 400px; width: 600px; background-size: cover; background-position: center')
-        br
-
       div.feed
         center
-          form#betForm.pure-form(action='/submitForm' method='post')
-            input(type='integer' name='price' placeholder='Price' autofocus=true required=true style='width: 100px')
-            input(type='integer' name='shareNumber' placeholder='Number of Shares' required=true style='width: 100px')
+          form#betForm.pure-form(action='/submitForm/'+playerId method='post')
+            input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width:100px' min="0" step="0.01")
+            input(type='number' name='shareNumber' placeholder='Quantity' required=true style='width: 100px' min="1" step="1")
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
             | Above
             input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
             | Under
             input.pure-button.button-primary(type='submit')
-      each item in betinfo
-        if (item.long_position===false)
-          div.linkcontainer
-            div.leftsidehome
-              center
-                div(id="shown_first" style='display: inline')
-                  h2=item.username
-            div.rightsidehome
-              center
-                a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
-                  Take Bet!
-            div.centersidehome
-              center
-                h5="price: " + item.bet_value
-                h5="multiplier: " + item.multiplier
+      div.profilecontainer
+        div.profileleft
+          div.profilebox
+            div#prof-pic(style='background-image: url(#{imageUrl})')
+        div.profileright
+          include graph
+        div.profilebottom
+          center
+            h2=fullName
+            h4=team
+            h4=position
 
-        else
-          div.linkcontainer
-            div.rightsidehome
-              center
-                div(id="shown_first" style='display: inline')
-                  h2=item.username
-            div.leftsidehome
-              center
-                a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer').
-                  Take Bet!
-            div.centersidehome
-              center
-                h5="price: " + item.bet_value
-                h5="multiplier: " + item.multiplier
+      div.betcontainer
+        center
+          table#betTable(border="5")
+            thead
+              tr
+                th='Price'
+                th='Multiplier'
+                th='Take Bets'
+            tbody
+              each item in betinfo
+                if (item.longPosition===false)
+                  tr
+                    td
+                      h2=item.betValue
+                    td
+                      h2=item.multiplier
+                    td
+                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                        img(src='../uparrow.png' width='50' height='70')
+                else
+                  tr
+                    td
+                      h2=item.betValue
+                    td
+                      h2=item.multiplier
+                    td
+                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                        img(src='../downarrow.png' width='50' height='70')
+    script(src='../js/betTableFilter.js')
+    script(src='../js/search.js')
+    script(src='../js/jquery-ui-1.10.4.custom.js')
     script(type='application/javascript' src='/js/takeBets.js')
+    script(src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js")
+    link(rel="stylesheet" type="text/css" href="../css/dataTables.css")

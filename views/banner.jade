@@ -1,28 +1,44 @@
 div.pure-g-r.banner
   div.pure-u-3-4.banner-inner
-      div.banner-nav
-        div#divide
-          h4
-            a(href='/') Newsfeed
-        div.pure-hidden-phone
-          span
-            a.fui-gear
-        div.pure-hidden-desktop.pure-hidden-tablet
-          span
-            a.fui-list(href='/')
-      div.search
-        h2.pure-hidden-phone
-          a(href='/')= title
-        h2.pure-hidden-desktop.pure-hidden-tablet C
-        form#searchform.pure-form.pure-hidden-mini(method='get')
-          input#autocomplete.input.pure-input-1-4(type='text' name='search' placeholder='Looking for a player?')
-          button#searchbutton.pure-button.button-primary.input(type='submit')
-            span.fui-search
-      div#settings
-        a(href='/logout') Logout
-      form.pure-form(action='/login' method='post')
-        input.input(type='text' name='email' placeholder='email' autofocus=true required=true)
-        input.input(type='password' name='password' placeholder='password' required=true)
-        input.pure-button.button-primary.input(type='submit' value='Submit')
-      h1
-        a(href='/')=title
+    div.banner-nav
+      div#divide
+        h4
+          a(href='/user') Profile
+      div.pure-hidden-phone
+        span
+          a.fui-gear
+      ul.dropdown-menu
+        li.dropdown-entry
+          a(href='/') Homepage
+        li.dropdown-entry 
+          a(href='/market') Market
+        li.dropdown-entry
+          a(href='/tournaments') Tournaments
+        li.dropdown-entry
+          a(href='/forums') Forums
+        li.dropdown-divider
+        li.dropdown-entry
+          a(href='/logout') Logout
+      div.pure-hidden-desktop.pure-hidden-tablet
+        span
+          a.fui-list(href='/')
+    div.search
+      h2.pure-hidden-phone
+        a(href='/')= title
+      h2.pure-hidden-desktop.pure-hidden-tablet
+      form#searchform.pure-form.pure-hidden-mini(method='get')
+        input#autocomplete.input.pure-input-1-4(type='text' name='search' placeholder='Looking for a player?')
+        button#searchbutton.pure-button.button-primary.input(type='submit')
+          span.fui-search
+    div#settings
+      a(href='/logout') Logout
+
+    h1
+      a(href='/')=title
+    script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
+    script(src='../js/search.js')
+    script(src='../js/banner.js')
+    script(src='../js/jquery-ui-1.10.4.custom.js')
+    link(rel='stylesheet' type='text/css' href='/css/pure-min.css')
+    link(rel='stylesheet' type='text/css' href='/css/style.css')
+    link(rel='stylesheet' type = 'text/css' href='/css/ui-lightness/jquery-ui-1.10.4.custom.css')
