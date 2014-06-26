@@ -49,9 +49,11 @@
   background-color: #fff;
 
   position: fixed;
-  width: 30%;
-  top: 25%;
-  left: 35%;
+  width: 60%;
+  top: 5%;
+  height: 80%;
+  left: 20%;
+
 
   /* Embiggen */
   -webkit-transform: scale(1.25); /* prefix me */
@@ -90,6 +92,9 @@
   /* Regular size and visible */
   -webkit-transform: scale(1); /* prefix me */
   opacity: 1;
+  /*height:70%;
+  width:70%;*/
+
 
   /* Clickable */
   pointer-events: auto;
@@ -107,8 +112,8 @@
 /* Dialog Box Inner */
 
 .tournament-dialog-box-header {
-  border-top: 1px solid #7878ac;
-  border-bottom: 1px solid #7878ac;
+/*  border-top: 1px solid #7878ac;
+  border-bottom: 1px solid #7878ac; */
   border-radius: 4px 4px 0px 0px;
 
   padding: 5px 10px 5px 10px;
@@ -117,8 +122,8 @@
   color: #fff;
   
   width: 100%;
-  height: 35px;
-  background-color: #7272d5;
+  height: 70px;
+  background-color: #191919;
 }
 .tournament-dialog-box-body {
   border-bottom: 1px solid #7878ac;
@@ -128,10 +133,12 @@
 .tournament-dialog-box-info {
   height: 100px;
   padding: 5px 10px 5px 10px;
+  background-color: #191919;
+  color: #fff;
 }
 
 .tournament-dialog-box-tab-container {
-  padding: 10px 0px 10px 0px;
+/*  padding: 10px 0px 10px 0px; */
 }
 
 .tournament-dialog-box-tab-menu {
@@ -139,6 +146,7 @@
   list-style: none;
   width: 100%;
   margin: 0px;
+  background-color: #191919;
 }
 
 .tournament-dialog-box-tab {
@@ -148,19 +156,24 @@
   font-weight: 700;
   padding: 5px 10px 5px 10px;
   background: #eee;
-  border: 1px solid #ddc;
+/*  border: 1px solid #ddc; */
   border-bottom: none;
-  border-width: 1px;
+  border-width: 1px; 
   color: #999;
   cursor: default;
-  margin-bottom: -1px;
+  margin-bottom: 0px;
   margin-right: 5px;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  width: 100px;
+  background-color: #191919;
 }
 
 .tournament-dialog-box-tab:hover,
-.tournament-dialog-box-tab.active,
+.tournament-dialog-box-tab.active {
+  display: block;
+  background: #fff;
+}
 .tournament-dialog-box-tab-content.active {
   display: block;
   background: #fff;
@@ -179,4 +192,10 @@
   padding-bottom: 30px;
   font-size: 11px;
   display: none;
+  overflow: scroll;
+  height: 430px;
+}
+
+#participants{
+  font-size: 1.5em;
 }
