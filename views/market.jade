@@ -7,14 +7,14 @@ html(lang="en")
     div.content
       div.feed
         center
-          form#betForm.pure-form(action='/submitForm/'+playerId method='post')
+          form#betForm.pure-form(action='/submitForm/' + playerId method='post')
             input(type='number' name='price' placeholder='Price' autofocus=true required=true style='width:100px' min="0" step="0.01")
             input(type='number' name='shareNumber' placeholder='Quantity' required=true style='width: 100px' min="1" step="1")
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Above' checked='checked')
             | Above
             input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
             | Under
-            input.pure-button.button-primary(type='submit')
+            input#betFormButton.pure-button.button-primary(type='submit')
       div.profilecontainer
         div.profileleft
           div.profilebox
@@ -55,9 +55,37 @@ html(lang="en")
                     td
                       a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
                         img(src='../downarrow.png' width='50' height='70')
+      div.flash-error.flash-error-market#flash-error-market-3
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Database Error
+            p Something went wrong with the database.
+      div.flash-error.flash-error-market#flash-error-market-4
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Spending Power Error
+            p You don't have enough spending power for this bet.
+            p Cancel a pending bet, wait for your current bets to end, or add more money to your account, and try again.
+      div.flash-error.flash-error-market#flash-error-market-5
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Bet Already Taken Error
+            p This bet has already been taken by someone else.
+      div.flash-error.flash-error-market#flash-error-market-6
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Bet Taker Error
+            p You can't take your own bet.
+
+
+
     script(src='../js/betTableFilter.js')
     script(src='../js/search.js')
     script(src='../js/jquery-ui-1.10.4.custom.js')
-    script(type='application/javascript' src='/js/takeBets.js')
+    script(type='application/javascript' src='/js/market.js')
     script(src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js")
     link(rel="stylesheet" type="text/css" href="../css/dataTables.css")

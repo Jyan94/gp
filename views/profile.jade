@@ -42,7 +42,7 @@ html(lang="en")
                 b VIP Status:
               td= userInfo.vip_status
 
-      div#tab-container
+      div.tab-container
         ul.tab-menu
           li#pending-bets.active Pending Bets
           li#current-bets Current Bets
@@ -51,60 +51,59 @@ html(lang="en")
         div.tab-top-border
         div#pending-bets-tab.tab-content.active
           h1 Pending Bets
-          div#bet-container
+          div.bet-container
             each item in pendingBetInfo
-              div.padded
-                div#indiv-bet-container.rounded
-                  table#bet-layout(border='0', cellpadding='5')
+              div.padded(id='bet-' + item.bet_id)
+                div.indiv-bet-container.rounded
+                  table.bet-layout(border='0', cellpadding='5')
                     tbody
                       tr
-                        td#bet-player-image-cell(style='width:100px', align='right')
-                          div#bet-player-image(style='background-image: url(#{userInfo.image})')
-                        td#bet-info-cell
-                          div#bet-player-name
+                        td.bet-player-image-cell(style='width:100px', align='right')
+                          div.bet-player-image(style='background-image: url(#{userInfo.image})')
+                        td.bet-info-cell
+                          div.bet-player-name
                             h1 Bet on #{item.player_id}
-                          div#bet-info
+                          div.bet-info
                             | Price: #{item.bet_value}
-                          div#bet-info
+                          div.bet-info
                             | Multiplier: #{item.multiplier}
-                          a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer')
+                          a(href=item.bet_id class = 'delete-bet' id='delete-bet-' + item.bet_id style='cursor: pointer')
                             img(src='../deleteButton.png' width='20' height='30')
         div#current-bets-tab.tab-content
           h1 Current Bets
-          div#bet-container
+          div.bet-container
             each item in currentBetInfo
               div.padded
-                div#indiv-bet-container.rounded
-                  table#bet-layout(border='0', cellpadding='5')
+                div.indiv-bet-container.rounded
+                  table.bet-layout(border='0', cellpadding='5')
                     tbody
                       tr
-                        td#bet-player-image-cell(style='width:100px', align='right')
-                          div#bet-player-image(style='background-image: url(#{userInfo.image})')
-                        td#bet-info-cell
-                          div#bet-player-name
+                        td.bet-player-image-cell(style='width:100px', align='right')
+                          div.bet-player-image(style='background-image: url(#{userInfo.image})')
+                        td.bet-info-cell
+                          div.bet-player-name
                             h1 Bet on #{item.player_id}
-                          div#bet-info
+                          div.bet-info
                             | Price: #{item.bet_value}
-                          div#bet-info
+                          div.bet-info
                             | Multiplier: #{item.multiplier}
         div#past-bets-tab.tab-content
           h1 Past Bets
-          div#bet-container
+          div.bet-container
             each item in pastBetInfo
               div.padded
-                div#indiv-bet-container.rounded
-                  table#bet-layout(border='0', cellpadding='5')
+                div.indiv-bet-container.rounded
+                  table.bet-layout(border='0', cellpadding='5')
                     tbody
                       tr
-                        td#bet-player-image-cell(style='width:100px', align='right')
-                          div#bet-player-image(style='background-image: url(#{userInfo.image})')
-                        td#bet-info-cell
-                          div#bet-player-name
+                        td.bet-player-image-cell(style='width:100px', align='right')
+                          div.bet-player-image(style='background-image: url(#{userInfo.image})')
+                        td.bet-info-cell
+                          div.bet-player-name
                             h1 Bet on #{item.player_id}
-                          div#bet-info
+                          div.bet-info
                             | Price: #{item.bet_value}
-                          div#bet-info
+                          div.bet-info
                             | Multiplier: #{item.multiplier}
-      script(src='../js/deleteBets.js')
       script(src='../js/jquery-ui-1.10.4.custom.js')
       script(type='application/javascript' src='/js/profile.js')

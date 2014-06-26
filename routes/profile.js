@@ -187,23 +187,21 @@ var cancelCheck = function(req, res, next, callback) {
 
   Bet.selectMultiple('pending_bets', [betId], function (err, result) {
     if (err) {
-      next(err);
+      res.send(500, 'Database error.');
     }
     else if (result.length === 0) {
-      next(new Error('Bet does not exist.'));
+      res.send(404, 'Bet does not exist.');
     }
     else if (result.length === 1) {
-      console.log(1);
-
       if (result[0].user_id !== req.user.user_id) {
-        next(new Error('Can\'t delete someone else\'s bet.'));
+        res.send(403, 'Can\'t delete someone else\'s bet.');
       }
       else {
         callback(null, req, res, next, betId);
       }
     }
     else {
-      next(new Error('WTF'));
+      res.send(500, 'WTF');
     }
   });
 }
@@ -211,7 +209,10 @@ var cancelCheck = function(req, res, next, callback) {
 var deletePendingBet = function(req, res, next, betId, callback) {
   Bet.delete('pending_bets', betId, function (err, result) {
     if (err) {
-      next(err);
+      res.send(500, 'Database error.');
+    }
+    else {
+      res.send('Deleted pending bet.');
     }
   });
 }

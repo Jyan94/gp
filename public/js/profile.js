@@ -38,3 +38,30 @@ $(document).ready(function () {
     return false;
   });
 });
+
+$(document).ready(function() {
+  $('.delete-bet').each(function(index, element) {
+    $('#' + element.id).click(function(e) {
+      e.preventDefault();
+      var betId = element.id.substring(11);
+      var data = { betId: betId } ;
+      $.ajax({
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        url: '../deleteBets/' + betId,
+        success: function (response) {
+          console.log(response);
+          $('#bet-' + betId).remove();
+        },
+        failure: function (response) {
+          console.log(response);
+        },
+        error: function (response) {
+          console.log(response);
+        }
+      });
+    });
+  });
+
+});
