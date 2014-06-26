@@ -132,7 +132,7 @@ function updateInstance(
       (new Date()).getTime()) {
     callback(new Error('cooldown has not expired'));
   }
-  else if (instanceIndex < contestant.instance.length) {
+  else if (instanceIndex < contestant.instances.length) {
     var compareCallback = function(err) {
       if (err) {
         callback(err);
@@ -148,9 +148,8 @@ function updateInstance(
       }
     };
 
-    var oldInstance = contestant.instance[instanceIndex];
+    var oldInstance = contestant.instances[instanceIndex];
     compareInstances(oldInstance, updatedInstance, contest, compareCallback);
-
   }
   else {
     callback(new Error('out of bounds index'));
@@ -184,7 +183,7 @@ function updateContestantInstance(
       SelectContest.selectById(contestId, callback);
     },
     function(contest, callback) {
-      verifyInstance(user, instanceIndex, updatedInstance, contest, callback);
+      verifyInstance(user, updatedInstance, contest, callback);
     },
     function(contest, callback) {
       updateInstance(user, instanceIndex, updatedInstance, contest, callback);

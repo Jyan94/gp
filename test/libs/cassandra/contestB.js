@@ -51,11 +51,16 @@ var testUserParams1 =
 var testContestSettings =
 [
   {value: {
-    0: 'a',
-    1: 'b',
-    2: 'c',
-    3: 'd',
-    4: '5'
+    0: '{"athleteId":"00000000-0000-0000-0000-000000000000",'+
+       '"athleteName":"John Snow0"}',
+    1: '{"athleteId":"00000000-0000-0000-0000-000000000001",' +
+        '"athleteName":"John Snow1"}',
+    2: '{"athleteId":"00000000-0000-0000-0000-000000000002",' +
+        '"athleteName":"John Snow2"}',
+    3: '{"athleteId":"00000000-0000-0000-0000-000000000003",' +
+        '"athleteName":"John Snow3"}',
+    4: '{"athleteId":"00000000-0000-0000-0000-000000000004",' +
+        '"athleteName":"John Snow4"}'
   }, hint: 'map'}, //athletes
   0,  //commission_earned
   null, //contest_deadline_time
@@ -68,7 +73,7 @@ var testContestSettings =
   0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
-  'daily prophet', //game_type
+  'test', //game_type
   8000,   //max_wager
   3, //maximum_entries
   1, //minimum_entries
@@ -84,6 +89,23 @@ var testContestSettings =
   10000, //starting_virtual_money
   10  //total_prize_pool
 ];
+
+var athleteIds = 
+[
+  '00000000-0000-0000-0000-000000000000',
+  '00000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000002',
+  '00000000-0000-0000-0000-000000000003',
+  '00000000-0000-0000-0000-000000000004'
+
+];
+
+var testInstance = {
+  virtualMoneyRemaining: 1000,
+  wagers: [2000, 2000, 3000, 1000, 1000],
+  predictions: [10, 20, 30, 40, 50]
+};
+var CONTEST_ATHLETES_IDS_INDEX = 0;
 var USER_ID_INDEX = 0;
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
@@ -91,6 +113,7 @@ var RemoveContestant = require('libs/cassandra/contestB/RemoveContestant');
 var SelectContest = require('libs/cassandra/contestB/select');
 var UpdateContest = require('libs/cassandra/contestB/update');
 var UpdateContestant = require('libs/cassandra/contestB/updateContestant');
+var TimeseriesValues = require('libs/cassandra/timeseriesFantasyValues');
 var User = require('libs/cassandra/user');
 
 var configs = require('config/index');
@@ -105,7 +128,6 @@ var CANCELLED = states.CANCELLED;
 
 var async = require('async');
 
-var ATHLETES_INDEX = 0;
 var CONTEST_ID_INDEX = 4;
 var CONTESTID = testContestSettings[CONTEST_ID_INDEX];
 
@@ -312,22 +334,42 @@ function testContestant(callback) {
     },
     function(callback) {
       selectById(function(err, result) {
-        if (err) {
-          err.should.be.false;
+        (err === null).should.be.true;
+        result.contestants.should.have.property(user0.username);
+        JSON.parse(result.contestants[user0.username]).instances
+          .should.have.length(numInstances0);
+        JSON.parse(result.contestants[user0.username]).instances[0]
+          .should.have.keys(
+            'wagers', 
+            'predictions', 
+            'virtualMoneyRemaining',
+            'lastModified');
+        callback(null);
+      });
+    },
+    function(callback) {
+      UpdateContestant.updateContestantInstance(
+        user0, 0, testInstance, CONTESTID, function(err) {
           callback(err);
-        }
-        else {
-          result.contestants.should.have.property(user0.username);
-          JSON.parse(result.contestants[user0.username]).instances
-            .should.have.length(numInstances0);
-          JSON.parse(result.contestants[user0.username]).instances[0]
-            .should.have.keys(
-              'wagers', 
-              'predictions', 
-              'virtualMoneyRemaining',
-              'lastModified');
-          callback(null);
-        }
+        });
+    },
+    function(callback) {
+      selectById(function(err, result) {
+        (err === null).should.be.true;
+        var contestant = JSON.parse(result.contestants[user0.username]);
+        contestant.instances.should.have.length(numInstances0);
+        contestant.instances[0].should.have.keys(
+          'wagers', 
+          'predictions', 
+          'virtualMoneyRemaining',
+          'lastModified');
+        contestant.instances[0].should.have.property(
+          'wagers', testInstance.wagers);
+        contestant.instances[0].should.have.property(
+          'predictions', testInstance.predictions);
+        contestant.instances[0].should.have.property(
+          'virtualMoneyRemaining', testInstance.virtualMoneyRemaining);
+        callback(null);
       });
     },
     function(callback) {
@@ -421,28 +463,37 @@ function testContestant(callback) {
         }
         else {
           (result.contestants === null).should.be.true;
-          //Object.keys(result.contestants).should.have.length(numContestants);
           callback(null);
         }
       });
-    },
-    function(callback) {
-      UpdateContest.delete(CONTESTID, callback);
     }
   ], callback);
 }
 
 function tests(callback) {
+  var waterfallCallback = function(err) {
+    async.waterfall([
+      function(callback) {
+        UpdateContest.delete(CONTESTID, function(err) {
+          callback(err);
+        });
+      },
+      function(callback) {
+        async.each(athleteIds, function(athleteId, callback){
+          TimeseriesValues.removeValue(athleteId, callback);
+        }, callback);
+      }
+    ], callback);
+  };
   async.waterfall(
   [
     testStates,
     testContestant
-  ], callback);
+  ], waterfallCallback);
 }
 
 describe('contestB', function () {
   it('should test queries then modify contestants', function(done) {
-    this.timeout(1000000);
     tests(function (err) {
       if(err) {
         console.log(err);
@@ -454,4 +505,3 @@ describe('contestB', function () {
     }); 
   });
 });
-require('test/testConfigs/takedownTest').takedown();
