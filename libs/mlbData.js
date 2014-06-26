@@ -127,7 +127,7 @@ function updateOrInsert(gameId, startTime, date, homeName,
           callback(err);
         }
         else {
-          console.log("Successfully Inserted")
+          console.log("Successfully Inserted");
         }
       })
     }

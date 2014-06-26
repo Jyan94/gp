@@ -9,7 +9,7 @@ var multiline = require('multiline');
 var INSERT_PRICE_CQL = multiline(function() {/*
   INSERT INTO timeseries_fantasy_values (
     player_id, time, fantasy_value, virtual_money_wagered, contest_type
-  ) VALUES 
+  ) VALUES  
     (?, ?, ?, ?, ?);
 */});
 
@@ -24,7 +24,7 @@ exports.insert = function (
     playerId, 
     cql.types.timeuuid(), 
     {value: fantasyValue, hint: 'double'},
-    {value: virtualMoneyWagered, hint: 'double'},
+    virtualMoneyWagered,
     contestType
     ], 
     cql.types.consistencies.one,
@@ -37,14 +37,12 @@ var DELETE_PRICES_CQL = multiline(function() {/*
   IN
     (?);
 */});
-exports.deletePrices = function (playerId, callback) {
+exports.removeValue = function (playerId, callback) {
   cassandra.query(
     DELETE_PRICES_CQL,
     [playerId],
     cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+    callback);
 }
 
 var SELECT_TIMERANGE_CQL = multiline(function () {/*

@@ -189,32 +189,35 @@ var cancelCheck = function(req, res, next, callback) {
 
   Bet.selectMultiple('pending_bets', [betId], function (err, result) {
     if (err) {
-      next(err);
+      res.send(500, { error: messages.databaseError });
     }
     else if (result.length === 0) {
-      next(new Error('Bet does not exist.'));
+      res.send(400, 'Bet does not exist.');
     }
     else if (result.length === 1) {
-      console.log(1);
-
       if (result[0].user_id !== req.user.user_id) {
-        next(new Error('Can\'t delete someone else\'s bet.'));
+        res.send(400, { error: messages.betDeleterError });
       }
       else {
-        callback(null, req, res, next, betId);
+        callback(null, req, res, next, betId, result[0]);
       }
     }
     else {
-      SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
-      console.log("Deleted!");
+      res.send(500, 'WTF');
     }
   });
 }
 
-var deletePendingBet = function(req, res, next, betId, callback) {
+var deletePendingBet = function(req, res, next, betId, bet, callback) {
   Bet.delete('pending_bets', betId, function (err, result) {
     if (err) {
-      next(err);
+      res.send(500, 'Database error.');
+    }
+    else {
+      SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
+      console.log("Deleted!");
+
+      res.send('Deleted pending bet.');
     }
   });
 }

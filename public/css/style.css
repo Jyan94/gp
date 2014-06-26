@@ -94,6 +94,9 @@ input {
 .left {
   float: left;
 }
+.padded-less {
+  margin: 10px;
+}
 .padded {
   margin: 20px;
 }
@@ -438,20 +441,20 @@ input {
   visibility: hidden;
   display: block;
 }
-#tab-container{
+.tab-container{
   font-size: 12px;
   line-height: 14px;
   margin: 3em auto;
   width: 1080px;
   overflow: visible;
 }
-#tab-container ul{
+.tab-container ul{
   list-style: none;
   list-style-position: outside;
   width: 100%;
 }
 
-#tab-container ul.tab-menu li{
+.tab-container ul.tab-menu li{
   display: block;
   float: left;
   position: relative;
@@ -469,13 +472,13 @@ input {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
-#tab-container ul.tab-menu li.active{
+.tab-container ul.tab-menu li.active{
   background: #fff;
   color: #0088CC;
   height: 15px;
   border-bottom: 0;
 }
-#tab-container ul.tab-menu li:hover{
+.tab-container ul.tab-menu li:hover{
   background-color: #fff;
 }
 .tab-top-border {
@@ -494,7 +497,7 @@ input {
   box-shadow: none #888;
   display: none;
 }
-#tab-container div.active{
+.tab-container div.active{
   box-shadow: 0px 1px 4px #888;
   display: block;
 }
@@ -503,30 +506,30 @@ input {
   height: 28px;
   font-size: 22px;
 }
-#bet-container{
+.bet-container{
   border: 0px;
   padding: 0px;
 }
-#indiv-bet-container{
+.indiv-bet-container{
   border: 7px solid #ddc;
   padding: 10px;
   box-shadow: 0px 4px 0px #B6B69E;
   -webkit-transition:all 0.1s ease-in-out;
   -moz-transition:all 0.1s ease-in-out;
 }
-#indiv-bet-container:hover{
+.indiv-bet-container:hover{
   background: #efefef;
 }
-#indiv-bet-container:active{
+.indiv-bet-container:active{
   box-shadow: 0px 1px 0px #D6D6C1;
   -webkit-transform: translateY(3px);
   -moz-transform: translateY(3px);
 }
 
-#bet-player-image-cell{
+.bet-player-image-cell{
     padding-right: 10px;
 }
-#bet-player-image{
+.bet-player-image{
   display: block;
   position: relative;
   height: 80px;
@@ -535,11 +538,11 @@ input {
   background-size: cover;
 }
 
-#bet-player-name{
+.bet-player-name{
   line-height: 40px;
 }
 
-#bet-info{
+.bet-info{
   font-size: 15px;
   line-height: 20px;
 }
@@ -1113,11 +1116,29 @@ input {
 /*----------------------------------------------------------------------------*/
 /* Flash messages                                                             */
 /*----------------------------------------------------------------------------*/
-.error {
+.flash-error {
   margin-top: 0.60em;
   border: 1px solid #cc0704;
   background-color: #f5b8b2;
   color: black;
+}
+.flash-error-fade {
+  margin-top: 0;
+  width: 320px;
+  padding: 4px;
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.flash-info {
+  margin-bottom: 0.60em;
+  border: 1px solid rgb(25, 144, 25);
+  background-color: rgb(171, 221, 171);
+  color: black;
+}
+.flash-info-fade {
+  width: 320px;
 }
 /*----------------------------------------------------------------------------*/
 /* Mini Media (for the smallest supported screen sizes)                       */

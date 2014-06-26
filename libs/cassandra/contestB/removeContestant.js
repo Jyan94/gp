@@ -6,14 +6,18 @@
 'use strict';
 (require('rootpath')());
 
-var Lock = require('./lock');
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
+var UpdateContestants = require('./contestant');
 
+var configs = require('config/index');
 var User = require('libs/cassandra/user');
 
 var async = require('async');
 var multiline = require('multiline');
+
+var APPLIED = configs.constants.contestB.APPLIED;
+var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
 
 /**
  * removes contestant instance from contestant object
@@ -29,14 +33,29 @@ var multiline = require('multiline');
  * args: (err)
  */
 function removeInstanceFromContest(user, contest, instanceIndex, callback) {
-  var contestant = JSON.parse(contest.contestants[user.username]);
+  var contestant = null;
+  if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
+    contestant = JSON.parse(contest.contestants[user.username]);
+  }
   if (!contestant) {
-    callback(new Error('contestant does not exist, should not ever happen!'));
+    callback(new Error('contestant does not exist, should never happen!'));
   } 
   else if (!(contestant.instances.length>instanceIndex && instanceIndex>=0)) {
     callback(new Error('out of bounds instance index'));
   }
   else {
+    var waterfallArray = 
+    [
+      function(callback) {
+        UpdateContestants.removeContestant(
+          user.username, 
+          contestant, 
+          contest.current_entries - 1, 
+          contest.contest_id,
+          callback);  
+      }
+    ];
+
     var parallelArray = 
     [
       function(callback) {
@@ -52,27 +71,19 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     contestant.instances.splice(instanceIndex, 1);
     if (contestant.instances.length === 0) {
       parallelArray.push(function(callback) {
-        UpdateContest.deleteContestant(
+        UpdateContestants.deleteUsernameFromContest(
           user.username, 
           contest.contest_id, 
           callback);
-      });
-    }
-    else {
-      parallelArray.push(function(callback) {
-        UpdateContest.setContestant(
-          user.username, 
-          contestant, 
-          contest.current_entries - 1, 
-          contest.contest_id,
-          callback);  
       });
     }
 
     contestant = JSON.stringify(contestant);
 
     //update contest state
-    var beforeDeadline = (+(new Date()) < +contest.contest_deadline_time);
+    var beforeDeadline = 
+      (new Date()).getTime() < 
+      (new Date(contest.contest_deadline_time)).getTime();
     if (contest.current_entries === contest.maximum_entries && beforeDeadline) {
       parallelArray.push(function(callback) {
         UpdateContest.setOpen(contest.contest_id, callback);
@@ -85,15 +96,25 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
       });
     }
 
-    //update in database
-    async.parallel(parallelArray, callback);
+    //add to waterfall
+    if (parallelArray.length > 1) {
+      waterfallArray.push(function(callback) {
+        async.parallel(parallelArray, callback);
+      });
+    }
+    else {
+      waterfallArray.push(parallelArray[0]);
+    }
 
+    //update in database
+    async.waterfall(waterfallArray, callback);
   }
 }
 
 /**
  * removes contestant instance
- * obtains lock, selects the contest, removes the instance, release lock
+ * selects the contest, removes the instance
+ * if the update failed, delay and attempt later
  * @param  {object}   user
  * from req.user, MUST have fields user_id and username
  * @param  {int}   instanceIndex 
@@ -105,24 +126,21 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
  */
 function removeContestantInstance(user, instanceIndex, contestId, callback) {
 
-  var waterfallCallback = function (waterfallErr) {
-    Lock.releaseLock(contestId, function(err) {
-      if (waterfallErr) {
-        callback(waterfallErr);
-      }
-      if (err) {
-        callback(err);
-      }
-      else {
-        callback(null);
-      }
-    });
+  var waterfallCallback = function (err) {
+    if (err && err.message === APPLIED) {
+      setTimeout(function() {
+        removeContestantInstance(user, instanceIndex, contestId, callback);
+      }, Math.random() * MAX_WAIT);
+    }
+    else if (err) {
+      callback(err);
+    }
+    else {
+      callback(null);
+    }
   };
 
   async.waterfall([
-    function(callback) {
-      Lock.tryObtainLock(user, contestId, callback);
-    },
     function(callback) {
       SelectContest.selectById(contestId, callback);
     },

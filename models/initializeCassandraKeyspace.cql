@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users(
     user_id uuid PRIMARY KEY,
     email text,
     verified boolean,
-    verified_time timeuuid,
+    verified_time timestamp,
     username text,
     password text,
     first_name text,
@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users(
     address text,
     payment_info text,
     money double,
+    spending_power double,
     fbid text,
     vip_status int,
     image text

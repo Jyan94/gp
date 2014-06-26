@@ -7,13 +7,14 @@
 (require('rootpath')());
 
 var SelectContest = require('./select');
-var UpdateContest = require('./update');
+var UpdateContestant = require('./contestant');
 
 var TimeSeries = require('libs/cassandra/timeseriesFantasyValues');
 
 var async = require('async');
 var multiline = require('multiline');
 
+var minuteInMilliseconds = 60000;
 /**
  * verifies if the instance
  * @param  {object}   user 
@@ -124,16 +125,22 @@ function updateInstance(
   contest, 
   callback) {
 
-  var contestant = JSON.parse(contest.contestestants[user.username]);
-  if (instanceIndex < contestant.instance.length) {
-
+  var contestant = JSON.parse(contest.contestants[user.username]);
+  var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
+  if (contestant.instances[instanceIndex].lastModified &&
+      contestant.instances[instanceIndex].lastModified+cooldownInMilliseconds >
+      (new Date()).getTime()) {
+    callback(new Error('cooldown has not expired'));
+  }
+  else if (instanceIndex < contestant.instances.length) {
     var compareCallback = function(err) {
       if (err) {
         callback(err);
       }
       else {
+        updatedInstance.lastModified = (new Date()).getTime();
         contestant.instances[instanceIndex] = updatedInstance;
-        UpdateContest.updateContestant(
+        UpdateContestant.updateContestant(
           user.username, 
           JSON.stringify(contestant), 
           contest.contest_id, 
@@ -141,9 +148,8 @@ function updateInstance(
       }
     };
 
-    var oldInstance = contestant.instance[instanceIndex];
+    var oldInstance = contestant.instances[instanceIndex];
     compareInstances(oldInstance, updatedInstance, contest, compareCallback);
-
   }
   else {
     callback(new Error('out of bounds index'));
@@ -171,12 +177,13 @@ function updateContestantInstance(
   contestId, 
   callback) {
 
-  async.waterfall([
+  async.waterfall(
+  [
     function(callback) {
       SelectContest.selectById(contestId, callback);
     },
     function(contest, callback) {
-      verifyInstance(user, instanceIndex, updatedInstance, contest, callback);
+      verifyInstance(user, updatedInstance, contest, callback);
     },
     function(contest, callback) {
       updateInstance(user, instanceIndex, updatedInstance, contest, callback);

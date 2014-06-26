@@ -1,7 +1,6 @@
 $(function() {
   var searchCache = [];
   var id;
-  console.log(222);
   $.getJSON("/autocomp", function (data) {
     for (var i = 0; i < data.length; i++) {
       searchCache.push(data[i]);
