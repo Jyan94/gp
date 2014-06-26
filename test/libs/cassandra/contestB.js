@@ -73,7 +73,11 @@ var testContestSettings =
   0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
-  'test', //game_type
+  {value: [
+    '00000000-0000-0000-0000-000000000000', 
+    '00000000-0000-0000-0000-000000000001'
+  ], hint: 'list'},  //games
+  false, //isfiftyfifty
   8000,   //max_wager
   3, //maximum_entries
   1, //minimum_entries
@@ -109,11 +113,11 @@ var CONTEST_ATHLETES_IDS_INDEX = 0;
 var USER_ID_INDEX = 0;
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
-var RemoveContestant = require('libs/cassandra/contestB/RemoveContestant');
+var RemoveContestant = require('libs/cassandra/contestB/removeContestant');
 var SelectContest = require('libs/cassandra/contestB/select');
 var UpdateContest = require('libs/cassandra/contestB/update');
 var UpdateContestant = require('libs/cassandra/contestB/updateContestant');
-var TimeseriesValues = require('libs/cassandra/timeseriesFantasyValues');
+var TimeseriesValues = require('libs/cassandra/contestB/timeseries');
 var User = require('libs/cassandra/user');
 
 var configs = require('config/index');
@@ -150,7 +154,8 @@ function verifyContestEssentials(queryResult) {
     'current_entries',
     'entries_allowed_per_contestant',
     'entry_fee',
-    'game_type',
+    'games',
+    'isfiftyfifty',
     'max_wager',
     'maximum_entries',
     'minimum_entries',

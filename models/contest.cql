@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS contest_B (
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
-  game_type text,
+  games list<uuid>,
+  isfiftyfifty boolean,
   max_wager int,
   maximum_entries int,
   minimum_entries int,
@@ -142,14 +143,14 @@ CREATE TABLE IF NOT EXISTS baseball_player (
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics
 
-CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
+CREATE TABLE IF NOT EXISTS timeseries_contest_b (
     player_id uuid,
     time timeuuid,
     fantasy_value double,
     virtual_money_wagered int,
-    contest_type text,
+    username text,
     active boolean,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
-CREATE INDEX IF NOT EXISTS ON timeseries_fantasy_values(contest_type);
-CREATE INDEX IF NOT EXISTS ON timeseries_fantasy_values(active);
+CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(contest_type);
+CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(active);

@@ -38,7 +38,6 @@ var config = {
     app.use(bodyParser());
     app.use(cookieparser());
     app.use(methodOverride());
-    //basic error handler
     app.use(session({
       secret: 'secret-key',
       cookie: {
