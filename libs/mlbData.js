@@ -203,7 +203,7 @@ function calculateBoxScore() {
   }, 360000);
 }
 
-calculateBoxScore();
+//calculateBoxScore();
 
 
 exports.createRequest = createRequest;

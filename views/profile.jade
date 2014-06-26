@@ -29,6 +29,8 @@ html(lang="en")
               td(style='width:150px', align='right')
                 b Money:
               td= userInfo.money
+              div(id='paypal' height = '70' width = '100' border='0' style='cursor: pointer')
+                img(src='https://www.paypalobjects.com/webstatic/mktg/logo/AM_SbyPP_mc_vs_dc_ae.jpg')
             tr
               td(style='width:150px', align='right')
                 b Spending Power:
@@ -41,6 +43,7 @@ html(lang="en")
               td(style='width:150px', align='right')
                 b VIP Status:
               td= userInfo.vip_status
+
 
       div#tab-container
         ul.tab-menu
@@ -105,6 +108,37 @@ html(lang="en")
                             | Price: #{item.bet_value}
                           div#bet-info
                             | Multiplier: #{item.multiplier}
+        div.paypal-dialog-box-backdrop
+        div.paypal-dialog-box
+          div.paypal-dialog-box-header
+            center
+              p Deposit Funds
+            div.paypal-dialog-box-body
+              div.paypal-dialog-box-info
+                form.pure-form(action='/submitPayment/'+userInfo.user_id method='post')
+                  input(id = 'visa' type='radio' name='cardType' value='visa' checked='checked')
+                  | Visa
+                  input(id = 'amex' type='radio' name='cardType' value='amex')
+                  | Am Ex
+                  input(id = 'mastercard' type='radio' name='cardType' value='mastercard')
+                  | Mastercard
+                  input(id = 'discover' type='radio' name='cardType' value='discover')
+                  | Discover
+                  input(type='number' name='cardNumber' placeholder='Credit Card Number' required=true style='width:200px')
+                  input(type='number' name='expireMonth', placeHolder='Exp Mon' required=true style='width:100px')
+                  input(type='number' name='expireYear', placeHolder='Exp Year' required=true style='width:100px')
+                  input(type='number' name='cvv2', placeHolder='Cvv2' required=true style='width:100px')
+                  input(type='text' name='firstName', placeHolder='First Name' required=true style='width:200px')
+                  input(type='text' name='lastName', placeHolder='Last Name' required=true style='width:200px')
+                  input(type='text' name='address1', placeHolder='Address Line 1' required=true style='width:200px')
+                  input(type='text' name='city' placeHolder='City' required=true style='width:100px')
+                  input(type='text' name='state' placeHolder='State' required=true style='width:100px')
+                  input(type='number' name='postalCode' placeHolder='Postal Code' required=true style='width:200px')
+                  input(type='amount' name='amount' placeHolder='Deposit Amount' required=true style='width:100px')
+                  input.pure-button.button-primary(type='submit')
+      script(src='../js/paypal.js')
+      script(src='../css/bootstrap/paypal.css')
       script(src='../js/deleteBets.js')
       script(src='../js/jquery-ui-1.10.4.custom.js')
       script(type='application/javascript' src='/js/profile.js')
+      link(rel='stylesheet' type='text/css' href='../css/bootstrap/paypal.css')

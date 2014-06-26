@@ -30,6 +30,7 @@
     "passport": "~0.2.0",
     "passport-facebook": "^1.0.3",
     "passport-local": "~0.1.6",
+    "paypal-rest-sdk": "0.9.3",
     "request": "^2.34.0",
     "rootpath": "0.1.2",
     "s3-upload-stream": "^0.2.0",

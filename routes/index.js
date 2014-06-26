@@ -80,6 +80,10 @@ app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
 app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
+//paypal
+var paypal = require('routes/paypal');
+app.post('/submitPayment/:userId', paypal.submitPayment);
+
 //graph
 var graph = require('routes/graph');
 app.get('/update', graph.update);

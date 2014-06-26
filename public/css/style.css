@@ -812,9 +812,7 @@ input {
   box-shadow: 0px 1px 4px #888;
   background-color: #fff;
 }
-.bounding-box input {
-  width: 100%;
-}
+
 .button-align {
   text-align: center;
 }
