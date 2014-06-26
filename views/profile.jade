@@ -67,6 +67,8 @@ html(lang="en")
                             | Price: #{item.bet_value}
                           div.bet-info
                             | Multiplier: #{item.multiplier}
+                          div.bet-info
+                            | Long Position: #{item.long_position}
                           a(href=item.bet_id class = 'delete-bet' id='delete-bet-' + item.bet_id style='cursor: pointer')
                             img(src='../deleteButton.png' width='20' height='30')
         div#current-bets-tab.tab-content
@@ -87,6 +89,8 @@ html(lang="en")
                             | Price: #{item.bet_value}
                           div.bet-info
                             | Multiplier: #{item.multiplier}
+                          div.bet-info
+                            | Long Position: #{userInfo.user_id === item.long_better_id}
         div#past-bets-tab.tab-content
           h1 Past Bets
           div.bet-container
@@ -105,6 +109,8 @@ html(lang="en")
                             | Price: #{item.bet_value}
                           div.bet-info
                             | Multiplier: #{item.multiplier}
+                          div.bet-info
+                            | Long Position: #{userInfo.user_id === item.long_better_id}
       div.flash-error.flash-error-fade#flash-error-profile-4
         div.padded-less
           div

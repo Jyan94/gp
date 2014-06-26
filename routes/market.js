@@ -70,10 +70,6 @@ var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
   var fullName = null;
   var team;
   var position;
-  var infos = req.flash().info;
-  var infosSend = [];
-  var errors = req.flash().error;
-  var errorsSend = [];
 
   Player.select(playerId, function(err, result) {
     if (err) {
@@ -91,9 +87,7 @@ var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
             playerId: playerId,
             fullName: fullName,
             team: team,
-            position: position,
-            infos: infosSend,
-            errors: errorsSend});
+            position: position});
         }
         else {
           res.render('market', {betinfo: betInfo,
@@ -101,9 +95,7 @@ var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
             playerId: playerId,
             fullName: fullName,
             team: team,
-            position: position,
-            infos: infosSend,
-            errors: errorsSend});
+            position: position});
         }
       });
     }
