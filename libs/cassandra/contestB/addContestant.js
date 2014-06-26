@@ -60,11 +60,17 @@ function addUserInstanceToContest(user, contest, callback) {
   if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
     contestant = JSON.parse(contest.contestants[user.username]);
   }
+
   if (user.money < contest.entry_fee) {
     callback(new Error('not enough money'));
   }
   else if (contest.current_entries === contest.maximum_entries) {
     callback(new Error('contest is full'));
+  }
+  //deadline time should be in the future
+  //if it's in the past, shouldn't be able to enter
+  else if (contest.contest_deadline_time.getTime() < (new Date()).getTime()) {
+    callback(new Error('cannot enter contest past deadline time'));
   }
   else if (contestant && contestant.instances.length === 
           contest.entries_allowed_per_contestant) {

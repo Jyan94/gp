@@ -36,15 +36,21 @@ var cql = configs.cassandra.cql;
  *   
  * @param  {Object} athletes
  *         map of an int, as string, 0-x number of athletes to athlete type
- * @param  {int} commissionEarned
+ * @parame {int} commissionEarned
  *         determined after sport event ends and payouts are calculated
+ * @param  {Date} deadlineTime
+ *         date of contest deadline
+ * @param  {int} cooldownMinutes
+ *         time in minutes before one can re-edit their entry
  * @param  {int} entriesAllowedPerContestant
  *         maximum entries allowed for a given contestant
  * @param  {Date} deadlineTime
  *         time when both no additional players can join and bets are locked in
  * @param  {int} entryFee
- * @param  {text} gameType             
- *         brief text describing gametype
+ * @param  {text} games
+ *         list of game uuids
+ * @param  {boolean} isfiftyfifty
+ *         if it's a fifty-fifty game mode where half of the entrants win
  * @param  {int} maxWager
  *         maximum wager on any given athlete
  * @param  {int} maximumEntries
@@ -65,7 +71,8 @@ function createSettings(
   cooldownMinutes,
   entriesAllowedPerContestant,
   entryFee,
-  gameType,
+  games,
+  isfiftyfifty,
   maxWager,
   maximumEntries,
   minimumEntries,
@@ -87,9 +94,8 @@ function createSettings(
     0,  //current_entries
     entriesAllowedPerContestant, //entries_allowed_per_contestant
     entryFee, //entry_fee
-    gameType, //game_type
-    null, //last_locked
-    false,  //lock_current_entries
+    games, //games
+    isfiftyfifty, //isfiftyfifty
     maxWager, //max_wager
     maximumEntries, //maximum_entries
     minimumEntries, //minimum_entries
@@ -107,7 +113,8 @@ function createSettings(
   cooldownMinutes
   entriesAllowedPerContestant,
   entryFee,
-  gameType,
+  games,
+  isfiftyfifty,
   maxWager
   maximumEntries,
   minimumEntries,
@@ -116,14 +123,15 @@ function createSettings(
   startingVirtualMoney,
   totalPrizePool
  */
-function createType1Settings(athletes, deadlineTime, sport) {
+function createType1Settings(athletes,games,isfiftyfifty,deadlineTime,sport) {
   return createSettings(
     athletes,
     deadlineTime,
     10,
     10,
     10,
-    'daily prophet',
+    games,
+    isfiftyfifty,
     8000,
     10,
     9,

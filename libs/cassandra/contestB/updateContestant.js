@@ -126,9 +126,11 @@ function updateInstance(
 
   var contestant = JSON.parse(contest.contestants[user.username]);
   var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
+  //last modified + cooldown should be in the past
+  //if it's in the future, should not be able to modify
   if (contestant.instances[instanceIndex].lastModified &&
-      contestant.instances[instanceIndex].lastModified+cooldownInMilliseconds >
-      (new Date()).getTime()) {
+      contestant.instances[instanceIndex].lastModified.getTime() +
+        cooldownInMilliseconds > (new Date()).getTime()) {
     callback(new Error('cooldown has not expired'));
   }
   else if (instanceIndex < contestant.instances.length) {
@@ -137,7 +139,7 @@ function updateInstance(
         callback(err);
       }
       else {
-        updatedInstance.lastModified = (new Date()).getTime();
+        updatedInstance.lastModified = new Date();
         contestant.instances[instanceIndex] = updatedInstance;
         UpdateContestant.updateContestant(
           user.username, 
