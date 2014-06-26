@@ -33,6 +33,7 @@ athletes map of int to stringified athlete object:
 {
   athleteId: uuid of athlete
   athleteName: name of athlete
+  numPredictions: total number of predictions on athlete
 }
 
 contestants map of username to stringified contestant object:
@@ -147,6 +148,8 @@ CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
     fantasy_value double,
     virtual_money_wagered int,
     contest_type text,
+    active boolean,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
 CREATE INDEX IF NOT EXISTS ON timeseries_fantasy_values(contest_type);
+CREATE INDEX IF NOT EXISTS ON timeseries_fantasy_values(active);

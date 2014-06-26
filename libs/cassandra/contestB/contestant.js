@@ -173,7 +173,6 @@ var DELETE_CONTESTANT_QUERY_2 = multiline(function() {/*
     contest_id = ?;
 */});
 
-
 /**
  * delete contestant from contest
  * @param  {string}   username 
