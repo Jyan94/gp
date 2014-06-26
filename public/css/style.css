@@ -1124,9 +1124,9 @@ input {
   background-color: #f5b8b2;
   color: black;
 }
-.flash-error-market {
+.flash-error-fade {
   margin-top: 0;
-  width: 480px;
+  width: 320px;
   padding: 4px;
   display: none;
   position: absolute;
@@ -1139,8 +1139,8 @@ input {
   background-color: rgb(171, 221, 171);
   color: black;
 }
-.flash-info-market {
-  width: 980px;
+.flash-info-fade {
+  width: 320px;
 }
 /*----------------------------------------------------------------------------*/
 /* Mini Media (for the smallest supported screen sizes)                       */
@@ -1190,7 +1190,7 @@ input {
 
 .profilebottom {
   height: 75px;
-  width: 35%;
+  width: 34.98%;
   float: left;
   background-color: white;
   opacity: 0.7;

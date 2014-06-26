@@ -39,6 +39,21 @@ $(document).ready(function () {
   });
 });
 
+function profileError(error, id) {
+  if ($('.flash-error-fade').is(':animated')) {
+    $('.flash-error-fade').stop(true, true);
+  }
+
+  var offset = $('#' + id).offset();
+  var posX = offset.left + 30;
+  var posY = offset.top - 15;
+
+  console.log(posX, posY);
+
+  $('#flash-error-profile-' + error).css({ left: posX, top: posY });
+  $('#flash-error-profile-' + error).show().fadeOut(2000);
+}
+
 $(document).ready(function() {
   $('.delete-bet').each(function(index, element) {
     $('#' + element.id).click(function(e) {
@@ -54,11 +69,14 @@ $(document).ready(function() {
           console.log(response);
           $('#bet-' + betId).remove();
         },
-        failure: function (response) {
-          console.log(response);
-        },
         error: function (response) {
-          console.log(response);
+          var parsedResponse = JSON.parse(response.responseText);
+          var error = parsedResponse.error;
+          var possibleErrors = [4, 5];
+
+          if (possibleErrors.indexOf(error) >= 0) {
+            profileError(error, element.id);
+          }
         }
       });
     });

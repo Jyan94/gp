@@ -53,7 +53,6 @@ function insertUser(body, res, next) {
 
 var processSignup = function(req, res, next) {
   var body = req.body;
-  console.log("body: " + body.username);
   async.waterfall(
   [
     //username lookup

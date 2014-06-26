@@ -3,7 +3,9 @@ exports.defaultPlayerImage = 'http://2.bp.blogspot.com/-6QyJDHjB5XE/Uscgo2DVBdI/
 exports.profileStrings = {
   incorrectUsername: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }',
   deleteError: '{ "title": "Delete error", "parts": ["Something went wrong while deleting a file."] }',
-  uploadError:'{ "title": "Upload error", "parts": ["Something went wrong while uploading a file."] }'
+  uploadError:'{ "title": "Upload error", "parts": ["Something went wrong while uploading a file."] }',
+  databaseError: 4,
+  betDeleterError: 5,
 };
 exports.marketStrings = {
   //submitted: '{ "title": "Bet submitted successfully", "parts": [] }',
@@ -30,9 +32,11 @@ exports.contestB = {
   PROCESSED: 3,
   CANCELLED: 4,
   //for lock.js times and tries
-  MAX_MILLISECONDS: 20000,
+  MIN_MILLISECONDS: 30000,
   MAX_TRIES: 20,
-  MAX_WAIT: 1000
+  MAX_WAIT: 10000,
+  //for locking
+  APPLIED: '[applied]'
 };
 exports.FacebookStrategy = {
     clientID: "855194074508903",

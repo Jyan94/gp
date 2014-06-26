@@ -1,9 +1,15 @@
 function marketError(error, id) {
-  if ($('.flash-error-market').is(':animated')) {
-    $('.flash-error-market').stop(true, true);
+  if ($('.flash-error-fade').is(':animated')) {
+    $('.flash-error-fade').stop(true, true);
   }
 
-  $('#flash-error-market-' + error).css($('#' + id).offset());
+  var offset = $('#' + id).offset();
+  var posX = offset.left + 30;
+  var posY = offset.top - 15;
+
+  console.log(posX, posY);
+
+  $('#flash-error-market-' + error).css({ left: posX, top: posY });
   $('#flash-error-market-' + error).show().fadeOut(2000);
 }
 
@@ -59,7 +65,7 @@ $('#betForm').submit(function(e) {
     contentType: 'application/json',
     url: '../submitForm/' + playerId,
     success: function (response) {
-      //window.location.href = '/market/' + playerId;
+      window.location.href = '/market/' + playerId;
     },
     error: function (response) {
       var parsedResponse = JSON.parse(response.responseText);

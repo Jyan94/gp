@@ -29,22 +29,21 @@ var CANCELLED = states.CANCELLED;
 var INSERT_CONTEST_QUERY = multiline(function() {/*
   INSERT INTO contest_B (
     athletes,
-    commission,
+    commission_earned,
     contest_deadline_time,
     contest_end_time,
     contest_id,
     contest_start_time,
     contest_state,
     contestants,
+    cooldown_minutes,
     current_entries,
     entries_allowed_per_contestant,
     entry_fee,
     game_type,
-    last_locked,
-    lock_insert_delete,
     max_wager,
     maximum_entries,
-    minimum_entries
+    minimum_entries,
     pay_outs,
     processed_payouts_time,
     sport,
@@ -54,8 +53,8 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
-    ?. ?. ?, ?, ?,
-    ?, ?
+    ?, ?, ?, ?, ?,
+    ?
   );
 */});
 
@@ -67,7 +66,9 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
  * parameters (err)
  */
 exports.insert  = function(settings, callback) {
-  cassandra.query(INSERT_CONTEST_QUERY, settings, quorum, callback);
+  cassandra.query(INSERT_CONTEST_QUERY, settings, quorum, function(err) {
+    callback(err);
+  });
 };
 
 /* 
@@ -87,7 +88,7 @@ exports.delete = function(contestId, callback) {
 
 /*
  * ====================================================================
- * UPDATE QUERIES
+ * UPDATE QUERIES FOR CONTESTS
  * ====================================================================
  */
 
@@ -97,7 +98,7 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
   SET 
     contest_state = ?
   WHERE
-    contest_id = ?
+    contest_id = ?;
 */});
 
 /**
@@ -109,7 +110,13 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
  * args: (err)
  */
 function updateContestState(nextState, contestId, callback) {
-  cassandra.query(UPDATE_STATE_QUERY, [nextState, contestId], quorum, callback);
+  cassandra.query(
+    UPDATE_STATE_QUERY, 
+    [nextState, contestId], 
+    quorum, 
+    function(err) {
+      callback(err);
+    });
 }
 
 exports.setOpen = function(contestId, callback) {
@@ -131,87 +138,3 @@ exports.setProcessed = function(contestId, callback) {
 exports.setCancelled = function(contestId, callback) {
   updateContestState(CANCELLED, contestId, callback);
 }
-
-var SET_CONTESTANT_QUERY = multiline(function() {/*
-  UPDATE 
-    contest_B
-  SET 
-    contestants['?'] = ?,
-    current_entries = ?
-  WHERE
-    contest_id = ?
-*/});
-
-/**
- * @param {string}   username
- * @param {string}   contestant 
- * JSON.stringify({
- *   instances: [{contestant instance}]
- * })
- * @param {int}   numEntries 
- * number of current entries in contest
- * @param {uuid}   contestId  
- * @param {Function} callback
- * args: (err)
- */
-function setContestant(username, contestant, numEntries, contestId, callback) {
-  cassandra.query(
-    SET_CONTESTANT_QUERY, 
-    [username, contestant, numEntries, contestId],
-    quorum,
-    callback);
-}
-exports.setContestant = setContestant;
-
-var UPDATE_CONTESTANT_QUERY = multiline(function() {/*
-  UPDATE
-    contest_B
-  SET
-    contestants['?'] = ?
-  WHERE
-    contest_id = ?;
-*/});
-
-/**
- * @param {string}   username
- * @param {string}   contestant 
- * JSON.stringify({
- *   instances: [{contestant instance}]
- * })
- * @param {uuid}   contestId  
- * @param {Function} callback
- * args: (err)
- */
-function updateContestant(username, contestant, contestId, callback) {
-  cassandra.query(
-    UPDATE_CONTESTANT_QUERY,
-    [username, contestant, contestId],
-    one,
-    callback);
-}
-exports.updateContestant = updateContestant;
-
-var DELETE_CONTESTANT_QUERY = multiline(function() {/*
-  DELETE
-    contestants['?']
-  FROM
-    contest_B
-  WHERE
-    contest_id = ?;
-*/});
-
-/**
- * delete contestant from contest
- * @param  {[type]}   username  [description]
- * @param  {[type]}   contestId [description]
- * @param  {Function} callback  [description]
- * @return {[type]}             [description]
- */
-function deleteContestant(username, contestId, callback) {
-  cassandra.query(
-    DELETE_CONTESTANT_QUERY,
-    [username, contestId],
-    one,
-    callback);
-}
-exports.deleteContestant = deleteContestant;

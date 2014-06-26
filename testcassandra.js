@@ -3,7 +3,7 @@ var cql = require('./config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var extend = require('node.extend');
 var User = require('libs/cassandra/user');
-
+/*
 User.insert([
   '12000000-0000-0000-0000-000000005eb3',
   'test1@test.com',
@@ -27,7 +27,7 @@ User.insert([
 })
 
 var query = 'insert into birds (name, bird) VALUES (?, ?)';
-var query = 'select * from birds where name = ?'
+var query = 'select * from birds where name = ?'*/
 
 //var query = 'update test42 set bool1 = false where name = ? if bool1 = false and num1 = 1';
 /*
@@ -112,12 +112,18 @@ console.log(JSON.parse(str)[0][1]);
 var retval = (function() {
   hello = extend(hello, {9 : 'one'});
   var a = function() {
-    console.log(hello[9]);
+    console.log(hello[0]);
   }
   hello[0] = 2;
-  return hello[0];
+  return a;
 }());
 
-var a = [1]
-a.splice(0, 1);
-console.log(a);
+retval();
+
+var query = 'insert into contest_b (sport, contest_id, athletes) values (?, ?, ?)';
+
+cassandra.query(query, ['soccer', '00000000-0000-0000-0000-000000000000', {value: {1: 'hello'}, hint: 'map'}], cql.types.consistencies.one, function(err) {
+  if (err) {
+    console.log(err);
+  }
+})
