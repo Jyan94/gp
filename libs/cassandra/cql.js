@@ -13,7 +13,7 @@ exports.query = function(cql, params, consistency, callback) {
     if (result) {
       result = result.rows;
     }
-
+    //console.log(params);
     callback(err, result);
   });
 };

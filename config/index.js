@@ -31,13 +31,13 @@ var config = {
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
+    app.engine('hbs', require('hbs').__express);
     app.engine('ejs', require('ejs').renderFile);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
     app.use(bodyParser());
     app.use(cookieparser());
     app.use(methodOverride());
-    //basic error handler
     app.use(session({
       secret: 'secret-key',
       cookie: {

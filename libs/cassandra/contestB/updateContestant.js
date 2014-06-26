@@ -8,8 +8,7 @@
 
 var SelectContest = require('./select');
 var UpdateContestant = require('./contestant');
-
-var TimeSeries = require('libs/cassandra/timeseriesFantasyValues');
+var TimeSeries = require('./timeseries');
 
 var async = require('async');
 var multiline = require('multiline');
@@ -79,7 +78,7 @@ function verifyInstance(user, instance, contest, callback) {
  * @param  {Function} callback
  * args: (err)
  */
-function compareInstances(oldInstance, newInstance, contest, callback) {
+function compareInstances(user, oldInstance, newInstance, contest, callback) {
   //convert all serialized json text fields of athlete map to object
   var timeseriesUpdates = [];
   for (var i = 0; contest.athletes.hasOwnProperty(i); ++i) {
@@ -98,7 +97,7 @@ function compareInstances(oldInstance, newInstance, contest, callback) {
         update.athleteId, 
         update.fantasyValue, 
         update.wager, 
-        contest.game_type, 
+        user.username, 
         callback);
     };
     async.each(timeseriesUpdates, updateTimeseriesTable, callback);
@@ -127,9 +126,11 @@ function updateInstance(
 
   var contestant = JSON.parse(contest.contestants[user.username]);
   var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
+  //last modified + cooldown should be in the past
+  //if it's in the future, should not be able to modify
   if (contestant.instances[instanceIndex].lastModified &&
-      contestant.instances[instanceIndex].lastModified+cooldownInMilliseconds >
-      (new Date()).getTime()) {
+      contestant.instances[instanceIndex].lastModified.getTime() +
+        cooldownInMilliseconds > (new Date()).getTime()) {
     callback(new Error('cooldown has not expired'));
   }
   else if (instanceIndex < contestant.instances.length) {
@@ -138,7 +139,7 @@ function updateInstance(
         callback(err);
       }
       else {
-        updatedInstance.lastModified = (new Date()).getTime();
+        updatedInstance.lastModified = new Date();
         contestant.instances[instanceIndex] = updatedInstance;
         UpdateContestant.updateContestant(
           user.username, 
@@ -149,7 +150,12 @@ function updateInstance(
     };
 
     var oldInstance = contestant.instances[instanceIndex];
-    compareInstances(oldInstance, updatedInstance, contest, compareCallback);
+    compareInstances(
+      user, 
+      oldInstance, 
+      updatedInstance, 
+      contest, 
+      compareCallback);
   }
   else {
     callback(new Error('out of bounds index'));

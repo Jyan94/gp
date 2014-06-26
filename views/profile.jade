@@ -107,19 +107,6 @@ html(lang="en")
                             | Price: #{item.bet_value}
                           div.bet-info
                             | Multiplier: #{item.multiplier}
-      div.flash-error.flash-error-fade#flash-error-profile-4
-        div.padded-less
-          div
-            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
-            h3(style='padding: 4px') Database Error
-            p Something went wrong with the database.
-      div.flash-error.flash-error-fade#flash-error-profile-5
-        div.padded-less
-          div
-            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
-            h3(style='padding: 4px') Bet Deleter Error
-            p You can't delete someone else's bet.
-
         div.paypal-dialog-box-backdrop
         div.paypal-dialog-box
           div.paypal-dialog-box-header
@@ -148,6 +135,18 @@ html(lang="en")
                   input(type='number' name='postalCode' placeHolder='Postal Code' required=true style='width:200px')
                   input(type='amount' name='amount' placeHolder='Deposit Amount' required=true style='width:100px')
                   input.pure-button.button-primary(type='submit')
+      div.flash-error.flash-error-fade#flash-error-profile-4
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Database Error
+            p Something went wrong with the database.
+      div.flash-error.flash-error-fade#flash-error-profile-5
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Bet Deleter Error
+            p You can't delete someone else's bet.
       script(src='../js/paypal.js')
       script(src='../css/bootstrap/paypal.css')
       script(src='../js/deleteBets.js')

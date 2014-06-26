@@ -85,21 +85,17 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
     for (var i = 0; i < result.length; i++) {
       currentUserId = result[i].user_id;
       oldMoneyValues[currentUserId] = result[i].money;
-      console.log("currentUserId: " + currentUserId);
-      console.log("oldMoneyValues: " + oldMoneyValues[currentUserId]);
     }
 
     for (i = 0; i < moneyValuesLength; i++) {
       currentUserId = userIdValues[i];
       total = oldMoneyValues[currentUserId] + moneyValues[i];
-      console.log("total: " + total);
       queries[i] = {
         query: UPDATE_MONEY_CQL,
         params: [{ value: total, hint: 'double'}, currentUserId]
       }
     }
 
-    console.log(queries);
     cassandra.queryBatch(queries, cql.types.consistencies.one,
       function(err) {
         callback(err);

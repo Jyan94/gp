@@ -50,7 +50,7 @@ var testUserParams1 =
 
 var testContestSettings =
 [
-  {value: {
+  {
     0: '{"athleteId":"00000000-0000-0000-0000-000000000000",'+
        '"athleteName":"John Snow0"}',
     1: '{"athleteId":"00000000-0000-0000-0000-000000000001",' +
@@ -61,29 +61,33 @@ var testContestSettings =
         '"athleteName":"John Snow3"}',
     4: '{"athleteId":"00000000-0000-0000-0000-000000000004",' +
         '"athleteName":"John Snow4"}'
-  }, hint: 'map'}, //athletes
+  }, //athletes
   0,  //commission_earned
-  null, //contest_deadline_time
+  new Date(new Date().getTime() +100000), //contest_deadline_time
   null, //contest_end_time
   '00000000-0000-0000-0000-000000000000', //contest_id
   new Date(), //contest_start_time
   0,  //contest_state
-  {value: {}, hint: 'map'}, //contestants
+  {}, //contestants
   0, //cooldown_minutes
   0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
-  'test', //game_type
+  [
+    '00000000-0000-0000-0000-000000000000', 
+    '00000000-0000-0000-0000-000000000001'
+  ],  //games
+  false, //isfiftyfifty
   8000,   //max_wager
   3, //maximum_entries
   1, //minimum_entries
-  {value: {
-    0: {value: 1.0, hint: 'double'},
-    1: {value: 10.0, hint: 'double'},
-    2: {value: 11.0, hint: 'double'},
-    3: {value: 12.0, hint: 'double'},
-    4: {value: 13.0, hint: 'double'}
-  }, hint: 'map'},  //pay_outs
+  {
+    0: 1.0,
+    1: 10.0,
+    2: 11.0,
+    3: 12.0,
+    4: 13.0
+  },  //pay_outs
   null, //processed_payouts_timestamp
   'world',  //sport
   10000, //starting_virtual_money
@@ -105,15 +109,14 @@ var testInstance = {
   wagers: [2000, 2000, 3000, 1000, 1000],
   predictions: [10, 20, 30, 40, 50]
 };
-var CONTEST_ATHLETES_IDS_INDEX = 0;
 var USER_ID_INDEX = 0;
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
-var RemoveContestant = require('libs/cassandra/contestB/RemoveContestant');
+var RemoveContestant = require('libs/cassandra/contestB/removeContestant');
 var SelectContest = require('libs/cassandra/contestB/select');
 var UpdateContest = require('libs/cassandra/contestB/update');
 var UpdateContestant = require('libs/cassandra/contestB/updateContestant');
-var TimeseriesValues = require('libs/cassandra/timeseriesFantasyValues');
+var TimeseriesValues = require('libs/cassandra/contestB/timeseries');
 var User = require('libs/cassandra/user');
 
 var configs = require('config/index');
@@ -128,14 +131,21 @@ var CANCELLED = states.CANCELLED;
 
 var async = require('async');
 
+var CONTEST_ATHLETES_IDS_INDEX = 0;
 var CONTEST_ID_INDEX = 4;
+var CONTEST_GAMES_INDEX = 12;
 var CONTESTID = testContestSettings[CONTEST_ID_INDEX];
 
 function verifyContestEssentials(queryResult) {
-  queryResult.should.have.property('athletes');
+  queryResult.should.have.property(
+    'athletes',
+    testContestSettings[CONTEST_ATHLETES_IDS_INDEX].value);
   queryResult.should.have.property(
     'contest_id', 
     testContestSettings[CONTEST_ID_INDEX]);
+  queryResult.should.have.property(
+    'games',
+    testContestSettings[CONTEST_GAMES_INDEX].value);
   queryResult.should.have.keys(
     'columns',
     'athletes', 
@@ -150,7 +160,8 @@ function verifyContestEssentials(queryResult) {
     'current_entries',
     'entries_allowed_per_contestant',
     'entry_fee',
-    'game_type',
+    'games',
+    'isfiftyfifty',
     'max_wager',
     'maximum_entries',
     'minimum_entries',
@@ -330,7 +341,10 @@ function testContestant(callback) {
     function(callback) {
       ++numInstances0;
       ++numContestants;
-      AddContestant.addContestant(user0, contest.contest_id, callback);
+      AddContestant.addContestant(user0, contest.contest_id, function(err) {
+        (err === null).should.be.true;
+        callback(null);
+      });
     },
     function(callback) {
       selectById(function(err, result) {
@@ -350,6 +364,7 @@ function testContestant(callback) {
     function(callback) {
       UpdateContestant.updateContestantInstance(
         user0, 0, testInstance, CONTESTID, function(err) {
+          (err === null).should.be.true;
           callback(err);
         });
     },
@@ -379,7 +394,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(function(err, result) {
         if (err) {
-          err.should.be.false;
+          (err === null).should.be.true;
           callback(err);
         }
         else {
@@ -399,12 +414,10 @@ function testContestant(callback) {
     function(callback) {
       selectById(function(err, result) {
         if (err) {
-          err.should.be.false;
+          (err === null).should.be.true;
           callback(err);
         }
         else {
-          //maximum_entries is 3
-          //result.maximum_entries.should.equal(numInstances0 + numInstances1);
           result.contestants.should.have.property(user0.username);
           Object.keys(result.contestants).should.have.length(numContestants);
           callback(null);
@@ -418,7 +431,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(function(err, result) {
         if (err) {
-          err.should.be.false;
+          (err === null).should.be.true;
           callback(err);
         }
         else {
@@ -458,7 +471,6 @@ function testContestant(callback) {
     function(callback) {
       selectById(function(err, result) {
         if (err) {
-          err.should.be.false;
           callback(err);
         }
         else {
@@ -467,11 +479,20 @@ function testContestant(callback) {
         }
       });
     }
-  ], callback);
+  ], function(err) {
+    (err === null).should.be.true;
+    callback(null);
+  });
 }
 
 function tests(callback) {
   var waterfallCallback = function(err) {
+    if (err) {
+      console.log(err);
+      console.log(err.stack);
+      console.trace();
+    }
+    (err === null).should.be.true;
     async.waterfall([
       function(callback) {
         UpdateContest.delete(CONTESTID, function(err) {
@@ -494,13 +515,7 @@ function tests(callback) {
 
 describe('contestB', function () {
   it('should test queries then modify contestants', function(done) {
-    tests(function (err) {
-      if(err) {
-        console.log(err);
-        console.log(err.stack);
-        console.trace();
-        err.should.be.false;
-      }
+    tests(function () {
       done();
     }); 
   });
