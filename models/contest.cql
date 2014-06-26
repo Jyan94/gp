@@ -149,3 +149,4 @@ CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
     contest_type text,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
+CREATE INDEX IF NOT EXISTS ON timeseries_fantasy_values(contest_type);

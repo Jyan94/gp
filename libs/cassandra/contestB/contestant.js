@@ -154,8 +154,8 @@ function updateContestant(username, contestant, contestId, callback) {
   UPDATE_CONTESTANT_QUERY += UPDATE_CONTESTANT_QUERY_2;
   cassandra.query(
     UPDATE_CONTESTANT_QUERY,
-    [username, contestant, contestId],
-    quorum,
+    [contestant, contestId],
+    one,
     callback);
 }
 exports.updateContestant = updateContestant;

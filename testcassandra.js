@@ -108,7 +108,7 @@ var str = JSON.stringify(hello[4]);
 console.log(str);
 console.log(JSON.parse(str)[0][1]);
 */
-
+/*
 var retval = (function() {
   hello = extend(hello, {9 : 'one'});
   var a = function() {
@@ -126,4 +126,11 @@ cassandra.query(query, ['soccer', '00000000-0000-0000-0000-000000000000', {value
   if (err) {
     console.log(err);
   }
-})
+})*/
+
+var hello = {
+  athleteId: '00000000-0000-0000-0000-000000000000',
+  athleteName: 'John Snow'
+};
+
+console.log(JSON.stringify(hello));
