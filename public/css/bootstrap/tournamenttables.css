@@ -126,7 +126,7 @@
   background-color: #191919;
 }
 .tournament-dialog-box-body {
-  border-bottom: 1px solid #7878ac;
+ /* border-bottom: 1px solid #7878ac; */
   border-radius: 4px 4px 0px 0px;
 }
 
@@ -199,3 +199,4 @@
 #participants{
   font-size: 1.5em;
 }
+
