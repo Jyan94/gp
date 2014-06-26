@@ -152,5 +152,4 @@ CREATE TABLE IF NOT EXISTS timeseries_contest_b (
     active boolean,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
-CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(contest_type);
 CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(active);

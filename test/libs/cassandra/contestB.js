@@ -14,7 +14,7 @@ var testUserParams0 =
   'test0@test.com',
   true,
   new Date(),
-  'hello0',
+  't0',
   'world',
   'first name',
   'last name',
@@ -34,7 +34,7 @@ var testUserParams1 =
   'test1@test.com',
   true,
   new Date(),
-  'hello1',
+  't1',
   'world',
   'first name',
   'last name',
@@ -207,7 +207,10 @@ var testStates = function(callback) {
       User.insert(testUserParams1, callback);
     },
     function(callback) {
-      UpdateContest.insert(testContestSettings, callback);
+      UpdateContest.insert(testContestSettings, function(err) {
+        (err === null).should.be.true;
+        callback(err);
+      });
     },
     function(callback) {
       UpdateContest.setFilled(CONTESTID, callback);
@@ -302,7 +305,7 @@ function testContestant(callback) {
         testUserParams0[USER_ID_INDEX], 
         function (err, result) {
           if (err) {
-            (!err).should.be.true;
+            (err === null).should.be.true;
             callback(err);
           }
           else {
@@ -317,7 +320,7 @@ function testContestant(callback) {
         testUserParams1[USER_ID_INDEX], 
         function (err, result) {
           if (err) {
-            err.should.be.false;
+            (err === null).should.be.true;
             callback(err);
           }
           else {
@@ -329,7 +332,7 @@ function testContestant(callback) {
     function(callback) {
       selectById(function(err, result) {
         if (err) {
-          err.should.be.false;
+          (err === null).should.be.true;
           callback(err);
         }
         else {
@@ -348,6 +351,22 @@ function testContestant(callback) {
     },
     function(callback) {
       selectById(function(err, result) {
+        (err === null).should.be.true;
+        result.contestants.should.have.property(user0.username);
+        JSON.parse(result.contestants[user0.username]).instances
+          .should.have.length(numInstances0);
+        JSON.parse(result.contestants[user0.username]).instances[0]
+          .should.have.keys(
+            'wagers', 
+            'predictions', 
+            'virtualMoneyRemaining',
+            'lastModified');
+        callback(null);
+      });
+    },
+    function(callback) {
+      SelectContest.selectByUsername(user0.username, function(err, result) {
+        result = result[0];
         (err === null).should.be.true;
         result.contestants.should.have.property(user0.username);
         JSON.parse(result.contestants[user0.username]).instances

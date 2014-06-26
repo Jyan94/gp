@@ -1,33 +1,13 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 (require('rootpath')());
 var configs = require('config/index.js');
 var cql = configs.cassandra.cql;
-
-/*
-  schema for contestB:
-  athletes map<int, text>,
-  commission_earned int,
-  contest_deadline_time timestamp,
-  contest_end_time timestamp,
-  contest_id uuid,
-  contest_start_time timestamp,
-  contest_state int,
-  contestants map<text, text>,
-  cooldown_minutes int,
-  current_entries int,
-  entries_allowed_per_contestant int,
-  entry_fee int,
-  game_type text,
-  lock_current_entries boolean,
-  max_wager int,
-  maximum_entries int,
-  minimum_entries int,
-  pay_outs map<int, double>,
-  processed_payouts_time timestamp,
-  sport text,
-  starting_virtual_money int,
-  total_prize_pool int
- */
+var contestB = require('libs/cassandra/contestB/exports');
 
 /**
  * returns a settings array for database query insertion of contests
@@ -107,38 +87,36 @@ function createSettings(
   ];
 }
 
-/*
-  athletes
-  deadlineTime
-  cooldownMinutes
-  entriesAllowedPerContestant,
-  entryFee,
-  games,
-  isfiftyfifty,
-  maxWager
-  maximumEntries,
-  minimumEntries,
-  payouts,
-  sport,
-  startingVirtualMoney,
-  totalPrizePool
+/**
+ * creates a contest parameters object that can be passed to the insert
+ * function
+ * @param  {object} athletes     
+ * maps athlete game id (integer)
+ * to JSON.stringify({athleteId: id, athleteName: name})
+ * @param  {array} games
+ * list of uuids for games
+ * @param  {date} deadlineTime
+ * deadline for users entering
+ * @param  {string} sport       
+ * @return {array}
+ * parameters for contest_b insert query
  */
-function createType1Settings(athletes,games,isfiftyfifty,deadlineTime,sport) {
+function createType1Settings(athletes, games, deadlineTime, sport) {
   return createSettings(
-    athletes,
-    deadlineTime,
-    10,
-    10,
-    10,
-    games,
-    isfiftyfifty,
-    8000,
-    10,
-    9,
-    {1: 60, 2: 25},
-    sport,
-    10000,
-    85
+    athletes, //athletes
+    deadlineTime, //deadlineTime
+    10, //cooldownMinutes
+    10, //entriesAllowedPerContestant
+    10, //entryFee
+    games,  //games
+    false,  //isfiftyfifty
+    8000, //maxWager
+    10, //maximumEntries
+    9,  //minimumEntries
+    {1: 60, 2: 25}, //payouts
+    sport,  //sport
+    10000,  //startingVirtualMoney
+    85  //totalPrizePool
   );
 }
 

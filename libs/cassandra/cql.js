@@ -13,7 +13,6 @@ exports.query = function(cql, params, consistency, callback) {
     if (result) {
       result = result.rows;
     }
-    //console.log(params);
     callback(err, result);
   });
 };
@@ -23,7 +22,6 @@ exports.queryOneRow = function(cql, params, consistency, callback) {
     if (result) {
       result = result[0];
     }
-
     callback(err, result);
   });
 };
