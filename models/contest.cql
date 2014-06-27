@@ -1,6 +1,7 @@
 USE goprophet;
 
 CREATE TABLE IF NOT EXISTS contest_B (
+  athlete_names list<text>,
   athletes map<text, text>,
   commission_earned int,
   contest_deadline_time timestamp,
@@ -13,7 +14,8 @@ CREATE TABLE IF NOT EXISTS contest_B (
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
-  game_type text,
+  games list<uuid>,
+  isfiftyfifty boolean,
   max_wager int,
   maximum_entries int,
   minimum_entries int,
@@ -27,8 +29,8 @@ CREATE TABLE IF NOT EXISTS contest_B (
 CREATE INDEX IF NOT EXISTS ON contest_B(contest_state);
 CREATE INDEX IF NOT EXISTS ON contest_B(sport);
 CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
+CREATE INDEX IF NOT EXISTS ON contest_B(athlete_names);
 /*
-last_locked is in milliseconds
 athletes map of int to stringified athlete object:
 {
   athleteId: uuid of athlete
@@ -37,6 +39,7 @@ athletes map of int to stringified athlete object:
 
 contestants map of username to stringified contestant object:
 {
+  numTimesEntered: number of instances
   instances: [
   {
     virtualMoneyRemaining : money remaining
@@ -46,11 +49,21 @@ contestants map of username to stringified contestant object:
     [value0, value1, value2, ...]
     //should add timestamp too, prevent users from changing too frequently
     lastModified: timestamp formatted as milliseconds since jan 1, 1970
+    joinTime: timestamp formatted as milliseconds since jan 1, 1970
   },
   ...
   ]
 }
+
+{
+
+}
  */
+}
+/*=============================================
+TODO: make games store JSON of what to be displayed
+TODO: add to athletes map store
+ ==============================================*/
 
 /*
 sport is lowercase text
@@ -60,7 +73,6 @@ contest_start_time - when we create the contest
 contest_deadline_time - actually matters for contestants, deadline for submitting
 contest_end_time - is end time of the real-world event and after processing payouts
 commission earned, processed_payouts - updated after contest ends
-lock_current_entries - lock on adding and subtracting from current_entries
 contest states:
 0: after created and before deadline
 1: filled
@@ -141,12 +153,13 @@ CREATE TABLE IF NOT EXISTS baseball_player (
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics
 
-CREATE TABLE IF NOT EXISTS timeseries_fantasy_values (
+CREATE TABLE IF NOT EXISTS timeseries_contest_b (
     player_id uuid,
     time timeuuid,
     fantasy_value double,
     virtual_money_wagered int,
-    contest_type text,
+    username text,
+    active boolean,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
-CREATE INDEX IF NOT EXISTS ON timeseries_fantasy_values(contest_type);
+CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(active);

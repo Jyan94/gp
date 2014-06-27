@@ -8,6 +8,7 @@
 
 var cassandra = require('libs/cassandra/cql');
 var configs = require('config/index.js');
+var async = require('async');
 var multiline = require('multiline');
 
 var cql = configs.cassandra.cql;
@@ -20,6 +21,7 @@ var FILLED = states.FILLED;
 var TO_PROCESS = states.TO_PROCESS;
 var PROCESSED = states.PROCESSED;
 var CANCELLED = states.CANCELLED;
+var SEMICOLON = ';'
 
 /*
  * ====================================================================
@@ -51,16 +53,24 @@ exports.selectById = function(contestId, callback) {
     });
 };
 
-var SELECT_USERNAME_QUERY = multiline(function() {/*
+
+var SELECT_USERNAME_QUERY_1 = multiline(function() {/*
   SELECT * 
     FROM contest_B 
-    WHERE contestants CONTAINS KEY ?;
+    WHERE contestants CONTAINS KEY '
+*/});
+
+var SELECT_USERNAME_QUERY_2 = multiline(function() {/*
+';
 */});
 
 exports.selectByUsername = function(username, callback) {
+  var SELECT_USERNAME_QUERY = SELECT_USERNAME_QUERY_1;
+  SELECT_USERNAME_QUERY += username;
+  SELECT_USERNAME_QUERY += SELECT_USERNAME_QUERY_2;
   cassandra.query(
     SELECT_USERNAME_QUERY, 
-    [username], 
+    [], 
     one,     
     function (err, result) {
       if (err) {
@@ -74,6 +84,7 @@ exports.selectByUsername = function(username, callback) {
       }
     });
 }
+
 
 var SELECT_BY_STATE_QUERY = multiline(function() {/*
   SELECT *
@@ -111,6 +122,55 @@ var SELECT_BY_SPORT_QUERY = multiline(function() {/*
     WHERE sport = ?;
 */});
 
+/**
+ * [selectBySport description]
+ * @param  {[type]}   sport    [description]
+ * @param  {Function} callback [description]
+ * args: (err, results)
+ * where results is an array of rows or undefined
+ */
 exports.selectBySport = function(sport, callback) {
   cassandra.query(SELECT_BY_SPORT_QUERY, [sport], one, callback);
+}
+
+var SELECT_OPEN_BY_ATHLETE_1 = multiline(function() {/*
+  SELECT *
+    FROM contest_B
+    WHERE athlete_names CONTAINS '
+*/});
+
+var SELECT_OPEN_BY_ATHLETE_2 = multiline(function() {/*
+';
+*/});
+
+/**
+ * returns all open contests with the given athlete name
+ * prevents against cql injection by preventing against semicolon insertion
+ * @param  {string}   athleteName
+ * @param  {Function} callback
+ * args: (err, results)
+ * where results is an array of rows
+ * if there are no results, returns an empty array
+ */
+exports.selectOpenByAthlete = function(athleteName, callback) {
+  if(athleteName.indexOf(SEMICOLON) === -1) {
+    var SELECT_OPEN_BY_ATHLETE = SELECT_OPEN_BY_ATHLETE_1;
+    SELECT_OPEN_BY_ATHLETE += athleteName;
+    SELECT_OPEN_BY_ATHLETE += SELECT_OPEN_BY_ATHLETE_2;
+    async.waterfall([
+      function(callback) {
+        cassandra.query(SELECT_OPEN_BY_ATHLETE, [], one, callback);
+      },
+      function(contests, callback) {
+        async.filter(contests, function(contest, callback) {
+          callback(contest.contest_state === OPEN);
+        }, function (results) {
+          callback(null, results);
+        });
+      }
+    ], callback);
+  }
+  else {
+    callback(new Error('invalid name request'));
+  }
 }

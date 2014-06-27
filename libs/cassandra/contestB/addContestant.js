@@ -8,7 +8,7 @@
 
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
-var UpdateContestants = require('./contestant');
+var Contestant = require('./contestant');
 
 var configs = require('config/index');
 var User = require('libs/cassandra/user');
@@ -39,7 +39,8 @@ function createNewContestantInstance(startingVirtualMoney, numAthletes) {
     virtualMoneyRemaining : startingVirtualMoney,
     predictions: predictions,
     wagers: wagers,
-    lastModified: null
+    lastModified: null,
+    joinTime: (new Date()).getTime()
   };
 }
 
@@ -60,11 +61,17 @@ function addUserInstanceToContest(user, contest, callback) {
   if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
     contestant = JSON.parse(contest.contestants[user.username]);
   }
+
   if (user.money < contest.entry_fee) {
     callback(new Error('not enough money'));
   }
   else if (contest.current_entries === contest.maximum_entries) {
     callback(new Error('contest is full'));
+  }
+  //deadline time should be in the future
+  //if it's in the past, shouldn't be able to enter
+  else if (contest.contest_deadline_time.getTime() < (new Date()).getTime()) {
+    callback(new Error('cannot enter contest past deadline time'));
   }
   else if (contestant && contestant.instances.length === 
           contest.entries_allowed_per_contestant) {
@@ -75,15 +82,17 @@ function addUserInstanceToContest(user, contest, callback) {
     [
       //subtract money from user's current money
       function(callback) {
-        var leftoverMoney = user.money - contest.entry_fee;
-        User.updateMoney([leftoverMoney], [user.user_id], callback);
+        User.updateMoneyOneUser(
+          user.money - contest.entry_fee,
+          user.user_id, 
+          callback);
       }
     ];
 
     var waterfallArray =
     [
       function(callback) {
-        UpdateContestants.addContestant(
+        Contestant.addContestant(
           user.username, 
           contestant, 
           contest.current_entries, 
@@ -104,9 +113,13 @@ function addUserInstanceToContest(user, contest, callback) {
           Object.keys(contest.athletes).length);
     if (contestant) {
       contestant.instances.push(newContestantInstance);
+      ++contestant.numTimesEntered;
     }
     else {
-      contestant = {instances: [newContestantInstance]};
+      contestant = {
+        numTimesEntered: 1,
+        instances: [newContestantInstance]
+      };
     }
     contestant = JSON.stringify(contestant);
     

@@ -8,10 +8,10 @@ configs.configure(app);
 
 var tournamenttables = function (req, res) {
   if (req.user) {
-    res.render('tournamenttables.ejs', {link: 'logout', display: 'Logout'});
+    res.render('tournamenttables.hbs');
   }
   else {
-    res.render('tournamenttables.ejs', {link: 'login', display: 'Login'});
+    res.render('tournamenttables.hbs');
   }
 }
 
