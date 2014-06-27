@@ -8,7 +8,7 @@
 
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
-var UpdateContestants = require('./contestant');
+var Contestant = require('./contestant');
 
 var configs = require('config/index');
 var User = require('libs/cassandra/user');
@@ -39,7 +39,8 @@ function createNewContestantInstance(startingVirtualMoney, numAthletes) {
     virtualMoneyRemaining : startingVirtualMoney,
     predictions: predictions,
     wagers: wagers,
-    lastModified: null
+    lastModified: null,
+    joinTime: (new Date()).getTime()
   };
 }
 
@@ -81,15 +82,17 @@ function addUserInstanceToContest(user, contest, callback) {
     [
       //subtract money from user's current money
       function(callback) {
-        var leftoverMoney = user.money - contest.entry_fee;
-        User.updateMoney([leftoverMoney], [user.user_id], callback);
+        User.updateMoneyOneUser(
+          user.money - contest.entry_fee,
+          user.user_id, 
+          callback);
       }
     ];
 
     var waterfallArray =
     [
       function(callback) {
-        UpdateContestants.addContestant(
+        Contestant.addContestant(
           user.username, 
           contestant, 
           contest.current_entries, 
@@ -110,9 +113,13 @@ function addUserInstanceToContest(user, contest, callback) {
           Object.keys(contest.athletes).length);
     if (contestant) {
       contestant.instances.push(newContestantInstance);
+      ++contestant.numTimesEntered;
     }
     else {
-      contestant = {instances: [newContestantInstance]};
+      contestant = {
+        numTimesEntered: 1,
+        instances: [newContestantInstance]
+      };
     }
     contestant = JSON.stringify(contestant);
     

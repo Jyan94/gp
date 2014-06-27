@@ -63,7 +63,7 @@ var testContestSettings =
         '"athleteName":"John Snow4"}'
   }, //athletes
   0,  //commission_earned
-  new Date(new Date().getTime() +100000), //contest_deadline_time
+  new Date(new Date().getTime() + 100000), //contest_deadline_time
   null, //contest_end_time
   '00000000-0000-0000-0000-000000000000', //contest_id
   new Date(), //contest_start_time
@@ -360,7 +360,8 @@ function testContestant(callback) {
             'wagers', 
             'predictions', 
             'virtualMoneyRemaining',
-            'lastModified');
+            'lastModified',
+            'joinTime');
         callback(null);
       });
     },
@@ -376,13 +377,17 @@ function testContestant(callback) {
             'wagers', 
             'predictions', 
             'virtualMoneyRemaining',
-            'lastModified');
+            'lastModified',
+            'joinTime');
         callback(null);
       });
     },
     function(callback) {
       UpdateContestant.updateContestantInstance(
         user0, 0, testInstance, CONTESTID, function(err) {
+          if (err) {
+            console.log(err);
+          }
           (err === null).should.be.true;
           callback(err);
         });
@@ -392,6 +397,7 @@ function testContestant(callback) {
         (err === null).should.be.true;
         var contestant = JSON.parse(result.contestants[user0.username]);
         contestant.instances.should.have.length(numInstances0);
+        contestant.numTimesEntered.should.equal(numInstances0);
         contestant.instances[0].should.have.keys(
           'wagers', 
           'predictions', 
@@ -420,6 +426,8 @@ function testContestant(callback) {
           result.contestants.should.have.property(user0.username);
           JSON.parse(result.contestants[user0.username]).instances
             .should.have.length(numInstances0);
+          JSON.parse(result.contestants[user0.username]).numTimesEntered
+            .should.equal(numInstances0);
           Object.keys(result.contestants).should.have.length(numContestants);
           callback(null);
         }

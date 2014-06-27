@@ -8,7 +8,7 @@
 
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
-var UpdateContestants = require('./contestant');
+var Contestant = require('./contestant');
 
 var configs = require('config/index');
 var User = require('libs/cassandra/user');
@@ -39,7 +39,11 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
   }
   if (!contestant) {
     callback(new Error('contestant does not exist, should never happen!'));
-  } 
+  }
+  //if past deadline time
+  else if (contest.contest_deadline_time.getTime() < (new Date()).getTime()) {
+    callback(new Error('cannot leave contest after deadline'));
+  }
   else if (!(contestant.instances.length>instanceIndex && instanceIndex>=0)) {
     callback(new Error('out of bounds instance index'));
   }
@@ -47,7 +51,7 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     var waterfallArray = 
     [
       function(callback) {
-        UpdateContestants.removeContestant(
+        Contestant.removeContestant(
           user.username, 
           contestant, 
           contest.current_entries - 1, 
@@ -59,9 +63,9 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     var parallelArray = 
     [
       function(callback) {
-        User.updateMoney(
-          [user.money + contest.entry_fee], 
-          [user.user_id], 
+        User.updateMoneyOneUser(
+          user.money + contest.entry_fee, 
+          user.user_id, 
           callback);
       }
     ];
@@ -69,9 +73,10 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     //removes instanceIndex element and removes contestant from map if
     //instance's length is 0
     contestant.instances.splice(instanceIndex, 1);
+    --contestant.numTimesEntered;
     if (contestant.instances.length === 0) {
       parallelArray.push(function(callback) {
-        UpdateContestants.deleteUsernameFromContest(
+        Contestant.deleteUsernameFromContest(
           user.username, 
           contest.contest_id, 
           callback);
@@ -80,19 +85,10 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
 
     contestant = JSON.stringify(contestant);
 
-    //update contest state
-    var beforeDeadline = 
-      (new Date()).getTime() < 
-      (new Date(contest.contest_deadline_time)).getTime();
-    if (contest.current_entries === contest.maximum_entries && beforeDeadline) {
+    //update contest state if necessary
+    if (contest.current_entries === contest.maximum_entries) {
       parallelArray.push(function(callback) {
         UpdateContest.setOpen(contest.contest_id, callback);
-      });
-    }
-    else if (contest.current_entries < contest.minimum_entries && 
-             !beforeDeadline) {
-      parallelArray.push(function(callback) {
-        UpdateContest.setCancelled(contest.contest_id, callback);
       });
     }
 

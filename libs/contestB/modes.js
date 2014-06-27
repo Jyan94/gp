@@ -13,9 +13,12 @@ var contestB = require('libs/cassandra/contestB/exports');
  * returns a settings array for database query insertion of contests
  * entries is for contest_count_entries table
  * mode is for contest_B table
- *   
+ *
+ * @param  {array} athleteNames
+ *         list of strings for athlete names
  * @param  {Object} athletes
  *         map of an int, as string, 0-x number of athletes to athlete type
+ *         stringified values of objects for each key-value pair
  * @parame {int} commissionEarned
  *         determined after sport event ends and payouts are calculated
  * @param  {Date} deadlineTime
@@ -46,6 +49,7 @@ var contestB = require('libs/cassandra/contestB/exports');
  *         Configuration array for initializing contest B
  */
 function createSettings(
+  athleteNames,
   athletes,
   deadlineTime,
   cooldownMinutes,
@@ -62,6 +66,7 @@ function createSettings(
   totalPrizePool) {
 
   return [
+    athleteNames,
     athletes, //athletes
     0,  //commission_earned
     deadlineTime, //contest_deadline_time
@@ -90,8 +95,8 @@ function createSettings(
 /**
  * creates a contest parameters object that can be passed to the insert
  * function
- * @param  {object} athletes     
- * maps athlete game id (integer)
+ * @param  {array} athletes     
+ * array
  * to JSON.stringify({athleteId: id, athleteName: name})
  * @param  {array} games
  * list of uuids for games
@@ -102,8 +107,15 @@ function createSettings(
  * parameters for contest_b insert query
  */
 function createType1Settings(athletes, games, deadlineTime, sport) {
+  var athletesObj = {};
+  var athleteNames = [];
+  for (var i = 0; i !== athletes.length; ++i) {
+    athletesObj[i] = JSON.stringify(athletes[i]);
+    athleteNames.push(athletes[i].athleteName);
+  }
   return createSettings(
-    athletes, //athletes
+    athleteNames, //athleteNames
+    athletesObj, //athletes
     deadlineTime, //deadlineTime
     10, //cooldownMinutes
     10, //entriesAllowedPerContestant

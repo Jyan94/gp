@@ -7,17 +7,53 @@
 (require('rootpath')());
 
 var SelectContest = require('./select');
-var UpdateContestant = require('./contestant');
+var Contestant = require('./contestant');
 var TimeSeries = require('./timeseries');
 
 var async = require('async');
 var multiline = require('multiline');
 
 var minuteInMilliseconds = 60000;
+
+/**
+ * converts milliseconds to readable string
+ * @param  {int} milliseconds
+ * @return {string}
+ */
+function millisecondsToStr (milliseconds) {
+    function numberEnding (number) {
+        return (number > 1) ? 's' : '';
+    }
+    var temp = Math.floor(milliseconds / 1000);
+    var years = Math.floor(temp / 31536000);
+    if (years) {
+        return years + ' year' + numberEnding(years);
+    }
+    var days = Math.floor((temp %= 31536000) / 86400);
+    if (days) {
+        return days + ' day' + numberEnding(days);
+    }
+    var hours = Math.floor((temp %= 86400) / 3600);
+    if (hours) {
+        return hours + ' hour' + numberEnding(hours);
+    }
+    var minutes = Math.floor((temp %= 3600) / 60);
+    if (minutes) {
+        return minutes + ' minute' + numberEnding(minutes);
+    }
+    var seconds = temp % 60;
+    if (seconds) {
+        return seconds + ' second' + numberEnding(seconds);
+    }
+    return 'less than a second';
+}
+
 /**
  * verifies if the instance
  * @param  {object}   user 
  * user object from req.user
+ * @param  {int}   instanceIndex
+ * index of the instance to modify
  * @param  {object}   instance 
  * updated instance to be inserted into the database
  * @param  {object}   contest
@@ -25,7 +61,7 @@ var minuteInMilliseconds = 60000;
  * @param  {Function} callback
  * args: (err, contest)
  */
-function verifyInstance(user, instance, contest, callback) {
+function verifyInstance(user, instanceIndex, instance, contest, callback) {
   if (!(contest.contestants.hasOwnProperty(user.username))) {
     callback(new Error('username does not exist in contest'));
   }
@@ -126,22 +162,38 @@ function updateInstance(
 
   var contestant = JSON.parse(contest.contestants[user.username]);
   var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
+  var now = (new Date()).getTime();
+
+  if (instanceIndex >= contestant.instances.length) {
+    callback(new Error('out of bounds index'));
+  }
+  //give minute leeway to new joiners (joinTime + leeway must be > than now)
+  //else check if for hard deadline
+  else if (contestant.instances[instanceIndex].joinTime + minuteInMilliseconds 
+           < now || contest.contest_deadline_time.getTime() < now){
+    callback(new Error('cannot update instance after deadline'));
+  }
   //last modified + cooldown should be in the past
   //if it's in the future, should not be able to modify
-  if (contestant.instances[instanceIndex].lastModified &&
-      contestant.instances[instanceIndex].lastModified.getTime() +
-        cooldownInMilliseconds > (new Date()).getTime()) {
-    callback(new Error('cooldown has not expired'));
+  else if (contestant.instances[instanceIndex].lastModified &&
+           contestant.instances[instanceIndex].lastModified + 
+           cooldownInMilliseconds > now) {
+    var lastModifiedPlusCooldown = 
+      contestant.instances[instanceIndex].lastModified + 
+      cooldownInMilliseconds;
+    var difference = lastModifiedPlusCooldown - now;
+    callback(new Error('cooldown has not expired yet ' 
+      + millisecondsToStr(difference) + ' remaining'));
   }
-  else if (instanceIndex < contestant.instances.length) {
+  else {
     var compareCallback = function(err) {
       if (err) {
         callback(err);
       }
       else {
-        updatedInstance.lastModified = new Date();
+        updatedInstance.lastModified = (new Date()).getTime();
         contestant.instances[instanceIndex] = updatedInstance;
-        UpdateContestant.updateContestant(
+        Contestant.updateContestant(
           user.username, 
           JSON.stringify(contestant), 
           contest.contest_id, 
@@ -156,9 +208,6 @@ function updateInstance(
       updatedInstance, 
       contest, 
       compareCallback);
-  }
-  else {
-    callback(new Error('out of bounds index'));
   }
 }
 
@@ -189,7 +238,7 @@ function updateContestantInstance(
       SelectContest.selectById(contestId, callback);
     },
     function(contest, callback) {
-      verifyInstance(user, updatedInstance, contest, callback);
+      verifyInstance(user, instanceIndex, updatedInstance, contest, callback);
     },
     function(contest, callback) {
       updateInstance(user, instanceIndex, updatedInstance, contest, callback);
