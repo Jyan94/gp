@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users(
     email text,
     verified boolean,
     verified_time timestamp,
+    ver_code timeuuid,
     username text,
     password text,
     first_name text,
@@ -160,4 +161,3 @@ CREATE TABLE IF NOT EXISTS timeseries_bets (
     price double,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
-

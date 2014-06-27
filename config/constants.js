@@ -1,4 +1,3 @@
-
 exports.defaultPlayerImage = 'http://2.bp.blogspot.com/-6QyJDHjB5XE/Uscgo2DVBdI/AAAAAAAACS0/DFSFGLBK_fY/s1600/facebook-default-no-profile-pic.jpg';
 exports.profileStrings = {
   incorrectUsername: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username."] }',
@@ -21,7 +20,8 @@ exports.marketStrings = {
 }
 exports.auth = {
   incorrectUsername: '{ "title": "Incorrect username", "parts": ["We couldn\'t find any user with the username you provided.", "Please try again with a different username, or sign up."] }',
-  incorrectPassword: '{ "title": "Incorrect password", "parts": ["The provided username and password didn\'t match anyone in our records.", "Please check your spelling and try again." ]}'
+  incorrectPassword: '{ "title": "Incorrect password", "parts": ["The provided username and password didn\'t match anyone in our records.", "Please check your spelling and try again." ]}',
+  unverified: '{ "title": "Account Not Verified", "parts": ["The provided email address has not been verified.", "Please check your email for a verification link." ]}'
 };
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
 exports.contestB = {

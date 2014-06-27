@@ -53,6 +53,10 @@ app.route('/signup')
 .get(signup.renderSignup)
 .post(signup.processSignup);
 
+//verify
+var verify = require('routes/verify');
+app.get('/verify/:email/:ver_code', verify.verify);
+
 //logout
 var logout = require('routes/registry/logout');
 app.get('/logout', logout.logout);
