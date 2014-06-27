@@ -88,7 +88,7 @@ exports.insert  = function(settings, callback) {
   };
   settings[GAMES_INDEX] = {
     value: settings[GAMES_INDEX], 
-    hint: 'list'
+    hint: 'map'
   };
   for (var key in settings[PAY_OUTS_INDEX]) {
     if (settings[PAY_OUTS_INDEX].hasOwnProperty(key)) {

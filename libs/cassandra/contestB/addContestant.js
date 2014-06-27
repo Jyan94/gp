@@ -113,11 +113,9 @@ function addUserInstanceToContest(user, contest, callback) {
           Object.keys(contest.athletes).length);
     if (contestant) {
       contestant.instances.push(newContestantInstance);
-      ++contestant.numTimesEntered;
     }
     else {
       contestant = {
-        numTimesEntered: 1,
         instances: [newContestantInstance]
       };
     }
