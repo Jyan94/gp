@@ -2,6 +2,7 @@
  * ====================================================================
  * Author: Harrison Zhao
  * ====================================================================
+ * Note: inserting into the contest_b table modifies the testContestSettings
  */
 'use strict';
 (require('rootpath')());

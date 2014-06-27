@@ -167,17 +167,7 @@ exports.selectOpenByAthlete = function(athleteName, callback) {
           callback(null, results);
         });
       }
-    ], function(err, results) {
-      if (err) {
-        callback(err);
-      }
-      else if (!results) {
-        callback(null, []);
-      }
-      else {
-        callback(null, results);
-      }
-    });
+    ], callback);
   }
   else {
     callback(new Error('invalid name request'));
