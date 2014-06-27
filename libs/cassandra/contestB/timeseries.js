@@ -1,5 +1,10 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
-require('rootpath')();
+(require('rootpath')());
 
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
@@ -33,7 +38,7 @@ exports.insert = function (
     callback);
 };
 
-var DELETE_PRICES_CQL = multiline(function() {/*
+var DELETE_VALUES_CQL = multiline(function() {/*
   DELETE FROM timeseries_contest_b WHERE
     player_id
   IN
@@ -41,15 +46,50 @@ var DELETE_PRICES_CQL = multiline(function() {/*
 */});
 exports.removeValue = function (playerId, callback) {
   cassandra.query(
-    DELETE_PRICES_CQL,
+    DELETE_VALUES_CQL,
     [playerId],
     cql.types.consistencies.one,
     callback);
 }
 
+var SELECT_TIMERANGE_FOR_DISPLAY_CQL = multiline(function () {/*
+  SELECT  
+    fantasy_value, dateOf(time)
+  FROM 
+    timeseries_contest_b
+  WHERE
+    player_id=?
+  AND
+    time > maxTimeuuid(?)
+  AND
+    time < minTimeuuid(?)
+*/});
+
+/**
+ * returns a list of rows for fantasy values
+ * between two times: start and end
+ * @param  {uuid}
+ * playerId [player uniquely identified id]
+ * @param  {Date object}   
+ * start     [start date]
+ * @param  {Date object}   
+ * end       [end date]
+ * @param  {Function} 
+ * callback  [callback function to pass results]
+ */
+exports.selectTimeRangeForDisplay = function (playerId, start, end, callback) {
+  cassandra.query(
+    SELECT_TIMERANGE_FOR_DISPLAY_CQL,
+    [playerId, start, end], 
+    cql.types.consistencies.one, 
+    function(err, result) {
+      callback(err, result);
+  });
+};
+
 var SELECT_TIMERANGE_CQL = multiline(function () {/*
   SELECT  
-    price, dateOf(time) 
+    fantasy_value, dateOf(time), virtual_money_wagered, username, active
   FROM 
     timeseries_contest_b
   WHERE
@@ -72,19 +112,18 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
  * @param  {Function} 
  * callback  [callback function to pass results]
  */
-exports.selectTimeRange = function (playerId, start, end, callback) {
+exports.selectTimeRangeForDisplay = function (playerId, start, end, callback) {
   cassandra.query(
-    SELECT_TIMERANGE_CQL,
+    SELECT_TIMERANGE_FOR_DISPLAY_CQL,
     [playerId, start, end], 
     cql.types.consistencies.one, 
     function(err, result) {
       callback(err, result);
   });
 };
-
 var UNTIL_NOW_CQL = multiline(function () {/*
   SELECT  
-    price, dateOf(time) 
+    fantasy_value, dateOf(time) 
   FROM 
     timeseries_contest_b
   WHERE
@@ -115,3 +154,30 @@ exports.selectSinceTime = function (playerId, start, callback) {
       callback(err, result);
   });
 };
+
+var SELECT_ACTIVE_CQL = multiline(function () {/*
+  SELECT  
+    *
+  FROM 
+    timeseries_contest_b
+  WHERE
+    player_id=?
+  AND
+    active = true;
+*/});
+
+/**
+ * selects all the active predictions for a given player
+ * active refers to if the prediction was made for a contest not yet resolved
+ * this is how the five-for-five determines which values are up to date
+ * @param  {uuid}   playerId
+ * @param  {Function} callback
+ * args: (err, result) where result is an array of values
+ */
+exports.selectActivePlayerValues = function(playerId, callback) {
+  cassandra.query(
+    SELECT_ACTIVE_CQL,
+    [playerId], 
+    cql.types.consistencies.one, 
+    callback);
+}

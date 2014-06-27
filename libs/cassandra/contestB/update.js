@@ -28,6 +28,7 @@ var CANCELLED = states.CANCELLED;
  */
 var INSERT_CONTEST_QUERY = multiline(function() {/*
   INSERT INTO contest_B (
+    athlete_names,
     athletes,
     commission_earned,
     contest_deadline_time,
@@ -55,11 +56,17 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?, ?
+    ?, ?, ?
   );
 */});
 
+var ATHLETE_NAMES_INDEX = 0;
+var ATHLETES_INDEX = 1;
+var CONTESTANTS_INDEX = 8;
+var GAMES_INDEX = 13;
+var PAY_OUTS_INDEX = 18;
 /**
+ * fields that need type inference are formatted
  * initialize contest by inserting into contest_count_entries and contest_B
  * @param  {array}   settings
  * contains array for contest_b entry initialization params
@@ -67,6 +74,34 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
  * parameters (err)
  */
 exports.insert  = function(settings, callback) {
+  settings[ATHLETE_NAMES_INDEX] = {
+    value: settings[ATHLETE_NAMES_INDEX], 
+    hint: 'list'
+  };
+  settings[ATHLETES_INDEX] = {
+    value: settings[ATHLETES_INDEX], 
+    hint: 'map'
+  };
+  settings[CONTESTANTS_INDEX] = {
+    value: settings[CONTESTANTS_INDEX], 
+    hint: 'map'
+  };
+  settings[GAMES_INDEX] = {
+    value: settings[GAMES_INDEX], 
+    hint: 'list'
+  };
+  for (var key in settings[PAY_OUTS_INDEX]) {
+    if (settings[PAY_OUTS_INDEX].hasOwnProperty(key)) {
+      settings[PAY_OUTS_INDEX][key] = {
+        value: settings[PAY_OUTS_INDEX][key],
+        hint: 'double'
+      };
+    }
+  }
+  settings[PAY_OUTS_INDEX] = {
+    value: settings[PAY_OUTS_INDEX], 
+    hint: 'map'
+  };
   cassandra.query(INSERT_CONTEST_QUERY, settings, quorum, function(err) {
     callback(err);
   });

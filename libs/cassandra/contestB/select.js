@@ -51,16 +51,24 @@ exports.selectById = function(contestId, callback) {
     });
 };
 
-var SELECT_USERNAME_QUERY = multiline(function() {/*
+
+var SELECT_USERNAME_QUERY_1 = multiline(function() {/*
   SELECT * 
     FROM contest_B 
-    WHERE contestants CONTAINS KEY ?;
+    WHERE contestants CONTAINS KEY '
+*/});
+
+var SELECT_USERNAME_QUERY_2 = multiline(function() {/*
+';
 */});
 
 exports.selectByUsername = function(username, callback) {
+  var SELECT_USERNAME_QUERY = SELECT_USERNAME_QUERY_1;
+  SELECT_USERNAME_QUERY += username;
+  SELECT_USERNAME_QUERY += SELECT_USERNAME_QUERY_2;
   cassandra.query(
     SELECT_USERNAME_QUERY, 
-    [username], 
+    [], 
     one,     
     function (err, result) {
       if (err) {
@@ -74,6 +82,7 @@ exports.selectByUsername = function(username, callback) {
       }
     });
 }
+
 
 var SELECT_BY_STATE_QUERY = multiline(function() {/*
   SELECT *

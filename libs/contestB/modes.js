@@ -1,50 +1,39 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 (require('rootpath')());
 var configs = require('config/index.js');
 var cql = configs.cassandra.cql;
-
-/*
-  schema for contestB:
-  athletes map<int, text>,
-  commission_earned int,
-  contest_deadline_time timestamp,
-  contest_end_time timestamp,
-  contest_id uuid,
-  contest_start_time timestamp,
-  contest_state int,
-  contestants map<text, text>,
-  cooldown_minutes int,
-  current_entries int,
-  entries_allowed_per_contestant int,
-  entry_fee int,
-  game_type text,
-  lock_current_entries boolean,
-  max_wager int,
-  maximum_entries int,
-  minimum_entries int,
-  pay_outs map<int, double>,
-  processed_payouts_time timestamp,
-  sport text,
-  starting_virtual_money int,
-  total_prize_pool int
- */
+var contestB = require('libs/cassandra/contestB/exports');
 
 /**
  * returns a settings array for database query insertion of contests
  * entries is for contest_count_entries table
  * mode is for contest_B table
- *   
+ *
+ * @param  {array} athleteNames
+ *         list of strings for athlete names
  * @param  {Object} athletes
  *         map of an int, as string, 0-x number of athletes to athlete type
- * @param  {int} commissionEarned
+ *         stringified values of objects for each key-value pair
+ * @parame {int} commissionEarned
  *         determined after sport event ends and payouts are calculated
+ * @param  {Date} deadlineTime
+ *         date of contest deadline
+ * @param  {int} cooldownMinutes
+ *         time in minutes before one can re-edit their entry
  * @param  {int} entriesAllowedPerContestant
  *         maximum entries allowed for a given contestant
  * @param  {Date} deadlineTime
  *         time when both no additional players can join and bets are locked in
  * @param  {int} entryFee
- * @param  {text} gameType             
- *         brief text describing gametype
+ * @param  {text} games
+ *         list of game uuids
+ * @param  {boolean} isfiftyfifty
+ *         if it's a fifty-fifty game mode where half of the entrants win
  * @param  {int} maxWager
  *         maximum wager on any given athlete
  * @param  {int} maximumEntries
@@ -60,12 +49,14 @@ var cql = configs.cassandra.cql;
  *         Configuration array for initializing contest B
  */
 function createSettings(
+  athleteNames,
   athletes,
   deadlineTime,
   cooldownMinutes,
   entriesAllowedPerContestant,
   entryFee,
-  gameType,
+  games,
+  isfiftyfifty,
   maxWager,
   maximumEntries,
   minimumEntries,
@@ -75,6 +66,7 @@ function createSettings(
   totalPrizePool) {
 
   return [
+    athleteNames,
     athletes, //athletes
     0,  //commission_earned
     deadlineTime, //contest_deadline_time
@@ -87,9 +79,8 @@ function createSettings(
     0,  //current_entries
     entriesAllowedPerContestant, //entries_allowed_per_contestant
     entryFee, //entry_fee
-    gameType, //game_type
-    null, //last_locked
-    false,  //lock_current_entries
+    games, //games
+    isfiftyfifty, //isfiftyfifty
     maxWager, //max_wager
     maximumEntries, //maximum_entries
     minimumEntries, //minimum_entries
@@ -101,36 +92,43 @@ function createSettings(
   ];
 }
 
-/*
-  athletes
-  deadlineTime
-  cooldownMinutes
-  entriesAllowedPerContestant,
-  entryFee,
-  gameType,
-  maxWager
-  maximumEntries,
-  minimumEntries,
-  payouts,
-  sport,
-  startingVirtualMoney,
-  totalPrizePool
+/**
+ * creates a contest parameters object that can be passed to the insert
+ * function
+ * @param  {array} athletes     
+ * array
+ * to JSON.stringify({athleteId: id, athleteName: name})
+ * @param  {array} games
+ * list of uuids for games
+ * @param  {date} deadlineTime
+ * deadline for users entering
+ * @param  {string} sport       
+ * @return {array}
+ * parameters for contest_b insert query
  */
-function createType1Settings(athletes, deadlineTime, sport) {
+function createType1Settings(athletes, games, deadlineTime, sport) {
+  var athletesObj = {};
+  var athleteNames = [];
+  for (var i = 0; i !== athletes.length; ++i) {
+    athletesObj[i] = JSON.stringify(athletes[i]);
+    athleteNames.push(athletes[i].athleteName);
+  }
   return createSettings(
-    athletes,
-    deadlineTime,
-    10,
-    10,
-    10,
-    'daily prophet',
-    8000,
-    10,
-    9,
-    {1: 60, 2: 25},
-    sport,
-    10000,
-    85
+    athleteNames, //athleteNames
+    athletesObj, //athletes
+    deadlineTime, //deadlineTime
+    10, //cooldownMinutes
+    10, //entriesAllowedPerContestant
+    10, //entryFee
+    games,  //games
+    false,  //isfiftyfifty
+    8000, //maxWager
+    10, //maximumEntries
+    9,  //minimumEntries
+    {1: 60, 2: 25}, //payouts
+    sport,  //sport
+    10000,  //startingVirtualMoney
+    85  //totalPrizePool
   );
 }
 

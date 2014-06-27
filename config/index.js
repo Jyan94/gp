@@ -32,7 +32,6 @@ var config = {
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
     app.engine('hbs', require('hbs').__express);
-    app.engine('ejs', require('ejs').renderFile);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
     app.use(bodyParser());
