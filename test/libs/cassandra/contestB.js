@@ -2,6 +2,7 @@
  * ====================================================================
  * Author: Harrison Zhao
  * ====================================================================
+ * Note: inserting into the contest_b table modifies the testContestSettings
  */
 'use strict';
 (require('rootpath')());
@@ -48,21 +49,76 @@ var testUserParams1 =
   'image'
 ];
 
+/*
+example athletes object
+{
+  athleteName: 'John Snow',
+  athleteId: '00000000-0000-0000-0000-000000000000',
+  gameContestId: 0,
+  gameId: '00000000-0000-0000-0000-000000000000',
+  isOnHomeTeam: true,
+  position: 'test_pitcher',
+  shortTeamName: 'TEST_GOT',
+  longTeamName: 'THE_TEST_GOT',
+  teamId: '00000000-0000-0000-0000-000000000000'
+};
+
+example games object
+{
+  awayTeam: 'TEST_A',
+  awayTeamId: '00000000-0000-0000-0000-000000000000',
+  gameDate: (new Date()).getTime(),
+  gameId: '00000000-0000-0000-0000-000000000000',
+  homeTeam: 'TEST_B',
+  homeTeamId: '00000000-0000-0000-0000-000000000001',
+}
+ */
+
 var testContestSettings =
 [
   ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
   //athlete_names
   {
-    0: '{"athleteId":"00000000-0000-0000-0000-000000000000",'+
-       '"athleteName":"John Snow00"}',
-    1: '{"athleteId":"00000000-0000-0000-0000-000000000001",' +
-        '"athleteName":"John Snow01"}',
-    2: '{"athleteId":"00000000-0000-0000-0000-000000000002",' +
-        '"athleteName":"John Snow02"}',
-    3: '{"athleteId":"00000000-0000-0000-0000-000000000003",' +
-        '"athleteName":"John Snow03"}',
-    4: '{"athleteId":"00000000-0000-0000-0000-000000000004",' +
-        '"athleteName":"John Snow04"}'
+    0: '{"athleteName":"John Snow00",' +
+       '"athleteId":"00000000-0000-0000-0000-000000000000",' +
+       '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"isOnHomeTeam":true,' + 
+       '"position":"test_pitcher",' +
+       '"shortTeamName":"TEST_GOT",' + 
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"teamId":"00000000-0000-0000-0000-000000000000"}',
+    1: '{"athleteName":"John Snow01",' +
+       '"athleteId":"00000000-0000-0000-0000-000000000001",' +
+       '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"isOnHomeTeam":true,' + 
+       '"position":"test_pitcher",' +
+       '"shortTeamName":"TEST_GOT",' + 
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"teamId":"00000000-0000-0000-0000-000000000000"}',
+    2: '{"athleteName":"John Snow02",' +
+       '"athleteId":"00000000-0000-0000-0000-000000000002",' +
+       '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"isOnHomeTeam":true,' + 
+       '"position":"test_pitcher",' +
+       '"shortTeamName":"TEST_GOT",' + 
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"teamId":"00000000-0000-0000-0000-000000000000"}',
+    3: '{"athleteName":"John Snow03",' +
+       '"athleteId":"00000000-0000-0000-0000-000000000003",' +
+       '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"isOnHomeTeam":true,' + 
+       '"position":"test_pitcher",' +
+       '"shortTeamName":"TEST_GOT",' + 
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"teamId":"00000000-0000-0000-0000-000000000000"}',
+    4: '{"athleteName":"John Snow04",' +
+       '"athleteId":"00000000-0000-0000-0000-000000000004",' +
+       '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"isOnHomeTeam":true,' + 
+       '"position":"test_pitcher",' +
+       '"shortTeamName":"TEST_GOT",' + 
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"teamId":"00000000-0000-0000-0000-000000000000"}',
   }, //athletes
   0,  //commission_earned
   new Date(new Date().getTime() + 100000), //contest_deadline_time
@@ -75,10 +131,14 @@ var testContestSettings =
   0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
-  [
-    '00000000-0000-0000-0000-000000000000', 
-    '00000000-0000-0000-0000-000000000001'
-  ],  //games
+  {
+    0: '{"awayTeam":"TEST_A",' +
+       '"awayTeamId":"00000000-0000-0000-0000-000000000000",' +
+       '"gameDate":1403899335204,' +
+       '"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"homeTeam":"TEST_B",' +
+       '"homeTeamId":"00000000-0000-0000-0000-000000000001"}'
+  },  //games
   false, //isfiftyfifty
   8000,   //max_wager
   3, //maximum_entries
@@ -103,7 +163,6 @@ var athleteIds =
   '00000000-0000-0000-0000-000000000002',
   '00000000-0000-0000-0000-000000000003',
   '00000000-0000-0000-0000-000000000004'
-
 ];
 
 var testInstance = {
@@ -416,7 +475,6 @@ function testContestant(callback) {
         (err === null).should.be.true;
         var contestant = JSON.parse(result.contestants[user0.username]);
         contestant.instances.should.have.length(numInstances0);
-        contestant.numTimesEntered.should.equal(numInstances0);
         contestant.instances[0].should.have.keys(
           'wagers', 
           'predictions', 
@@ -445,8 +503,6 @@ function testContestant(callback) {
           result.contestants.should.have.property(user0.username);
           JSON.parse(result.contestants[user0.username]).instances
             .should.have.length(numInstances0);
-          JSON.parse(result.contestants[user0.username]).numTimesEntered
-            .should.equal(numInstances0);
           Object.keys(result.contestants).should.have.length(numContestants);
           callback(null);
         }

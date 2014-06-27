@@ -21,6 +21,7 @@ var FILLED = states.FILLED;
 var TO_PROCESS = states.TO_PROCESS;
 var PROCESSED = states.PROCESSED;
 var CANCELLED = states.CANCELLED;
+var SEMICOLON = ';'
 
 /*
  * ====================================================================
@@ -152,7 +153,7 @@ var SELECT_OPEN_BY_ATHLETE_2 = multiline(function() {/*
  * if there are no results, returns an empty array
  */
 exports.selectOpenByAthlete = function(athleteName, callback) {
-  if(athleteName.indexOf(';') === -1) {
+  if(athleteName.indexOf(SEMICOLON) === -1) {
     var SELECT_OPEN_BY_ATHLETE = SELECT_OPEN_BY_ATHLETE_1;
     SELECT_OPEN_BY_ATHLETE += athleteName;
     SELECT_OPEN_BY_ATHLETE += SELECT_OPEN_BY_ATHLETE_2;
@@ -167,17 +168,7 @@ exports.selectOpenByAthlete = function(athleteName, callback) {
           callback(null, results);
         });
       }
-    ], function(err, results) {
-      if (err) {
-        callback(err);
-      }
-      else if (!results) {
-        callback(null, []);
-      }
-      else {
-        callback(null, results);
-      }
-    });
+    ], callback);
   }
   else {
     callback(new Error('invalid name request'));
