@@ -50,19 +50,19 @@ var testUserParams1 =
 
 var testContestSettings =
 [
-  ['John Snow0', 'John Snow1', 'John Snow2', 'John Snow3', 'John Snow4'],
+  ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
   //athlete_names
   {
     0: '{"athleteId":"00000000-0000-0000-0000-000000000000",'+
-       '"athleteName":"John Snow0"}',
+       '"athleteName":"John Snow00"}',
     1: '{"athleteId":"00000000-0000-0000-0000-000000000001",' +
-        '"athleteName":"John Snow1"}',
+        '"athleteName":"John Snow01"}',
     2: '{"athleteId":"00000000-0000-0000-0000-000000000002",' +
-        '"athleteName":"John Snow2"}',
+        '"athleteName":"John Snow02"}',
     3: '{"athleteId":"00000000-0000-0000-0000-000000000003",' +
-        '"athleteName":"John Snow3"}',
+        '"athleteName":"John Snow03"}',
     4: '{"athleteId":"00000000-0000-0000-0000-000000000004",' +
-        '"athleteName":"John Snow4"}'
+        '"athleteName":"John Snow04"}'
   }, //athletes
   0,  //commission_earned
   new Date(new Date().getTime() + 100000), //contest_deadline_time
@@ -346,6 +346,19 @@ function testContestant(callback) {
           callback(null);
         }
       });
+    },
+    function(callback) {
+      SelectContest.selectOpenByAthlete(
+        testContestSettings[0].value[0], 
+        function(err, results){
+          if (err) {
+            console.log(err);
+            (err === null).should.be.true;
+          }
+          else {
+            callback(null);
+          }
+        });
     },
     function(callback) {
       ++numInstances0;
