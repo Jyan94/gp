@@ -56,6 +56,9 @@ var config = {
     cql: cql,
     client: client
   },
+  isDev: function() {
+    return process.env.NODE_ENV === 'development';
+  },
   constants: constants
 }
 

@@ -122,7 +122,7 @@ var testContestSettings =
   0,  //commission_earned
   new Date(new Date().getTime() + 100000), //contest_deadline_time
   null, //contest_end_time
-  '00000000-0000-0000-0000-000000000000', //contest_id
+  'bcf4d500-fe44-11e3-89b7-c361d0a10fc1', //contest_id
   'THE_DAILY_PROPHET',
   new Date(), //contest_start_time
   0,  //contest_state
@@ -151,7 +151,7 @@ var testContestSettings =
     4: 13.0
   },  //pay_outs
   null, //processed_payouts_timestamp
-  'world',  //sport
+  'TEST_SPORT',  //sport
   10000, //starting_virtual_money
   10  //total_prize_pool
 ];

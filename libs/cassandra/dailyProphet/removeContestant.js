@@ -37,8 +37,7 @@ var TIME_BEFORE_CANCEL =
 function removeInstanceFromContest(user, contest, instanceIndex, callback) {
   var contestant = null;
   var removeDeadlineMilliseconds = null;
-  if (process.env.NODE_ENV === 'development') {
-    console.log(process.env.NODE_ENV);
+  if (configs.isDev()) {
     removeDeadlineMilliseconds = contest.contest_deadline_time.getTime();
   }
   else {

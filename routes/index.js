@@ -54,7 +54,7 @@ app.route('/signup')
 .post(signup.processSignup);
 
 //verify
-var verify = require('routes/verify');
+var verify = require('routes/registry/verify');
 app.get('/verify/:email/:ver_code', verify.verify);
 
 //logout
