@@ -59,7 +59,7 @@ contestants map of username to stringified contestant object:
 
 }
  */
-}
+
 /*=============================================
 TODO: make games store JSON of what to be displayed
 TODO: add to athletes map store

@@ -2,19 +2,14 @@
 $('#tournaments tbody tr').on('click', function (e) {
   console.log(e);
 
-  if (e.target.className === 'editbtn') {
-    //e.stopPropagation();
+  if (e.target.className === 'enterbtn') {
+    return true;
   }
   else {
     // State changes
     $('body').toggleClass('dialogIsOpen');
   }
 });
-
-/*$('.editbtn').on('click', function () {
-
-});*/
-
 
 // Something happens
 $('.tournament-dialog-box-backdrop').on('click', function () {
