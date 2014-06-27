@@ -62,7 +62,7 @@ var logout = require('routes/registry/logout');
 app.get('/logout', logout.logout);
 
 //redirects to login if not logged in
-//app.all('*', login.checkUser);
+app.all('*', login.redirectLogin);
 
 //autocomplete
 var autocomplete = require('routes/autocomplete');
