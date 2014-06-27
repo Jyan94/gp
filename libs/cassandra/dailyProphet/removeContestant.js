@@ -18,6 +18,8 @@ var multiline = require('multiline');
 
 var APPLIED = configs.constants.dailyProphet.APPLIED;
 var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;
+var TIME_BEFORE_CANCEL = 
+  configs.constants.dailyProphet.MAX_TIME_BEFORE_DEADLINE_TO_CANCEL;
 
 /**
  * removes contestant instance from contestant object
@@ -34,15 +36,24 @@ var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;
  */
 function removeInstanceFromContest(user, contest, instanceIndex, callback) {
   var contestant = null;
+  var removeDeadlineMilliseconds = null;
+  if (configs.isDev()) {
+    removeDeadlineMilliseconds = contest.contest_deadline_time.getTime();
+  }
+  else {
+    removeDeadlineMilliseconds = 
+      contest.contest_deadline_time.getTime() - TIME_BEFORE_CANCEL;
+  }
+
   if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
     contestant = JSON.parse(contest.contestants[user.username]);
   }
   if (!contestant) {
     callback(new Error('contestant does not exist, should never happen!'));
   }
-  //if past deadline time
-  else if (contest.contest_deadline_time.getTime() < (new Date()).getTime()) {
-    callback(new Error('cannot leave contest after deadline'));
+  //if past deadline time to cancel, don't allow cancelling
+  else if (removeDeadlineMilliseconds < (new Date()).getTime()) {
+    callback(new Error('cannot leave contest after cancel deadline'));
   }
   else if (!(contestant.instances.length>instanceIndex && instanceIndex>=0)) {
     callback(new Error('out of bounds instance index'));

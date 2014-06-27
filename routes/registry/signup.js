@@ -1,24 +1,18 @@
 'use strict';
 require('rootpath')();
-var configs = require('config/index');
 
 var async = require('async');
 var bcrypt = require('bcrypt-nodejs');
-var User = require('libs/cassandra/user');
-var cql = configs.cassandra.cql;
-var responseValues = configs.constants.signupResponseValues;
-
-var defaultPlayerImage = configs.constants.defaultPlayerImage
+var configs = require('config/index');
 var nodemailer = require('nodemailer');
-var constantCreateTransport = configs.constants.createTransport;
+var User = require('libs/cassandra/user');
+var constants = configs.constants;
+var cql = configs.cassandra.cql;
+var responseValues = constants.signupResponseValues;
 
-var smtpTransport = nodemailer.createTransport('SMTP', {
-  service: 'Gmail',
-  auth: {
-    user: 'goprophetteam@gmail.com',
-    pass: 'goteamgp'
-  }
-});
+var defaultPlayerImage = constants.defaultPlayerImage;
+var SMTP = constants.SMTP;
+var smtpTransport = nodemailer.createTransport(SMTP.name, SMTP.configObject);
 
 function insertUser(body, res, next) {
   var bcryptHashCallback = function(err, hash) {
@@ -26,15 +20,19 @@ function insertUser(body, res, next) {
       next(err);
     }
     else {
-      var verCode = cql.types.timeuuid();
       var userId = cql.types.uuid();
+      var verificationCode = cql.types.timeuuid();
+      var verified = false;
+      if (configs.isDev()) {
+        verified = true;
+      }
       var fields =
       [
         userId, //user_id
         body.email, //email
-        false, //verified
+        verified, //verified
         null, //verfied_time
-        verCode, //ver_code
+        verificationCode, //ver_code
         body.username, //username
         hash, //password
         body.firstName, //first_name
@@ -48,26 +46,24 @@ function insertUser(body, res, next) {
         0,  //vip_status
         defaultPlayerImage //image
       ];
-      var insertCallback = function(err) {
+      var sendMailCallback = function(err, response) {
         if (err) {
           next(err);
         }
         else {
-          var MailOptions = {
-            from: "goprophetteam@gmail.com",
-            to: body.email,
-            subject: 'Welcome to GoProphet',
-            text: 'Welcome to GoProphet.  To verify your account, go to',
-            html: '<a href = http://localhost:3000/verify/' + body.email + '/' + verCode + '> Verify My Account </a>'
-          }
-          smtpTransport.sendMail(MailOptions, function(err, response) {
-            if (err) {
-              next(err);
-            }
-            else {
-              res.send({value: responseValues.success});
-            }
-          });
+          res.send({value: responseValues.success});
+        }
+      };
+      var insertCallback = function(err) {
+        if (err) {
+          next(err);
+        }
+        else if (configs.isDev()){
+          res.send({value: responseValues.success});
+        }
+        else {
+          var MailOptions= SMTP.createMailOptions(body.email, verificationCode);
+          smtpTransport.sendMail(MailOptions, sendMailCallback);
         }
       };
       User.insert(fields, insertCallback);
@@ -82,11 +78,12 @@ function insertUser(body, res, next) {
 
 var processSignup = function(req, res, next) {
   var body = req.body;
+  
   async.waterfall(
   [
     //username lookup
     function(callback) {
-      User.select('username', body.username, function(err, result) {
+      var selectUsernameCallback = function(err, result) {
         if (err) {
           callback(err);
         }
@@ -96,12 +93,14 @@ var processSignup = function(req, res, next) {
         else {
           callback(null);
         }
-      });
+      };
+
+      User.select('username', body.username, selectUsernameCallback);
     },
 
     //email lookup
     function(callback) {
-      User.select('email', body.email, function(err, result) {
+      var selectEmailCallback = function(err, result) {
         if (err) {
           callback(err);
         }
@@ -111,7 +110,9 @@ var processSignup = function(req, res, next) {
         else {
           callback(null);
         }
-      });
+      };
+
+      User.select('email', body.email, selectEmailCallback);
     }
   ],
   function(err) {

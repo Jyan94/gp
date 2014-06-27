@@ -71,7 +71,7 @@ function createSettings(
     0,  //commission_earned
     deadlineTime, //contest_deadline_time
     null, //contest_end_time
-    cql.types.uuid(), //contest_id
+    cql.types.timeuuid(), //contest_id
     'Daily Prophet',  //contest_name
     new Date(), //contest_start_time
     0,  //contest_state

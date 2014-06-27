@@ -23,6 +23,10 @@ var cql = require('node-cassandra-cql');
 var CassandraStore = require('connect-cassandra-cql')(session);
 var client = new cql.Client(cassandraConfig);
 
+//CHANGE TO PRODUCTION WHEN IN PRODUCTION
+process.env.NODE_ENV = 'development';
+//process.env.NODE_ENV = 'production';
+
 //exported configurations
 var config = {
   configure: function(app) {
@@ -51,6 +55,9 @@ var config = {
   cassandra: {
     cql: cql,
     client: client
+  },
+  isDev: function() {
+    return process.env.NODE_ENV === 'development';
   },
   constants: constants
 }

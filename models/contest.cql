@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS daily_prophet (
   commission_earned int,
   contest_deadline_time timestamp,
   contest_end_time timestamp,
-  contest_id uuid,
+  contest_id timeuuid,
   contest_name text,
   contest_start_time timestamp,
   contest_state int,

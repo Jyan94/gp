@@ -12,8 +12,9 @@ var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 var FacebookStrategyObj = configs.constants.FacebookStrategy;
+var LocalStrategyObject = configs.constants.PassportLocalStrategyObject;
 var messages = configs.constants.auth;
-var defaultPlayerImage = configs.constants.defaultPlayerImage
+var defaultPlayerImage = configs.constants.defaultPlayerImage;
 
 function localStrategyVerify(username, password, done) {
   var selectCallback = function (err, result) {
@@ -102,13 +103,11 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
   }
 ));
 
-passport.use(new LocalStrategy({
-  usernameField: 'username',
-  passwordField: 'password'
-},
-function(username, password, done) {
-  localStrategyVerify(username, password, done);
-}));
+passport.use(new LocalStrategy(
+  LocalStrategyObject,
+  function(username, password, done) {
+    localStrategyVerify(username, password, done);
+  }));
 
 passport.serializeUser(function (user, done) {
   done(null, user.user_id);

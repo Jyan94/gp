@@ -1,3 +1,8 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 require('rootpath')();
 
@@ -22,9 +27,6 @@ var renderLogin = function(req, res) {
       errorsSend[i] = JSON.parse(errors[i]);
     }
   }
-
-  console.log(errorsSend);
-
   res.render('login.jade', { errors: errorsSend });
 }
 
