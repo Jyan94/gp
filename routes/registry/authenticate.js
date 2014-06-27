@@ -13,6 +13,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 
 var FacebookStrategyObj = configs.constants.FacebookStrategy;
 var messages = configs.constants.auth;
+var defaultPlayerImage = configs.constants.defaultPlayerImage
 
 function localStrategyVerify(username, password, done) {
   var selectCallback = function (err, result) {
@@ -22,7 +23,9 @@ function localStrategyVerify(username, password, done) {
     if (!result) {
       return done(null, false, {message: messages.incorrectUsername});
     }
-
+    if (result.verified === false) {
+      return done(null, false, { message: messages.unverified });
+    }
     var bcryptCallback = function(err, res) {
       if (res) {
         return done(null, result);
@@ -75,6 +78,7 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
           profileUsername, //fb email
           true, //verified
           null, //verified_time
+          null, // no ver_code
           profileUsername, //fb username and fb email is the same
           null, //no password since login through facebook
           profile.name.givenName, //first_name
@@ -86,7 +90,7 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
           {value: 10000.0, hint: 'double'}, //spending_power
           profile.id, //fb id
           0, //vip_status
-          null //image
+          defaultPlayerImage //image
         ];
         User.insert(fields, insertUserCallback);
       }

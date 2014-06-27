@@ -1,12 +1,13 @@
 USE goprophet;
 
-CREATE TABLE IF NOT EXISTS contest_B (
+CREATE TABLE IF NOT EXISTS daily_prophet (
   athlete_names list<text>,
   athletes map<text, text>,
   commission_earned int,
   contest_deadline_time timestamp,
   contest_end_time timestamp,
   contest_id uuid,
+  contest_name text,
   contest_start_time timestamp,
   contest_state int,
   contestants map<text, text>,
@@ -26,12 +27,12 @@ CREATE TABLE IF NOT EXISTS contest_B (
   total_prize_pool int,
   PRIMARY KEY (contest_id)
 );
-CREATE INDEX IF NOT EXISTS ON contest_B(contest_state);
-CREATE INDEX IF NOT EXISTS ON contest_B(sport);
-CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
-CREATE INDEX IF NOT EXISTS ON contest_B(athlete_names);
+CREATE INDEX IF NOT EXISTS ON daily_prophet(contest_state);
+CREATE INDEX IF NOT EXISTS ON daily_prophet(sport);
+CREATE INDEX IF NOT EXISTS ON daily_prophet(KEYS(contestants));
+CREATE INDEX IF NOT EXISTS ON daily_prophet(athlete_names);
 
-CREATE TABLE IF NOT EXISTS timeseries_contest_b (
+CREATE TABLE IF NOT EXISTS timeseries_daily_prophet (
     player_id uuid,
     time timeuuid,
     fantasy_value double,
@@ -40,17 +41,17 @@ CREATE TABLE IF NOT EXISTS timeseries_contest_b (
     active boolean,
     PRIMARY KEY (player_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
-CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(active);
+CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);
 
 /*
 ===================================================
-Contest_b serialized objects
+daily_prophet serialized objects
 ===================================================
 athlete_names: list of athlete names
 
 athletes: map of int to stringified athlete object:
 {
-  athleteId: uuid of athlete //only athlete variable used in cassandra/contest_b module,
+  athleteId: uuid of athlete //only athlete variable used in cassandra/daily_prophet module,
   athleteName: name of athlete,
   gameContestId: integer (0 - numGames in contest) to index into games map,
   gameId: uuid for game,
@@ -78,7 +79,7 @@ contestants: map of username to stringified contestant object:
   ]
 }
 
-games: map of int to stringified game object:
+games: map of gameContestId (int) to stringified game object:
 {
   awayTeam: short string for home team (i.e. NYY),
   awayTeamId: uuid for away team,
@@ -87,12 +88,15 @@ games: map of int to stringified game object:
   homeTeam: short string for home team ,
   homeTeamId: uuid for home team,
 }
+
+contest states:
+0: after created and before deadline
+1: filled
+2: after deadline
+3: processed payouts
+4: cancelled
  */
 
-/*=============================================
-TODO: make games store JSON of what to be displayed
-TODO: add to athletes map store
- ==============================================*/
 
 /*
 sport is lowercase text
@@ -102,12 +106,6 @@ contest_start_time - when we create the contest
 contest_deadline_time - actually matters for contestants, deadline for submitting
 contest_end_time - is end time of the real-world event and after processing payouts
 commission earned, processed_payouts - updated after contest ends
-contest states:
-0: after created and before deadline
-1: filled
-2: after deadline
-3: processed payouts
-4: cancelled
 */
 
 /*

@@ -2,12 +2,11 @@
  * ====================================================================
  * Author: Harrison Zhao
  * ====================================================================
- * Note: inserting into the contest_b table modifies the testContestSettings
+ * Note: inserting into the daily_prophet table modifies the testContestSettings
  */
 'use strict';
 (require('rootpath')());
 
-var setupTest = require('test/testConfigs/setupTest');
 var cql = require('config/index').cassandra.cql;
 var testUserParams0 = 
 [
@@ -124,6 +123,7 @@ var testContestSettings =
   new Date(new Date().getTime() + 100000), //contest_deadline_time
   null, //contest_end_time
   '00000000-0000-0000-0000-000000000000', //contest_id
+  'THE_DAILY_PROPHET_TEST',
   new Date(), //contest_start_time
   0,  //contest_state
   {}, //contestants
@@ -172,17 +172,17 @@ var testInstance = {
 };
 var USER_ID_INDEX = 0;
 
-var AddContestant = require('libs/cassandra/contestB/addContestant');
-var RemoveContestant = require('libs/cassandra/contestB/removeContestant');
-var SelectContest = require('libs/cassandra/contestB/select');
-var UpdateContest = require('libs/cassandra/contestB/update');
-var UpdateContestant = require('libs/cassandra/contestB/updateContestant');
-var TimeseriesValues = require('libs/cassandra/contestB/timeseries');
+var AddContestant = require('libs/cassandra/dailyProphet/addContestant');
+var RemoveContestant = require('libs/cassandra/dailyProphet/removeContestant');
+var SelectContest = require('libs/cassandra/dailyProphet/select');
+var UpdateContest = require('libs/cassandra/dailyProphet/update');
+var UpdateContestant = require('libs/cassandra/dailyProphet/updateContestant');
+var TimeseriesValues = require('libs/cassandra/dailyProphet/timeseries');
 var User = require('libs/cassandra/user');
 
 var configs = require('config/index');
 var cql = configs.cassandra.cql;
-var states = configs.constants.contestB;
+var states = configs.constants.dailyProphet;
 
 var OPEN = states.OPEN;
 var FILLED = states.FILLED;
@@ -194,7 +194,7 @@ var async = require('async');
 
 var CONTEST_ATHLETES_IDS_INDEX = 1;
 var CONTEST_ID_INDEX = 5;
-var CONTEST_GAMES_INDEX = 13;
+var CONTEST_GAMES_INDEX = 14;
 var CONTESTID = testContestSettings[CONTEST_ID_INDEX];
 
 function verifyContestEssentials(queryResult) {
@@ -215,6 +215,7 @@ function verifyContestEssentials(queryResult) {
     'contest_deadline_time',
     'contest_end_time',
     'contest_id',
+    'contest_name',
     'contest_start_time',
     'contest_state',
     'contestants',
@@ -615,7 +616,7 @@ function tests(callback) {
   ], waterfallCallback);
 }
 
-describe('contestB', function () {
+describe('dailyProphet', function () {
   it('should test queries then modify contestants', function(done) {
     tests(function () {
       done();

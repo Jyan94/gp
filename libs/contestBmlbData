@@ -31,7 +31,7 @@ function getAllPlayerIdForGame(prefixScheduleElement, callback) {
         'playerId': result[i].$.id,
         'isOnHomeTeam': true,
         'prefixSchedule': prefixScheduleElement
-      })
+      });
     }
 
     result = prefixScheduleElement.game[0].visitor[0].roster[0].player;
@@ -42,7 +42,7 @@ function getAllPlayerIdForGame(prefixScheduleElement, callback) {
         'playerId': result[j].$.id,
         'isOnHomeTeam': false,
         'prefixSchedule': prefixScheduleElement
-      })
+      });
     }
 
     callback(null, retArray);
@@ -106,7 +106,7 @@ function getBetsFromPlayerId (playerId, callback) {
     else {
       callback(null, result);
     }
-  })
+  });
 }
 
 /* gets the bets on all the players*/
@@ -124,7 +124,7 @@ function getBets(playerObjects, fantasyPointsArray, callback) {
     else {
       callback(null, result, fantasyPointsArray);
     }
-  })
+  });
 }
 
 /* calculates the winnings for a better*/
@@ -182,17 +182,80 @@ function processArrayBets(betsArray, fantasyPoints, callback) {
   }
 }
 
+function checkGamesFinished (prefixSchedule, playerObjArr, callback) {
+  var bool = true;
+  var teamArr = [];
+  for (var k = 0; k < playerObjArr.length; k++) {
+    teamArr.push(playerObjArr[k].team);
+  }
 
+  for (var i = 0; i < teamArr.length; i++) {
+    for (var j = 0; j < prefixSchedule.length; j++) {
+      if (prefixSchedule[j].game[0].home[0] === teamArr[i] ||
+      prefixSchedule[j].game[0].visitor[0] === teamArr[i]) {
+        if (prefixSchedule[j].$.status !== 'closed') {
+          bool = false;
+        }
+      }
+    }
+  }
+  callback(null, bool, prefixSchedule, playerObjArr);
+}
+
+function getAllPlayerIds (bool, prefixSchedule, teamArr, playerArr, callback) {
+  var retArray = []
+  if (bool === false) {
+    callback(null, bool, prefixSchedule, teamArr, playerArr);
+  }
+  else {
+    for (var i = 0; i < teamArr.length; i++) {
+      for (var j = 0; j < prefixSchedule.length; j++) {
+        // check if the team is in the current prefixSchedule
+        if (prefixSchedule[j].game[0].home[0] === teamArr[i] ||
+          prefixSchedule[j].game[0].visitor[0] === teamArr[i]) {
+
+          var result;
+
+        //if it is, then check if it's a home team or an away team
+          if (prefixSchedule[j].game[0].home[0] === teamArr[i]) {
+            result = prefixSchedule[j].game[0].home[0].roster[0].player;
+          }
+          else {
+            result = prefixSchedule[j].game[0].visitor[0].roster[0].player;
+          }
+
+          // go through the team roster and push
+          for (var k = 0; k < result.length; k++) {
+            if (playerArr[i] === result[k].$.id) {
+              retArray.push ({
+                'name': result[k].$.preferred_name + " " + result[k].$.last_name,
+                'playerId': result[k].$.id,
+                'team': teamArr[i],
+                'prefixSchedule': prefixSchedule
+              })
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function getPlayerFantasy (bool, prefixSchedule, teamArr, playerArr, callback) {
+
+}
 /*updates everyone's totals after a game is finished*/
-function calculateAllWinnings(schedule, year, week, day) {
+function calculateAllWinnings(schedule, year, week, day, playerObjArr) {
   var prefixSchedule = schedule.events.event;
 
   async.waterfall([
 
       function(callback) {
-        callback(null, prefixSchedule, year, week, day);
+        callback(null, prefixSchedule, year, week, day, playerObjArr);
       },
-      //first waterfall function, gets list of players and player_id
+      //first waterfall function, check if the teams are closed
+      checkGamesFinished,
+      //second waterfall function, gets list of players and player_id
       getAllPlayerIds,
       //reduce matrix to single array
       reduceMatrixToArray,
@@ -210,13 +273,13 @@ function calculateAllWinnings(schedule, year, week, day) {
     });
 }
 
-function checkEndGames(year, week, day) {
+function checkEndGames(year, week, day, playerObjArr) {
   mlbData.getDailyEventInfoAndLineups(year, week, day, function(err, schedule) {
     if (err) {
       console.log(err);
     }
     else {
-      calculateAllWinnings(schedule, year, week, day);
+      calculateAllWinnings(schedule, year, week, day, playerObjArr);
     }
   });
 }

@@ -11,7 +11,7 @@ var configs = require('config/index.js');
 var multiline = require('multiline');
 
 var cql = configs.cassandra.cql;
-var states = configs.constants.contestB;
+var states = configs.constants.dailyProphet;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
@@ -27,13 +27,14 @@ var CANCELLED = states.CANCELLED;
  * ====================================================================
  */
 var INSERT_CONTEST_QUERY = multiline(function() {/*
-  INSERT INTO contest_B (
+  INSERT INTO daily_prophet (
     athlete_names,
     athletes,
     commission_earned,
     contest_deadline_time,
     contest_end_time,
     contest_id,
+    contest_name,
     contest_start_time,
     contest_state,
     contestants,
@@ -56,20 +57,20 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?, ?, ?
+    ?, ?, ?, ?
   );
 */});
 
 var ATHLETE_NAMES_INDEX = 0;
 var ATHLETES_INDEX = 1;
-var CONTESTANTS_INDEX = 8;
-var GAMES_INDEX = 13;
-var PAY_OUTS_INDEX = 18;
+var CONTESTANTS_INDEX = 9;
+var GAMES_INDEX = 14;
+var PAY_OUTS_INDEX = 19;
 /**
  * fields that need type inference are formatted
- * initialize contest by inserting into contest_count_entries and contest_B
+ * initialize contest by inserting into contest_count_entries and daily_prophet
  * @param  {array}   settings
- * contains array for contest_b entry initialization params
+ * contains array for daily_prophet entry initialization params
  * @param  {Function} callback
  * parameters (err)
  */
@@ -114,7 +115,7 @@ exports.insert  = function(settings, callback) {
  */
 var DELETE_CONTEST_QUERY = multiline(function() {/*
   DELETE 
-    FROM contest_B 
+    FROM daily_prophet 
     WHERE contest_id = ?;
 */});
 
@@ -130,7 +131,7 @@ exports.delete = function(contestId, callback) {
 
 var UPDATE_STATE_QUERY = multiline(function() {/*
   UPDATE 
-    contest_B
+    daily_prophet
   SET 
     contest_state = ?
   WHERE
@@ -140,7 +141,7 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
 /**
  * [updateContestState description]
  * @param  {int}   nextState 
- * 0-4, defined in constants.contestB
+ * 0-4, defined in constants.dailyProphet
  * @param  {uuid}   contestId
  * @param  {Function} callback
  * args: (err)
