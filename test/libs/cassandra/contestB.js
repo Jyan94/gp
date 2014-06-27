@@ -50,6 +50,8 @@ var testUserParams1 =
 
 var testContestSettings =
 [
+  ['John Snow0', 'John Snow1', 'John Snow2', 'John Snow3', 'John Snow4'],
+  //athlete_names
   {
     0: '{"athleteId":"00000000-0000-0000-0000-000000000000",'+
        '"athleteName":"John Snow0"}',
@@ -131,9 +133,9 @@ var CANCELLED = states.CANCELLED;
 
 var async = require('async');
 
-var CONTEST_ATHLETES_IDS_INDEX = 0;
-var CONTEST_ID_INDEX = 4;
-var CONTEST_GAMES_INDEX = 12;
+var CONTEST_ATHLETES_IDS_INDEX = 1;
+var CONTEST_ID_INDEX = 5;
+var CONTEST_GAMES_INDEX = 13;
 var CONTESTID = testContestSettings[CONTEST_ID_INDEX];
 
 function verifyContestEssentials(queryResult) {
@@ -148,6 +150,7 @@ function verifyContestEssentials(queryResult) {
     testContestSettings[CONTEST_GAMES_INDEX].value);
   queryResult.should.have.keys(
     'columns',
+    'athlete_names',
     'athletes', 
     'commission_earned', 
     'contest_deadline_time',
@@ -208,6 +211,9 @@ var testStates = function(callback) {
     },
     function(callback) {
       UpdateContest.insert(testContestSettings, function(err) {
+        if (err) {
+          console.log(err);
+        }
         (err === null).should.be.true;
         callback(err);
       });

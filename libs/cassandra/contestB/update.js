@@ -28,6 +28,7 @@ var CANCELLED = states.CANCELLED;
  */
 var INSERT_CONTEST_QUERY = multiline(function() {/*
   INSERT INTO contest_B (
+    athlete_names,
     athletes,
     commission_earned,
     contest_deadline_time,
@@ -55,14 +56,15 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?, ?
+    ?, ?, ?
   );
 */});
 
-var ATHLETES_INDEX = 0;
-var CONTESTANTS_INDEX = 7
-var GAMES_INDEX = 12;
-var PAY_OUTS_INDEX = 17;
+var ATHLETE_NAMES_INDEX = 0;
+var ATHLETES_INDEX = 1;
+var CONTESTANTS_INDEX = 8;
+var GAMES_INDEX = 13;
+var PAY_OUTS_INDEX = 18;
 /**
  * fields that need type inference are formatted
  * initialize contest by inserting into contest_count_entries and contest_B
@@ -72,6 +74,10 @@ var PAY_OUTS_INDEX = 17;
  * parameters (err)
  */
 exports.insert  = function(settings, callback) {
+  settings[ATHLETE_NAMES_INDEX] = {
+    value: settings[ATHLETE_NAMES_INDEX], 
+    hint: 'list'
+  };
   settings[ATHLETES_INDEX] = {
     value: settings[ATHLETES_INDEX], 
     hint: 'map'
