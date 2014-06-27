@@ -12,7 +12,7 @@ var async = require('async');
 var multiline = require('multiline');
 
 var cql = configs.cassandra.cql;
-var states = configs.constants.contestB;
+var states = configs.constants.dailyProphet;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
@@ -31,7 +31,7 @@ var SEMICOLON = ';'
 
 var SELECT_CONTEST_ID_QUERY = multiline(function() {/*
   SELECT * 
-    FROM contest_B 
+    FROM daily_prophet 
     WHERE contest_id = ?;
 */});
 
@@ -56,7 +56,7 @@ exports.selectById = function(contestId, callback) {
 
 var SELECT_USERNAME_QUERY_1 = multiline(function() {/*
   SELECT * 
-    FROM contest_B 
+    FROM daily_prophet 
     WHERE contestants CONTAINS KEY '
 */});
 
@@ -88,7 +88,7 @@ exports.selectByUsername = function(username, callback) {
 
 var SELECT_BY_STATE_QUERY = multiline(function() {/*
   SELECT *
-    FROM contest_B
+    FROM daily_prophet
     WHERE contest_state = ?;
 */});
 
@@ -118,7 +118,7 @@ exports.selectCancelled = function(callback) {
 
 var SELECT_BY_SPORT_QUERY = multiline(function() {/*
   SELECT *
-    FROM contest_B
+    FROM daily_prophet
     WHERE sport = ?;
 */});
 
@@ -135,7 +135,7 @@ exports.selectBySport = function(sport, callback) {
 
 var SELECT_OPEN_BY_ATHLETE_1 = multiline(function() {/*
   SELECT *
-    FROM contest_B
+    FROM daily_prophet
     WHERE athlete_names CONTAINS '
 */});
 

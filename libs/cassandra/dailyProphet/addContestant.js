@@ -16,8 +16,8 @@ var User = require('libs/cassandra/user');
 var async = require('async');
 var multiline = require('multiline');
 
-var APPLIED = configs.constants.contestB.APPLIED;
-var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
+var APPLIED = configs.constants.dailyProphet.APPLIED;
+var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;
 
 /**
  * creates a new contestant instance object

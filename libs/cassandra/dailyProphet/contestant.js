@@ -11,11 +11,12 @@ var configs = require('config/index.js');
 var multiline = require('multiline');
 
 var cql = configs.cassandra.cql;
-var states = configs.constants.contestB;
+var states = configs.constants.dailyProphet;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
-var APPLIED = configs.constants.contestB.APPLIED;
+var APPLIED = configs.constants.dailyProphet.APPLIED;
+var SEMICOLON = ';';
 
 /*
  * ====================================================================
@@ -24,7 +25,7 @@ var APPLIED = configs.constants.contestB.APPLIED;
  */
 var SET_CONTESTANT_QUERY_1 = multiline(function() {/*
   UPDATE 
-    contest_B
+    daily_prophet
   SET 
     contestants['
 */});
@@ -127,7 +128,7 @@ exports.removeContestant = removeContestant;
 
 var UPDATE_CONTESTANT_QUERY_1 = multiline(function() {/*
   UPDATE
-    contest_B
+    daily_prophet
   SET
     contestants['
 */});
@@ -149,14 +150,19 @@ var UPDATE_CONTESTANT_QUERY_2 = multiline(function() {/*
  * args: (err)
  */
 function updateContestant(username, contestant, contestId, callback) {
-  var UPDATE_CONTESTANT_QUERY = UPDATE_CONTESTANT_QUERY_1;
-  UPDATE_CONTESTANT_QUERY += username;
-  UPDATE_CONTESTANT_QUERY += UPDATE_CONTESTANT_QUERY_2;
-  cassandra.query(
-    UPDATE_CONTESTANT_QUERY,
-    [contestant, contestId],
-    one,
-    callback);
+  if(username.indexOf(SEMICOLON) === -1) {
+    var UPDATE_CONTESTANT_QUERY = UPDATE_CONTESTANT_QUERY_1;
+    UPDATE_CONTESTANT_QUERY += username;
+    UPDATE_CONTESTANT_QUERY += UPDATE_CONTESTANT_QUERY_2;
+    cassandra.query(
+      UPDATE_CONTESTANT_QUERY,
+      [contestant, contestId],
+      one,
+      callback);
+  }
+  else {
+    callback(new Error('username contains semicolon'));
+  }
 }
 exports.updateContestant = updateContestant;
 
@@ -168,7 +174,7 @@ var DELETE_CONTESTANT_QUERY_1 = multiline(function() {/*
 var DELETE_CONTESTANT_QUERY_2 = multiline(function() {/*
 ']
   FROM
-    contest_B
+    daily_prophet
   WHERE
     contest_id = ?;
 */});
@@ -181,13 +187,18 @@ var DELETE_CONTESTANT_QUERY_2 = multiline(function() {/*
  * args: (err)
  */
 function deleteUsernameFromContest(username, contestId, callback) {
-  var DELETE_CONTESTANT_QUERY = DELETE_CONTESTANT_QUERY_1;
-  DELETE_CONTESTANT_QUERY += username;
-  DELETE_CONTESTANT_QUERY += DELETE_CONTESTANT_QUERY_2;
-  cassandra.query(
-    DELETE_CONTESTANT_QUERY,
-    [contestId],
-    one,
-    callback);
+  if(username.indexOf(SEMICOLON) === -1) {
+    var DELETE_CONTESTANT_QUERY = DELETE_CONTESTANT_QUERY_1;
+    DELETE_CONTESTANT_QUERY += username;
+    DELETE_CONTESTANT_QUERY += DELETE_CONTESTANT_QUERY_2;
+    cassandra.query(
+      DELETE_CONTESTANT_QUERY,
+      [contestId],
+      one,
+      callback);
+  }
+  else {
+    callback(new Error('username contains semicolon'));
+  }
 }
 exports.deleteUsernameFromContest = deleteUsernameFromContest;

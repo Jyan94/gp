@@ -72,6 +72,7 @@ function createSettings(
     deadlineTime, //contest_deadline_time
     null, //contest_end_time
     cql.types.uuid(), //contest_id
+    'Daily Prophet',  //contest_name
     new Date(), //contest_start_time
     0,  //contest_state
     {}, //contestants

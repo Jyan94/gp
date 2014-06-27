@@ -12,7 +12,7 @@ var async = require('async');
 var multiline = require('multiline');
 
 var INSERT_PRICE_CQL = multiline(function() {/*
-  INSERT INTO timeseries_contest_b (
+  INSERT INTO timeseries_daily_prophet (
     player_id, time, fantasy_value, virtual_money_wagered, username, active
   ) VALUES  
     (?, ?, ?, ?, ?, ?);
@@ -39,7 +39,7 @@ exports.insert = function (
 };
 
 var DELETE_VALUES_CQL = multiline(function() {/*
-  DELETE FROM timeseries_contest_b WHERE
+  DELETE FROM timeseries_daily_prophet WHERE
     player_id
   IN
     (?);
@@ -56,7 +56,7 @@ var SELECT_TIMERANGE_FOR_DISPLAY_CQL = multiline(function () {/*
   SELECT  
     fantasy_value, dateOf(time)
   FROM 
-    timeseries_contest_b
+    timeseries_daily_prophet
   WHERE
     player_id=?
   AND
@@ -91,7 +91,7 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
   SELECT  
     fantasy_value, dateOf(time), virtual_money_wagered, username, active
   FROM 
-    timeseries_contest_b
+    timeseries_daily_prophet
   WHERE
     player_id=?
   AND
@@ -125,7 +125,7 @@ var UNTIL_NOW_CQL = multiline(function () {/*
   SELECT  
     fantasy_value, dateOf(time) 
   FROM 
-    timeseries_contest_b
+    timeseries_daily_prophet
   WHERE
     player_id=?
   AND
@@ -159,7 +159,7 @@ var SELECT_ACTIVE_CQL = multiline(function () {/*
   SELECT  
     *
   FROM 
-    timeseries_contest_b
+    timeseries_daily_prophet
   WHERE
     player_id=?
   AND

@@ -24,7 +24,7 @@ exports.auth = {
   unverified: '{ "title": "Account Not Verified", "parts": ["The provided email address has not been verified.", "Please check your email for a verification link." ]}'
 };
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
-exports.contestB = {
+exports.dailyProphet = {
   //for update.js states
   OPEN: 0,
   FILLED: 1,
@@ -32,8 +32,6 @@ exports.contestB = {
   PROCESSED: 3,
   CANCELLED: 4,
   //for lock.js times and tries
-  MIN_MILLISECONDS: 30000,
-  MAX_TRIES: 20,
   MAX_WAIT: 10000,
   //for locking
   APPLIED: '[applied]'
