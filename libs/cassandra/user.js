@@ -11,8 +11,8 @@ var INSERT_USER_CQL = multiline(function() {/*
     last_name, age, address, payment_info, money, spending_power, fbid,
     vip_status, image
   ) VALUES
-    (?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?, 
+    (?, ?, ?, ?, ?,
+     ?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
      ?);
 */});
@@ -73,7 +73,8 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
   var userIdValuesLength = userIdValues.length;
   var oldMoneyValues = {};
   var currentUserId = null;
-  var query = [];
+  var queries = [];
+  var total = 0.0;
 
   if (moneyValuesLength !== userIdValuesLength) {
     callback(
@@ -88,19 +89,35 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
 
     for (i = 0; i < moneyValuesLength; i++) {
       currentUserId = userIdValues[i];
-      query[i] = {
+      total = oldMoneyValues[currentUserId] + moneyValues[i];
+      queries[i] = {
         query: UPDATE_MONEY_CQL,
-        params: [{ value: oldMoneyValues[currentUserId] + moneyValues[i],
-                   hint: 'double' }, currentUserId]
+        params: [{ value: total, hint: 'double'}, currentUserId]
       }
     }
 
-    cassandra.queryBatch(query, cql.types.consistencies.one,
-      function(err, result) {
-        callback(err, result);
+    cassandra.queryBatch(queries, cql.types.consistencies.one,
+      function(err) {
+        callback(err);
     });
   })
 };
+
+exports.updateMoneyOneUser = function(moneyValue, userId, callback) {
+  var total = 0.0;
+  exports.select('user_id', userId, function(err, result) {
+    var money = parseFloat(result.money);
+    var moneyValueF = parseFloat(moneyValue);
+    var total = money + moneyValueF;
+    total = parseFloat(total);
+    var params = [{value: total, hint: 'double'}, userId];
+    cassandra.query(
+      UPDATE_MONEY_CQL,
+      params,
+      cql.types.consistencies.one,
+      callback);
+  })
+}
 
 var UPDATE_SPENDINGPOWER_CQL = multiline(function() {/*
   UPDATE users SET spending_power = ? WHERE user_id = ?
@@ -112,7 +129,7 @@ exports.updateSpendingPower = function(spendingPower, userId, callback) {
   cql.types.consistencies.one,
   function(err) {
     if (err) {
-      console.log(err);
+      callback(err);
     }
   })
 }

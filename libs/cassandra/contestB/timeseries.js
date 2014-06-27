@@ -7,17 +7,18 @@ var async = require('async');
 var multiline = require('multiline');
 
 var INSERT_PRICE_CQL = multiline(function() {/*
-  INSERT INTO timeseries_fantasy_values (
-    player_id, time, fantasy_value, virtual_money_wagered, contest_type
+  INSERT INTO timeseries_contest_b (
+    player_id, time, fantasy_value, virtual_money_wagered, username, active
   ) VALUES  
-    (?, ?, ?, ?, ?);
+    (?, ?, ?, ?, ?, ?);
 */});
 
 /**
- * inserts prices into timeseries 
+ * inserts prices into timeseries
+ * default is active
  */
 exports.insert = function (
-  playerId, fantasyValue, virtualMoneyWagered, contestType, callback) {
+  playerId, fantasyValue, virtualMoneyWagered, username, callback) {
   cassandra.query(
     INSERT_PRICE_CQL, 
     [
@@ -25,14 +26,15 @@ exports.insert = function (
     cql.types.timeuuid(), 
     {value: fantasyValue, hint: 'double'},
     virtualMoneyWagered,
-    contestType
+    username,
+    true  //active
     ], 
     cql.types.consistencies.one,
     callback);
 };
 
 var DELETE_PRICES_CQL = multiline(function() {/*
-  DELETE FROM timeseries_fantasy_values WHERE
+  DELETE FROM timeseries_contest_b WHERE
     player_id
   IN
     (?);
@@ -49,7 +51,7 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
   SELECT  
     price, dateOf(time) 
   FROM 
-    timeseries_fantasy_values
+    timeseries_contest_b
   WHERE
     player_id=?
   AND
@@ -84,7 +86,7 @@ var UNTIL_NOW_CQL = multiline(function () {/*
   SELECT  
     price, dateOf(time) 
   FROM 
-    timeseries_fantasy_values
+    timeseries_contest_b
   WHERE
     player_id=?
   AND

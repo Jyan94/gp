@@ -40,7 +40,8 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     current_entries,
     entries_allowed_per_contestant,
     entry_fee,
-    game_type,
+    games,
+    isfiftyfifty,
     max_wager,
     maximum_entries,
     minimum_entries,
@@ -54,7 +55,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?
+    ?, ?
   );
 */});
 
