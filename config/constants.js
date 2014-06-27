@@ -31,10 +31,12 @@ exports.dailyProphet = {
   TO_PROCESS: 2,
   PROCESSED: 3,
   CANCELLED: 4,
-  //for lock.js times and tries
+  //for retrying to atomically update times and tries
   MAX_WAIT: 10000,
-  //for locking
-  APPLIED: '[applied]'
+  //for checking if lightweight transaction went through
+  APPLIED: '[applied]',
+  //time in milliseconds
+  MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 2 * 60 * 60000
 };
 exports.FacebookStrategy = {
     clientID: "855194074508903",

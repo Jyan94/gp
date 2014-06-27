@@ -163,7 +163,7 @@ function updateInstance(
   var contestant = JSON.parse(contest.contestants[user.username]);
   var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
   var now = (new Date()).getTime();
-
+  
   if (instanceIndex >= contestant.instances.length) {
     callback(new Error('out of bounds index'));
   }

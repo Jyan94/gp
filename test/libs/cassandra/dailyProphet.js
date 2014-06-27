@@ -123,7 +123,7 @@ var testContestSettings =
   new Date(new Date().getTime() + 100000), //contest_deadline_time
   null, //contest_end_time
   '00000000-0000-0000-0000-000000000000', //contest_id
-  'THE_DAILY_PROPHET_TEST',
+  'THE_DAILY_PROPHET',
   new Date(), //contest_start_time
   0,  //contest_state
   {}, //contestants
