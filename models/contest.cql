@@ -88,12 +88,15 @@ games: map of gameContestId (int) to stringified game object:
   homeTeam: short string for home team ,
   homeTeamId: uuid for home team,
 }
+
+contest states:
+0: after created and before deadline
+1: filled
+2: after deadline
+3: processed payouts
+4: cancelled
  */
 
-/*=============================================
-TODO: make games store JSON of what to be displayed
-TODO: add to athletes map store
- ==============================================*/
 
 /*
 sport is lowercase text
@@ -103,12 +106,6 @@ contest_start_time - when we create the contest
 contest_deadline_time - actually matters for contestants, deadline for submitting
 contest_end_time - is end time of the real-world event and after processing payouts
 commission earned, processed_payouts - updated after contest ends
-contest states:
-0: after created and before deadline
-1: filled
-2: after deadline
-3: processed payouts
-4: cancelled
 */
 
 /*
