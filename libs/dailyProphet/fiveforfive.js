@@ -25,7 +25,7 @@ function selectFive(results, callback) {
 
   for (var i = 0; i !== 5; ++i) {
     index = Math.round(Math.random() * (results.length - 1));
-    while ((!indexes[index]) && index > upperBound && index < lowerBound) {
+    while ((!indexes[index]) || (index > upperBound) || (index < lowerBound)) {
       index = Math.round(Math.random() * (results.length - 1));
     }
     indexes[index] = 1;

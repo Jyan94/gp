@@ -7,7 +7,7 @@
 (require('rootpath')());
 var configs = require('config/index.js');
 var cql = configs.cassandra.cql;
-var contestB = require('libs/cassandra/contestB/exports');
+var contestB = require('libs/cassandra/dailyProphet/exports');
 
 /**
  * returns a settings array for database query insertion of contests
