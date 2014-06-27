@@ -129,8 +129,12 @@ cassandra.query(query, ['soccer', '00000000-0000-0000-0000-000000000000', {value
 })*/
 
 var hello = {
-  athleteId: '00000000-0000-0000-0000-000000000000',
-  athleteName: 'John Snow'
-};
+  awayTeam: 'TEST_A',
+  awayTeamId: '00000000-0000-0000-0000-000000000000',
+  gameDate: (new Date()).getTime(),
+  gameId: '00000000-0000-0000-0000-000000000000',
+  homeTeam: 'TEST_B',
+  homeTeamId: '00000000-0000-0000-0000-000000000001',
+}
 
 console.log(JSON.stringify(hello));

@@ -73,7 +73,6 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     //removes instanceIndex element and removes contestant from map if
     //instance's length is 0
     contestant.instances.splice(instanceIndex, 1);
-    --contestant.numTimesEntered;
     if (contestant.instances.length === 0) {
       parallelArray.push(function(callback) {
         Contestant.deleteUsernameFromContest(

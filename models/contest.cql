@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS contest_B (
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
-  games list<uuid>,
+  games map<text, text>,
   isfiftyfifty boolean,
   max_wager int,
   maximum_entries int,
@@ -30,16 +30,39 @@ CREATE INDEX IF NOT EXISTS ON contest_B(contest_state);
 CREATE INDEX IF NOT EXISTS ON contest_B(sport);
 CREATE INDEX IF NOT EXISTS ON contest_B(KEYS(contestants));
 CREATE INDEX IF NOT EXISTS ON contest_B(athlete_names);
+
+CREATE TABLE IF NOT EXISTS timeseries_contest_b (
+    player_id uuid,
+    time timeuuid,
+    fantasy_value double,
+    virtual_money_wagered int,
+    username text,
+    active boolean,
+    PRIMARY KEY (player_id, time)
+) WITH CLUSTERING ORDER BY (time ASC);
+CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(active);
+
 /*
-athletes map of int to stringified athlete object:
+===================================================
+Contest_b serialized objects
+===================================================
+athlete_names: list of athlete names
+
+athletes: map of int to stringified athlete object:
 {
-  athleteId: uuid of athlete
-  athleteName: name of athlete
+  athleteId: uuid of athlete //only athlete variable used in cassandra/contest_b module,
+  athleteName: name of athlete,
+  gameContestId: integer (0 - numGames in contest) to index into games map,
+  gameId: uuid for game,
+  isOnHomeTeam: boolean,
+  position: string for position,
+  shortTeamName: short string for team,
+  longTeamName: full team name,
+  teamId: uuid for team
 }
 
-contestants map of username to stringified contestant object:
+contestants: map of username to stringified contestant object:
 {
-  numTimesEntered: number of instances
   instances: [
   {
     virtualMoneyRemaining : money remaining
@@ -55,11 +78,17 @@ contestants map of username to stringified contestant object:
   ]
 }
 
+games: map of int to stringified game object:
 {
-
+  awayTeam: short string for home team (i.e. NYY),
+  awayTeamId: uuid for away team,
+  gameDate: Date formatted as milliseconds since epoch,
+  gameId: uuid for game,
+  homeTeam: short string for home team ,
+  homeTeamId: uuid for home team,
 }
  */
-}
+
 /*=============================================
 TODO: make games store JSON of what to be displayed
 TODO: add to athletes map store
@@ -79,7 +108,9 @@ contest states:
 2: after deadline
 3: processed payouts
 4: cancelled
+*/
 
+/*
 
 CREATE TYPE IF NOT EXISTS baseball_team (
   team_id uuid,
@@ -152,14 +183,3 @@ CREATE TABLE IF NOT EXISTS baseball_player (
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics
-
-CREATE TABLE IF NOT EXISTS timeseries_contest_b (
-    player_id uuid,
-    time timeuuid,
-    fantasy_value double,
-    virtual_money_wagered int,
-    username text,
-    active boolean,
-    PRIMARY KEY (player_id, time)
-) WITH CLUSTERING ORDER BY (time ASC);
-CREATE INDEX IF NOT EXISTS ON timeseries_contest_b(active);
