@@ -34,4 +34,5 @@ var renderTournamentEntryPage = function (req, res) {
 }
 
 app.get('/tournament', renderTournamentTablesPage);
+app.get('/tournamentEntry', renderTournamentTablesPage);
 app.listen(3000);

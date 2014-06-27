@@ -1,11 +1,9 @@
-
-
 // Something happens
 $('#tournaments tbody tr').on('click', function (e) {
   console.log(e);
 
   if (e.target.className === 'editbtn') {
-    e.stopPropagation();
+    //e.stopPropagation();
   }
   else {
     // State changes
@@ -13,9 +11,9 @@ $('#tournaments tbody tr').on('click', function (e) {
   }
 });
 
-$('.editbtn').on('click', function () {
+/*$('.editbtn').on('click', function () {
 
-});
+});*/
 
 
 // Something happens
