@@ -221,20 +221,18 @@ var hello = {
 ]);*/
 
 //console.log(JSON.stringify(hello));
-/*
+
 var hbs = require('hbs');
 var express = require('express');
 var app = express();
-hbs.registerHelper('hello', function(context, options) {
-  return options.fn(context);
+hbs.registerHelper('hello', function(options) {
+  return options.fn(this);
 });
-app.use(hbs.__express);
-app.set('view engine', 'hbs');
+app.engine('hbs', hbs.__express);
 var path = require('path');
 app.set('views', path.join(__dirname, './views'));
 app.get('/', function(req, res) {
-  console.log('he');
   res.render('hello.hbs', {text: 'ohaiyo sekai'});
 });
 app.listen(3000);
-*/
+

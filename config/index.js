@@ -2,6 +2,7 @@
 (require('rootpath')());
 
 var constants = require('config/constants');
+var handlebarsHelpers = require('config/handlebarsHelpers');
 
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
@@ -41,6 +42,14 @@ var config = {
       app.use(helmet());
       app.use(morgan('short'));
     }
+
+    //configure handlebars
+    for (var key in handlebarsHelpers) {
+      if (handlebarsHelpers.hasOwnProperty(key)) {
+        hbs.registerHelper(key, handlebarsHelpers[key]);
+      }
+    }
+
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
