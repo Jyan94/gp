@@ -8,9 +8,10 @@ var multiline = require('multiline');
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
     user_id, 
-    email, 
+    email,
     verified, 
     verified_time, 
+    ver_code,
     username, 
     password, 
     first_name,
@@ -27,7 +28,7 @@ var INSERT_USER_CQL = multiline(function() {/*
     (?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
-     ?);
+     ?, ?);
 */});
 exports.insert = function (params, callback) {
   //parse values

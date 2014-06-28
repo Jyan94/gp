@@ -3,6 +3,7 @@ var cql = require('./config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var extend = require('node.extend');
 var User = require('libs/cassandra/user');
+
 /*
 User.insert([
   '12000000-0000-0000-0000-000000005eb3',
@@ -84,13 +85,13 @@ cassandra.queryOneRow(
   }
 );
 */
-
+/*
 var hello = {
   0: ['hi', 2],
   1: 'hi1',
   2: 'hi2',
   3: 'hi3'
-};
+};*/
 /*
 (function (callback){
   var a = function(callback) {
@@ -127,7 +128,7 @@ cassandra.query(query, ['soccer', '00000000-0000-0000-0000-000000000000', {value
     console.log(err);
   }
 })*/
-
+/*
 var hello = {
   awayTeam: 'TEST_A',
   awayTeamId: '00000000-0000-0000-0000-000000000000',
@@ -135,7 +136,7 @@ var hello = {
   gameId: '00000000-0000-0000-0000-000000000000',
   homeTeam: 'TEST_B',
   homeTeamId: '00000000-0000-0000-0000-000000000001',
-}
+}*/
 
 /*require('./libs/cassandra/dailyProphet/update.js').insert([
   ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
@@ -219,4 +220,21 @@ var hello = {
   10  //total_prize_pool
 ]);*/
 
-console.log(JSON.stringify(hello));
+//console.log(JSON.stringify(hello));
+/*
+var hbs = require('hbs');
+var express = require('express');
+var app = express();
+hbs.registerHelper('hello', function(context, options) {
+  return options.fn(context);
+});
+app.use(hbs.__express);
+app.set('view engine', 'hbs');
+var path = require('path');
+app.set('views', path.join(__dirname, './views'));
+app.get('/', function(req, res) {
+  console.log('he');
+  res.render('hello.hbs', {text: 'ohaiyo sekai'});
+});
+app.listen(3000);
+*/

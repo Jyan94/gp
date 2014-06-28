@@ -2,12 +2,15 @@
 (require('rootpath')());
 
 var constants = require('config/constants');
+
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
 var cookieparser = require('cookie-parser');
 var compress = require('compression');
 var express = require('express');
 var flash = require('connect-flash');
+var hbs = require('hbs');
+var helmet = require('helmet');
 var methodOverride = require('method-override');
 var morgan = require('morgan');
 var session = require('express-session');
@@ -26,16 +29,22 @@ var client = new cql.Client(cassandraConfig);
 //CHANGE TO PRODUCTION WHEN IN PRODUCTION
 process.env.NODE_ENV = 'development';
 //process.env.NODE_ENV = 'production';
+var cookieConfig = (process.env.NODE_ENV === 'development') ? false : true;
 
 //exported configurations
 var config = {
   configure: function(app) {
-    //use helmet too
-    app.use(morgan('dev'));
+    if (process.env.NODE_ENV === 'development') {
+      app.use(morgan('dev'));
+    }
+    else {
+      app.use(helmet());
+      app.use(morgan('short'));
+    }
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
-    app.engine('hbs', require('hbs').__express);
+    app.engine('hbs', hbs.__express);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
     app.use(bodyParser());
@@ -44,7 +53,7 @@ var config = {
     app.use(session({
       secret: 'secret-key',
       cookie: {
-        secure: false
+        secure: cookieConfig
       },
       //make sure cassandra is running for this to work
       store: new CassandraStore({client: client})

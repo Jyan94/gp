@@ -18,12 +18,12 @@ app.use(passport.session());
 var staticPages = require('routes/static/routes');
 app.get('/', staticPages.home);
 //commented out for purposes of making public
+app.get('/home', staticPages.home);
 /*
 app.get('/about', staticPages.about);
 app.get('/contact', staticPages.contact);
 app.get('/faq', staticPages.faq);
 app.get('/features', staticPages.features);
-app.get('/home', staticPages.home);
 app.get('/rules', staticPages.rules);
 app.get('/terms', staticPages.terms);
 */
@@ -43,7 +43,7 @@ app.get('/auth/facebook',
 
 // Facebook will redirect the user to this URL after approval.
 app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { successRedirect: '/user/',
+  passport.authenticate('facebook', { successRedirect: '/user',
                                       failureRedirect: '/login' }));
 
 //signup
@@ -62,7 +62,7 @@ var logout = require('routes/registry/logout');
 app.get('/logout', logout.logout);
 
 //redirects to login if not logged in
-app.all('*', login.redirectLogin);
+app.all('*', login.checkUser);
 
 //autocomplete
 var autocomplete = require('routes/autocomplete');
