@@ -140,7 +140,7 @@ function addUserInstanceToContest(user, contest, callback) {
  * if the update fails, delay and attempt later
  * @param {Object}   user
  * req.user passport object, contains username and money fields
- * @param {uuid}   contestId
+ * @param {timeuuid}   contestId
  * uuid for contest
  * @param {Function} callback
  * args (err)

@@ -19,14 +19,13 @@ var staticPages = require('routes/static/routes');
 app.get('/', staticPages.home);
 //commented out for purposes of making public
 app.get('/home', staticPages.home);
-/*
+
 app.get('/about', staticPages.about);
 app.get('/contact', staticPages.contact);
 app.get('/faq', staticPages.faq);
 app.get('/features', staticPages.features);
 app.get('/rules', staticPages.rules);
 app.get('/terms', staticPages.terms);
-*/
 
 //login
 var login = require('routes/registry/login');

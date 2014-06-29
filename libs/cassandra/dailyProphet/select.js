@@ -35,6 +35,12 @@ var SELECT_CONTEST_ID_QUERY = multiline(function() {/*
     WHERE contest_id = ?;
 */});
 
+/**
+ * @param  {timeuuid}   contestId
+ * @param  {Function} callback
+ * args: (err, result)
+ * result is a row object
+ */
 exports.selectById = function(contestId, callback) {
   cassandra.queryOneRow(
     SELECT_CONTEST_ID_QUERY, 
@@ -64,6 +70,12 @@ var SELECT_USERNAME_QUERY_2 = multiline(function() {/*
 ';
 */});
 
+/**
+ * @param  {string}   username
+ * @param  {Function} callback
+ * args: (err, result)
+ * result is a row object
+ */
 exports.selectByUsername = function(username, callback) {
   var SELECT_USERNAME_QUERY = SELECT_USERNAME_QUERY_1;
   SELECT_USERNAME_QUERY += username;
@@ -123,11 +135,10 @@ var SELECT_BY_SPORT_QUERY = multiline(function() {/*
 */});
 
 /**
- * [selectBySport description]
- * @param  {[type]}   sport    [description]
- * @param  {Function} callback [description]
+ * @param  {string}   sport
+ * @param  {Function} callback
  * args: (err, results)
- * where results is an array of rows or undefined
+ * where results is an array of rows
  */
 exports.selectBySport = function(sport, callback) {
   cassandra.query(SELECT_BY_SPORT_QUERY, [sport], one, callback);

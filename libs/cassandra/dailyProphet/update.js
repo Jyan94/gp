@@ -68,7 +68,7 @@ var GAMES_INDEX = 14;
 var PAY_OUTS_INDEX = 19;
 /**
  * fields that need type inference are formatted
- * initialize contest by inserting into contest_count_entries and daily_prophet
+ * initialize contest by inserting into daily_prophet
  * @param  {array}   settings
  * contains array for daily_prophet entry initialization params
  * @param  {Function} callback

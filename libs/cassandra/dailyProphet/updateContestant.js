@@ -104,7 +104,7 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
 }
 
 /**
- * compares two instances and inserts all updated bets into the database
+ * compares two instances and inserts all updated bets into timeseries
  * @param  {object}   oldInstance 
  * previous contestant instance
  * @param  {object}   newInstance 
@@ -221,7 +221,7 @@ function updateInstance(
  * index of contestant instance 
  * @param  {object}   updatedInstance
  * updated instance for contestant as an object
- * @param  {uuid}   contestId       
+ * @param  {timeuuid}   contestId       
  * @param  {Function} callback
  * args: (err)
  */
