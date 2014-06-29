@@ -62,12 +62,12 @@ Schema:
     CREATE TABLE IF NOT EXISTS daily_prophet (
       athlete_names list<text>,
       athletes map<text, text>,
-      commission_earned int,
-      contest_deadline_time timestamp,
-      contest_end_time timestamp,
+      commission_earned int, //updated after processed payouts
+      contest_deadline_time timestamp,  //deadline for submitting and updating instances
+      contest_end_time timestamp, //is end time of the real-world event(s)
       contest_id timeuuid,
       contest_name text,
-      contest_start_time timestamp,
+      contest_start_time timestamp, //when contest created
       contest_state int,
       contestants map<text, text>,
       cooldown_minutes int,
@@ -80,8 +80,8 @@ Schema:
       maximum_entries int,
       minimum_entries int,
       pay_outs map<text, double>,
-      processed_payouts_time timestamp,
-      sport text,
+      processed_payouts_time timestamp, //updated after processed payouts
+      sport text, //lowercase text
       starting_virtual_money int,
       total_prize_pool int,
       PRIMARY KEY (contest_id)
