@@ -142,7 +142,7 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
  * [updateContestState description]
  * @param  {int}   nextState 
  * 0-4, defined in constants.dailyProphet
- * @param  {uuid}   contestId
+ * @param  {timeuuid}   contestId
  * @param  {Function} callback
  * args: (err)
  */

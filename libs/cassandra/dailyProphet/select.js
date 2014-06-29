@@ -21,7 +21,7 @@ var FILLED = states.FILLED;
 var TO_PROCESS = states.TO_PROCESS;
 var PROCESSED = states.PROCESSED;
 var CANCELLED = states.CANCELLED;
-var SEMICOLON = ';'
+var SEMICOLON = ';';
 
 /*
  * ====================================================================

@@ -50,14 +50,14 @@ exports.dailyProphet = {
   MAX_WAIT: 10000,
   //for checking if lightweight transaction went through
   APPLIED: '[applied]',
-  //time in milliseconds
-  MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 2 * 60 * 60000
+  //time in milliseconds (2 hours)
+  MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 120 * 60000
 };
 exports.FacebookStrategy = {
     clientID: "855194074508903",
     clientSecret: "f0eba05b866e9921a7d88071d800bb72",
     callbackURL: "http://localhost:3000/auth/facebook/callback"
-}
+};
 exports.signupResponseValues = {
   userTaken: 1,
   emailTaken: 2,
@@ -86,7 +86,7 @@ exports.SMTP = {
             '/' + verificationCode + '> Verify My Account </a>'
     };
   }
-}
+};
 exports.verificationMessages = {
   verified: 'Congratulations, your account is now verified!',
   noMatch: 'Your verification code does not match!',

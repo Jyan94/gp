@@ -8,53 +8,53 @@ Require the exports.js file to have access to necessary functionality.
 
 daily_prophet serialized objects
 ===================================================
-athlete_names: list of athlete names
+  athlete_names: list of athlete names
 
-athletes: map of int to stringified athlete object:
-{
-  athleteId: uuid of athlete
-  athleteName: name of athlete,
-  gameContestId: integer (0 - numGames in contest) to index into games map,
-  gameId: uuid for game,
-  isOnHomeTeam: boolean,
-  position: string for position,
-  shortTeamName: short string for team,
-  longTeamName: full team name,
-  teamId: uuid for team
-}
-
-contestants: map of username to stringified contestant object:
-{
-  instances: [
+  athletes: map of int to stringified athlete object:
   {
-    virtualMoneyRemaining : money remaining
-    wagers: array of amounts wagered, indexed 0 - num athletes initialized to 0's
-    [0, 0, 0, 0, 0, ...]
-    predictions: array of predicted fantasy values
-    [value0, value1, value2, ...]
-    lastModified: timestamp formatted as milliseconds since jan 1, 1970
-    joinTime: timestamp formatted as milliseconds since jan 1, 1970
-  },
-  ...
-  ]
-}
+    athleteId: uuid of athlete
+    athleteName: name of athlete,
+    gameContestId: integer (0 - numGames in contest) to index into games map,
+    gameId: uuid for game,
+    isOnHomeTeam: boolean,
+    position: string for position,
+    shortTeamName: short string for team,
+    longTeamName: full team name,
+    teamId: uuid for team
+  }
 
-games: map of gameContestId (int) to stringified game object:
-{
-  awayTeam: short string for home team (i.e. NYY),
-  awayTeamId: uuid for away team,
-  gameDate: Date formatted as milliseconds since epoch,
-  gameId: uuid for game,
-  homeTeam: short string for home team ,
-  homeTeamId: uuid for home team,
-}
+  contestants: map of username to stringified contestant object:
+  {
+    instances: [
+    {
+      virtualMoneyRemaining : money remaining
+      wagers: array of amounts wagered, indexed 0 - num athletes initialized to 0's
+      [0, 0, 0, 0, 0, ...]
+      predictions: array of predicted fantasy values
+      [value0, value1, value2, ...]
+      lastModified: timestamp formatted as milliseconds since jan 1, 1970
+      joinTime: timestamp formatted as milliseconds since jan 1, 1970
+    },
+    ...
+    ]
+  }
 
-contest states:
-0: after created and before deadline
-1: filled
-2: after deadline
-3: processed payouts
-4: cancelled
+  games: map of gameContestId (int) to stringified game object:
+  {
+    awayTeam: short string for home team (i.e. NYY),
+    awayTeamId: uuid for away team,
+    gameDate: Date formatted as milliseconds since epoch,
+    gameId: uuid for game,
+    homeTeam: short string for home team ,
+    homeTeamId: uuid for home team,
+  }
+
+  contest states:
+  0: after created and before deadline
+  1: filled
+  2: after deadline
+  3: processed payouts
+  4: cancelled
 
     CREATE TABLE IF NOT EXISTS daily_prophet (
       athlete_names list<text>,
