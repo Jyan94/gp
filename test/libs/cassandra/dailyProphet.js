@@ -14,6 +14,7 @@ var testUserParams0 =
   'test0@test.com',
   true,
   new Date(),
+  null,
   't0',
   'world',
   'first name',
@@ -34,6 +35,7 @@ var testUserParams1 =
   'test1@test.com',
   true,
   new Date(),
+  null,
   't1',
   'world',
   'first name',
@@ -604,7 +606,7 @@ function tests(callback) {
       },
       function(callback) {
         async.each(athleteIds, function(athleteId, callback){
-          TimeseriesValues.removeValue(athleteId, callback);
+          TimeseriesValues.removeValues(athleteId, callback);
         }, callback);
       }
     ], callback);
