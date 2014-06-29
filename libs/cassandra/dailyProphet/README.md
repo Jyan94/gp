@@ -67,7 +67,7 @@ Schema:
       contest_end_time timestamp, //is end time of the real-world event(s)
       contest_id timeuuid,
       contest_name text,
-      contest_start_time timestamp, //when contest created
+      contest_start_time timestamp, //when contest was created
       contest_state int,
       contestants map<text, text>,
       cooldown_minutes int,

@@ -17,6 +17,14 @@ var ONE = 1.00;
 var ZERO = 0.0;
 var FIVE = 5;
 
+/**
+ * selects 5 random values from the cutoff percentage to the 1-cutoff percentage
+ * @param  {array}   results
+ * sorted by fantasy value array of rows
+ * @param  {Function} callback
+ * args: (err, results)
+ * where results is an array of length 5
+ */
 function selectFive(results, callback) {
   var indexes = {};
   var index;
@@ -37,6 +45,19 @@ function selectFive(results, callback) {
   callback(null, indexes);
 }
 
+/**
+ * checks if user has enough money for five for five and
+ * selects all predictions on a player that are not owned by a given user
+ * checks if there enough values
+ * if there are, sort and select five randomly
+ * @param  {object}   user
+ * from req.user, must have properties username and money
+ * @param  {uuid}   playerId
+ * id for athlete
+ * @param  {Function} callback
+ * args: (err, results)
+ * where results is an array of length 5 containing fantasy values
+ */
 function fiveForFive(user, playerId, callback) {
   if (user.money < FIVE) {
     callback(new Error('not enough money'));
