@@ -3,7 +3,7 @@ Contest B module - "Daily Prophet"
 Author: Harrison Zhao
 Date: 6/2014
 
-The low level queries and functionality for contest B.
+The low level queries and functionality for contest B. <br>
 Require the exports.js file to have access to necessary functionality.
 
 daily_prophet serialized objects
@@ -50,11 +50,12 @@ daily_prophet serialized objects
     }
 
     contest states:
-    0: after created and before deadline
-    1: filled
-    2: after deadline
-    3: processed payouts
-    4: cancelled
+    0: after created and before deadline (OPEN)
+    1: filled (FILLED)
+    2: after deadline (TO_PROCESS)
+    3: processed payouts (PROCESSED)
+    4: cancelled (CANCELLED)
+    See the exports.js file to see api functions to interface with setting and getting state
 
 Schema: 
 

@@ -95,6 +95,7 @@ contest states:
 2: after deadline
 3: processed payouts
 4: cancelled
+See the exports.js file to see api functions to interface with setting and getting state
  */
 
 
