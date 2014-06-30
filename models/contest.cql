@@ -1,0 +1,124 @@
+USE goprophet;
+
+CREATE TABLE IF NOT EXISTS daily_prophet (
+  athlete_names list<text>,
+  athletes map<text, text>,
+  commission_earned int, //updated after processed payouts
+  contest_deadline_time timestamp,  //actually matters for contestants, deadline for submitting
+  contest_end_time timestamp, //is end time of the real-world event(s)
+  contest_id timeuuid,
+  contest_name text,
+  contest_start_time timestamp, //when contest was created
+  contest_state int,
+  contestants map<text, text>,
+  cooldown_minutes int,
+  current_entries int,
+  entries_allowed_per_contestant int,
+  entry_fee int,
+  games map<text, text>,
+  isfiftyfifty boolean,
+  max_wager int,
+  maximum_entries int,
+  minimum_entries int,
+  pay_outs map<text, double>,
+  processed_payouts_time timestamp, //updated after processed payouts
+  sport text, //lowercase text
+  starting_virtual_money int,
+  total_prize_pool int,
+  PRIMARY KEY (contest_id)
+);
+CREATE INDEX IF NOT EXISTS ON daily_prophet(contest_state);
+CREATE INDEX IF NOT EXISTS ON daily_prophet(sport);
+CREATE INDEX IF NOT EXISTS ON daily_prophet(KEYS(contestants));
+CREATE INDEX IF NOT EXISTS ON daily_prophet(athlete_names);
+
+CREATE TABLE IF NOT EXISTS timeseries_daily_prophet (
+    player_id uuid,
+    time timeuuid,
+    fantasy_value double,
+    virtual_money_wagered int,
+    username text,
+    active boolean,
+    PRIMARY KEY (player_id, time)
+) WITH CLUSTERING ORDER BY (time ASC);
+CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);
+
+/*
+===================================================
+daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more information
+===================================================
+ */
+
+/*
+
+CREATE TYPE IF NOT EXISTS baseball_team (
+  team_id uuid,
+  team_name text,
+  team_abbreviation
+);
+
+CREATE TYPE IF NOT EXISTS baseball_team_table (
+  team_id uuid,
+  team_name text,
+  team_abbreviation
+);*/
+
+CREATE TABLE IF NOT EXISTS baseball_game (
+  gsis_id uuid PRIMARY KEY,
+  start_time text,
+  end_time timeuuid,
+  game_date text,
+  season_type text,
+  status text,
+  home_team text,
+  away_team text,
+  home_score int,
+  away_score int,
+  play_by_play list<text>
+);
+
+CREATE INDEX IF NOT EXISTS on baseball_game (game_date);
+
+CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
+  statistic_id uuid PRIMARY KEY,
+  player_id uuid,
+  sport text,
+  game_date timestamp,
+  season_year int,
+  season_type text,
+  position_in_game text,
+  singles int,
+  doubles int,
+  triples int,
+  home_runs int,
+  runs int,
+  rbis int,
+  stolen_bases int,
+  caught_stealing_bases int,
+  walks int,
+  earned_runs_allowed int,
+  strikeouts int,
+  walks_and_hits_allowed int,
+  fantasy_points double
+);
+CREATE INDEX IF NOT EXISTS ON baseball_player_game_statistics(player_id);
+
+CREATE TABLE IF NOT EXISTS baseball_player (
+  player_id uuid PRIMARY KEY,
+  current_value double,
+  full_name text,
+  first_name text,
+  last_name text,
+  team text,
+  status text,
+  position text,
+  profile_url text,
+  uniform_number int,
+  height int,
+  weight int,
+  age int,
+  image text,
+  statistics list<uuid>
+);
+CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
+//statistics is list of baseball_player_game_statistics

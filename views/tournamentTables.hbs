@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+  </head>
+
+  <body>
+    <table id="tournaments" align="center" style="width:1000px">
+      <thead>
+        <tr>
+          <th>Sport</th>
+          <th>Event</th>
+          <th>Game Type</th>
+          <th>Start Time (ET)</th>
+          <th>Entrants</th>
+          <th>Entry Fee</th>
+          <th>Prize Pool</th>
+          <th>Starting Money</th>
+          <th>Enter</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{#each tournaments}}
+            <tr>
+              <td>{{this.sport}}</td>
+              <td>{{this.type}}</td>
+              <td>{{this.type}}</td>
+              <td>{{this.contestStartTime}}</td>
+              <td>{{this.currentEntries}} / {{this.maximumEntries}}</td>
+              <td>{{this.entryFee}}</td>
+              <td>{{this.totalPrizePool}}</td>
+              <td>{{this.startingVirtualMoney}}</td>
+              <td>
+                <a class="enterbtn" href="/tournamentEntry/{{this.contestId}}">Enter</a>
+              </td>
+            </tr>
+        {{/each}}
+      </tbody>
+      
+    </table>
+
+    <div class="tournament-dialog-box-backdrop">
+    </div>
+
+    <div class="tournament-dialog-box" align="center">
+      <div class="tournament-dialog-box-header">
+        <h2> The Daily Prophet - $21,000 Prize Pool </h2>
+      </div>
+      <div class="tournament-dialog-box-body">
+        <div class="tournament-dialog-box-info">
+          <p><font size="4"> Entry Fee: $500 Multiple Entries Allowed</font></p>
+          <table id="games" style="width:700px">
+          <tr>
+          <td>NYY at NYM </td>
+          <td>NYY at NYM </td>    
+          <td>NYY at NYM </td>
+          <td>NYY at NYM </td>
+          </tr>
+          <tr>
+          <td>7pm EST</td>
+          <td>7pm EST</td>
+          <td>7pm EST</td>
+          <td>7pm EST</td>
+          </tr>
+          </table>
+          </div>
+        </div>
+        <div class="tournament-dialog-box-tab-container">
+          <ul class="tournament-dialog-box-tab-menu">
+            <li class="tournament-dialog-box-tab active" id="tab1">Info</li>
+            <li class="tournament-dialog-box-tab" id="tab2">Entries</li>
+            <li class="tournament-dialog-box-tab" id="tab3">Prizes</li>
+          </ul>
+          <div class="tournament-dialog-box-tab-content-top-border">
+          </div>
+          <div class="tournament-dialog-box-tab-content active" id="tab1-content">
+            <p><font size="5"> Pick players from the following list and determine their values:</font></p>
+            <p><font size="4"> Derek Jeter (SS - NYY) </font></p>
+            <p><font size="4"> Alex Rodriguez (? - NYY)</font></p>
+            <br>
+            <br>
+            <p><font size="5"> Scoring Categories </font></p>
+            <p><font size="3"> Hitters: 1B = 1pt, 2B = 2pts, 3B = 3pts, HR = 4pts, RBI = 1pt, R = 1pt, BB = 1pt, SB = 2pts, HBP = 1, Out (calculated as at bats - hits) = -.25pt  
+            <br>
+            Pitchers: W = 4pts, ER = -1pt, SO = 1pt, IP = 1pt
+            </font></p>
+            <br>
+            <p><font size="2">*Must choose at least 2 players, each investing at least $2,000</font></p>
+            <p><font size="2">*Maximum investment amount is $8,000 on a single player</font></p>
+
+
+          </div>
+          <div class="tournament-dialog-box-tab-content" id="tab2-content">
+          <p><font size="5"> List of Participants: </font></p>
+          <table id="participants" style="width:700px">
+          <tr>
+          <td>David</td>
+          <td>Taehoon</td>    
+          <td>Jeffrey</td>
+          </tr>
+          <tr>
+          <td>Harrison</td>
+          <td>David again</td>    
+          <td>Taehoon again</td>
+          </tr>
+          <tr>
+          <td>Jeffrey again</td>
+          <td>Harrison again</td>    
+          <td>Stop entering David</td>
+          </tr>
+          </table>
+          </div>
+
+          <div class="tournament-dialog-box-tab-content" id="tab3-content">
+          <p><font size="4"> 1st: $10,000 </font></p>
+          <p><font size="4"> 2nd: $5,000 </font></p>
+          <p><font size="4"> 3rd: $3,000 </font></p>
+          <p><font size="4"> 4th: $2,000 </font></p>
+          <p><font size="4"> 5th: $1,000 </font></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles for this template -->
+    <link  rel="stylesheet" type="text/css" href="../css/bootstrap/tournamentTables.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src='../js/jquery-ui-1.10.4.custom.js'></script>
+    <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dataTables.css">
+    <script src="../js/tournamentBetTableFilter.js"></script>
+    <script src="../js/tournamentTables.js"></script>
+  </body>
+</html>

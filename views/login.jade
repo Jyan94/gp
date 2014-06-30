@@ -1,0 +1,37 @@
+doctype html
+html(lang='en')
+  head
+    include base_head
+  body
+    div#login-box-wrapper.content
+      div#login-box-wrapper.bounding-box.rounded
+        if errors.length > 0
+          each error in errors
+            div.padded-less
+              div.flash-error.rounded
+                div.padded-less
+                  div
+                    img(src='../error_message_icon.png' width='30' height='30' style="margin-right: 10px; float: left")
+                    h3(style="padding: 4px")=error.title
+                  each part in error.parts
+                    p=part
+        div.padded
+          a(href='/auth/facebook')
+            img(src='login-with-facebook.png' width='154' height='22')
+        div.padded
+          h3 Login
+          hr
+          div.pure-g-r
+            div#login-box.pure-u-11-24
+              form#login.pure-form.pure-form-stacked(action='/login' method='post')
+                fieldset
+                  label(for='username') Username
+                  input(type='text' name='username' placeholder='username' autofocus=true required=true)
+                fieldset
+                  label(for='password') Password
+                  input(type='password' name='password' placeholder='password' required=true)
+              div.button-align
+                input.pure-button.button-primary.left(type='submit' form='login' value='Log in')
+                p or
+                form
+                  input.pure-button.button-primary.right(onClick='parent.location="signup"' value='Sign up here')

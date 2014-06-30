@@ -1,0 +1,16 @@
+doctype html
+html(lang="en")
+  head
+    include base_head
+  body
+    div.content
+      div.scorecontainer
+        each item in result
+          div.score
+            if (item.start_time)
+              h5=item.home_team
+              h5=item.away_team
+              h5=item.start_time
+            else
+              h5=item.home_team + "  " + item.home_score
+              h5=item.away_team + "  " + item.away_score
