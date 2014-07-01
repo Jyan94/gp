@@ -37,33 +37,22 @@
               </thead>
 
               <tbody>
-                <form id="entry-form-1" action="/tournamentEntryProcess" method="post">
-                  <tr>
-                    <td> Bob </td>
+                <form id="entry-form-1" action="/tournamentEntryProcess/{{contestInfo.contestId}}" method="post">
+                  {{#each contestInfo.athletes}}
+                    <tr>
+                      <td> {{this.athleteName}} </td>
+                        <td>
+                          <input class="entry-form-input" type="number" name="prediction-{{@index}}" placeholder="Your prediction" required=true min="0" step="0.01"></input>
+                        </td>
+                        <td>
+                          <input class="entry-form-input" type="number" name="wager-{{@index}}" placeholder="Your wager" required=true min="0"step="1"></input>
+                        </td>
+                      </fieldset>
                       <td>
-                        <input class="entry-form-input" type="number" name="prediction-1" placeholder="Your prediction" required=true min="0" step="0.01"></input>
+                        <button type="button" class="entry-form-button"> 5 for 5 </button>
                       </td>
-                      <td>
-                        <input class="entry-form-input" type="number" name="wager-1" placeholder="Your wager" required=true min="0"step="1"></input>
-                      </td>
-                    </fieldset>
-                    <td>
-                      <button type="button" class="entry-form-button"> 5 for 5 </button>
-                    </td>
-                  </tr>
-                
-                  <tr>
-                    <td> Joe </td>
-                      <td>
-                        <input class="entry-form-input" type="number" name="prediction-2" placeholder="Your prediction" required=true min="0" step="0.01"></input>
-                      </td>
-                      <td>
-                        <input class="entry-form-input" type="number" name="wager-2" placeholder="Your wager" required=true min="0"step="1"></input>
-                      </td>
-                    <td>
-                      <button type="button" class="entry-form-button"> 5 for 5 </button>
-                    </td>
-                  </tr>
+                    </tr>
+                  {{/each}}
                 </form>
               </tbody>
 
@@ -72,7 +61,7 @@
 
           <div class="entry-form-info">
             <div class="entry-form-money">
-              <p> Money Remaining: 10000 <p>
+              <p> Money Remaining: {{contestInfo.startingVirtualMoney}} <p>
             </div>
           </div>
 
@@ -95,7 +84,7 @@
     <script src="js/jquery-ui-1.10.4.custom.js"></script>
 
     <!-- Custom styles for this template -->
-    <link href="css/tournamentEntry.css" rel="stylesheet">
+    <link href="../css/tournamentEntry.css" rel="stylesheet">
 
   </body>
 </html>

@@ -49,7 +49,7 @@ daily_prophet serialized objects
 ===================================================
 athlete_names: list of athlete names
 
-athletes: map of int to stringified athlete object:
+athletes: map of stringified int to stringified athlete object:
 {
   athleteId: uuid of athlete //only athlete variable used in cassandra/daily_prophet module,
   athleteName: name of athlete,

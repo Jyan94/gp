@@ -14,9 +14,11 @@ var cql = configs.cassandra.cql;
 
 var messages = configs.constants.tournamentStrings;
 
-var tournamentEntryProcess = function (req, res, next) {
-  
-}
+/*
+ * ====================================================================
+ * TOURNAMENT TABLES
+ * ====================================================================
+ */
 
 var findTournaments = function (req, res, next, callback) {
   Tournament.selectOpen(function (err, result) {
@@ -29,7 +31,7 @@ var findTournaments = function (req, res, next, callback) {
   });
 }
 
-var filterTournamentFields = function (req, res, next, tournaments, callback) {
+var filterTournamentFieldsTables = function (req, res, next, tournaments, callback) {
   var filterFunction = function (tournament, callback) {
     callback(null, { contestId: tournament.contest_id,
                      sport: tournament.sport,
@@ -69,7 +71,7 @@ var renderTournamentTablesPage = function (req, res, next) {
       callback(null, req, res, next);
     },
     findTournaments,
-    filterTournamentFields
+    filterTournamentFieldsTables
   ],
   function (err) {
     if (err) {
@@ -78,32 +80,149 @@ var renderTournamentTablesPage = function (req, res, next) {
   });
 }
 
-var findTournamentByContestId = function (req, res, next) {
-  Tournament.selectById()
-}
+/*
+ * ====================================================================
+ * TOURNAMENT ENTRY
+ * ====================================================================
+ */
 
-var renderTournamentEntryPage = function (req, res, next) {
-  async.waterfall([
-    function (callback) {
-      callback(null, req, res, next);
-    },
-    findTournaments
-  ],
-  function (err) {
+var findTournamentByContestId = function (req, res, next, callback) {
+  Tournament.selectById(req.params.contestId, function (err, result) {
     if (err) {
       next(err);
     }
+    else {
+      callback(null, req, res, next, result);
+    }
   });
+}
+
+// Need names, not numbers, as keys of athletes
+var filterTournamentFieldsEntry = function (req, res, next, tournament, callback) {
+  /*var parseAthlete = function(athleteName, callback) {
+    console.log(athleteName);
+    tournament.athletes[athleteName] = JSON.parse(tournament.athletes[athleteName]);
+    callback();
+  }
+
+  console.log(tournament.athlete_names)
+
+  async.each(tournament.athlete_names, parseAthlete, function(err) {
+    if (err) {
+      next(err);
+    }
+    else {
+      console.log(typeof(tournament.athletes[0]));
+    }
+  });*/
+  
+  var athlete = null;
+  var athletes = [];
+  var contestInfo = { contestId: tournament.contest_id,
+                      athletes: athletes,
+                      startingVirtualMoney: tournament.starting_virtual_money
+                    };
+    
+  for (var i = 0; i < tournament.athlete_names.length; i++) {
+    athlete = JSON.parse(tournament.athletes[i.toString()]);
+    athletes[i] = athlete;
+  }
+
+  console.log(contestInfo);
 
   if (req.user) {
+    res.render('tournamentEntry.hbs', { link: 'logout',
+                                        display: 'Logout',
+                                        contestInfo: contestInfo });
+  }
+  else {
+    res.render('tournamentEntry.hbs', { link: 'login',
+                                        display: 'Login',
+                                        contestInfo: contestInfo });
+  }
+
+/*
+  var contestInfo = { contestId: tournament.contest_id,
+                      athletes: tournament.athletes,
+                      startingVirtualMoney: tournament.starting_virtual_money
+                    }
+                      sport: tournament.sport,
+                      type: 'The Daily Prophet',
+                      contestStartTime: tournament.contest_start_time,
+                      currentEntries: tournament.current_entries,
+                      maximumEntries: tournament.maximum_entries,
+                      entryFee: tournament.entry_fee,
+                      totalPrizePool: tournament.total_prize_pool,
+                      startingVirtualMoney: tournament.starting_virtual_money
+                    };
+
+  if (req.user) {
+    console.log(contestInfo);
     res.render('tournamentEntry.hbs');
   }
   else {
+    console.log(contestInfo);
     res.render('tournamentEntry.hbs');
+  }*/
+}
+
+var renderTournamentEntryPage = function (req, res, next) {
+  if (typeof(req.params.contestId) === 'undefined') {
+    next(new Error('Not a valid contest ID.'));
+  }
+  else {
+    async.waterfall([
+      function (callback) {
+        callback(null, req, res, next);
+      },
+      findTournamentByContestId,
+      filterTournamentFieldsEntry
+    ],
+    function (err) {
+      if (err) {
+        next(err);
+      }
+    });
   }
 }
 
+/*
+ * ====================================================================
+ * TOURNAMENT ENTRY PROCESS
+ * ====================================================================
+ */
+
+var parseEntry = function(req, res, next, callback) {
+  
+}
+
+var tournamentEntryProcess = function (req, res, next) {
+  if (typeof(req.params.contestId) === 'undefined') {
+    next(new Error('Not a valid contest ID.'));
+  }
+  else {
+    async.waterfall([
+      function (callback) {
+        callback(null, req, res, next);
+      },
+      findTournamentByContestId,
+      filterTournamentFieldsEntry
+    ],
+    function (err) {
+      if (err) {
+        next(err);
+      }
+    });
+  }
+}
+
+/*
+ * ====================================================================
+ * EXPORTS
+ * ====================================================================
+ */
+
 app.get('/tournament', renderTournamentTablesPage);
 app.get('/tournamentEntry/:contestId', renderTournamentEntryPage);
-//app.post('/tournamentEntryProcess', tournamentEntryProcess);
+app.post('/tournamentEntryProcess/:contestId', tournamentEntryProcess);
 app.listen(3000);
