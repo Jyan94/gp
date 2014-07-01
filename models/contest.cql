@@ -2,7 +2,7 @@ USE goprophet;
 
 CREATE TABLE IF NOT EXISTS daily_prophet (
   athlete_names list<text>,
-  athletes map<text, text>,
+  athletes list<text>,
   commission_earned int, //updated after processed payouts
   contest_deadline_time timestamp,  //actually matters for contestants, deadline for submitting
   contest_end_time timestamp, //is end time of the real-world event(s)
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS daily_prophet (
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
-  games map<text, text>,
+  games list<text>,
   isfiftyfifty boolean,
   max_wager int,
   maximum_entries int,

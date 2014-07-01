@@ -79,8 +79,8 @@ var testContestSettings =
 [
   ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
   //athlete_names
-  {
-    0: '{"athleteName":"John Snow00",' +
+  [
+    '{"athleteName":"John Snow00",' +
        '"athleteId":"00000000-0000-0000-0000-000000000000",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -88,7 +88,7 @@ var testContestSettings =
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    1: '{"athleteName":"John Snow01",' +
+    '{"athleteName":"John Snow01",' +
        '"athleteId":"00000000-0000-0000-0000-000000000001",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -96,7 +96,7 @@ var testContestSettings =
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    2: '{"athleteName":"John Snow02",' +
+    '{"athleteName":"John Snow02",' +
        '"athleteId":"00000000-0000-0000-0000-000000000002",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -104,7 +104,7 @@ var testContestSettings =
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    3: '{"athleteName":"John Snow03",' +
+    '{"athleteName":"John Snow03",' +
        '"athleteId":"00000000-0000-0000-0000-000000000003",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -112,15 +112,15 @@ var testContestSettings =
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    4: '{"athleteName":"John Snow04",' +
+    '{"athleteName":"John Snow04",' +
        '"athleteId":"00000000-0000-0000-0000-000000000004",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
        '"position":"test_pitcher",' +
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
-       '"teamId":"00000000-0000-0000-0000-000000000000"}',
-  }, //athletes
+       '"teamId":"00000000-0000-0000-0000-000000000000"}'
+  ], //athletes
   0,  //commission_earned
   new Date(new Date().getTime() + 100000), //contest_deadline_time
   null, //contest_end_time
@@ -133,14 +133,13 @@ var testContestSettings =
   0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
-  {
-    0: '{"awayTeam":"TEST_A",' +
+  [    '{"awayTeam":"TEST_A",' +
        '"awayTeamId":"00000000-0000-0000-0000-000000000000",' +
        '"gameDate":1403899335204,' +
        '"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"homeTeam":"TEST_B",' +
        '"homeTeamId":"00000000-0000-0000-0000-000000000001"}'
-  },  //games
+  ],  //games
   false, //isfiftyfifty
   8000,   //max_wager
   3, //maximum_entries
@@ -474,6 +473,7 @@ function testContestant(callback) {
         });
     },
     function(callback) {
+      console.log('2');
       selectById(function(err, result) {
         (err === null).should.be.true;
         var contestant = JSON.parse(result.contestants[user0.username]);
@@ -493,10 +493,12 @@ function testContestant(callback) {
       });
     },
     function(callback) {
+      console.log('3');
       ++numInstances0;
       AddContestant.addContestant(user0, contest.contest_id, callback);
     },
     function(callback) {
+      console.log('4');
       selectById(function(err, result) {
         if (err) {
           (err === null).should.be.true;
@@ -512,6 +514,7 @@ function testContestant(callback) {
       });
     },
     function(callback) {
+      console.log('5');
       ++numInstances1;
       ++numContestants;
       AddContestant.addContestant(user1, contest.contest_id, callback);
@@ -554,6 +557,7 @@ function testContestant(callback) {
       RemoveContestant.removeContestantInstance(user0, 0, CONTESTID, callback);
     },
     function(callback) {
+      console.log('6');
       selectById(function(err, result) {
         if (err) {
           err.should.be.false;

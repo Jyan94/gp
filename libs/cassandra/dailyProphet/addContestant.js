@@ -110,7 +110,7 @@ function addUserInstanceToContest(user, contest, callback) {
 
     var newContestantInstance = createNewContestantInstance(
           contest.starting_virtual_money,
-          Object.keys(contest.athletes).length);
+          contest.athletes.length);
     if (contestant) {
       contestant.instances.push(newContestantInstance);
     }

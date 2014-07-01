@@ -81,7 +81,7 @@ exports.insert  = function(settings, callback) {
   };
   settings[ATHLETES_INDEX] = {
     value: settings[ATHLETES_INDEX], 
-    hint: 'map'
+    hint: 'list'
   };
   settings[CONTESTANTS_INDEX] = {
     value: settings[CONTESTANTS_INDEX], 
@@ -89,7 +89,7 @@ exports.insert  = function(settings, callback) {
   };
   settings[GAMES_INDEX] = {
     value: settings[GAMES_INDEX], 
-    hint: 'map'
+    hint: 'list'
   };
   for (var key in settings[PAY_OUTS_INDEX]) {
     if (settings[PAY_OUTS_INDEX].hasOwnProperty(key)) {

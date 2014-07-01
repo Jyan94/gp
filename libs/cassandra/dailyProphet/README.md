@@ -10,7 +10,7 @@ daily_prophet serialized objects
 ===================================================
     athlete_names: list of athlete names
 
-    athletes: map of int to stringified athlete object:
+    athletes: list of stringified athlete objects:
     {
       athleteId: uuid of athlete
       athleteName: name of athlete,
@@ -39,7 +39,7 @@ daily_prophet serialized objects
       ]
     }
 
-    games: map of gameContestId (int) to stringified game object:
+    games: list of stringified game objects:
     {
       awayTeam: short string for home team (i.e. NYY),
       awayTeamId: uuid for away team,

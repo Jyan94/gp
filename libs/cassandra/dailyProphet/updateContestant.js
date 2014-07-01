@@ -71,8 +71,7 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   else if (instance.predictions.length !== instance.wagers.length) {
     callback(new Error('wagers length do not match with predictions length'));
   }
-  else if (Object.keys(contest.athletes).length 
-          !== instance.predictions.length) {
+  else if (contest.athletes.length !== instance.predictions.length) {
     callback(new Error('invalid number of athletes'));
   }
   else {
@@ -117,7 +116,7 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
 function compareInstances(user, oldInstance, newInstance, contest, callback) {
   //convert all serialized json text fields of athlete map to object
   var timeseriesUpdates = [];
-  for (var i = 0; contest.athletes.hasOwnProperty(i); ++i) {
+  for (var i = 0; i !== contest.athletes.length; ++i) {
     if (oldInstance.predictions[i] !== newInstance.predictions[i] ||
         oldInstance.wagers[i] !== newInstance.wagers[i]) {
       timeseriesUpdates.push({
