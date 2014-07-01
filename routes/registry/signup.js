@@ -32,7 +32,7 @@ function insertUser(body, res, next) {
         body.email, //email
         verified, //verified
         null, //verfied_time
-        verificationCode, //ver_code
+        verificationCode, //verification_code
         body.username, //username
         hash, //password
         body.firstName, //first_name

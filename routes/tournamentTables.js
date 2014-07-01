@@ -1,10 +1,7 @@
 'use strict';
 (require('rootpath')());
 
-var express = require('express');
-var app = module.exports = express();
-var configs = require('config/index');
-configs.configure(app);
+var configs = require('config/index.js');
 
 var async = require('async');
 var User = require('libs/cassandra/user');
@@ -66,6 +63,10 @@ var filterTournamentFieldsTables = function (req, res, next, tournaments, callba
 }
 
 var renderTournamentTablesPage = function (req, res, next) {
+  if (typeof(req.user) === 'undefined') {
+    res.redirect('/login');
+  }
+
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -86,10 +87,16 @@ var renderTournamentTablesPage = function (req, res, next) {
  * ====================================================================
  */
 
-var findTournamentByContestId = function (req, res, next, callback) {
+var findTournamentByContestIdCheck = function (req, res, next, callback) {
   Tournament.selectById(req.params.contestId, function (err, result) {
     if (err) {
-      next(err);
+      res.send(404, 'Contest not found.');
+    }
+    else if (result.maximum_entries === result.current_entries) {
+      res.send(400, 'Contest is at maximum capacity.');
+    }
+    else if ((new Date()).getTime() > result.contest_deadline_time.getTime()) {
+      res.send(400, 'Contest is past deadline time.');
     }
     else {
       callback(null, req, res, next, result);
@@ -99,83 +106,50 @@ var findTournamentByContestId = function (req, res, next, callback) {
 
 // Need names, not numbers, as keys of athletes
 var filterTournamentFieldsEntry = function (req, res, next, tournament, callback) {
-  /*var parseAthlete = function(athleteName, callback) {
-    console.log(athleteName);
-    tournament.athletes[athleteName] = JSON.parse(tournament.athletes[athleteName]);
-    callback();
+  var contestInfo = { contestId: tournament.contest_id,
+                      athletes: tournament.athletes,
+                      startingVirtualMoney: tournament.starting_virtual_money
+                    };
+
+  var parseAthlete = function(athlete, callback) {
+    console.log(athlete);
+    callback(null, JSON.parse(athlete));
   }
 
-  console.log(tournament.athlete_names)
-
-  async.each(tournament.athlete_names, parseAthlete, function(err) {
+  async.map(contestInfo.athletes, parseAthlete, function(err) {
     if (err) {
       next(err);
     }
     else {
-      console.log(typeof(tournament.athletes[0]));
+      console.log(typeof(contestInfo.athletes[0]));
+
+      if (req.user) {
+        res.render('tournamentEntry.hbs', { link: 'logout',
+                                            display: 'Logout',
+                                            contestInfo: contestInfo });
+      }
+      else {
+        res.render('tournamentEntry.hbs', { link: 'login',
+                                            display: 'Login',
+                                            contestInfo: contestInfo });
+      }
     }
-  });*/
-  
-  var athlete = null;
-  var athletes = [];
-  var contestInfo = { contestId: tournament.contest_id,
-                      athletes: athletes,
-                      startingVirtualMoney: tournament.starting_virtual_money
-                    };
-    
-  for (var i = 0; i < tournament.athlete_names.length; i++) {
-    athlete = JSON.parse(tournament.athletes[i.toString()]);
-    athletes[i] = athlete;
-  }
-
-  console.log(contestInfo);
-
-  if (req.user) {
-    res.render('tournamentEntry.hbs', { link: 'logout',
-                                        display: 'Logout',
-                                        contestInfo: contestInfo });
-  }
-  else {
-    res.render('tournamentEntry.hbs', { link: 'login',
-                                        display: 'Login',
-                                        contestInfo: contestInfo });
-  }
-
-/*
-  var contestInfo = { contestId: tournament.contest_id,
-                      athletes: tournament.athletes,
-                      startingVirtualMoney: tournament.starting_virtual_money
-                    }
-                      sport: tournament.sport,
-                      type: 'The Daily Prophet',
-                      contestStartTime: tournament.contest_start_time,
-                      currentEntries: tournament.current_entries,
-                      maximumEntries: tournament.maximum_entries,
-                      entryFee: tournament.entry_fee,
-                      totalPrizePool: tournament.total_prize_pool,
-                      startingVirtualMoney: tournament.starting_virtual_money
-                    };
-
-  if (req.user) {
-    console.log(contestInfo);
-    res.render('tournamentEntry.hbs');
-  }
-  else {
-    console.log(contestInfo);
-    res.render('tournamentEntry.hbs');
-  }*/
+  });
 }
 
 var renderTournamentEntryPage = function (req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
-    next(new Error('Not a valid contest ID.'));
+    res.send(404, 'Contest not found.');
+  }
+  else if (typeof(req.user) === 'undefined') {
+    res.redirect('/login');
   }
   else {
     async.waterfall([
       function (callback) {
         callback(null, req, res, next);
       },
-      findTournamentByContestId,
+      findTournamentByContestIdCheck,
       filterTournamentFieldsEntry
     ],
     function (err) {
@@ -192,21 +166,85 @@ var renderTournamentEntryPage = function (req, res, next) {
  * ====================================================================
  */
 
-var parseEntry = function(req, res, next, callback) {
-  
+var entryProcessCheck = function (req, res, next, contest, callback) {
+  var user = req.user;
+  var contestant = null;
+
+  if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
+    contestant = JSON.parse(contest.contestants[user.username]);
+  }
+
+  if (user.money < contest.entry_fee) {
+    res.send(400, 'You do not have enough money to enter this contest.');
+  }
+  else if (contestant && contestant.instances.length === 
+          contest.entries_allowed_per_contestant) {
+    res.send(400, 'You have exceeded the maximum number of entries for a user');
+  }
+  else {
+    callback(null, req, res, next, contest, user, contestant);
+  }
+}
+
+var createInstance = function (params, contest) {
+  var virtualMoneyRemaining = contest.starting_virtual_money;
+  var wagers = [];
+  var predictions = [];
+  var time = new Date();
+
+  for (var i = 0; i < contest.athletes.length; i++) {
+    wagers[i] = parseInt(params['wager-' + i.toString()]);
+    predictions[i] = parseInt(params['prediction-' + i.toString()]);
+    virtualMoneyRemaining -= parseInt(params['wager-' + i.toString()]); 
+  }
+
+  return { virtualMoneyRemaining: virtualMoneyRemaining,
+           wagers: wagers,
+           predictions: predictions,
+           lastModified: time,
+           joinTime: time
+         }
+
+}
+
+var submitEntry = function(req, res, next, contest, user, contestant, callback) {
+  var instanceIndex = (contestant ? contestant.instances.length : 0);
+  var instance = createInstance(req.body, contest);
+
+  Tournament.addContestant(user, contest.contest_id, function (err, result) {
+    if (err) {
+      next(err);
+    }
+    else {
+      Tournament.updateContestantInstance(user, instanceIndex,
+        instance, contest.contest_id,
+        function (err, result) {
+          if (err) {
+            next(err);
+          }
+          else {
+            res.redirect('/tournaments');
+          }
+        });
+    }
+  });
 }
 
 var tournamentEntryProcess = function (req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
-    next(new Error('Not a valid contest ID.'));
+    res.send(404, 'Not a valid contest ID.');
+  }
+  else if (typeof(req.user) === 'undefined') {
+    res.redirect('/login');
   }
   else {
     async.waterfall([
       function (callback) {
         callback(null, req, res, next);
       },
-      findTournamentByContestId,
-      filterTournamentFieldsEntry
+      findTournamentByContestIdCheck,
+      entryProcessCheck,
+      submitEntry
     ],
     function (err) {
       if (err) {
@@ -222,7 +260,6 @@ var tournamentEntryProcess = function (req, res, next) {
  * ====================================================================
  */
 
-app.get('/tournament', renderTournamentTablesPage);
-app.get('/tournamentEntry/:contestId', renderTournamentEntryPage);
-app.post('/tournamentEntryProcess/:contestId', tournamentEntryProcess);
-app.listen(3000);
+exports.renderTournamentTablesPage = renderTournamentTablesPage;
+exports.renderTournamentEntryPage = renderTournamentEntryPage;
+exports.tournamentEntryProcess = tournamentEntryProcess;

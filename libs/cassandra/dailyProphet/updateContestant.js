@@ -21,31 +21,31 @@ var minuteInMilliseconds = 60000;
  * @return {string}
  */
 function millisecondsToStr (milliseconds) {
-    function numberEnding (number) {
-        return (number > 1) ? 's' : '';
-    }
-    var temp = Math.floor(milliseconds / 1000);
-    var years = Math.floor(temp / 31536000);
-    if (years) {
-        return years + ' year' + numberEnding(years);
-    }
-    var days = Math.floor((temp %= 31536000) / 86400);
-    if (days) {
-        return days + ' day' + numberEnding(days);
-    }
-    var hours = Math.floor((temp %= 86400) / 3600);
-    if (hours) {
-        return hours + ' hour' + numberEnding(hours);
-    }
-    var minutes = Math.floor((temp %= 3600) / 60);
-    if (minutes) {
-        return minutes + ' minute' + numberEnding(minutes);
-    }
-    var seconds = temp % 60;
-    if (seconds) {
-        return seconds + ' second' + numberEnding(seconds);
-    }
-    return 'less than a second';
+  function numberEnding (number) {
+    return (number > 1) ? 's' : '';
+  }
+  var temp = Math.floor(milliseconds / 1000);
+  var years = Math.floor(temp / 31536000);
+  if (years) {
+    return years + ' year' + numberEnding(years);
+  }
+  var days = Math.floor((temp %= 31536000) / 86400);
+  if (days) {
+    return days + ' day' + numberEnding(days);
+  }
+  var hours = Math.floor((temp %= 86400) / 3600);
+  if (hours) {
+    return hours + ' hour' + numberEnding(hours);
+  }
+  var minutes = Math.floor((temp %= 3600) / 60);
+  if (minutes) {
+    return minutes + ' minute' + numberEnding(minutes);
+  }
+  var seconds = temp % 60;
+  if (seconds) {
+    return seconds + ' second' + numberEnding(seconds);
+  }
+  return 'less than a second';
 }
 
 /**
@@ -71,8 +71,7 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   else if (instance.predictions.length !== instance.wagers.length) {
     callback(new Error('wagers length do not match with predictions length'));
   }
-  else if (Object.keys(contest.athletes).length 
-          !== instance.predictions.length) {
+  else if (contest.athletes.length !== instance.predictions.length) {
     callback(new Error('invalid number of athletes'));
   }
   else {
@@ -93,18 +92,20 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
       }
       else if ((instance.virtualMoneyRemaining + result) !== 
                 contest.starting_virtual_money){
+        console.log(instance.virtualMoneyRemaining, result);
         callback(new Error('numbers do not add up'));
       }
       else {
         callback(null, contest);
       }
     };
+    console.log(typeof(instance.wagers[0]));
     async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
   }
 }
 
 /**
- * compares two instances and inserts all updated bets into the database
+ * compares two instances and inserts all updated bets into timeseries
  * @param  {object}   oldInstance 
  * previous contestant instance
  * @param  {object}   newInstance 
@@ -117,7 +118,7 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
 function compareInstances(user, oldInstance, newInstance, contest, callback) {
   //convert all serialized json text fields of athlete map to object
   var timeseriesUpdates = [];
-  for (var i = 0; contest.athletes.hasOwnProperty(i); ++i) {
+  for (var i = 0; i !== contest.athletes.length; ++i) {
     if (oldInstance.predictions[i] !== newInstance.predictions[i] ||
         oldInstance.wagers[i] !== newInstance.wagers[i]) {
       timeseriesUpdates.push({
@@ -221,7 +222,7 @@ function updateInstance(
  * index of contestant instance 
  * @param  {object}   updatedInstance
  * updated instance for contestant as an object
- * @param  {uuid}   contestId       
+ * @param  {timeuuid}   contestId       
  * @param  {Function} callback
  * args: (err)
  */

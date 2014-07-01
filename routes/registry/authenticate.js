@@ -74,6 +74,10 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
         return done(null, result);
       }
       else {
+        var verifiedTime = null;
+        if (configs.isDev()) {
+          
+        }
         var fields = [
           cql.types.uuid(), //user_id
           profileUsername, //fb email

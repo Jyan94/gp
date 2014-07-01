@@ -2,27 +2,27 @@ USE goprophet;
 
 CREATE TABLE IF NOT EXISTS daily_prophet (
   athlete_names list<text>,
-  athletes map<text, text>,
-  commission_earned int,
-  contest_deadline_time timestamp,
-  contest_end_time timestamp,
+  athletes list<text>,
+  commission_earned int, //updated after processed payouts
+  contest_deadline_time timestamp,  //actually matters for contestants, deadline for submitting
+  contest_end_time timestamp, //is end time of the real-world event(s)
   contest_id timeuuid,
   contest_name text,
-  contest_start_time timestamp,
+  contest_start_time timestamp, //when contest was created
   contest_state int,
   contestants map<text, text>,
   cooldown_minutes int,
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
-  games map<text, text>,
+  games list<text>,
   isfiftyfifty boolean,
   max_wager int,
   maximum_entries int,
   minimum_entries int,
   pay_outs map<text, double>,
-  processed_payouts_time timestamp,
-  sport text,
+  processed_payouts_time timestamp, //updated after processed payouts
+  sport text, //lowercase text
   starting_virtual_money int,
   total_prize_pool int,
   PRIMARY KEY (contest_id)
@@ -45,7 +45,7 @@ CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);
 
 /*
 ===================================================
-daily_prophet serialized objects
+daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more information
 ===================================================
 athlete_names: list of athlete names
 
@@ -95,17 +95,6 @@ contest states:
 2: after deadline
 3: processed payouts
 4: cancelled
- */
-
-
-/*
-sport is lowercase text
-use username as key for contestants map
-use int as key for athletes in game as tournament ids
-contest_start_time - when we create the contest
-contest_deadline_time - actually matters for contestants, deadline for submitting
-contest_end_time - is end time of the real-world event and after processing payouts
-commission earned, processed_payouts - updated after contest ends
 */
 
 /*

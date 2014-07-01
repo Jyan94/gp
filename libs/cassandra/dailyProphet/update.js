@@ -68,7 +68,7 @@ var GAMES_INDEX = 14;
 var PAY_OUTS_INDEX = 19;
 /**
  * fields that need type inference are formatted
- * initialize contest by inserting into contest_count_entries and daily_prophet
+ * initialize contest by inserting into daily_prophet
  * @param  {array}   settings
  * contains array for daily_prophet entry initialization params
  * @param  {Function} callback
@@ -81,7 +81,7 @@ exports.insert  = function(settings, callback) {
   };
   settings[ATHLETES_INDEX] = {
     value: settings[ATHLETES_INDEX], 
-    hint: 'map'
+    hint: 'list'
   };
   settings[CONTESTANTS_INDEX] = {
     value: settings[CONTESTANTS_INDEX], 
@@ -89,7 +89,7 @@ exports.insert  = function(settings, callback) {
   };
   settings[GAMES_INDEX] = {
     value: settings[GAMES_INDEX], 
-    hint: 'map'
+    hint: 'list'
   };
   for (var key in settings[PAY_OUTS_INDEX]) {
     if (settings[PAY_OUTS_INDEX].hasOwnProperty(key)) {
@@ -142,7 +142,7 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
  * [updateContestState description]
  * @param  {int}   nextState 
  * 0-4, defined in constants.dailyProphet
- * @param  {uuid}   contestId
+ * @param  {timeuuid}   contestId
  * @param  {Function} callback
  * args: (err)
  */

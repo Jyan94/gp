@@ -8,9 +8,10 @@ var multiline = require('multiline');
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
     user_id, 
-    email, 
+    email,
     verified, 
     verified_time, 
+    ver_code,
     username, 
     password, 
     first_name,
@@ -27,7 +28,7 @@ var INSERT_USER_CQL = multiline(function() {/*
     (?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
-     ?);
+     ?, ?);
 */});
 exports.insert = function (params, callback) {
   //parse values
@@ -78,6 +79,7 @@ exports.update = function (userId, fields, params, callback) {
     });
 };
 
+// This is actually add money
 var UPDATE_MONEY_CQL = multiline(function() {/*
   UPDATE users SET money = ? WHERE user_id = ?;
 */});
@@ -116,20 +118,13 @@ exports.updateMoney = function (moneyValues, userIdValues, callback) {
   })
 };
 
-exports.updateMoneyOneUser = function(moneyValue, userId, callback) {
-  var total = 0.0;
-  exports.select('user_id', userId, function(err, result) {
-    var money = parseFloat(result.money);
-    var moneyValueF = parseFloat(moneyValue);
-    var total = money + moneyValueF;
-    total = parseFloat(total);
-    var params = [{value: total, hint: 'double'}, userId];
-    cassandra.query(
-      UPDATE_MONEY_CQL,
-      params,
-      cql.types.consistencies.one,
-      callback);
-  })
+exports.updateMoneyOneUser = function (moneyValue, userId, callback) {
+  cassandra.query(UPDATE_MONEY_CQL,
+    [{ value: moneyValue, hint: 'double' }, userId],
+    cql.types.consistencies.one,
+    function(err) {
+      callback(err);
+    });
 }
 
 var UPDATE_SPENDINGPOWER_CQL = multiline(function() {/*

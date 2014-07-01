@@ -125,7 +125,7 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
  * from req.user, MUST have fields user_id and username
  * @param  {int}   instanceIndex 
  * index to be removed from instances
- * @param  {uuid}   contestId
+ * @param  {timeuuid}   contestId
  * id of contest
  * @param  {Function} callback      
  * args: (err)

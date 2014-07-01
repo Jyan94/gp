@@ -53,7 +53,7 @@ var SET_CONTESTANT_QUERY_2 = multiline(function() {/*
  * number of current entries in contest, accounting for changes
  * @param {int}   oldNumEntries 
  * number of current entries in contest, before changes
- * @param {uuid}   contestId  
+ * @param {timeuuid}   contestId  
  * @param {Function} callback
  * args: (err)
  */
@@ -89,7 +89,7 @@ function setContestant(
  * @param {string}   contestant 
  * @param {int}   numEntries 
  * number of current entries in contest, accounting for changes
- * @param {uuid}   contestId  
+ * @param {timeuuid}   contestId  
  * @param {Function} callback
  * args: (err)
  */
@@ -110,7 +110,7 @@ exports.addContestant = addContestant;
  * @param {string}   contestant 
  * @param {int}   numEntries 
  * number of current entries in contest, accounting for changes
- * @param {uuid}   contestId  
+ * @param {timeuuid}   contestId  
  * @param {Function} callback
  * args: (err)
  */
@@ -145,7 +145,7 @@ var UPDATE_CONTESTANT_QUERY_2 = multiline(function() {/*
  * JSON.stringify({
  *   instances: [{contestant instance}]
  * })
- * @param {uuid}   contestId  
+ * @param {timeuuid}   contestId  
  * @param {Function} callback
  * args: (err)
  */
@@ -182,7 +182,7 @@ var DELETE_CONTESTANT_QUERY_2 = multiline(function() {/*
 /**
  * delete contestant from contest
  * @param  {string}   username 
- * @param  {uuid}   contestId
+ * @param  {timeuuid}   contestId
  * @param  {Function} callback
  * args: (err)
  */

@@ -3,6 +3,7 @@ var cql = require('./config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var extend = require('node.extend');
 var User = require('libs/cassandra/user');
+
 /*
 User.insert([
   '12000000-0000-0000-0000-000000005eb3',
@@ -84,13 +85,13 @@ cassandra.queryOneRow(
   }
 );
 */
-
+/*
 var hello = {
   0: ['hi', 2],
   1: 'hi1',
   2: 'hi2',
   3: 'hi3'
-};
+};*/
 /*
 (function (callback){
   var a = function(callback) {
@@ -127,7 +128,7 @@ cassandra.query(query, ['soccer', '00000000-0000-0000-0000-000000000000', {value
     console.log(err);
   }
 })*/
-
+/*
 var hello = {
   awayTeam: 'TEST_A',
   awayTeamId: '00000000-0000-0000-0000-000000000000',
@@ -135,13 +136,12 @@ var hello = {
   gameId: '00000000-0000-0000-0000-000000000000',
   homeTeam: 'TEST_B',
   homeTeamId: '00000000-0000-0000-0000-000000000001',
-}
+}*/
 
-/*require('./libs/cassandra/dailyProphet/update.js').insert([
+require('./libs/cassandra/dailyProphet/update.js').insert([
   ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
   //athlete_names
-  {
-    0: '{"athleteName":"John Snow00",' +
+  [ '{"athleteName":"John Snow00",' +
        '"athleteId":"00000000-0000-0000-0000-000000000000",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -149,7 +149,7 @@ var hello = {
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    1: '{"athleteName":"John Snow01",' +
+    '{"athleteName":"John Snow01",' +
        '"athleteId":"00000000-0000-0000-0000-000000000001",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -157,7 +157,7 @@ var hello = {
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    2: '{"athleteName":"John Snow02",' +
+    '{"athleteName":"John Snow02",' +
        '"athleteId":"00000000-0000-0000-0000-000000000002",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -165,7 +165,7 @@ var hello = {
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    3: '{"athleteName":"John Snow03",' +
+    '{"athleteName":"John Snow03",' +
        '"athleteId":"00000000-0000-0000-0000-000000000003",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -173,7 +173,7 @@ var hello = {
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-    4: '{"athleteName":"John Snow04",' +
+    '{"athleteName":"John Snow04",' +
        '"athleteId":"00000000-0000-0000-0000-000000000004",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -181,11 +181,11 @@ var hello = {
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
-  }, //athletes
+  ], //athletes
   0,  //commission_earned
-  new Date(new Date().getTime() + 100000), //contest_deadline_time
+  new Date(new Date().getTime() + 1000000), //contest_deadline_time
   null, //contest_end_time
-  '00000000-0000-0000-0000-000000000000', //contest_id
+  'bcf4d500-fe44-11e3-89b7-c361d0a10fc1', //contest_id
   'THE_DAILY_PROPHET_TEST',
   new Date(), //contest_start_time
   0,  //contest_state
@@ -194,14 +194,14 @@ var hello = {
   0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
-  {
-    0: '{"awayTeam":"TEST_A",' +
+  [
+    '{"awayTeam":"TEST_A",' +
        '"awayTeamId":"00000000-0000-0000-0000-000000000000",' +
        '"gameDate":1403899335204,' +
        '"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"homeTeam":"TEST_B",' +
        '"homeTeamId":"00000000-0000-0000-0000-000000000001"}'
-  },  //games
+  ],  //games
   false, //isfiftyfifty
   8000,   //max_wager
   3, //maximum_entries
@@ -217,6 +217,25 @@ var hello = {
   'world',  //sport
   10000, //starting_virtual_money
   10  //total_prize_pool
-]);*/
+], function (err, result) {
+  if (err) {
+    console.log(err);
+  }
+});
 
-console.log(JSON.stringify(hello));
+//console.log(JSON.stringify(hello));
+/*
+var hbs = require('hbs');
+var express = require('express');
+var app = express();
+hbs.registerHelper('hello', function(options) {
+  return options.fn(this);
+});
+app.engine('hbs', hbs.__express);
+var path = require('path');
+app.set('views', path.join(__dirname, './views'));
+app.get('/', function(req, res) {
+  res.render('hello.hbs', {text: 'ohaiyo sekai'});
+});
+app.listen(3000);*/
+
