@@ -107,7 +107,6 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
         callback(null, contest);
       }
     };
-    console.log(typeof(instance.wagers[0]));
     async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
   }
 }
