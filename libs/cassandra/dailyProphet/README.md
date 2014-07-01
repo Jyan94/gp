@@ -15,12 +15,14 @@ daily_prophet serialized objects
       contestant instance's wagers and predictions array
       for example the 0th element athlete corresponds 
       to the 0th element wager and 0th element prediction
+
+      the same index strategy applies to gameCOntestId
     */
     athletes: list of stringified athlete objects:
     {
       athleteId: uuid of athlete
       athleteName: name of athlete,
-      gameContestId: integer (0 - numGames in contest) to index into games map,
+      gameContestId: integer (0 - numGames in contest) to index into games list,
       gameId: uuid for game,
       isOnHomeTeam: boolean,
       position: string for position,

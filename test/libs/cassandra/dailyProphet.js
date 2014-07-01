@@ -473,7 +473,7 @@ function testContestant(callback) {
         });
     },
     function(callback) {
-      console.log('2');
+      //console.log('2');
       selectById(function(err, result) {
         (err === null).should.be.true;
         var contestant = JSON.parse(result.contestants[user0.username]);
@@ -493,12 +493,12 @@ function testContestant(callback) {
       });
     },
     function(callback) {
-      console.log('3');
+      //console.log('3');
       ++numInstances0;
       AddContestant.addContestant(user0, contest.contest_id, callback);
     },
     function(callback) {
-      console.log('4');
+      //console.log('4');
       selectById(function(err, result) {
         if (err) {
           (err === null).should.be.true;
@@ -514,7 +514,7 @@ function testContestant(callback) {
       });
     },
     function(callback) {
-      console.log('5');
+      //console.log('5');
       ++numInstances1;
       ++numContestants;
       AddContestant.addContestant(user1, contest.contest_id, callback);
@@ -557,7 +557,7 @@ function testContestant(callback) {
       RemoveContestant.removeContestantInstance(user0, 0, CONTESTID, callback);
     },
     function(callback) {
-      console.log('6');
+      //console.log('6');
       selectById(function(err, result) {
         if (err) {
           err.should.be.false;
