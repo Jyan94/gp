@@ -65,8 +65,13 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   if (!(contest.contestants.hasOwnProperty(user.username))) {
     callback(new Error('username does not exist in contest'));
   }
-  else if (!(instance && instance.predictions && instance.wagers)) {
-    callback(new Error('instance format'));
+  else if (!(instance && 
+             instance.predictions && 
+             instance.wagers && 
+             instance.virtualMoneyRemaining &&
+             Array.isArray(instance.predictions) && 
+             Array.isArray(instance.wagers))) {
+    callback(new Error('instance format error'));
   }
   else if (instance.predictions.length !== instance.wagers.length) {
     callback(new Error('wagers length do not match with predictions length'));
@@ -76,7 +81,10 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   }
   else {
     var reduceFunc = function(memo, item, callback) {
-      if (item < 0) {
+      if (!item && item !== 0) {
+        callback(new Error('undefined value'));
+      }
+      else if (item < 0) {
         callback(new Error('negative wager'));
       }
       else if (item > contest.max_wager) {
