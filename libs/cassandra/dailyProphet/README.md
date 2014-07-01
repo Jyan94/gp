@@ -10,6 +10,12 @@ daily_prophet serialized objects
 ===================================================
     athlete_names: list of athlete names
 
+    /*
+      the index corresponds to athlete contest id, which corresponds to the 
+      contestant instance's wagers and predictions array
+      for example the 0th element athlete corresponds 
+      to the 0th element wager and 0th element prediction
+    */
     athletes: list of stringified athlete objects:
     {
       athleteId: uuid of athlete
