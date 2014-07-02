@@ -20,7 +20,7 @@ var messages = configs.constants.tournamentStrings;
 var findTournaments = function (req, res, next, callback) {
   Tournament.selectOpen(function (err, result) {
     if (err) {
-      next(err);
+      res.send(500, 'Database error.');
     }
     else {
       callback(null, req, res, next, result);
@@ -45,7 +45,7 @@ var filterTournamentFieldsTables = function (req, res, next, tournaments, callba
   async.map(tournaments, filterFunction, function (err, result) {
     console.log(JSON.stringify(result));
     if (err) {
-      next(err);
+      res.send(500, 'Server error.');
     }
     else {
       if (req.user) {
@@ -106,22 +106,21 @@ var findTournamentByContestIdCheck = function (req, res, next, callback) {
 
 // Need names, not numbers, as keys of athletes
 var filterTournamentFieldsEntry = function (req, res, next, tournament, callback) {
-  var contestInfo = { contestId: tournament.contest_id,
-                      athletes: tournament.athletes,
-                      startingVirtualMoney: tournament.starting_virtual_money
-                    };
+  var contestInfo = {};
 
   var parseAthlete = function(athlete, callback) {
-    console.log(athlete);
     callback(null, JSON.parse(athlete));
   }
 
-  async.map(contestInfo.athletes, parseAthlete, function(err) {
+  async.map(tournament.athletes, parseAthlete, function(err, result) {
     if (err) {
-      next(err);
+      res.send(500, 'Server error.');
     }
     else {
-      console.log(typeof(contestInfo.athletes[0]));
+      contestInfo = { contestId: tournament.contest_id,
+                      athletes: result,
+                      startingVirtualMoney: tournament.starting_virtual_money
+                    };
 
       if (req.user) {
         res.render('tournamentEntry.hbs', { link: 'logout',
@@ -166,7 +165,7 @@ var renderTournamentEntryPage = function (req, res, next) {
  * ====================================================================
  */
 
-var entryProcessCheck = function (req, res, next, contest, callback) {
+/*var entryProcessCheck = function (req, res, next, contest, callback) {
   var user = req.user;
   var contestant = null;
 
@@ -184,6 +183,17 @@ var entryProcessCheck = function (req, res, next, contest, callback) {
   else {
     callback(null, req, res, next, contest, user, contestant);
   }
+}*/
+
+var findTournamentByContestId = function (req, res, next, callback) {
+  Tournament.selectById(req.params.contestId, function (err, result) {
+    if (err) {
+      res.send(404, 'Contest not found.');
+    }
+    else {
+      callback(null, req, res, next, result);
+    }
+  });
 }
 
 var createInstance = function (params, contest) {
@@ -207,20 +217,27 @@ var createInstance = function (params, contest) {
 
 }
 
-var submitEntry = function(req, res, next, contest, user, contestant, callback) {
+var submitEntry = function(req, res, next, contest, callback) {
+  var user = req.user;
+  var contestant = null;
+
+  if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
+    contestant = JSON.parse(contest.contestants[user.username]);
+  }
+
   var instanceIndex = (contestant ? contestant.instances.length : 0);
   var instance = createInstance(req.body, contest);
 
   Tournament.addContestant(user, contest.contest_id, function (err, result) {
     if (err) {
-      next(err);
+      res.send(400, err);
     }
     else {
       Tournament.updateContestantInstance(user, instanceIndex,
         instance, contest.contest_id,
         function (err, result) {
           if (err) {
-            next(err);
+            res.send(400, err);
           }
           else {
             res.redirect('/tournaments');
@@ -242,8 +259,8 @@ var tournamentEntryProcess = function (req, res, next) {
       function (callback) {
         callback(null, req, res, next);
       },
-      findTournamentByContestIdCheck,
-      entryProcessCheck,
+      findTournamentByContestId,
+      //entryProcessCheck,
       submitEntry
     ],
     function (err) {
@@ -251,6 +268,11 @@ var tournamentEntryProcess = function (req, res, next) {
         next(err);
       }
     });
+    /*submitEntry(req, res, next, function (err, result) {
+      if (err) {
+        next(err);
+      }
+    });*/
   }
 }
 
