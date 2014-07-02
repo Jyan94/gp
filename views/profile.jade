@@ -1,7 +1,7 @@
 doctype html
 html(lang="en")
   head
-    include base_head
+    include common/base_head
   body
     include banner
     div.content(style='width:1080px')
@@ -153,9 +153,9 @@ html(lang="en")
             img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
             h3(style='padding: 4px') Bet Deleter Error
             p You can't delete someone else's bet.
-      script(src='../js/paypal.js')
-      script(src='../css/bootstrap/paypal.css')
-      script(src='../js/deleteBets.js')
-      script(src='../js/jquery-ui-1.10.4.custom.js')
+      script(src='/js/paypal.js')
+      script(src='/css/bootstrap/paypal.css')
+      script(src='/js/deleteBets.js')
+      script(src='/js/jquery/jquery-ui-1.10.4.custom.js')
       script(type='application/javascript' src='/js/profile.js')
-      link(rel='stylesheet' type='text/css' href='../css/bootstrap/paypal.css')
+      link(rel='stylesheet' type='text/css' href='/css/bootstrap/paypal.css')

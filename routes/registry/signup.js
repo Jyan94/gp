@@ -126,7 +126,7 @@ var processSignup = function(req, res, next) {
 }
 
 var renderSignup = function(req, res) {
-  res.render('signup');
+  res.render('registry/signup');
 }
 
 //exports

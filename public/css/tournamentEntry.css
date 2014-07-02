@@ -8,7 +8,7 @@ body {
   font-family: 'Helvetica', 'Arial', 'sans-serif';
   font-size: 16px;
   background-color: #242425;
-  background-image: url('../enterStadium.png');
+  background-image: url('../assets/enterStadium.png');
   background-size: 100%;
 }
 
@@ -53,7 +53,7 @@ p {
   position: relative;
   box-shadow: 0 0 5px rgba(95, 99, 105, 0.5);
   max-height: 800px;
-  width: 640px;
+  width: 800px;
   overflow: hidden;
   background-color: #fff;
   border-radius: 4px;
@@ -154,4 +154,3 @@ p {
 @media (min-width: 992px) {
   
 }
-S

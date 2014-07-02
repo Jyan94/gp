@@ -75,15 +75,19 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
       }
       else {
         var verifiedTime = null;
+        var verified = false;
+        var verificationCode = null;
         if (configs.isDev()) {
-          
+          verified = true;
+          verifiedTime = new Date();
+          verificationCode = cql.types.timeuuid();
         }
         var fields = [
           cql.types.uuid(), //user_id
           profileUsername, //fb email
-          true, //verified
-          null, //verified_time
-          null, // no ver_code
+          verified, //verified
+          verifiedTime, //verified_time
+          verificationCode, // no ver_code
           profileUsername, //fb username and fb email is the same
           null, //no password since login through facebook
           profile.name.givenName, //first_name
