@@ -67,10 +67,13 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   else if (!(instance && 
              instance.predictions && 
              instance.wagers && 
-             instance.virtualMoneyRemaining &&
+             !isNaN(instance.virtualMoneyRemaining) &&
              Array.isArray(instance.predictions) && 
              Array.isArray(instance.wagers))) {
     callback(new Error('instance format error'));
+  }
+  else if (instance.virtualMoneyRemaining !== 0) {
+    callback(new Error('must spend all money'));
   }
   else if (instance.predictions.length !== instance.wagers.length) {
     callback(new Error('wagers length do not match with predictions length'));
@@ -79,8 +82,20 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
     callback(new Error('invalid number of athletes'));
   }
   else {
+    var checkIfValidPredictions = function(callback) {
+      async.each(instance.predictions, function(value, callback) {
+        if (isNaN(value) || value < 0) {
+          callback(new Error('undefined prediction'));
+        }
+        else {
+          callback(null);
+        }
+      },
+      callback);
+    };
+
     var reduceFunc = function(memo, item, callback) {
-      if (!item && item !== 0) {
+      if (isNaN(item) || item < 0) {
         callback(new Error('undefined value'));
       }
       else if (item < 0) {
@@ -105,7 +120,16 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
         callback(null, contest);
       }
     };
-    async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
+    var checkIfValidWagers = function (callback) {
+      async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
+    };
+
+    async.waterfall(
+    [
+      checkIfValidPredictions,
+      checkIfValidWagers
+    ],
+    callback);
   }
 }
 
@@ -170,7 +194,7 @@ function updateInstance(
   var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
   var now = (new Date()).getTime();
   
-  if (instanceIndex >= contestant.instances.length) {
+  if (instanceIndex >= contestant.instances.length || instanceIndex < 0) {
     callback(new Error('out of bounds index'));
   }
   //give minute leeway to new joiners (joinTime + leeway must be > than now)
