@@ -85,6 +85,18 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
     callback(new Error('invalid number of athletes'));
   }
   else {
+    var checkIfValidPredictions = function(callback) {
+      async.each(instance.predictions, function(value, callback) {
+        if (!value && value !== 0) {
+          callback(new Error('undefined prediction'));
+        }
+        else {
+          callback(null);
+        }
+      },
+      callback);
+    };
+
     var reduceFunc = function(memo, item, callback) {
       if (!item && item !== 0) {
         callback(new Error('undefined value'));
@@ -111,7 +123,16 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
         callback(null, contest);
       }
     };
-    async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
+    var checkIfValidWagers = function (callback) {
+      async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
+    };
+
+    async.waterfall(
+    [
+      checkIfValidPredictions,
+      checkIfValidWagers
+    ],
+    callback);
   }
 }
 
