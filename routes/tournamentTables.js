@@ -220,31 +220,17 @@ var createInstance = function (params, contest) {
 var submitEntry = function(req, res, next, contest, callback) {
   var user = req.user;
   var contestant = null;
-
-  if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
-    contestant = JSON.parse(contest.contestants[user.username]);
-  }
-
-  var instanceIndex = (contestant ? contestant.instances.length : 0);
   var instance = createInstance(req.body, contest);
 
-  Tournament.addContestant(user, contest.contest_id, function (err, result) {
-    if (err) {
-      res.send(400, err);
-    }
-    else {
-      Tournament.updateContestantInstance(user, instanceIndex,
-        instance, contest.contest_id,
-        function (err, result) {
-          if (err) {
-            res.send(400, err);
-          }
-          else {
-            res.redirect('/tournaments');
-          }
-        });
-    }
-  });
+  Tournament.addAndUpdateContestant(user, contest.contest_id, instance,
+    function (err) {
+      if (err) {
+        next(err);
+      }
+      else {
+        res.redirect('/tournaments');
+      }
+    });
 }
 
 var tournamentEntryProcess = function (req, res, next) {
