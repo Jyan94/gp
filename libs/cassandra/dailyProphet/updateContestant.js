@@ -67,13 +67,10 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   else if (!(instance && 
              instance.predictions && 
              instance.wagers && 
+             !isNaN(instance.virtualMoneyRemaining) &&
              Array.isArray(instance.predictions) && 
              Array.isArray(instance.wagers))) {
     callback(new Error('instance format error'));
-  }
-  else if (!instance.virtualMoneyRemaining && 
-            instance.virtualMoneyRemaining !== 0) {
-    callback(new Error('virtual money not a number'));
   }
   else if (instance.virtualMoneyRemaining !== 0) {
     callback(new Error('must spend all money'));
@@ -87,7 +84,7 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   else {
     var checkIfValidPredictions = function(callback) {
       async.each(instance.predictions, function(value, callback) {
-        if (!value && value !== 0) {
+        if (isNaN(value) || value < 0) {
           callback(new Error('undefined prediction'));
         }
         else {
@@ -98,7 +95,7 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
     };
 
     var reduceFunc = function(memo, item, callback) {
-      if (!item && item !== 0) {
+      if (isNaN(item) || item < 0) {
         callback(new Error('undefined value'));
       }
       else if (item < 0) {

@@ -509,7 +509,13 @@ function testContestant(callback) {
     },
     function(callback) {
       AddAndUpdateContestant.addAndUpdateContestant(
-        user0, CONTESTID, testInstance, callback);
+        user0, CONTESTID, testInstance, function(err) {
+          if (err) {
+            console.log(err);
+          }
+          (err === null).should.be.true;
+          callback(null);
+        });
     },
     function(callback) {
       //console.log('2');
@@ -668,6 +674,9 @@ function testContestant(callback) {
       });
     }
   ], function(err) {
+    if (err) {
+      console.log(err);
+    }
     (err === null).should.be.true;
     callback(null);
   });
