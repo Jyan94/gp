@@ -171,6 +171,11 @@ var testInstance = {
   wagers: [2000, 2000, 3000, 1000, 2000],
   predictions: [10, 20, 30, 40, 50]
 };
+var testInstance2 = {
+  virtualMoneyRemaining: 0,
+  wagers: [2000, 2000, 2000, 2000, 2000],
+  predictions: [10, 20, 30, 40, 40]
+};
 var USER_ID_INDEX = 0;
 
 var AddContestant = require('libs/cassandra/dailyProphet/addContestant');
@@ -553,6 +558,32 @@ function testContestant(callback) {
           callback(null);
         }
       });
+    },
+    function(callback) {
+      RemoveContestant.removeContestantInstance(user0, 0, CONTESTID, callback);
+    },
+    function(callback) {
+      AddAndUpdateContestant.addAndUpdateContestant(
+        user0, CONTESTID, testInstance2, callback);
+    },
+    function(callback) {
+      selectById(function(err, result) {
+        (err === null).should.be.true;
+        var contestant = JSON.parse(result.contestants[user0.username]);
+        contestant.instances.should.have.length(numInstances0);
+        contestant.instances[1].should.have.keys(
+          'wagers', 
+          'predictions', 
+          'virtualMoneyRemaining',
+          'lastModified');
+        contestant.instances[1].should.have.property(
+          'wagers', testInstance2.wagers);
+        contestant.instances[1].should.have.property(
+          'predictions', testInstance2.predictions);
+        contestant.instances[1].should.have.property(
+          'virtualMoneyRemaining', testInstance2.virtualMoneyRemaining);
+        callback(null);
+      }); 
     },
     function(callback) {
       //console.log('5');
