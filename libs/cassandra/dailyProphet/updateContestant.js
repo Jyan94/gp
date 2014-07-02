@@ -108,28 +108,30 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
         callback(null, memo + item); 
       }
     };
-    var reduceCallback = function (err, result) {
-      if (err) {
-        callback(err);
-      }
-      else if ((instance.virtualMoneyRemaining + result) !== 
-                contest.starting_virtual_money){
-        callback(new Error('numbers do not add up'));
-      }
-      else {
-        callback(null, contest);
-      }
-    };
+    
     var checkIfValidWagers = function (callback) {
-      async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
+      async.reduce(instance.wagers, 0, reduceFunc, function (err, result) {
+        if (err) {
+          callback(err);
+        }
+        else if ((instance.virtualMoneyRemaining + result) !== 
+                  contest.starting_virtual_money){
+          callback(new Error('numbers do not add up'));
+        }
+        else {
+          callback(null);
+        }
+      });
     };
 
-    async.waterfall(
+    async.parallel(
     [
       checkIfValidPredictions,
       checkIfValidWagers
     ],
-    callback);
+    function(err) {
+      callback(err, contest);
+    });
   }
 }
 

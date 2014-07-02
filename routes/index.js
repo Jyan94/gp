@@ -96,7 +96,8 @@ app.get('/data', graph.get);
 var tournament = require('routes/tournamentTables');
 app.get('/tournaments', tournament.renderTournamentTablesPage);
 app.get('/tournamentEntry/:contestId', tournament.renderTournamentEntryPage);
-app.post('/tournamentEntryProcess/:contestId', tournament.tournamentEntryProcess);
+app.post('/tournamentEntryProcess/:contestId',
+  tournament.tournamentEntryProcess);
 
 //error handling middleware logs errors and sends 500
 var errorHandler = require('routes/error/error');
