@@ -185,11 +185,12 @@ function addContestant(user, contestId, callback) {
  * Test exports
  * ====================================================================
  */
+exports.addContestant = addContestant;
 exports.createNewContestantInstance = createNewContestantInstance;
+
 /**
  * ====================================================================
  * Used exports
  * ====================================================================
  */
-exports.addContestant = addContestant;
 exports.addUserInstanceToContest = addUserInstanceToContest;
