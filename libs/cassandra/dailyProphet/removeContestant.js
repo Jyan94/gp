@@ -14,7 +14,6 @@ var configs = require('config/index');
 var User = require('libs/cassandra/user');
 
 var async = require('async');
-var multiline = require('multiline');
 
 var APPLIED = configs.constants.dailyProphet.APPLIED;
 var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;
@@ -159,14 +158,8 @@ function removeContestantInstance(user, instanceIndex, contestId, callback) {
 
 /**
  * ====================================================================
- * Test exports
- * ====================================================================
- */
-exports.removeInstanceFromContest = removeInstanceFromContest;
-
-/**
- * ====================================================================
  * Used exports
  * ====================================================================
  */
 exports.removeContestantInstance = removeContestantInstance;
+exports.removeInstanceFromContest = removeInstanceFromContest;

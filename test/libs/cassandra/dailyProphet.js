@@ -180,6 +180,8 @@ var UpdateContest = require('libs/cassandra/dailyProphet/update');
 var UpdateContestant = require('libs/cassandra/dailyProphet/updateContestant');
 var TimeseriesValues = require('libs/cassandra/dailyProphet/timeseries');
 var User = require('libs/cassandra/user');
+var AddAndUpdateContestant = 
+  require('libs/cassandra/dailyProphet/addAndUpdateContestant');
 
 var configs = require('config/index');
 var cql = configs.cassandra.cql;
@@ -424,10 +426,15 @@ function testContestant(callback) {
     function(callback) {
       ++numInstances0;
       ++numContestants;
-      AddContestant.addContestant(user0, contest.contest_id, function(err) {
-        (err === null).should.be.true;
-        callback(null);
-      });
+      AddContestant.addContestant(
+        user0, 
+        contest.contest_id, 
+        function(err, result) {
+          (err === null).should.be.true;
+          result.should.equal(numInstances0 - 1);
+          callback(null);
+        }
+      );
     },
     function(callback) {
       selectById(function(err, result) {
@@ -493,9 +500,43 @@ function testContestant(callback) {
       });
     },
     function(callback) {
+      RemoveContestant.removeContestantInstance(user0, 0, CONTESTID, callback);
+    },
+    function(callback) {
+      AddAndUpdateContestant.addAndUpdateContestant(
+        user0, CONTESTID, testInstance, callback);
+    },
+    function(callback) {
+      //console.log('2');
+      selectById(function(err, result) {
+        (err === null).should.be.true;
+        var contestant = JSON.parse(result.contestants[user0.username]);
+        contestant.instances.should.have.length(numInstances0);
+        contestant.instances[0].should.have.keys(
+          'wagers', 
+          'predictions', 
+          'virtualMoneyRemaining',
+          'lastModified');
+        contestant.instances[0].should.have.property(
+          'wagers', testInstance.wagers);
+        contestant.instances[0].should.have.property(
+          'predictions', testInstance.predictions);
+        contestant.instances[0].should.have.property(
+          'virtualMoneyRemaining', testInstance.virtualMoneyRemaining);
+        callback(null);
+      });
+    },
+    function(callback) {
       //console.log('3');
       ++numInstances0;
-      AddContestant.addContestant(user0, contest.contest_id, callback);
+      AddContestant.addContestant(
+        user0, 
+        contest.contest_id, 
+        function(err, result) {
+          (err === null).should.be.true;
+          result.should.equal(numInstances0 - 1);
+          callback(null);
+        });
     },
     function(callback) {
       //console.log('4');
@@ -517,7 +558,14 @@ function testContestant(callback) {
       //console.log('5');
       ++numInstances1;
       ++numContestants;
-      AddContestant.addContestant(user1, contest.contest_id, callback);
+      AddContestant.addContestant(
+        user1, 
+        contest.contest_id,
+        function(err, result) {
+          (err === null).should.be.true;
+          result.should.equal(numInstances1 - 1);
+          callback(null);
+        });
     },
     function(callback) {
       selectById(function(err, result) {

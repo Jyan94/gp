@@ -14,7 +14,6 @@ var configs = require('config/index');
 var User = require('libs/cassandra/user');
 
 var async = require('async');
-var multiline = require('multiline');
 
 var APPLIED = configs.constants.dailyProphet.APPLIED;
 var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;
@@ -54,7 +53,8 @@ function createNewContestantInstance(startingVirtualMoney, numAthletes) {
  * @param {object}   contest  
  * contest object from database
  * @param {Function} callback
- * args: (err)
+ * args: (err, result)
+ * where result is the newly added instance's index
  */
 function addUserInstanceToContest(user, contest, callback) {
   var contestant = null;
@@ -119,7 +119,15 @@ function addUserInstanceToContest(user, contest, callback) {
         instances: [newContestantInstance]
       };
     }
+    var newlyAddedIndex = contestant.instances.length - 1;
     contestant = JSON.stringify(contestant);
+
+    //if contest.contestants is null, initialize it
+    //make sure it's updated for addAndUpdateContestant
+    if (!contest.contestants) {
+      contest.contestants = {};
+      contest.contestants[user.username] = contestant;
+    }
     
     if (parallelArray.length > 1) {
       waterfallArray.push(function(callback) {
@@ -130,7 +138,20 @@ function addUserInstanceToContest(user, contest, callback) {
       waterfallArray.push(parallelArray[0]);
     }
 
-    async.waterfall(waterfallArray, callback);
+    var waterfallCallback = function(err, result) {
+      if (err && err.message === APPLIED) {
+        setTimeout(function() {
+          addUserInstanceToContest(user, contest, callback);
+        }, Math.random() * MAX_WAIT);
+      }
+      else if (err) {
+        callback(err);
+      }
+      else {
+        callback(null, newlyAddedIndex);
+      }
+    };
+    async.waterfall(waterfallArray, waterfallCallback);
   }
 }
 
@@ -143,24 +164,12 @@ function addUserInstanceToContest(user, contest, callback) {
  * @param {timeuuid}   contestId
  * uuid for contest
  * @param {Function} callback
- * args (err)
+ * args (err, result)
+ * result will be the instance index of the newly added contestant instance
  */
 function addContestant(user, contestId, callback) {
-  var waterfallCallback = function (err) {
-    if (err && err.message === APPLIED) {
-      setTimeout(function() {
-        addContestant(user, contestId, callback);
-      }, Math.random() * MAX_WAIT);
-    }
-    else if (err) {
-      callback(err);
-    }
-    else {
-      callback(null);
-    }
-  };
-
-  async.waterfall([
+  async.waterfall(
+  [
     function(callback) {
       SelectContest.selectById(contestId, callback);
     },
@@ -168,7 +177,7 @@ function addContestant(user, contestId, callback) {
       addUserInstanceToContest(user, contest, callback);
     }
   ],
-  waterfallCallback);
+  callback);
 }
 
 /**
@@ -176,11 +185,12 @@ function addContestant(user, contestId, callback) {
  * Test exports
  * ====================================================================
  */
+exports.addContestant = addContestant;
 exports.createNewContestantInstance = createNewContestantInstance;
-exports.addUserInstanceToContest = addUserInstanceToContest;
+
 /**
  * ====================================================================
  * Used exports
  * ====================================================================
  */
-exports.addContestant = addContestant;
+exports.addUserInstanceToContest = addUserInstanceToContest;
