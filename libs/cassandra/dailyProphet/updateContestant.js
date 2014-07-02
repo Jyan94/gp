@@ -11,7 +11,6 @@ var Contestant = require('./contestant');
 var TimeSeries = require('./timeseries');
 
 var async = require('async');
-var multiline = require('multiline');
 
 var minuteInMilliseconds = 60000;
 
@@ -100,7 +99,6 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
       }
       else if ((instance.virtualMoneyRemaining + result) !== 
                 contest.starting_virtual_money){
-        console.log(instance.virtualMoneyRemaining, result);
         callback(new Error('numbers do not add up'));
       }
       else {

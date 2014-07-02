@@ -202,3 +202,4 @@ function deleteUsernameFromContest(username, contestId, callback) {
   }
 }
 exports.deleteUsernameFromContest = deleteUsernameFromContest;
+

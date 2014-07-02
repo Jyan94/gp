@@ -14,7 +14,6 @@ var configs = require('config/index');
 var User = require('libs/cassandra/user');
 
 var async = require('async');
-var multiline = require('multiline');
 
 var APPLIED = configs.constants.dailyProphet.APPLIED;
 var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;

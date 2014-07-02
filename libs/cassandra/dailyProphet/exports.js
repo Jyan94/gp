@@ -8,7 +8,7 @@
 'use strict';
 var extend = require('node.extend');
 
-var addContestant = require('./addContestant');
+var addAndUpdateContestant = require('./addAndUpdateContestant');
 var removeContestant = require('./removeContestant');
 var select = require('./select');
 var update = require('./update');
@@ -17,16 +17,6 @@ var timeseries = require('./timeseries');
 
 /**
  * function signatures for adding, removing, and updating contestant instances
- * =============================================================================
- * @function addContestant(user, contestId, callback)
- * 
- * @param {Object}   user
- * req.user passport object, contains username and money fields
- * @param {timeuuid}   contestId
- * uuid for contest
- * @param {Function} callback
- * args (err)
- *
  * =============================================================================
  * @function removeContestantInstance(user, instanceIndex, contestId, callback)
  *
@@ -56,10 +46,24 @@ var timeseries = require('./timeseries');
  * @param  {timeuuid}   contestId       
  * @param  {Function} callback
  * args: (err)
+ * 
+ * =============================================================================
+ * adds a new contestant instance and updates the instance
+ * 
+ * @function addAndUpdateContestant(user, contestId, newInstance, callback)
+ * 
+ * @param  {object}   user
+ * from req.user
+ * @param {timeuuid}   contestId
+ * sent from the front end
+ * @param {object}   newInstance
+ * instance sent from the front end
+ * @param {Function} callback
+ * args: (err)
  */
-exports.addContestant = addContestant.addContestant;
 exports.removeContestantInstance = removeContestant.removeContestantInstance;
 exports.updateContestantInstance = updateContestant.updateContestantInstance;
+exports.addAndUpdateContestant = addAndUpdateContestant.addAndUpdateContestant;
 
 /**
  * timeseries namespace
