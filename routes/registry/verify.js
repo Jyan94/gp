@@ -14,7 +14,9 @@ var verify = function(req, res, next) {
       next(err);
     }
     else {
-      res.render('verified.jade', {text: verificationMessages.verified});
+      res.render(
+        'registry/verified.jade', 
+        {text: verificationMessages.verified});
     }
   };
 
@@ -24,13 +26,17 @@ var verify = function(req, res, next) {
       User.update(userId, ['verified'], [true], updateVerifiedCallback);
     }
     else {
-      res.render('verified.jade', {text: verificationMessages.noMatch});
+      res.render(
+        'registry/verified.jade', 
+        {text: verificationMessages.noMatch});
     }
   };
 
   var checkIfVerified = function(result) {
     if (result.verified === true) {
-      res.render('verified.jade', {text: verificationMessages.alreadyVerified});
+      res.render(
+        'registry/verified.jade', 
+        {text: verificationMessages.alreadyVerified});
     }
     else {
       notVerified(result);
@@ -45,7 +51,9 @@ var verify = function(req, res, next) {
       checkIfVerified(result);
     }
     else {
-      res.render('verified.jade', {text: verificationMessages.invalidPage});
+      res.render(
+        'registry/verified.jade', 
+        {text: verificationMessages.invalidPage});
     }
   };
 

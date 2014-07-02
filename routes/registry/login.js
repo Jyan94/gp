@@ -40,7 +40,7 @@ var renderLogin = function(req, res) {
       errorsSend[i] = JSON.parse(errors[i]);
     }
   }
-  res.render('login.jade', { errors: errorsSend });
+  res.render('registry/login.jade', { errors: errorsSend });
 }
 
 exports.checkUser = checkUser;
