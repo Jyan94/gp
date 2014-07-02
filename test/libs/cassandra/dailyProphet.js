@@ -167,8 +167,8 @@ var athleteIds =
 ];
 
 var testInstance = {
-  virtualMoneyRemaining: 1000,
-  wagers: [2000, 2000, 3000, 1000, 1000],
+  virtualMoneyRemaining: 0,
+  wagers: [2000, 2000, 3000, 1000, 2000],
   predictions: [10, 20, 30, 40, 50]
 };
 var USER_ID_INDEX = 0;

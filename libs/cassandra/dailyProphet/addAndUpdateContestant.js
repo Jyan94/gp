@@ -78,7 +78,6 @@ function verifyAndUpdateInstance(user, contest, index, instance, callback) {
  * args: (err)
  */
 function addAndUpdateContestant(user, contestId, newInstance, callback) {
-  var index = null;
   async.waterfall(
   [
     function(callback) {
@@ -90,12 +89,11 @@ function addAndUpdateContestant(user, contestId, newInstance, callback) {
           callback(err);
         }
         else {
-          index = newInstanceIndex;
-          callback(null, contest);
+          callback(null, newInstanceIndex, contest);
         }
       });
     },
-    function(contest, callback) {
+    function(index, contest, callback) {
       verifyAndUpdateInstance(user, contest, index, newInstance, callback);
     }
   ],

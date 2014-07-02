@@ -67,10 +67,16 @@ function verifyInstance(user, instanceIndex, instance, contest, callback) {
   else if (!(instance && 
              instance.predictions && 
              instance.wagers && 
-             instance.virtualMoneyRemaining &&
              Array.isArray(instance.predictions) && 
              Array.isArray(instance.wagers))) {
     callback(new Error('instance format error'));
+  }
+  else if (!instance.virtualMoneyRemaining && 
+            instance.virtualMoneyRemaining !== 0) {
+    callback(new Error('virtual money not a number'));
+  }
+  else if (instance.virtualMoneyRemaining !== 0) {
+    callback(new Error('must spend all money'));
   }
   else if (instance.predictions.length !== instance.wagers.length) {
     callback(new Error('wagers length do not match with predictions length'));
@@ -170,7 +176,7 @@ function updateInstance(
   var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
   var now = (new Date()).getTime();
   
-  if (instanceIndex >= contestant.instances.length) {
+  if (instanceIndex >= contestant.instances.length || instanceIndex < 0) {
     callback(new Error('out of bounds index'));
   }
   //give minute leeway to new joiners (joinTime + leeway must be > than now)

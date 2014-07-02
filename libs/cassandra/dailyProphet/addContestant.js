@@ -126,8 +126,8 @@ function addUserInstanceToContest(user, contest, callback) {
     //make sure it's updated for addAndUpdateContestant
     if (!contest.contestants) {
       contest.contestants = {};
-      contest.contestants[user.username] = contestant;
     }
+    contest.contestants[user.username] = contestant;
     
     if (parallelArray.length > 1) {
       waterfallArray.push(function(callback) {
