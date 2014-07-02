@@ -5,8 +5,9 @@
 body {
   padding-bottom: 40px;
   color: #fffffa;
-  background-color: #012148;
+  background-color: #000;
   box-shadow: inset 0 0 100px rgba(110,110,0,.5);
+  font-family: 'Roboto', sans-serif;
 }
 
 
@@ -106,7 +107,6 @@ body {
 
 /* Thin out the marketing headings */
 .featurette-heading {
-  font-family: "Times New Roman", serif;
   font-weight: 300;
   line-height: 1;
   letter-spacing: -1px;
@@ -131,10 +131,12 @@ body {
     margin-bottom: 20px;
     font-size: 21px;
     line-height: 1.4;
+    font-family: 'Roboto', sans-serif;
   }
 
   .featurette-heading {
     font-size: 50px;
+    font-family: 'Roboto', sans-serif;
   }
 }
 
