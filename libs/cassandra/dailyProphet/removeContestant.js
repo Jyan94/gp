@@ -158,14 +158,8 @@ function removeContestantInstance(user, instanceIndex, contestId, callback) {
 
 /**
  * ====================================================================
- * Test exports
- * ====================================================================
- */
-exports.removeInstanceFromContest = removeInstanceFromContest;
-
-/**
- * ====================================================================
  * Used exports
  * ====================================================================
  */
 exports.removeContestantInstance = removeContestantInstance;
+exports.removeInstanceFromContest = removeInstanceFromContest;

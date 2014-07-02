@@ -258,12 +258,12 @@ function updateContestantInstance(
  * Test exports
  * ====================================================================
  */
-exports.verifyInstance = verifyInstance;
 exports.compareInstances = compareInstances;
-exports.updateInstance = updateInstance;
 /**
  * ====================================================================
  * Used exports
  * ====================================================================
  */
 exports.updateContestantInstance = updateContestantInstance;
+exports.updateInstance = updateInstance;
+exports.verifyInstance = verifyInstance;

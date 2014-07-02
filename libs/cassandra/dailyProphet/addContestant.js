@@ -121,7 +121,7 @@ function addUserInstanceToContest(user, contest, callback) {
     }
     var newlyAddedIndex = contestant.instances.length - 1;
     contestant = JSON.stringify(contestant);
-    
+
     //if contest.contestants is null, initialize it
     //make sure it's updated for addAndUpdateContestant
     if (!contest.contestants) {
@@ -186,10 +186,10 @@ function addContestant(user, contestId, callback) {
  * ====================================================================
  */
 exports.createNewContestantInstance = createNewContestantInstance;
-exports.addUserInstanceToContest = addUserInstanceToContest;
 /**
  * ====================================================================
  * Used exports
  * ====================================================================
  */
 exports.addContestant = addContestant;
+exports.addUserInstanceToContest = addUserInstanceToContest;
