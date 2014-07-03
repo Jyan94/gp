@@ -5,8 +5,8 @@ var configs = require('config/index.js');
 
 var async = require('async');
 var User = require('libs/cassandra/user');
-var Tournament = require('libs/cassandra/dailyProphet/exports');
-var modes = require('libs/dailyProphet/modes.js');
+var Tournament = require('libs/cassandra/contestB/exports');
+var modes = require('libs/contestB/modes.js');
 var cql = configs.cassandra.cql;
 
 var messages = configs.constants.tournamentStrings;
