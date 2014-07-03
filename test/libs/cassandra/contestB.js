@@ -178,15 +178,15 @@ var testInstance2 = {
 };
 var USER_ID_INDEX = 0;
 
-var AddContestant = require('libs/cassandra/dailyProphet/addContestant');
-var RemoveContestant = require('libs/cassandra/dailyProphet/removeContestant');
-var SelectContest = require('libs/cassandra/dailyProphet/select');
-var UpdateContest = require('libs/cassandra/dailyProphet/update');
-var UpdateContestant = require('libs/cassandra/dailyProphet/updateContestant');
-var TimeseriesValues = require('libs/cassandra/dailyProphet/timeseries');
+var AddContestant = require('libs/cassandra/contestB/addContestant');
+var RemoveContestant = require('libs/cassandra/contestB/removeContestant');
+var SelectContest = require('libs/cassandra/contestB/select');
+var UpdateContest = require('libs/cassandra/contestB/update');
+var UpdateContestant = require('libs/cassandra/contestB/updateContestant');
+var TimeseriesValues = require('libs/cassandra/contestB/timeseries');
 var User = require('libs/cassandra/user');
 var AddAndUpdateContestant = 
-  require('libs/cassandra/dailyProphet/addAndUpdateContestant');
+  require('libs/cassandra/contestB/addAndUpdateContestant');
 
 var configs = require('config/index');
 var cql = configs.cassandra.cql;
