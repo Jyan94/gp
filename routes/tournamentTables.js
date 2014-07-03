@@ -269,5 +269,6 @@ var tournamentEntryProcess = function (req, res, next) {
  */
 
 exports.renderTournamentTablesPage = renderTournamentTablesPage;
+exports.renderTournamentCreationPage = renderTournamentCreationPage;
 exports.renderTournamentEntryPage = renderTournamentEntryPage;
 exports.tournamentEntryProcess = tournamentEntryProcess;

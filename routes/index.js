@@ -95,6 +95,7 @@ app.get('/data', graph.get);
 //tournament
 var tournament = require('routes/tournamentTables');
 app.get('/tournaments', tournament.renderTournamentTablesPage);
+app.get('/tournamentCreation', tournament.tournamentCreation);
 app.get('/tournamentEntry/:contestId', tournament.renderTournamentEntryPage);
 app.post('/tournamentEntryProcess/:contestId', tournament.tournamentEntryProcess);
 
