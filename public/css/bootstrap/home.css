@@ -91,32 +91,37 @@ body {
 }
 
 .aaronRodgers {
-  height: 0px;
-  position: absolute;
-  left: 50%;
-  top: 400px;
-  margin-left: -180px;
-  z-index: 0;
-  -webkit-animation-name: aaronRodgersFadeInOut;
-  -webkit-animation-timing-function: ease-in-out;
-  -webkit-animation-duration: 10s;
-  -webkit-filter: drop-shadow(3px 3px 1px #222);
+  width: 480px;
+  margin: 0 auto;
+  position: relative;
 }
 
-@-webkit-keyframes aaronRodgersSilFadeInOut {
-  0% {
-    opacity:1;
-  }
-  30% {
-    opacity:1;
-  }
-  70% {
-    opacity:0;
-  }
-  100% {
-    opacity:0;
-  }
+.aaronRodgers img {
+  width: 100%;
 }
+
+.aaronRodgers .fadeIn {  
+  position: absolute;
+  top: 0;
+
+  left: 0;
+  -webkit-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -moz-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -ms-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -o-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -webkit-filter: drop-shadow(3px 3px 1px #222);
+  -moz-filter: drop-shadow(3px 3px 1px #222);
+  -ms-filter: drop-shadow(3px 3px 1px #222);
+  -o-filter: drop-shadow(3px 3px 1px #222);
+  filter: drop-shadow(3px 3px 1px #222);
+}
+
+@-webkit-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@-moz-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@-ms-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@-o-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
 
 .aaronRodgersSil {
   height: 0px;
