@@ -38,3 +38,48 @@ $(document).ready(function () {
     return false;
   });
 });
+
+function profileError(error, id) {
+  if ($('.flash-error-fade').is(':animated')) {
+    $('.flash-error-fade').stop(true, true);
+  }
+
+  var offset = $('#' + id).offset();
+  var posX = offset.left + 30;
+  var posY = offset.top - 15;
+
+  console.log(posX, posY);
+
+  $('#flash-error-profile-' + error).css({ left: posX, top: posY });
+  $('#flash-error-profile-' + error).show().fadeOut(2000);
+}
+
+$(document).ready(function() {
+  $('.delete-bet').each(function(index, element) {
+    $('#' + element.id).click(function(e) {
+      e.preventDefault();
+      var betId = element.id.substring(11);
+      var data = { betId: betId } ;
+      $.ajax({
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        url: '../deleteBets/' + betId,
+        success: function (response) {
+          console.log(response);
+          $('#bet-' + betId).remove();
+        },
+        error: function (response) {
+          var parsedResponse = JSON.parse(response.responseText);
+          var error = parsedResponse.error;
+          var possibleErrors = [4, 5];
+
+          if (possibleErrors.indexOf(error) >= 0) {
+            profileError(error, element.id);
+          }
+        }
+      });
+    });
+  });
+
+});

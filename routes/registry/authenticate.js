@@ -12,6 +12,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 var FacebookStrategyObj = configs.constants.FacebookStrategy;
+var LocalStrategyObject = configs.constants.PassportLocalStrategyObject;
+var defaultPlayerImage = configs.constants.defaultPlayerImage;
 var messages = configs.constants.auth;
 
 function localStrategyVerify(username, password, done) {
@@ -22,7 +24,9 @@ function localStrategyVerify(username, password, done) {
     if (!result) {
       return done(null, false, {message: messages.incorrectUsername});
     }
-
+    if (result.verified === false) {
+      return done(null, false, { message: messages.unverified });
+    }
     var bcryptCallback = function(err, res) {
       if (res) {
         return done(null, result);
@@ -34,7 +38,7 @@ function localStrategyVerify(username, password, done) {
     bcrypt.compare(password, result.password, bcryptCallback);
   };
 
-  User.select('username', username, selectCallback);
+  User.selectByUsername(username, selectCallback);
 }
 
 passport.use(new FacebookStrategy(FacebookStrategyObj,
@@ -57,7 +61,7 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
         return done(err);
       }
       else {
-        User.select('email', profileUsername, userEmailAfterInsertCallback);
+        User.selectByEmail(profileUsername, userEmailAfterInsertCallback);
       }
     };
 
@@ -70,11 +74,20 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
         return done(null, result);
       }
       else {
+        var verifiedTime = null;
+        var verified = false;
+        var verificationCode = null;
+        if (configs.isDev()) {
+          verified = true;
+          verifiedTime = new Date();
+          verificationCode = cql.types.timeuuid();
+        }
         var fields = [
           cql.types.uuid(), //user_id
           profileUsername, //fb email
-          true, //verified
-          null, //verified_time
+          verified, //verified
+          verifiedTime, //verified_time
+          verificationCode, // no ver_code
           profileUsername, //fb username and fb email is the same
           null, //no password since login through facebook
           profile.name.givenName, //first_name
@@ -86,32 +99,28 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
           {value: 10000.0, hint: 'double'}, //spending_power
           profile.id, //fb id
           0, //vip_status
-          null //image
+          defaultPlayerImage //image
         ];
         User.insert(fields, insertUserCallback);
       }
     };
 
     process.nextTick(function() {
-      User.select('email', profileUsername, selectEmailCallback);
+      User.selectByEmail(profileUsername, selectEmailCallback);
     });
   }
 ));
 
-passport.use(new LocalStrategy({
-  usernameField: 'username',
-  passwordField: 'password'
-},
-function(username, password, done) {
-  localStrategyVerify(username, password, done);
-}));
+passport.use(new LocalStrategy(
+  LocalStrategyObject,
+  function(username, password, done) {
+    localStrategyVerify(username, password, done);
+  }));
 
 passport.serializeUser(function (user, done) {
   done(null, user.user_id);
 });
 
 passport.deserializeUser(function (id, done) {
-  User.select('user_id', id, function(err, result){
-    done(err, result);
-  });
+  User.selectById(id, done);
 });

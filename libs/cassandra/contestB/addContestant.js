@@ -8,13 +8,12 @@
 
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
-var UpdateContestants = require('./contestant');
+var Contestant = require('./contestant');
 
 var configs = require('config/index');
 var User = require('libs/cassandra/user');
 
 var async = require('async');
-var multiline = require('multiline');
 
 var APPLIED = configs.constants.contestB.APPLIED;
 var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
@@ -39,7 +38,8 @@ function createNewContestantInstance(startingVirtualMoney, numAthletes) {
     virtualMoneyRemaining : startingVirtualMoney,
     predictions: predictions,
     wagers: wagers,
-    lastModified: null
+    lastModified: null,
+    joinTime: (new Date()).getTime()
   };
 }
 
@@ -53,73 +53,104 @@ function createNewContestantInstance(startingVirtualMoney, numAthletes) {
  * @param {object}   contest  
  * contest object from database
  * @param {Function} callback
- * args: (err)
+ * args: (err, result)
+ * where result is the newly added instance's index
  */
 function addUserInstanceToContest(user, contest, callback) {
   var contestant = null;
   if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
     contestant = JSON.parse(contest.contestants[user.username]);
   }
+
   if (user.money < contest.entry_fee) {
     callback(new Error('not enough money'));
   }
   else if (contest.current_entries === contest.maximum_entries) {
     callback(new Error('contest is full'));
   }
+  //deadline time should be in the future
+  //if it's in the past, shouldn't be able to enter
+  else if (contest.contest_deadline_time.getTime() < (new Date()).getTime()) {
+    callback(new Error('cannot enter contest past deadline time'));
+  }
   else if (contestant && contestant.instances.length === 
           contest.entries_allowed_per_contestant) {
     callback(new Error('exceeded maximum entries for user'));
   }
   else {
-    var parallelArray =
-    [
-      //subtract money from user's current money
-      function(callback) {
-        var leftoverMoney = user.money - contest.entry_fee;
-        User.updateMoney([leftoverMoney], [user.user_id], callback);
-      }
-    ];
-
     var waterfallArray =
     [
       function(callback) {
-        UpdateContestants.addContestant(
+        User.subtractMoney(
+          user.money,
+          contest.entry_fee,
+          user.user_id,
+          callback);
+      },
+      function(callback) {
+        Contestant.addContestant(
           user.username, 
           contestant, 
           contest.current_entries, 
           contest.contest_id,
-          callback);
+          function(err) {
+            if (err) {
+              //restore user to money before add if add contestant fails
+              User.addMoney(
+                user.money - contest.entry_fee,
+                contest.entry_fee,
+                user.user_id,
+                callback);
+            }
+            else {
+              callback(null);
+            }
+          });
       }
     ];
 
     contest.current_entries = contest.current_entries + 1;
     if (contest.current_entries === contest.maximum_entries) {
-      parallelArray.push(function(callback) {
+      waterfallArray.push(function(callback) {
         UpdateContest.setFilled(contest.contest_id, callback);
       });
     }
 
     var newContestantInstance = createNewContestantInstance(
           contest.starting_virtual_money,
-          Object.keys(contest.athletes).length);
+          contest.athletes.length);
     if (contestant) {
       contestant.instances.push(newContestantInstance);
     }
     else {
-      contestant = {instances: [newContestantInstance]};
+      contestant = {
+        instances: [newContestantInstance]
+      };
     }
+    var newlyAddedIndex = contestant.instances.length - 1;
     contestant = JSON.stringify(contestant);
-    
-    if (parallelArray.length > 1) {
-      waterfallArray.push(function(callback) {
-        async.parallel(parallelArray, callback);
-      });
-    }
-    else {
-      waterfallArray.push(parallelArray[0]);
-    }
 
-    async.waterfall(waterfallArray, callback);
+    //if contest.contestants is null, initialize it
+    //make sure it's updated for addAndUpdateContestant
+    if (!contest.contestants) {
+      contest.contestants = {};
+    }
+    contest.contestants[user.username] = contestant;
+
+    var waterfallCallback = function(err, result) {
+      if (err && err.message === APPLIED) {
+        setTimeout(function() {
+          addUserInstanceToContest(user, contest, callback);
+        }, Math.random() * MAX_WAIT);
+      }
+      else if (err) {
+        callback(err);
+      }
+      else {
+        callback(null, newlyAddedIndex);
+      }
+    };
+    async.waterfall(waterfallArray, waterfallCallback);
   }
 }
 
@@ -129,27 +160,15 @@ function addUserInstanceToContest(user, contest, callback) {
  * if the update fails, delay and attempt later
  * @param {Object}   user
  * req.user passport object, contains username and money fields
- * @param {uuid}   contestId
+ * @param {timeuuid}   contestId
  * uuid for contest
  * @param {Function} callback
- * args (err)
+ * args (err, result)
+ * result will be the instance index of the newly added contestant instance
  */
 function addContestant(user, contestId, callback) {
-  var waterfallCallback = function (err) {
-    if (err && err.message === APPLIED) {
-      setTimeout(function() {
-        addContestant(user, contestId, callback);
-      }, Math.random() * MAX_WAIT);
-    }
-    else if (err) {
-      callback(err);
-    }
-    else {
-      callback(null);
-    }
-  };
-
-  async.waterfall([
+  async.waterfall(
+  [
     function(callback) {
       SelectContest.selectById(contestId, callback);
     },
@@ -157,7 +176,7 @@ function addContestant(user, contestId, callback) {
       addUserInstanceToContest(user, contest, callback);
     }
   ],
-  waterfallCallback);
+  callback);
 }
 
 /**
@@ -165,11 +184,12 @@ function addContestant(user, contestId, callback) {
  * Test exports
  * ====================================================================
  */
+exports.addContestant = addContestant;
 exports.createNewContestantInstance = createNewContestantInstance;
-exports.addUserInstanceToContest = addUserInstanceToContest;
+
 /**
  * ====================================================================
  * Used exports
  * ====================================================================
  */
-exports.addContestant = addContestant;
+exports.addUserInstanceToContest = addUserInstanceToContest;

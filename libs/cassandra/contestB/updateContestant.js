@@ -7,18 +7,52 @@
 (require('rootpath')());
 
 var SelectContest = require('./select');
-var UpdateContestant = require('./contestant');
-
-var TimeSeries = require('libs/cassandra/timeseriesFantasyValues');
+var Contestant = require('./contestant');
+var TimeSeries = require('./timeseries');
 
 var async = require('async');
-var multiline = require('multiline');
 
 var minuteInMilliseconds = 60000;
+
+/**
+ * converts milliseconds to readable string
+ * @param  {int} milliseconds
+ * @return {string}
+ */
+function millisecondsToStr (milliseconds) {
+  function numberEnding (number) {
+    return (number > 1) ? 's' : '';
+  }
+  var temp = Math.floor(milliseconds / 1000);
+  var years = Math.floor(temp / 31536000);
+  if (years) {
+    return years + ' year' + numberEnding(years);
+  }
+  var days = Math.floor((temp %= 31536000) / 86400);
+  if (days) {
+    return days + ' day' + numberEnding(days);
+  }
+  var hours = Math.floor((temp %= 86400) / 3600);
+  if (hours) {
+    return hours + ' hour' + numberEnding(hours);
+  }
+  var minutes = Math.floor((temp %= 3600) / 60);
+  if (minutes) {
+    return minutes + ' minute' + numberEnding(minutes);
+  }
+  var seconds = temp % 60;
+  if (seconds) {
+    return seconds + ' second' + numberEnding(seconds);
+  }
+  return 'less than a second';
+}
+
 /**
  * verifies if the instance
  * @param  {object}   user 
  * user object from req.user
+ * @param  {int}   instanceIndex
+ * index of the instance to modify
  * @param  {object}   instance 
  * updated instance to be inserted into the database
  * @param  {object}   contest
@@ -26,23 +60,45 @@ var minuteInMilliseconds = 60000;
  * @param  {Function} callback
  * args: (err, contest)
  */
-function verifyInstance(user, instance, contest, callback) {
+function verifyInstance(user, instanceIndex, instance, contest, callback) {
   if (!(contest.contestants.hasOwnProperty(user.username))) {
     callback(new Error('username does not exist in contest'));
   }
-  else if (!(instance && instance.predictions && instance.wagers)) {
-    callback(new Error('instance format'));
+  else if (!(instance && 
+             instance.predictions && 
+             instance.wagers && 
+             !isNaN(instance.virtualMoneyRemaining) &&
+             Array.isArray(instance.predictions) && 
+             Array.isArray(instance.wagers))) {
+    callback(new Error('instance format error'));
+  }
+  else if (instance.virtualMoneyRemaining !== 0) {
+    callback(new Error('must spend all money'));
   }
   else if (instance.predictions.length !== instance.wagers.length) {
     callback(new Error('wagers length do not match with predictions length'));
   }
-  else if (Object.keys(contest.athletes).length 
-          !== instance.predictions.length) {
+  else if (contest.athletes.length !== instance.predictions.length) {
     callback(new Error('invalid number of athletes'));
   }
   else {
+    var checkIfValidPredictions = function(callback) {
+      async.each(instance.predictions, function(value, callback) {
+        if (isNaN(value) || value < 0) {
+          callback(new Error('undefined prediction'));
+        }
+        else {
+          callback(null);
+        }
+      },
+      callback);
+    };
+
     var reduceFunc = function(memo, item, callback) {
-      if (item < 0) {
+      if (isNaN(item) || item < 0) {
+        callback(new Error('undefined value'));
+      }
+      else if (item < 0) {
         callback(new Error('negative wager'));
       }
       else if (item > contest.max_wager) {
@@ -52,24 +108,35 @@ function verifyInstance(user, instance, contest, callback) {
         callback(null, memo + item); 
       }
     };
-    var reduceCallback = function (err, result) {
-      if (err) {
-        callback(err);
-      }
-      else if ((instance.virtualMoneyRemaining + result) !== 
-                contest.starting_virtual_money){
-        callback(new Error('numbers do not add up'));
-      }
-      else {
-        callback(null, contest);
-      }
+    
+    var checkIfValidWagers = function (callback) {
+      async.reduce(instance.wagers, 0, reduceFunc, function (err, result) {
+        if (err) {
+          callback(err);
+        }
+        else if ((instance.virtualMoneyRemaining + result) !== 
+                  contest.starting_virtual_money){
+          callback(new Error('numbers do not add up'));
+        }
+        else {
+          callback(null);
+        }
+      });
     };
-    async.reduce(instance.wagers, 0, reduceFunc, reduceCallback);
+
+    async.parallel(
+    [
+      checkIfValidPredictions,
+      checkIfValidWagers
+    ],
+    function(err) {
+      callback(err, contest);
+    });
   }
 }
 
 /**
- * compares two instances and inserts all updated bets into the database
+ * compares two instances and inserts all updated bets into timeseries
  * @param  {object}   oldInstance 
  * previous contestant instance
  * @param  {object}   newInstance 
@@ -79,10 +146,10 @@ function verifyInstance(user, instance, contest, callback) {
  * @param  {Function} callback
  * args: (err)
  */
-function compareInstances(oldInstance, newInstance, contest, callback) {
+function compareInstances(user, oldInstance, newInstance, contest, callback) {
   //convert all serialized json text fields of athlete map to object
   var timeseriesUpdates = [];
-  for (var i = 0; contest.athletes.hasOwnProperty(i); ++i) {
+  for (var i = 0; i !== contest.athletes.length; ++i) {
     if (oldInstance.predictions[i] !== newInstance.predictions[i] ||
         oldInstance.wagers[i] !== newInstance.wagers[i]) {
       timeseriesUpdates.push({
@@ -98,7 +165,7 @@ function compareInstances(oldInstance, newInstance, contest, callback) {
         update.athleteId, 
         update.fantasyValue, 
         update.wager, 
-        contest.game_type, 
+        user.username, 
         callback);
     };
     async.each(timeseriesUpdates, updateTimeseriesTable, callback);
@@ -127,12 +194,30 @@ function updateInstance(
 
   var contestant = JSON.parse(contest.contestants[user.username]);
   var cooldownInMilliseconds = minuteInMilliseconds * contest.cooldown_minutes;
-  if (contestant.instances[instanceIndex].lastModified &&
-      contestant.instances[instanceIndex].lastModified+cooldownInMilliseconds >
-      (new Date()).getTime()) {
-    callback(new Error('cooldown has not expired'));
+  var now = (new Date()).getTime();
+  
+  if (instanceIndex >= contestant.instances.length || instanceIndex < 0) {
+    callback(new Error('out of bounds index'));
   }
-  else if (instanceIndex < contestant.instance.length) {
+  //give minute leeway to new joiners (joinTime + leeway must be > than now)
+  //else check if for hard deadline
+  else if (contestant.instances[instanceIndex].joinTime + minuteInMilliseconds 
+           < now || contest.contest_deadline_time.getTime() < now){
+    callback(new Error('cannot update instance after deadline'));
+  }
+  //last modified + cooldown should be in the past
+  //if it's in the future, should not be able to modify
+  else if (contestant.instances[instanceIndex].lastModified &&
+           contestant.instances[instanceIndex].lastModified + 
+           cooldownInMilliseconds > now) {
+    var lastModifiedPlusCooldown = 
+      contestant.instances[instanceIndex].lastModified + 
+      cooldownInMilliseconds;
+    var difference = lastModifiedPlusCooldown - now;
+    callback(new Error('cooldown has not expired yet ' 
+      + millisecondsToStr(difference) + ' remaining'));
+  }
+  else {
     var compareCallback = function(err) {
       if (err) {
         callback(err);
@@ -140,7 +225,7 @@ function updateInstance(
       else {
         updatedInstance.lastModified = (new Date()).getTime();
         contestant.instances[instanceIndex] = updatedInstance;
-        UpdateContestant.updateContestant(
+        Contestant.updateContestant(
           user.username, 
           JSON.stringify(contestant), 
           contest.contest_id, 
@@ -148,12 +233,13 @@ function updateInstance(
       }
     };
 
-    var oldInstance = contestant.instance[instanceIndex];
-    compareInstances(oldInstance, updatedInstance, contest, compareCallback);
-
-  }
-  else {
-    callback(new Error('out of bounds index'));
+    var oldInstance = contestant.instances[instanceIndex];
+    compareInstances(
+      user, 
+      oldInstance, 
+      updatedInstance, 
+      contest, 
+      compareCallback);
   }
 }
 
@@ -167,7 +253,7 @@ function updateInstance(
  * index of contestant instance 
  * @param  {object}   updatedInstance
  * updated instance for contestant as an object
- * @param  {uuid}   contestId       
+ * @param  {timeuuid}   contestId       
  * @param  {Function} callback
  * args: (err)
  */
@@ -198,12 +284,12 @@ function updateContestantInstance(
  * Test exports
  * ====================================================================
  */
-exports.verifyInstance = verifyInstance;
 exports.compareInstances = compareInstances;
-exports.updateInstance = updateInstance;
 /**
  * ====================================================================
  * Used exports
  * ====================================================================
  */
 exports.updateContestantInstance = updateContestantInstance;
+exports.updateInstance = updateInstance;
+exports.verifyInstance = verifyInstance;

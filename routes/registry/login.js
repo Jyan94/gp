@@ -1,5 +1,23 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 require('rootpath')();
+
+
+/**
+ * checks if user session is still active
+ * if it is, redirects to market
+ */
+var checkUser = function(req, res, next) {
+  if (!req.user) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
+}
 
 /**
  * checks if user session is still active
@@ -22,12 +40,9 @@ var renderLogin = function(req, res) {
       errorsSend[i] = JSON.parse(errors[i]);
     }
   }
-
-  console.log(errorsSend);
-
-  res.render('login.jade', { errors: errorsSend });
+  res.render('registry/login.jade', { errors: errorsSend });
 }
 
-//exports.checkUser = checkUser;
+exports.checkUser = checkUser;
 exports.redirectLogin = redirectLogin;
 exports.renderLogin = renderLogin;

@@ -175,7 +175,7 @@ function processArrayBets(betsArray, fantasyPoints, callback) {
     var bets = betsArray[i];
 
     console.log(bets.length);
-    
+
     for (var j = 0; j !== bets.length; ++j) {
       calculateBet(bets[j], fantasyPoints[i], errCallback);
     }

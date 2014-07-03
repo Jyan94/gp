@@ -27,12 +27,14 @@ var CANCELLED = states.CANCELLED;
  * ====================================================================
  */
 var INSERT_CONTEST_QUERY = multiline(function() {/*
-  INSERT INTO contest_B (
+  INSERT INTO daily_prophet (
+    athlete_names,
     athletes,
     commission_earned,
     contest_deadline_time,
     contest_end_time,
     contest_id,
+    contest_name,
     contest_start_time,
     contest_state,
     contestants,
@@ -40,7 +42,8 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     current_entries,
     entries_allowed_per_contestant,
     entry_fee,
-    game_type,
+    games,
+    isfiftyfifty,
     max_wager,
     maximum_entries,
     minimum_entries,
@@ -54,18 +57,52 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?
+    ?, ?, ?, ?
   );
 */});
 
+var ATHLETE_NAMES_INDEX = 0;
+var ATHLETES_INDEX = 1;
+var CONTESTANTS_INDEX = 9;
+var GAMES_INDEX = 14;
+var PAY_OUTS_INDEX = 19;
 /**
- * initialize contest by inserting into contest_count_entries and contest_B
+ * fields that need type inference are formatted
+ * initialize contest by inserting into daily_prophet
  * @param  {array}   settings
- * contains array for contest_b entry initialization params
+ * contains array for daily_prophet entry initialization params
  * @param  {Function} callback
  * parameters (err)
  */
 exports.insert  = function(settings, callback) {
+  settings[ATHLETE_NAMES_INDEX] = {
+    value: settings[ATHLETE_NAMES_INDEX], 
+    hint: 'list'
+  };
+  settings[ATHLETES_INDEX] = {
+    value: settings[ATHLETES_INDEX], 
+    hint: 'list'
+  };
+  settings[CONTESTANTS_INDEX] = {
+    value: settings[CONTESTANTS_INDEX], 
+    hint: 'map'
+  };
+  settings[GAMES_INDEX] = {
+    value: settings[GAMES_INDEX], 
+    hint: 'list'
+  };
+  for (var key in settings[PAY_OUTS_INDEX]) {
+    if (settings[PAY_OUTS_INDEX].hasOwnProperty(key)) {
+      settings[PAY_OUTS_INDEX][key] = {
+        value: settings[PAY_OUTS_INDEX][key],
+        hint: 'double'
+      };
+    }
+  }
+  settings[PAY_OUTS_INDEX] = {
+    value: settings[PAY_OUTS_INDEX], 
+    hint: 'map'
+  };
   cassandra.query(INSERT_CONTEST_QUERY, settings, quorum, function(err) {
     callback(err);
   });
@@ -78,7 +115,7 @@ exports.insert  = function(settings, callback) {
  */
 var DELETE_CONTEST_QUERY = multiline(function() {/*
   DELETE 
-    FROM contest_B 
+    FROM daily_prophet 
     WHERE contest_id = ?;
 */});
 
@@ -94,7 +131,7 @@ exports.delete = function(contestId, callback) {
 
 var UPDATE_STATE_QUERY = multiline(function() {/*
   UPDATE 
-    contest_B
+    daily_prophet
   SET 
     contest_state = ?
   WHERE
@@ -104,8 +141,8 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
 /**
  * [updateContestState description]
  * @param  {int}   nextState 
- * 0-4, defined in constants.contestB
- * @param  {uuid}   contestId
+ * 0-4, defined in constants.dailyProphet
+ * @param  {timeuuid}   contestId
  * @param  {Function} callback
  * args: (err)
  */

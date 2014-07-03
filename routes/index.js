@@ -18,15 +18,14 @@ app.use(passport.session());
 var staticPages = require('routes/static/routes');
 app.get('/', staticPages.home);
 //commented out for purposes of making public
-/*
+app.get('/home', staticPages.home);
+
 app.get('/about', staticPages.about);
 app.get('/contact', staticPages.contact);
 app.get('/faq', staticPages.faq);
 app.get('/features', staticPages.features);
-app.get('/home', staticPages.home);
 app.get('/rules', staticPages.rules);
 app.get('/terms', staticPages.terms);
-*/
 
 //login
 var login = require('routes/registry/login');
@@ -43,7 +42,7 @@ app.get('/auth/facebook',
 
 // Facebook will redirect the user to this URL after approval.
 app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { successRedirect: '/user/',
+  passport.authenticate('facebook', { successRedirect: '/user',
                                       failureRedirect: '/login' }));
 
 //signup
@@ -53,12 +52,16 @@ app.route('/signup')
 .get(signup.renderSignup)
 .post(signup.processSignup);
 
+//verify
+var verify = require('routes/registry/verify');
+app.get('/verify/:email/:ver_code', verify.verify);
+
 //logout
 var logout = require('routes/registry/logout');
 app.get('/logout', logout.logout);
 
 //redirects to login if not logged in
-//app.all('*', login.checkUser);
+app.all('*', login.checkUser);
 
 //autocomplete
 var autocomplete = require('routes/autocomplete');
@@ -80,10 +83,22 @@ app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
 app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
+//paypal
+var paypal = require('routes/paypal');
+app.post('/submitPayment/:userId', paypal.submitPayment);
+
 //graph
 var graph = require('routes/graph');
 app.get('/update', graph.update);
 app.get('/data', graph.get);
+
+//tournament
+var tournament = require('routes/tournamentTables');
+app.get('/contestTable', tournament.renderTournamentTablesPage);
+app.get('/populateContestTable', tournament.sendContestTable);
+app.get('/tournamentEntry/:contestId', tournament.renderTournamentEntryPage);
+app.post('/tournamentEntryProcess/:contestId',
+  tournament.tournamentEntryProcess);
 
 //error handling middleware logs errors and sends 500
 var errorHandler = require('routes/error/error');

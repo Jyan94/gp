@@ -1,7 +1,7 @@
 doctype html
 html(lang="en")
   head
-    include base_head
+    include common/base_head
   body
     include banner
     div.content(style='width:1080px')
@@ -29,6 +29,8 @@ html(lang="en")
               td(style='width:150px', align='right')
                 b Money:
               td= userInfo.money
+              div(id='paypal' height = '70' width = '100' border='0' style='cursor: pointer')
+                img(src='https://www.paypalobjects.com/webstatic/mktg/logo/AM_SbyPP_mc_vs_dc_ae.jpg')
             tr
               td(style='width:150px', align='right')
                 b Spending Power:
@@ -42,7 +44,7 @@ html(lang="en")
                 b VIP Status:
               td= userInfo.vip_status
 
-      div#tab-container
+      div.tab-container
         ul.tab-menu
           li#pending-bets.active Pending Bets
           li#current-bets Current Bets
@@ -51,60 +53,108 @@ html(lang="en")
         div.tab-top-border
         div#pending-bets-tab.tab-content.active
           h1 Pending Bets
-          div#bet-container
+          div.bet-container
             each item in pendingBetInfo
-              div.padded
-                div#indiv-bet-container.rounded
-                  table#bet-layout(border='0', cellpadding='5')
+              div.padded(id='bet-' + item.bet_id)
+                div.indiv-bet-container.rounded
+                  table.bet-layout(border='0', cellpadding='5')
                     tbody
                       tr
-                        td#bet-player-image-cell(style='width:100px', align='right')
-                          div#bet-player-image(style='background-image: url(#{userInfo.image})')
-                        td#bet-info-cell
-                          div#bet-player-name
+                        td.bet-player-image-cell(style='width:100px', align='right')
+                          div.bet-player-image(style='background-image: url(#{userInfo.image})')
+                        td.bet-info-cell
+                          div.bet-player-name
                             h1 Bet on #{item.player_id}
-                          div#bet-info
+                          div.bet-info
                             | Price: #{item.bet_value}
-                          div#bet-info
+                          div.bet-info
                             | Multiplier: #{item.multiplier}
-                          a(href=item.bet_id class = 'bet' id='bet'+item.bet_id style='cursor: pointer')
+                          div.bet-info
+                            | Long Position: #{item.long_position}
+                          a(href=item.bet_id class = 'delete-bet' id='delete-bet-' + item.bet_id style='cursor: pointer')
                             img(src='../deleteButton.png' width='20' height='30')
         div#current-bets-tab.tab-content
           h1 Current Bets
-          div#bet-container
+          div.bet-container
             each item in currentBetInfo
               div.padded
-                div#indiv-bet-container.rounded
-                  table#bet-layout(border='0', cellpadding='5')
+                div.indiv-bet-container.rounded
+                  table.bet-layout(border='0', cellpadding='5')
                     tbody
                       tr
-                        td#bet-player-image-cell(style='width:100px', align='right')
-                          div#bet-player-image(style='background-image: url(#{userInfo.image})')
-                        td#bet-info-cell
-                          div#bet-player-name
+                        td.bet-player-image-cell(style='width:100px', align='right')
+                          div.bet-player-image(style='background-image: url(#{userInfo.image})')
+                        td.bet-info-cell
+                          div.bet-player-name
                             h1 Bet on #{item.player_id}
-                          div#bet-info
+                          div.bet-info
                             | Price: #{item.bet_value}
-                          div#bet-info
+                          div.bet-info
                             | Multiplier: #{item.multiplier}
+                          div.bet-info
+                            | Long Position: #{userInfo.user_id === item.long_better_id}
         div#past-bets-tab.tab-content
           h1 Past Bets
-          div#bet-container
+          div.bet-container
             each item in pastBetInfo
               div.padded
-                div#indiv-bet-container.rounded
-                  table#bet-layout(border='0', cellpadding='5')
+                div.indiv-bet-container.rounded
+                  table.bet-layout(border='0', cellpadding='5')
                     tbody
                       tr
-                        td#bet-player-image-cell(style='width:100px', align='right')
-                          div#bet-player-image(style='background-image: url(#{userInfo.image})')
-                        td#bet-info-cell
-                          div#bet-player-name
+                        td.bet-player-image-cell(style='width:100px', align='right')
+                          div.bet-player-image(style='background-image: url(#{userInfo.image})')
+                        td.bet-info-cell
+                          div.bet-player-name
                             h1 Bet on #{item.player_id}
-                          div#bet-info
+                          div.bet-info
                             | Price: #{item.bet_value}
-                          div#bet-info
+                          div.bet-info
                             | Multiplier: #{item.multiplier}
-      script(src='../js/deleteBets.js')
-      script(src='../js/jquery-ui-1.10.4.custom.js')
+                          div.bet-info
+                            | Long Position: #{userInfo.user_id === item.long_better_id}
+        div.paypal-dialog-box-backdrop
+        div.paypal-dialog-box
+          div.paypal-dialog-box-header
+            center
+              p Deposit Funds
+            div.paypal-dialog-box-body
+              div.paypal-dialog-box-info
+                form.pure-form(action='/submitPayment/'+userInfo.user_id method='post')
+                  input(id = 'visa' type='radio' name='cardType' value='visa' checked='checked')
+                  | Visa
+                  input(id = 'amex' type='radio' name='cardType' value='amex')
+                  | Am Ex
+                  input(id = 'mastercard' type='radio' name='cardType' value='mastercard')
+                  | Mastercard
+                  input(id = 'discover' type='radio' name='cardType' value='discover')
+                  | Discover
+                  input(type='number' name='cardNumber' placeholder='Credit Card Number' required=true style='width:200px')
+                  input(type='number' name='expireMonth', placeHolder='Exp Mon' required=true style='width:100px')
+                  input(type='number' name='expireYear', placeHolder='Exp Year' required=true style='width:100px')
+                  input(type='number' name='cvv2', placeHolder='Cvv2' required=true style='width:100px')
+                  input(type='text' name='firstName', placeHolder='First Name' required=true style='width:200px')
+                  input(type='text' name='lastName', placeHolder='Last Name' required=true style='width:200px')
+                  input(type='text' name='address1', placeHolder='Address Line 1' required=true style='width:200px')
+                  input(type='text' name='city' placeHolder='City' required=true style='width:100px')
+                  input(type='text' name='state' placeHolder='State' required=true style='width:100px')
+                  input(type='number' name='postalCode' placeHolder='Postal Code' required=true style='width:200px')
+                  input(type='amount' name='amount' placeHolder='Deposit Amount' required=true style='width:100px')
+                  input.pure-button.button-primary(type='submit')
+      div.flash-error.flash-error-fade#flash-error-profile-4
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Database Error
+            p Something went wrong with the database.
+      div.flash-error.flash-error-fade#flash-error-profile-5
+        div.padded-less
+          div
+            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            h3(style='padding: 4px') Bet Deleter Error
+            p You can't delete someone else's bet.
+      script(src='/js/paypal.js')
+      script(src='/css/paypal.css')
+      script(src='/js/jquery/jquery-ui-1.10.4.custom.js')
       script(type='application/javascript' src='/js/profile.js')
+      link(rel='stylesheet' type='text/css' href='/css/bootstrap/paypal.css')

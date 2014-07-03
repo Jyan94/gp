@@ -8,16 +8,17 @@
 
 var SelectContest = require('./select');
 var UpdateContest = require('./update');
-var UpdateContestants = require('./contestant');
+var Contestant = require('./contestant');
 
 var configs = require('config/index');
 var User = require('libs/cassandra/user');
 
 var async = require('async');
-var multiline = require('multiline');
 
 var APPLIED = configs.constants.contestB.APPLIED;
 var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
+var TIME_BEFORE_CANCEL = 
+  configs.constants.contestB.MAX_TIME_BEFORE_DEADLINE_TO_CANCEL;
 
 /**
  * removes contestant instance from contestant object
@@ -34,12 +35,25 @@ var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
  */
 function removeInstanceFromContest(user, contest, instanceIndex, callback) {
   var contestant = null;
+  var removeDeadlineMilliseconds = null;
+  if (configs.isDev()) {
+    removeDeadlineMilliseconds = contest.contest_deadline_time.getTime();
+  }
+  else {
+    removeDeadlineMilliseconds = 
+      contest.contest_deadline_time.getTime() - TIME_BEFORE_CANCEL;
+  }
+
   if (contest.contestants && contest.contestants.hasOwnProperty(user.username)){
     contestant = JSON.parse(contest.contestants[user.username]);
   }
   if (!contestant) {
     callback(new Error('contestant does not exist, should never happen!'));
-  } 
+  }
+  //if past deadline time to cancel, don't allow cancelling
+  else if (removeDeadlineMilliseconds < (new Date()).getTime()) {
+    callback(new Error('cannot leave contest after cancel deadline'));
+  }
   else if (!(contestant.instances.length>instanceIndex && instanceIndex>=0)) {
     callback(new Error('out of bounds instance index'));
   }
@@ -47,7 +61,7 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     var waterfallArray = 
     [
       function(callback) {
-        UpdateContestants.removeContestant(
+        Contestant.removeContestant(
           user.username, 
           contestant, 
           contest.current_entries - 1, 
@@ -59,9 +73,10 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     var parallelArray = 
     [
       function(callback) {
-        User.updateMoney(
-          [user.money + contest.entry_fee], 
-          [user.user_id], 
+        User.addMoney(
+          user.money,
+          contest.entry_fee, 
+          user.user_id, 
           callback);
       }
     ];
@@ -71,7 +86,7 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     contestant.instances.splice(instanceIndex, 1);
     if (contestant.instances.length === 0) {
       parallelArray.push(function(callback) {
-        UpdateContestants.deleteUsernameFromContest(
+        Contestant.deleteUsernameFromContest(
           user.username, 
           contest.contest_id, 
           callback);
@@ -80,19 +95,10 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
 
     contestant = JSON.stringify(contestant);
 
-    //update contest state
-    var beforeDeadline = 
-      (new Date()).getTime() < 
-      (new Date(contest.contest_deadline_time)).getTime();
-    if (contest.current_entries === contest.maximum_entries && beforeDeadline) {
+    //update contest state if necessary
+    if (contest.current_entries === contest.maximum_entries) {
       parallelArray.push(function(callback) {
         UpdateContest.setOpen(contest.contest_id, callback);
-      });
-    }
-    else if (contest.current_entries < contest.minimum_entries && 
-             !beforeDeadline) {
-      parallelArray.push(function(callback) {
-        UpdateContest.setCancelled(contest.contest_id, callback);
       });
     }
 
@@ -119,7 +125,7 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
  * from req.user, MUST have fields user_id and username
  * @param  {int}   instanceIndex 
  * index to be removed from instances
- * @param  {uuid}   contestId
+ * @param  {timeuuid}   contestId
  * id of contest
  * @param  {Function} callback      
  * args: (err)
@@ -153,14 +159,8 @@ function removeContestantInstance(user, instanceIndex, contestId, callback) {
 
 /**
  * ====================================================================
- * Test exports
- * ====================================================================
- */
-exports.removeInstanceFromContest = removeInstanceFromContest;
-
-/**
- * ====================================================================
  * Used exports
  * ====================================================================
  */
 exports.removeContestantInstance = removeContestantInstance;
+exports.removeInstanceFromContest = removeInstanceFromContest;
