@@ -7,6 +7,7 @@ var ContestTable = React.createClass({
       url: this.props.url,
       dataType: 'json',
       success: function(data) {
+        console.log('ha');
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
@@ -19,7 +20,7 @@ var ContestTable = React.createClass({
   },
   componentWillMount: function() {
     this.loadContestsFromServer();
-    setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+    setInterval(this.loadContestsFromServer, this.props.pollInterval);
   },
   render: function() {
     return (
@@ -75,7 +76,7 @@ var ContestList = React.createClass({
 });
 
 React.renderComponent(
-  <ContestTable url="contests" pollInterval={2000} />,
-  document.getElementById('content')
+  <ContestTable url="populateContestTable" pollInterval={2000} />,
+  document.getElementById('contestTable')
 );
 /* jshint ignore:end */

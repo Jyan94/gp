@@ -14,8 +14,8 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 
     <!-- Custom styles for this template -->
-    <link  rel="stylesheet" type="text/css" href="../css/bootstrap/tournamentTables.css">
-    <link rel="stylesheet" type="text/css" href="../css/dataTables.css">
+    <link  rel="stylesheet" type="text/css" href="/css/tournamentTables.css">
+    <link rel="stylesheet" type="text/css" href="/css/dataTables.css">
   </head>
 
   <body>
@@ -35,8 +35,8 @@
             <a class="enterbtn" href="/tournamentCreation">Create a Contest</a>
           </div>
         </div>
-        <div class="table-container-main">
-          <table id="tournaments" align="center" style="width:1000px">
+        <div id="contestTable" class="table-container-main">
+          <!-- <table id="tournaments" align="center" style="width:1000px">
             <thead>
               <tr>
                 <th>Sport</th>
@@ -68,7 +68,7 @@
                   </tr>
               {{/each}}
             </tbody>
-          </table>
+          </table> -->
         </div>
       </div>
     </div>
@@ -159,7 +159,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src='../js/jquery-ui-1.10.4.custom.js'></script>
+    <script src="http://fb.me/react-0.10.0.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.10.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/showdown/0.3.1/showdown.min.js"></script>
+    <script type="text/jsx" src="/js/contestTable.js"></script>
+
+    <script src='/js/jquery/jquery-ui-1.10.4.custom.js'></script>
     <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
     <script src="../js/tournamentBetTableFilter.js"></script>
     <script src="../js/tournamentTables.js"></script>
