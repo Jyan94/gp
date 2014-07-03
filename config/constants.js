@@ -39,7 +39,7 @@ exports.auth = {
     '"Please check your email for a verification link." ]}'
 };
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
-exports.dailyProphet = {
+exports.contestB = {
   //for update.js states
   OPEN: 0,
   FILLED: 1,

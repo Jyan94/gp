@@ -22,8 +22,8 @@ var testUserParams0 =
   20,
   'address',
   'paymentinfo',
-  {value: 1000, hint: 'double'},
-  {value: 1000, hint: 'double'},
+  {value: 2000, hint: 'double'},
+  {value: 2000, hint: 'double'},
   'fbid',
   0,
   'image'
@@ -190,7 +190,7 @@ var AddAndUpdateContestant =
 
 var configs = require('config/index');
 var cql = configs.cassandra.cql;
-var states = configs.constants.dailyProphet;
+var states = configs.constants.contestB;
 
 var OPEN = states.OPEN;
 var FILLED = states.FILLED;
@@ -431,10 +431,14 @@ function testContestant(callback) {
     function(callback) {
       ++numInstances0;
       ++numContestants;
+      //console.log(numInstances0);
       AddContestant.addContestant(
         user0, 
         contest.contest_id, 
         function(err, result) {
+          if (err) {
+            console.log(err);
+          }
           (err === null).should.be.true;
           result.should.equal(numInstances0 - 1);
           callback(null);
@@ -482,6 +486,22 @@ function testContestant(callback) {
           }
           (err === null).should.be.true;
           callback(err);
+        });
+    },
+    function(callback) {
+      User.select(
+        'user_id', 
+        testUserParams0[USER_ID_INDEX], 
+        function (err, result) {
+          if (err) {
+            (err === null).should.be.true;
+            callback(err);
+          }
+          else {
+            user0 = result;
+            user0.money.should.equal(1000);
+            callback(null);
+          }
         });
     },
     function(callback) {

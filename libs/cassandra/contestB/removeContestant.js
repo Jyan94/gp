@@ -15,10 +15,10 @@ var User = require('libs/cassandra/user');
 
 var async = require('async');
 
-var APPLIED = configs.constants.dailyProphet.APPLIED;
-var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;
+var APPLIED = configs.constants.contestB.APPLIED;
+var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
 var TIME_BEFORE_CANCEL = 
-  configs.constants.dailyProphet.MAX_TIME_BEFORE_DEADLINE_TO_CANCEL;
+  configs.constants.contestB.MAX_TIME_BEFORE_DEADLINE_TO_CANCEL;
 
 /**
  * removes contestant instance from contestant object
@@ -73,8 +73,9 @@ function removeInstanceFromContest(user, contest, instanceIndex, callback) {
     var parallelArray = 
     [
       function(callback) {
-        User.updateMoneyOneUser(
-          user.money + contest.entry_fee, 
+        User.addMoney(
+          user.money,
+          contest.entry_fee, 
           user.user_id, 
           callback);
       }
