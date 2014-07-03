@@ -7,7 +7,6 @@ var ContestTable = React.createClass({
       url: this.props.url,
       dataType: 'json',
       success: function(data) {
-        console.log('ha');
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
@@ -60,7 +59,7 @@ var ContestList = React.createClass({
           <td>{contest.totalPrizePool}</td>
           <td>{contest.startingVirtualMoney}</td>
           <td>
-            <a className="enterbtn" href="/tournamentEntry/{this.contestId}">
+            <a className="enterbtn" href={'/tournamentEntry/' +contest.contestId}>
               Enter
             </a>
           </td>
