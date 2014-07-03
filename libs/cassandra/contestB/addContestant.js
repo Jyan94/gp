@@ -95,7 +95,7 @@ function addUserInstanceToContest(user, contest, callback) {
           contest.contest_id,
           function(err) {
             if (err) {
-              //restore user to original money if add fails
+              //restore user to money before add if add contestant fails
               User.addMoney(
                 user.money - contest.entry_fee,
                 contest.entry_fee,

@@ -164,6 +164,17 @@ var UPDATE_MONEY_CQL = multiline(function() {/*
   UPDATE users SET money = ? WHERE user_id = ? IF money = ?;
 */});
 
+/**
+ * attempts to update money
+ * if update fails, do a read and try again
+ * @param  {double}   currentMoney
+ * @param  {double}   difference
+ * @param  {uuid}   userId
+ * @param  {Boolean}  isAdd
+ * distinguish between add and subtract
+ * @param  {Function} callback
+ * args: (err)
+ */
 function updateMoney(currentMoney, difference, userId, isAdd, callback) {
   var newMoney = -1;
   if (isAdd) {
