@@ -93,11 +93,13 @@ app.get('/update', graph.update);
 app.get('/data', graph.get);
 
 //tournament
-var tournament = require('routes/tournamentTables');
-app.get('/tournaments', tournament.renderTournamentTablesPage);
-app.get('/tournamentCreation', tournament.tournamentCreation);
-app.get('/tournamentEntry/:contestId', tournament.renderTournamentEntryPage);
-app.post('/tournamentEntryProcess/:contestId', tournament.tournamentEntryProcess);
+var contestB = require('routes/contestB');
+app.get('/contestB', contestB.renderContestPage);
+app.get('/contestBCreation', contestB.contestCreation);
+app.get('/populateContestBTable', contestB.sendContestTable);
+app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);
+app.post('/contestBEntryProcess/:contestId',
+  contestB.contestEntryProcess);
 
 //error handling middleware logs errors and sends 500
 var errorHandler = require('routes/error/error');

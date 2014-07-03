@@ -1,5 +1,5 @@
 // Something happens
-$('#tournaments tbody tr').on('click', function (e) {
+$('#contests tbody tr').on('click', function (e) {
   console.log(e);
 
   if (e.target.className === 'enterbtn') {
@@ -12,7 +12,7 @@ $('#tournaments tbody tr').on('click', function (e) {
 });
 
 // Something happens
-$('.tournament-dialog-box-backdrop').on('click', function () {
+$('.contest-dialog-box-backdrop').on('click', function () {
 
   // State changes
   $('body').toggleClass('dialogIsOpen');
@@ -23,7 +23,7 @@ $(document).ready(function () {
   var activeTabIndex = -1;
   var tabNames = ['tab1', 'tab2', 'tab3']
 
-  $('.tournament-dialog-box-tab').click(function (e) {
+  $('.contest-dialog-box-tab').click(function (e) {
     for (var i = 0; i < tabNames.length; i++) {
       if (e.target.id === tabNames[i]) {
         activeTabIndex = i;

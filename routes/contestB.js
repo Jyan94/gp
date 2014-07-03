@@ -5,20 +5,30 @@ var configs = require('config/index.js');
 
 var async = require('async');
 var User = require('libs/cassandra/user');
-var Tournament = require('libs/cassandra/dailyProphet/exports');
+var ContestB = require('libs/cassandra/dailyProphet/exports');
 var modes = require('libs/dailyProphet/modes.js');
 var cql = configs.cassandra.cql;
 
-var messages = configs.constants.tournamentStrings;
+var messages = configs.constants.contestStrings;
 
 /*
  * ====================================================================
- * TOURNAMENT TABLES
+ * CONTEST TABLES
  * ====================================================================
  */
 
-var findTournaments = function (req, res, next, callback) {
-  Tournament.selectOpen(function (err, result) {
+function renderContestPage(req, res, next) {
+  res.render('contestBTables.hbs');
+}
+
+/*
+ * ====================================================================
+ * SEND CONTEST TABLES
+ * ====================================================================
+ */
+
+function findContests(req, res, next, callback) {
+  ContestB.selectOpen(function (err, result) {
     if (err) {
       res.send(500, 'Database error.');
     }
@@ -28,45 +38,39 @@ var findTournaments = function (req, res, next, callback) {
   });
 }
 
-var filterTournamentFieldsTables = function (req, res, next, tournaments, callback) {
-  var filterFunction = function (tournament, callback) {
-    callback(null, { contestId: tournament.contest_id,
-                     sport: tournament.sport,
-                     type: 'The Daily Prophet',
-                     contestStartTime: tournament.contest_start_time,
-                     currentEntries: tournament.current_entries,
-                     maximumEntries: tournament.maximum_entries,
-                     entryFee: tournament.entry_fee,
-                     totalPrizePool: tournament.total_prize_pool,
-                     startingVirtualMoney: tournament.starting_virtual_money
-                   });
+function filterContestFieldsTables(req, res, next, contests, callback) {
+  var filterFunction = function (contest, callback) {
+    callback(
+      null, 
+      { 
+        contestId: contest.contest_id,
+        sport: contest.sport,
+        type: 'The Daily Prophet',
+        contestStartTime: contest.contest_start_time,
+        currentEntries: contest.current_entries,
+        maximumEntries: contest.maximum_entries,
+        entryFee: contest.entry_fee,
+        totalPrizePool: contest.total_prize_pool,
+        startingVirtualMoney: contest.starting_virtual_money
+      });
   }
 
-  async.map(tournaments, filterFunction, function (err, result) {
-    console.log(JSON.stringify(result));
+  async.map(contests, filterFunction, function (err, result) {
+    //console.log(JSON.stringify(result));
     if (err) {
       res.send(500, 'Server error.');
     }
     else {
-      if (req.user) {
-        res.render('tournamentTables.hbs', { link: 'login',
-                                             display: 'Login',
-                                             tournaments: result });
-      }
-      else {
-        res.render('tournamentTables.hbs', {link: 'logout',
-                                            display: 'Logout',
-                                            tournaments: result});
-      }
+      res.send(JSON.stringify(result));
+      /*res.render('tournamentTables.hbs', { link: 'login',
+                                           display: 'Login',
+                                           tournaments: result });*/
     }
   });
 }
 
+/*
 var renderTournamentTablesPage = function (req, res, next) {
-  if (typeof(req.user) === 'undefined') {
-    res.redirect('/login');
-  }
-
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -80,15 +84,41 @@ var renderTournamentTablesPage = function (req, res, next) {
     }
   });
 }
+*/
+
+function sendContestTable(req, res, next) {
+  async.waterfall([
+    function (callback) {
+      callback(null, req, res, next);
+    },
+    findContests,
+    filterContestFieldsTables
+  ],
+  function (err) {
+    if (err) {
+      next(err);
+    }
+  });
+}
 
 /*
  * ====================================================================
- * TOURNAMENT ENTRY
+ * CONTEST CREATION
  * ====================================================================
  */
 
-var findTournamentByContestIdCheck = function (req, res, next, callback) {
-  Tournament.selectById(req.params.contestId, function (err, result) {
+var renderContestCreation = function (req, res, next) {
+
+}
+
+/*
+ * ====================================================================
+ * CONTEST ENTRY
+ * ====================================================================
+ */
+
+var findContestByContestIdCheck = function (req, res, next, callback) {
+  ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
     }
@@ -105,51 +135,41 @@ var findTournamentByContestIdCheck = function (req, res, next, callback) {
 }
 
 // Need names, not numbers, as keys of athletes
-var filterTournamentFieldsEntry = function (req, res, next, tournament, callback) {
+var filterContestFieldsEntry = function (req, res, next, contest, callback) {
   var contestInfo = {};
 
   var parseAthlete = function(athlete, callback) {
     callback(null, JSON.parse(athlete));
-  }
+  };
 
-  async.map(tournament.athletes, parseAthlete, function(err, result) {
+  async.map(contest.athletes, parseAthlete, function(err, result) {
     if (err) {
       res.send(500, 'Server error.');
     }
     else {
-      contestInfo = { contestId: tournament.contest_id,
+      contestInfo = { contestId: contest.contest_id,
                       athletes: result,
-                      startingVirtualMoney: tournament.starting_virtual_money
+                      startingVirtualMoney: contest.starting_virtual_money
                     };
 
-      if (req.user) {
-        res.render('tournamentEntry.hbs', { link: 'logout',
-                                            display: 'Logout',
-                                            contestInfo: contestInfo });
-      }
-      else {
-        res.render('tournamentEntry.hbs', { link: 'login',
-                                            display: 'Login',
-                                            contestInfo: contestInfo });
-      }
+      res.render('contestBEntry.hbs', { link: 'logout',
+                                          display: 'Logout',
+                                          contestInfo: contestInfo });
     }
   });
 }
 
-var renderTournamentEntryPage = function (req, res, next) {
+var renderContestEntryPage = function (req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Contest not found.');
-  }
-  else if (typeof(req.user) === 'undefined') {
-    res.redirect('/login');
   }
   else {
     async.waterfall([
       function (callback) {
         callback(null, req, res, next);
       },
-      findTournamentByContestIdCheck,
-      filterTournamentFieldsEntry
+      findContestByContestIdCheck,
+      filterContestFieldsEntry
     ],
     function (err) {
       if (err) {
@@ -161,7 +181,7 @@ var renderTournamentEntryPage = function (req, res, next) {
 
 /*
  * ====================================================================
- * TOURNAMENT ENTRY PROCESS
+ * CONTEST ENTRY PROCESS
  * ====================================================================
  */
 
@@ -185,8 +205,8 @@ var renderTournamentEntryPage = function (req, res, next) {
   }
 }*/
 
-var findTournamentByContestId = function (req, res, next, callback) {
-  Tournament.selectById(req.params.contestId, function (err, result) {
+var findContestByContestId = function (req, res, next, callback) {
+  ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
     }
@@ -222,30 +242,27 @@ var submitEntry = function(req, res, next, contest, callback) {
   var contestant = null;
   var instance = createInstance(req.body, contest);
 
-  Tournament.addAndUpdateContestant(user, contest.contest_id, instance,
+  ContestB.addAndUpdateContestant(user, contest.contest_id, instance,
     function (err) {
       if (err) {
         next(err);
       }
       else {
-        res.redirect('/tournaments');
+        res.redirect('/contestB');
       }
     });
 }
 
-var tournamentEntryProcess = function (req, res, next) {
+var contestEntryProcess = function (req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Not a valid contest ID.');
-  }
-  else if (typeof(req.user) === 'undefined') {
-    res.redirect('/login');
   }
   else {
     async.waterfall([
       function (callback) {
         callback(null, req, res, next);
       },
-      findTournamentByContestId,
+      findContestByContestId,
       //entryProcessCheck,
       submitEntry
     ],
@@ -268,7 +285,8 @@ var tournamentEntryProcess = function (req, res, next) {
  * ====================================================================
  */
 
-exports.renderTournamentTablesPage = renderTournamentTablesPage;
-exports.renderTournamentCreationPage = renderTournamentCreationPage;
-exports.renderTournamentEntryPage = renderTournamentEntryPage;
-exports.tournamentEntryProcess = tournamentEntryProcess;
+exports.sendContestTable = sendContestTable;
+exports.renderContestTablesPage = renderContestPage;
+exports.renderContestCreationPage = renderContestCreationPage;
+exports.renderContestEntryPage = renderContestEntryPage;
+exports.contestEntryProcess = contestEntryProcess;

@@ -19,7 +19,7 @@ var ContestTable = React.createClass({
   },
   componentWillMount: function() {
     this.loadContestsFromServer();
-    setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+    setInterval(this.loadContestsFromServer, this.props.pollInterval);
   },
   render: function() {
     return (
@@ -59,7 +59,7 @@ var ContestList = React.createClass({
           <td>{contest.totalPrizePool}</td>
           <td>{contest.startingVirtualMoney}</td>
           <td>
-            <a className="enterbtn" href="/tournamentEntry/{this.contestId}">
+            <a className="enterbtn" href={'/tournamentEntry/' +contest.contestId}>
               Enter
             </a>
           </td>
@@ -75,7 +75,7 @@ var ContestList = React.createClass({
 });
 
 React.renderComponent(
-  <ContestTable url="contests" pollInterval={2000} />,
-  document.getElementById('content')
+  <ContestTable url="populateContestTable" pollInterval={2000} />,
+  document.getElementById('contestTable')
 );
 /* jshint ignore:end */

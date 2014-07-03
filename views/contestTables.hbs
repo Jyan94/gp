@@ -14,13 +14,64 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 
     <!-- Custom styles for this template -->
-    <link  rel="stylesheet" type="text/css" href="../css/bootstrap/tournamentTables.css">
-    <link rel="stylesheet" type="text/css" href="../css/dataTables.css">
-
+    <link  rel="stylesheet" type="text/css" href="/css/tournamentTables.css">
+    <link rel="stylesheet" type="text/css" href="/css/dataTables.css">
   </head>
 
   <body>
-    <div id="content"></div>
+    <div class="banner">
+      <div class="placeholder">
+        <p> Placeholder </p>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="table-container">
+        <div class="table-container-header">
+          <div class="table-container-header-title">
+            <h1> Open Contests </h1>
+          </div>
+          <div class="table-container-header-button-container">
+            <a class="enterbtn" href="/tournamentCreation">Create a Contest</a>
+          </div>
+        </div>
+        <div id="contestTable" class="table-container-main">
+          <!-- <table id="tournaments" align="center" style="width:1000px">
+            <thead>
+              <tr>
+                <th>Sport</th>
+                <th>Event</th>
+                <th>Game Type</th>
+                <th>Start Time (ET)</th>
+                <th>Entrants</th>
+                <th>Entry Fee</th>
+                <th>Prize Pool</th>
+                <th>Starting Money</th>
+                <th>Enter</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {{#each tournaments}}
+                  <tr>
+                    <td>{{this.sport}}</td>
+                    <td>{{this.type}}</td>
+                    <td>{{this.type}}</td>
+                    <td>{{this.contestStartTime}}</td>
+                    <td>{{this.currentEntries}} / {{this.maximumEntries}}</td>
+                    <td>{{this.entryFee}}</td>
+                    <td>{{this.totalPrizePool}}</td>
+                    <td>{{this.startingVirtualMoney}}</td>
+                    <td>
+                      <a class="enterbtn" href="/tournamentEntry/{{this.contestId}}">Enter</a>
+                    </td>
+                  </tr>
+              {{/each}}
+            </tbody>
+          </table> -->
+        </div>
+      </div>
+    </div>
 
     <div class="tournament-dialog-box-backdrop">
     </div>
@@ -108,10 +159,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script type="text/jsx" src="/js/contestTable.js"></script>
-    <script src='../js/jquery-ui-1.10.4.custom.js'></script>
+    <script src="http://fb.me/react-0.10.0.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.10.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/jsx" src="/js/contestTables.js"></script>
+
     <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-    <script src="../js/tournamentBetTableFilter.js"></script>
-    <script src="../js/tournamentTables.js"></script>
+    <script src="../js/contestBetTableFilter.js"></script>
+    <script src="../js/contestTables.js"></script>
   </body>
 </html>
