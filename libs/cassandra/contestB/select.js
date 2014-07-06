@@ -12,7 +12,7 @@ var async = require('async');
 var multiline = require('multiline');
 
 var cql = configs.cassandra.cql;
-var states = configs.constants.dailyProphet;
+var states = configs.constants.contestB;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 

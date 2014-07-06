@@ -4,6 +4,9 @@ require('rootpath')();
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
+var one = cql.types.consistencies.one;
+var quorum = cql.types.consistencies.quorum;
+var APPLIED = '[applied]';
 
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
@@ -32,7 +35,7 @@ var INSERT_USER_CQL = multiline(function() {/*
 */});
 exports.insert = function (params, callback) {
   //parse values
-  cassandra.query(INSERT_USER_CQL, params, cql.types.consistencies.one,
+  cassandra.query(INSERT_USER_CQL, params, one,
     function (err) {
       callback(err);
     });
@@ -42,7 +45,7 @@ var DELETE_USER_CQL = multiline(function() {/*
   DELETE FROM users WHERE user_id = ?;
 */});
 exports.delete = function (userId, callback) {
-  cassandra.query(DELETE_USER_CQL, [userId], cql.types.consistencies.one,
+  cassandra.query(DELETE_USER_CQL, [userId], one,
     function (err) {
       callback(err);
     });
@@ -79,54 +82,6 @@ exports.update = function (userId, fields, params, callback) {
     });
 };
 
-// This is actually add money
-var UPDATE_MONEY_CQL = multiline(function() {/*
-  UPDATE users SET money = ? WHERE user_id = ?;
-*/});
-exports.updateMoney = function (moneyValues, userIdValues, callback) {
-  var moneyValuesLength = moneyValues.length;
-  var userIdValuesLength = userIdValues.length;
-  var oldMoneyValues = {};
-  var currentUserId = null;
-  var queries = [];
-  var total = 0.0;
-
-  if (moneyValuesLength !== userIdValuesLength) {
-    callback(
-      new Error('Number of money values and user id values are not the same.'));
-  }
-
-  exports.selectMultiple(userIdValues, function (err, result) {
-    for (var i = 0; i < result.length; i++) {
-      currentUserId = result[i].user_id;
-      oldMoneyValues[currentUserId] = result[i].money;
-    }
-
-    for (i = 0; i < moneyValuesLength; i++) {
-      currentUserId = userIdValues[i];
-      total = oldMoneyValues[currentUserId] + moneyValues[i];
-      queries[i] = {
-        query: UPDATE_MONEY_CQL,
-        params: [{ value: total, hint: 'double'}, currentUserId]
-      }
-    }
-
-    cassandra.queryBatch(queries, cql.types.consistencies.one,
-      function(err) {
-        callback(err);
-    });
-  })
-};
-
-exports.updateMoneyOneUser = function (moneyValue, userId, callback) {
-  cassandra.query(UPDATE_MONEY_CQL,
-    [{ value: moneyValue, hint: 'double' }, userId],
-    cql.types.consistencies.one,
-    function(err) {
-      callback(err);
-    });
-}
-
 var UPDATE_SPENDINGPOWER_CQL = multiline(function() {/*
   UPDATE users SET spending_power = ? WHERE user_id = ?
 */})
@@ -148,18 +103,34 @@ var SELECT_USER_CQL = multiline(function () {/*
 
 var allowedFields = ['user_id', 'username', 'email'];
 
-exports.select = function (field, value, callback) {
+function select(field, value, callback) {
   if (allowedFields.indexOf(field) < 0) {
     callback(new Error(field + ' is not a searchable field.'));
   }
   else {
     cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
-      [value], cql.types.consistencies.one,
+      [value], one,
       function(err, result) {
         callback(err, result);
     });
   }
-};
+}
+
+function selectById(userId, callback) {
+  select('user_id', userId, callback);
+}
+
+function selectByUsername(username, callback) {
+  select('username', username, callback);
+}
+
+function selectByEmail(email, callback) {
+  select('email', email, callback);
+}
+exports.select = select;
+exports.selectById = selectById;
+exports.selectByUsername = selectByUsername;
+exports.selectByEmail = selectByEmail;
 
 var SELECT_USERS_MULTIPLE_CQL = multiline(function () {/*
   SELECT * FROM users WHERE user_id IN
@@ -178,8 +149,81 @@ exports.selectMultiple = function selectMultiple(params, callback) {
   }
 
   query = SELECT_USERS_MULTIPLE_CQL + ' (' + filter + ');';
-  cassandra.query(query, params, cql.types.consistencies.one,
+  cassandra.query(query, params, one,
     function (err, result) {
       callback(err, result);
     });
 }
+
+/* 
+ * =============================================================================
+ * Update money queries
+ * =============================================================================
+ */
+var UPDATE_MONEY_CQL = multiline(function() {/*
+  UPDATE users SET money = ? WHERE user_id = ? IF money = ?;
+*/});
+
+/**
+ * attempts to update money
+ * if update fails, do a read and try again
+ * @param  {double}   currentMoney
+ * @param  {double}   difference
+ * @param  {uuid}   userId
+ * @param  {Boolean}  isAdd
+ * distinguish between add and subtract
+ * @param  {Function} callback
+ * args: (err)
+ */
+function updateMoney(currentMoney, difference, userId, isAdd, callback) {
+  var newMoney = -1;
+  if (isAdd) {
+    newMoney = currentMoney + difference;
+  }
+  else {
+    newMoney = currentMoney - difference;
+  }
+  if (newMoney < 0) {
+    callback(new Error('negative money'));
+  }
+  else {
+    var updateMoneyCallback = function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if(result[APPLIED]) {
+        callback(null);
+      }
+      else {
+        selectById(userId, function(err, result) {
+          if (err) {
+            callback(err);
+          }
+          else {
+            updateMoney(result.money, difference, userId, isAdd, callback);
+          }
+        });
+      }
+    }
+    cassandra.queryOneRow(
+      UPDATE_MONEY_CQL, 
+      [
+        {value: newMoney, hint: 'double'}, 
+        userId, 
+        {value: currentMoney, hint: 'double'}
+      ],
+      quorum, 
+      updateMoneyCallback);
+  }
+}
+
+function addMoney(currentMoney, difference, userId, callback) {
+  updateMoney(currentMoney, difference, userId, true, callback);
+}
+
+function subtractMoney(currentMoney, difference, userId, callback) {
+  updateMoney(currentMoney, difference, userId, false, callback);
+}
+
+exports.addMoney = addMoney;
+exports.subtractMoney = subtractMoney;

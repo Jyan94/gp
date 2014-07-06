@@ -11,11 +11,10 @@ var configs = require('config/index.js');
 var multiline = require('multiline');
 
 var cql = configs.cassandra.cql;
-var states = configs.constants.dailyProphet;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
-var APPLIED = configs.constants.dailyProphet.APPLIED;
+var APPLIED = configs.constants.contestB.APPLIED;
 var SEMICOLON = ';';
 
 /*

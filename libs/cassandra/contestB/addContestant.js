@@ -15,8 +15,8 @@ var User = require('libs/cassandra/user');
 
 var async = require('async');
 
-var APPLIED = configs.constants.dailyProphet.APPLIED;
-var MAX_WAIT = configs.constants.dailyProphet.MAX_WAIT;
+var APPLIED = configs.constants.contestB.APPLIED;
+var MAX_WAIT = configs.constants.contestB.MAX_WAIT;
 
 /**
  * creates a new contestant instance object
@@ -78,32 +78,40 @@ function addUserInstanceToContest(user, contest, callback) {
     callback(new Error('exceeded maximum entries for user'));
   }
   else {
-    var parallelArray =
-    [
-      //subtract money from user's current money
-      function(callback) {
-        User.updateMoneyOneUser(
-          user.money - contest.entry_fee,
-          user.user_id, 
-          callback);
-      }
-    ];
-
     var waterfallArray =
     [
+      function(callback) {
+        User.subtractMoney(
+          user.money,
+          contest.entry_fee,
+          user.user_id,
+          callback);
+      },
       function(callback) {
         Contestant.addContestant(
           user.username, 
           contestant, 
           contest.current_entries, 
           contest.contest_id,
-          callback);
+          function(err) {
+            if (err) {
+              //restore user to money before add if add contestant fails
+              User.addMoney(
+                user.money - contest.entry_fee,
+                contest.entry_fee,
+                user.user_id,
+                callback);
+            }
+            else {
+              callback(null);
+            }
+          });
       }
     ];
 
     contest.current_entries = contest.current_entries + 1;
     if (contest.current_entries === contest.maximum_entries) {
-      parallelArray.push(function(callback) {
+      waterfallArray.push(function(callback) {
         UpdateContest.setFilled(contest.contest_id, callback);
       });
     }
@@ -128,15 +136,6 @@ function addUserInstanceToContest(user, contest, callback) {
       contest.contestants = {};
     }
     contest.contestants[user.username] = contestant;
-    
-    if (parallelArray.length > 1) {
-      waterfallArray.push(function(callback) {
-        async.parallel(parallelArray, callback);
-      });
-    }
-    else {
-      waterfallArray.push(parallelArray[0]);
-    }
 
     var waterfallCallback = function(err, result) {
       if (err && err.message === APPLIED) {
