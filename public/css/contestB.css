@@ -71,19 +71,19 @@ p {
   right: 0;
   padding: 15px;
 }
-#tournaments {
+#contests {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   width: 100%;
   border-collapse: collapse;
 }
 
-#tournaments td, #tournaments th {
+#contests td, #contests th {
   font-size: 1em;
   border: 1px solid #98bf21;
   padding: 3px 7px 2px 7px;
 }
 
-#tournaments th {
+#contests th {
   font-size: 1.1em;
   text-align: left;
   padding-top: 5px;
@@ -92,15 +92,15 @@ p {
   color: #ffffff;
 }
 
-#tournaments tr.alt {
+#contests tr.alt {
   background-color: #EAF2D3;
 }
 
-#tournaments tbody tr:hover {
+#contests tbody tr:hover {
   background-color: #b8c29d;
 }
 
-#tournaments tbody tr:active {
+#contests tbody tr:active {
   background-color: #888;
   color: #fff;
 }
@@ -118,12 +118,12 @@ p {
 
 /* Dialog Box Outer */
 
-#tournaments {
+#contests {
 
   -webkit-transition: all 0.05s ease-in-out;
 }
 
-.tournament-dialog-box {
+.contest-dialog-box {
   box-shadow: 0px 0px 20px #30232c;
   border-radius: 4px;
   background-color: #fff;
@@ -146,7 +146,7 @@ p {
   z-index: 3;
 }
 
-.tournament-dialog-box-backdrop {
+.contest-dialog-box-backdrop {
   background-color: #000;
   box-sizing: border-box;
   height: 100%;
@@ -162,7 +162,7 @@ p {
   z-index: 2;
 }
 
-.dialogIsOpen #tournaments{
+.dialogIsOpen #contests{
 
   /* Blur and de-color */
   -webkit-filter: grayscale(50%);
@@ -170,7 +170,7 @@ p {
   pointer-events: none;
 }
 
-.dialogIsOpen .tournament-dialog-box {
+.dialogIsOpen .contest-dialog-box {
   
   /* Regular size and visible */
   -webkit-transform: scale(1); /* prefix me */
@@ -184,7 +184,7 @@ p {
 
 }
 
-.dialogIsOpen .tournament-dialog-box-backdrop {
+.dialogIsOpen .contest-dialog-box-backdrop {
   opacity: 0.5;
 
   /* Clickable */
@@ -194,7 +194,7 @@ p {
 
 /* Dialog Box Inner */
 
-.tournament-dialog-box-header {
+.contest-dialog-box-header {
 /*  border-top: 1px solid #7878ac;
   border-bottom: 1px solid #7878ac; */
   border-radius: 4px 4px 0px 0px;
@@ -208,24 +208,24 @@ p {
   height: 70px;
   background-color: #191919;
 }
-.tournament-dialog-box-body {
+.contest-dialog-box-body {
  /* border-bottom: 1px solid #7878ac; */
   border-radius: 4px 4px 0px 0px;
 }
 
-.tournament-dialog-box-info {
+.contest-dialog-box-info {
   height: 100px;
   padding: 5px 10px 5px 10px;
   background-color: #191919;
   color: #fff;
 }
 
-.tournament-dialog-box-tab-container {
+.contest-dialog-box-tab-container {
 /*  padding: 10px 0px 10px 0px; */
   height: calc(100% - 170px);
 }
 
-.tournament-dialog-box-tab-menu {
+.contest-dialog-box-tab-menu {
   height: 31px;
   list-style: none;
   width: 100%;
@@ -233,7 +233,7 @@ p {
   background-color: #191919;
 }
 
-.tournament-dialog-box-tab {
+.contest-dialog-box-tab {
   display: block;
   float: left;
   position: relative;
@@ -253,21 +253,21 @@ p {
   background-color: #191919;
 }
 
-.tournament-dialog-box-tab:hover,
-.tournament-dialog-box-tab.active {
+.contest-dialog-box-tab:hover,
+.contest-dialog-box-tab.active {
   display: block;
   background: #fff;
 }
-.tournament-dialog-box-tab-content.active {
+.contest-dialog-box-tab-content.active {
   display: block;
   background: #fff;
 }
 
-.tournament-dialog-box-tab-content-top-border {
+.contest-dialog-box-tab-content-top-border {
   border-bottom: 1px solid #ddc;
 }
 
-.tournament-dialog-box-tab-content {
+.contest-dialog-box-tab-content {
   margin: 0 auto;
   background: #fff;
   border-bottom: 1px solid #ddc;

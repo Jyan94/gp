@@ -6,7 +6,7 @@
 'use strict';
 (require('rootpath')());
 
-var DailyProphet = require('libs/cassandra/dailyProphet/exports');
+var DailyProphet = require('libs/cassandra/contestB/exports');
 var User = require('libs/cassandra/user');
 
 var async = require('async');

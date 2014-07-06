@@ -38,44 +38,62 @@ var ContestTable = React.createClass({
           </tr>
         </thead>
 
-        <ContestList data={this.state.data} />
+        <ContestRows data={this.state.data} />
 
       </table>
     );
   }
 });
 
-var ContestList = React.createClass({
+var ContestRows = React.createClass({
   render: function() {
     var contestNodes = this.props.data.map(function(contest, index) {
       return (
-        <tr>
-          <td>{contest.sport}</td>
-          <td>{contest.type}</td>
-          <td>{contest.type}</td>
-          <td>{contest.contestStartTime}</td>
-          <td>{contest.currentEntries}</td>
-          <td>{contest.entryFee}</td>
-          <td>{contest.totalPrizePool}</td>
-          <td>{contest.startingVirtualMoney}</td>
-          <td>
-            <a className="enterbtn" href={'/tournamentEntry/' +contest.contestId}>
-              Enter
-            </a>
-          </td>
-        </tr>
+        <ContestRow data={contest} />
       );
     });
     return (
-      <tbody className="contestList">
+      <tbody className="contestRows">
         {contestNodes}
       </tbody>
     );
   }
 });
 
+var ContestRow = React.createClass({
+  handleClick: function(event) {
+    if (event.target.className === 'enterbtn') {
+      return true;
+    }
+    else {
+      // State changes
+      $('body').toggleClass('dialogIsOpen');
+    }
+  },
+  render: function() {
+    var contest = this.props.data;
+    return (
+      <tr onClick={this.handleClick}>
+        <td>{contest.sport}</td>
+        <td>{contest.type}</td>
+        <td>{contest.type}</td>
+        <td>{contest.contestStartTime}</td>
+        <td>{contest.currentEntries}</td>
+        <td>{contest.entryFee}</td>
+        <td>{contest.totalPrizePool}</td>
+        <td>{contest.startingVirtualMoney}</td>
+        <td>
+          <a className="enterbtn" href={'/contestBEntry/' +contest.contestId}>
+            Enter
+          </a>
+        </td>
+      </tr>
+    );
+  }
+})
+
 React.renderComponent(
-  <ContestTable url="populateContestTable" pollInterval={2000} />,
+  <ContestTable url="populateContestBTable" pollInterval={2000} />,
   document.getElementById('contestTable')
 );
 /* jshint ignore:end */

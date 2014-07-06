@@ -138,7 +138,7 @@ var hello = {
   homeTeamId: '00000000-0000-0000-0000-000000000001',
 }*/
 
-require('./libs/cassandra/dailyProphet/update.js').insert([
+require('./libs/cassandra/contestB/update.js').insert([
   ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
   //athlete_names
   [ '{"athleteName":"John Snow00",' +

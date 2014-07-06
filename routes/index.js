@@ -95,8 +95,8 @@ app.get('/data', graph.get);
 //tournament
 var contestB = require('routes/contestB');
 app.get('/contestB', contestB.renderContestPage);
-app.get('/contestBCreation', contestB.contestCreation);
 app.get('/populateContestBTable', contestB.sendContestTable);
+app.get('/contestBCreation', contestB.renderContestCreationPage);
 app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);
 app.post('/contestBEntryProcess/:contestId',
   contestB.contestEntryProcess);

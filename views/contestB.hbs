@@ -14,11 +14,11 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 
     <!-- Custom styles for this template -->
-    <link  rel="stylesheet" type="text/css" href="/css/tournamentTables.css">
+    <link  rel="stylesheet" type="text/css" href="/css/contestB.css">
     <link rel="stylesheet" type="text/css" href="/css/dataTables.css">
   </head>
 
-  <body>
+  <body id="page">
     <div class="banner">
       <div class="placeholder">
         <p> Placeholder </p>
@@ -32,11 +32,11 @@
             <h1> Open Contests </h1>
           </div>
           <div class="table-container-header-button-container">
-            <a class="enterbtn" href="/tournamentCreation">Create a Contest</a>
+            <a class="enterbtn" href="/contestCreation">Create a Contest</a>
           </div>
         </div>
         <div id="contestTable" class="table-container-main">
-          <!-- <table id="tournaments" align="center" style="width:1000px">
+          <!-- <table id="contests" align="center" style="width:1000px">
             <thead>
               <tr>
                 <th>Sport</th>
@@ -52,7 +52,7 @@
             </thead>
 
             <tbody>
-              {{#each tournaments}}
+              {{#each contests}}
                   <tr>
                     <td>{{this.sport}}</td>
                     <td>{{this.type}}</td>
@@ -63,7 +63,7 @@
                     <td>{{this.totalPrizePool}}</td>
                     <td>{{this.startingVirtualMoney}}</td>
                     <td>
-                      <a class="enterbtn" href="/tournamentEntry/{{this.contestId}}">Enter</a>
+                      <a class="enterbtn" href="/contestEntry/{{this.contestId}}">Enter</a>
                     </td>
                   </tr>
               {{/each}}
@@ -73,15 +73,15 @@
       </div>
     </div>
 
-    <div class="tournament-dialog-box-backdrop">
+    <div class="contest-dialog-box-backdrop">
     </div>
 
-    <div class="tournament-dialog-box" align="center">
-      <div class="tournament-dialog-box-header">
+    <div class="contest-dialog-box" align="center">
+      <div class="contest-dialog-box-header">
         <h2> The Daily Prophet - $21,000 Prize Pool </h2>
       </div>
-      <div class="tournament-dialog-box-body">
-        <div class="tournament-dialog-box-info">
+      <div class="contest-dialog-box-body">
+        <div class="contest-dialog-box-info">
           <p><font size="4"> Entry Fee: $500 Multiple Entries Allowed</font></p>
           <table id="games" style="width:700px">
           <tr>
@@ -99,15 +99,15 @@
           </table>
           </div>
         </div>
-        <div class="tournament-dialog-box-tab-container">
-          <ul class="tournament-dialog-box-tab-menu">
-            <li class="tournament-dialog-box-tab active" id="tab1">Info</li>
-            <li class="tournament-dialog-box-tab" id="tab2">Entries</li>
-            <li class="tournament-dialog-box-tab" id="tab3">Prizes</li>
+        <div class="contest-dialog-box-tab-container">
+          <ul class="contest-dialog-box-tab-menu">
+            <li class="contest-dialog-box-tab active" id="tab1">Info</li>
+            <li class="contest-dialog-box-tab" id="tab2">Entries</li>
+            <li class="contest-dialog-box-tab" id="tab3">Prizes</li>
           </ul>
-          <div class="tournament-dialog-box-tab-content-top-border">
+          <div class="contest-dialog-box-tab-content-top-border">
           </div>
-          <div class="tournament-dialog-box-tab-content active" id="tab1-content">
+          <div class="contest-dialog-box-tab-content active" id="tab1-content">
             <p><font size="5"> Pick players from the following list and determine their values:</font></p>
             <p><font size="4"> Derek Jeter (SS - NYY) </font></p>
             <p><font size="4"> Alex Rodriguez (? - NYY)</font></p>
@@ -124,7 +124,7 @@
 
 
           </div>
-          <div class="tournament-dialog-box-tab-content" id="tab2-content">
+          <div class="contest-dialog-box-tab-content" id="tab2-content">
           <p><font size="5"> List of Participants: </font></p>
           <table id="participants" style="width:700px">
           <tr>
@@ -145,7 +145,7 @@
           </table>
           </div>
 
-          <div class="tournament-dialog-box-tab-content" id="tab3-content">
+          <div class="contest-dialog-box-tab-content" id="tab3-content">
           <p><font size="4"> 1st: $10,000 </font></p>
           <p><font size="4"> 2nd: $5,000 </font></p>
           <p><font size="4"> 3rd: $3,000 </font></p>
@@ -159,13 +159,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="http://fb.me/react-0.10.0.js"></script>
+    <script src="http://fb.me/react-with-addons-0.10.0.min.js"></script>
     <script src="http://fb.me/JSXTransformer-0.10.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script type="text/jsx" src="/js/contestTables.js"></script>
+    <script type="text/jsx" src="/js/contestBTablesReact.js"></script>
 
     <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-    <script src="../js/contestBetTableFilter.js"></script>
-    <script src="../js/contestTables.js"></script>
+    <script src="../js/contestBFilter.js"></script>
+    <script src="../js/contestB.js"></script>
   </body>
 </html>

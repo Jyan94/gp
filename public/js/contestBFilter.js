@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $('#tournaments').dataTable();
+  $('#contests').dataTable();
   /*$('#tournaments').dataTable().columnFilter({
     sPlaceHolder: "head:after",
     aoColumns: [

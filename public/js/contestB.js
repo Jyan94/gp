@@ -1,5 +1,6 @@
 // Something happens
-$('#contests tbody tr').on('click', function (e) {
+// ;
+/*$('#contestTable').on('click', function (e) {
   console.log(e);
 
   if (e.target.className === 'enterbtn') {
@@ -9,7 +10,7 @@ $('#contests tbody tr').on('click', function (e) {
     // State changes
     $('body').toggleClass('dialogIsOpen');
   }
-});
+});*/
 
 // Something happens
 $('.contest-dialog-box-backdrop').on('click', function () {

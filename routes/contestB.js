@@ -5,8 +5,8 @@ var configs = require('config/index.js');
 
 var async = require('async');
 var User = require('libs/cassandra/user');
-var ContestB = require('libs/cassandra/dailyProphet/exports');
-var modes = require('libs/dailyProphet/modes.js');
+var ContestB = require('libs/cassandra/contestB/exports');
+var modes = require('libs/contestB/modes.js');
 var cql = configs.cassandra.cql;
 
 var messages = configs.constants.contestStrings;
@@ -17,8 +17,8 @@ var messages = configs.constants.contestStrings;
  * ====================================================================
  */
 
-function renderContestPage(req, res, next) {
-  res.render('contestBTables.hbs');
+var renderContestPage = function (req, res, next) {
+  res.render('contestB.hbs');
 }
 
 /*
@@ -27,7 +27,7 @@ function renderContestPage(req, res, next) {
  * ====================================================================
  */
 
-function findContests(req, res, next, callback) {
+var findContests = function (req, res, next, callback) {
   ContestB.selectOpen(function (err, result) {
     if (err) {
       res.send(500, 'Database error.');
@@ -38,14 +38,14 @@ function findContests(req, res, next, callback) {
   });
 }
 
-function filterContestFieldsTables(req, res, next, contests, callback) {
+var filterContestFieldsTables = function (req, res, next, contests, callback) {
   var filterFunction = function (contest, callback) {
     callback(
       null, 
       { 
         contestId: contest.contest_id,
         sport: contest.sport,
-        type: 'The Daily Prophet',
+        type: contest.contest_name,
         contestStartTime: contest.contest_start_time,
         currentEntries: contest.current_entries,
         maximumEntries: contest.maximum_entries,
@@ -86,7 +86,8 @@ var renderTournamentTablesPage = function (req, res, next) {
 }
 */
 
-function sendContestTable(req, res, next) {
+var sendContestTable = function (req, res, next) {
+  console.log(1211);
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -107,7 +108,7 @@ function sendContestTable(req, res, next) {
  * ====================================================================
  */
 
-var renderContestCreation = function (req, res, next) {
+var renderContestCreationPage = function (req, res, next) {
 
 }
 
@@ -285,8 +286,8 @@ var contestEntryProcess = function (req, res, next) {
  * ====================================================================
  */
 
+exports.renderContestPage = renderContestPage;
 exports.sendContestTable = sendContestTable;
-exports.renderContestTablesPage = renderContestPage;
 exports.renderContestCreationPage = renderContestCreationPage;
 exports.renderContestEntryPage = renderContestEntryPage;
 exports.contestEntryProcess = contestEntryProcess;
