@@ -1,6 +1,17 @@
 /*
  * Globals
  */
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.wrap {
+  margin: 0 auto;
+  width: 90%;
+  overflow: hidden;
+}
+ 
 
 /* Links */
 a,
@@ -29,7 +40,7 @@ body {
   font-family: 'Roboto', sans-serif;
   height: 100%;
   background-color: #000;
-  background-image: url(../../stadiumBack.jpg);
+  background-image: url(../../assets/static/stadiumBack.jpg);
   background-position: center 100px;
   background-repeat: no-repeat;
   background-size: auto;
@@ -81,32 +92,37 @@ body {
 }
 
 .aaronRodgers {
-  height: 0px;
-  position: absolute;
-  left: 50%;
-  top: 400px;
-  margin-left: -180px;
-  z-index: 0;
-  -webkit-animation-name: aaronRodgersFadeInOut;
-  -webkit-animation-timing-function: ease-in-out;
-  -webkit-animation-duration: 10s;
-  -webkit-filter: drop-shadow(3px 3px 1px #222);
+  width: 480px;
+  margin: 0 auto;
+  position: relative;
 }
 
-@-webkit-keyframes aaronRodgersSilFadeInOut {
-  0% {
-    opacity:1;
-  }
-  30% {
-    opacity:1;
-  }
-  70% {
-    opacity:0;
-  }
-  100% {
-    opacity:0;
-  }
+.aaronRodgers img {
+  width: 100%;
 }
+
+.aaronRodgers .fadeIn {  
+  position: absolute;
+  top: 0;
+
+  left: 0;
+  -webkit-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -moz-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -ms-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -o-animation: aaronRodgersFadeInOut ease-in-out 3s;
+  animation: aaronRodgersFadeInOut ease-in-out 3s;
+  -webkit-filter: drop-shadow(3px 3px 1px #222);
+  -moz-filter: drop-shadow(3px 3px 1px #222);
+  -ms-filter: drop-shadow(3px 3px 1px #222);
+  -o-filter: drop-shadow(3px 3px 1px #222);
+  filter: drop-shadow(3px 3px 1px #222);
+}
+
+@-webkit-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@-moz-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@-ms-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@-o-keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
+@keyframes aaronRodgersSilFadeInOut { 0% { opacity:1; } 30% { opacity:1; } 70% { opacity:0; } 100% { opacity:0; } }
 
 .aaronRodgersSil {
   height: 0px;
@@ -125,38 +141,42 @@ body {
 /*
  * Header
  */
-.masthead-brand {
-  margin-bottom: 10px;
-  margin-top: 0px;
-  margin-left: 30px;
-}
 
+.masthead {
+  height: 80px;
+  box-shadow: #4686B2 0 0 30px -1px inset;
+}
+.masthead-brand img {
+    max-height: 100%;
+}
 .masthead-nav > li {
-  display: inline-block;
+  display: block;
+  line-height: 48px;
+  float: left;
 }
-.masthead-nav > li + li {
-  margin-left: 20px;
-}
+<<<<<<< HEAD
 .masthead-nav > li > a {
   padding-right: 0;
   padding-left: 0;
   font-family: Helvetica, Arial, sans-serif;
+=======
+.masthead-nav li a {
+>>>>>>> 8b008967be0709e2489eab8099dcb8b3a9c0ce22
   font-size: 16px;
-  font-weight: bold;
-  color: #fff; /* IE8 proofing */
-  color: rgba(255,255,255,.75);
-  border-bottom: 2px solid transparent;
+  color: #ddd; /* IE8 proofing */
+  color: rgba(255,255,255,.9);
 }
 .masthead-nav > li > a:hover,
 .masthead-nav > li > a:focus {
-  background-color: transparent;
-  border-bottom-color: rgba(255,255,255,.25);
+  background-color: rgba(255,255,255,.045);
+  box-shadow: rgba(7, 7, 7, 1) 0 0 8px -2px inset;
 }
 .masthead-nav > .active > a,
 .masthead-nav > .active > a:hover,
 .masthead-nav > .active > a:focus {
-  color: #fff;
-  border-bottom-color: #fff;
+  background-color: rgba(255,255,255,.06);
+  cursor: default;
+  box-shadow: rgba(7, 7, 7, 1) 0 0 8px -2px inset;
 }
 
 @media (min-width: 768px) {
@@ -203,7 +223,12 @@ body {
     position: relative;
     top: 0;
     z-index: 100;
-  }
+    width:106%;
+    margin-left: -3%;
+    margin-top: -10px;
+    padding-top: 10px;
+  
+}
   .mastfoot {
     position: relative;
     bottom: 0;
@@ -211,7 +236,6 @@ body {
   }
   /* Start the vertical centering */
   /* Handle the widths */
-  .masthead,
   .mastfoot,
   .cover-container {
     width: 100%; /* Must be percentage or pixels for horizontal alignment */

@@ -38,7 +38,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-image: url(../stadium_night.jpg);
+  background-image: url(../assets/stadium_night.jpg);
   background-size: 100%;
   font-family: 'Helvetica', 'Arial', 'sans-serif';
 }
@@ -1288,8 +1288,8 @@ input {
 /*----------------------------------------------------------------------------*/
 @font-face {
   font-family: "Flat-UI-Icons";
-  src: url('../assets/flat-ui-icons.eot');
-  src: url('../assets/flat-ui-icons.eot?#iefix') format('embedded-opentype'), url('../assets/flat-ui-icons.woff') format('woff'), url('../assets/flat-ui-icons.ttf') format('truetype'), url('../assets/flat-ui-icons.svg#flat-ui-icons') format('svg');
+  src: url('../assets/common/flat-ui-icons.eot');
+  src: url('../assets/common/flat-ui-icons.eot?#iefix') format('embedded-opentype'), url('../assets/common/flat-ui-icons.woff') format('woff'), url('../assets/common/flat-ui-icons.ttf') format('truetype'), url('../assets/common/flat-ui-icons.svg#flat-ui-icons') format('svg');
   font-weight: normal;
   font-style: normal;
 }

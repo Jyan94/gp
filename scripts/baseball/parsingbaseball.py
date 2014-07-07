@@ -20,8 +20,11 @@ def parseNumber(number):
 f = requests.get(url).text;
 xmlDoc = minidom.parseString(f);
 
+print xmlDoc
+
 teamList = xmlDoc.getElementsByTagName('team')
 for team in teamList:
+	print 'in for loop'
 	teamName = team.attributes['abbr'].value
 	playerList = team.getElementsByTagName('player')
 	for player in playerList:
