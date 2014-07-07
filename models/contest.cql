@@ -67,7 +67,12 @@ CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 /**
  * players - list of player objects
  {
-  athleteId: athlete player uuid,
+    athleteId: athlete player uuid,
+    athleteName: name of athlete,
+    isOnHomeTeam: boolean,
+    shortTeamName: short string for team,
+    longTeamName: full team name,
+    teamId: uuid for team
  }
  */
 
