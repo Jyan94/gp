@@ -104,20 +104,16 @@ exports.update = function(fields, gameId, callback) {
   cassandra.query(query, fieldValues, one, callback);
 };
 
-var SELECT_TODAY_GAME_CQL = multiline(function() {/*
+var SELECT_TODAYS_GAME_CQL = multiline(function() {/*
   SELECT * 
   FROM baseball_game 
   WHERE game_date = ?;
 */});
-exports.selectTodayGames = function(callback) {
+exports.selectTodaysGames = function(callback) {
   var today = new Date();
   var date = ('0' + today.getDate()).slice(-2);
   var month = ('0' + (today.getMonth() + 1)).slice(-2);
-  var year = today.getYear();
+  var year = today.getFullYear();
   today = year + '/' + month + '/' + date;
-  cassandra.query(
-    SELECT_TODAY_GAME_CQL, 
-    [today],
-    one,
-    callback);
+  cassandra.query(SELECT_TODAYS_GAME_CQL, [today], one, callback);
 };
