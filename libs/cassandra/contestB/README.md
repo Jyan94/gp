@@ -16,7 +16,7 @@ daily_prophet serialized objects
       for example the 0th element athlete corresponds 
       to the 0th element wager and 0th element prediction
 
-      the same index strategy applies to gameCOntestId
+      the same index strategy applies to gameContestId
     */
     athletes: list (index is athleteContestId) of stringified athlete object:
     {
@@ -34,6 +34,7 @@ daily_prophet serialized objects
 
     contestants: map of username to stringified contestant object:
     {
+      userId: contestant userId,
       instances: [
       {
         virtualMoneyRemaining : money remaining

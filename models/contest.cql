@@ -49,38 +49,23 @@ daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more info
 ===================================================
 */
 
-/*
-need to get change below
-CREATE TYPE IF NOT EXISTS baseball_team (
-  team_id uuid,
-  team_name text,
-  team_abbreviation
-);
-
-CREATE TYPE IF NOT EXISTS baseball_team_table (
-  team_id uuid,
-  team_name text,
-  team_abbreviation
-);*/
-
 CREATE TABLE IF NOT EXISTS baseball_game (
-  gsis_id uuid PRIMARY KEY,
-  start_time text,
-  end_time timeuuid,
-  game_date text,
+  game_id timeuuid PRIMARY KEY,
+  start_time timestamp,
+  end_time timestamp,
   season_type text,
   status text,
-  home_team text,
+  home_team text, //acronym
   away_team text,
   home_score int,
   away_score int,
+  players list<text>,
   play_by_play list<text>
 );
-
-CREATE INDEX IF NOT EXISTS on baseball_game (game_date);
+CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
-  statistic_id uuid PRIMARY KEY,
+  statistic_id timeuuid,
   player_id uuid,
   sport text,
   game_date timestamp,
@@ -92,14 +77,15 @@ CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   triples int,
   home_runs int,
   runs int,
-  rbis int,
+  rbis int, //runs batted in
   stolen_bases int,
   caught_stealing_bases int,
   walks int,
   earned_runs_allowed int,
   strikeouts int,
   walks_and_hits_allowed int,
-  fantasy_points double
+  fantasy_points double,
+  PRIMARY KEY (player_id, statistic_id)
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player_game_statistics(player_id);
 
