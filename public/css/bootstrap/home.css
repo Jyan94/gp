@@ -37,6 +37,7 @@ a:hover {
 
 html,
 body {
+  font-family: 'Roboto', sans-serif;
   height: 100%;
   background-color: #000;
   background-image: url(../../assets/static/stadiumBack.jpg);
@@ -153,7 +154,14 @@ body {
   line-height: 48px;
   float: left;
 }
+<<<<<<< HEAD
+.masthead-nav > li > a {
+  padding-right: 0;
+  padding-left: 0;
+  font-family: Helvetica, Arial, sans-serif;
+=======
 .masthead-nav li a {
+>>>>>>> 8b008967be0709e2489eab8099dcb8b3a9c0ce22
   font-size: 16px;
   color: #ddd; /* IE8 proofing */
   color: rgba(255,255,255,.9);
@@ -201,6 +209,7 @@ body {
 .mastfoot {
   color: #999; /* IE8 proofing */
   color: rgba(255,255,255,.5);
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 
