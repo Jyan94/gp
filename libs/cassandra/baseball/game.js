@@ -16,12 +16,12 @@ var INSERT_GAME_CQL = multiline(function() {/*
     away_score,
     end_time,
     game_id,
+    game_date,
     home_score,
     long_away_name,
     long_home_name,
     players,
     play_by_play,
-    season_type,
     short_away_name,
     short_home_name,
     start_time,
@@ -32,8 +32,8 @@ var INSERT_GAME_CQL = multiline(function() {/*
     ?, ?, ?);
 */});
 
-var PLAYERS_INDEX = 6;
-var PLAY_BY_PLAY_INDEX = 7;
+var PLAYERS_INDEX = 7;
+var PLAY_BY_PLAY_INDEX = 8;
 
 /**
  * inserts game into database
@@ -102,19 +102,22 @@ exports.update = function(fields, gameId, callback) {
   }
   query += (' ' + UPDATE_GAME_CQL_2);
   cassandra.query(query, fieldValues, one, callback);
-}
+};
 
 var SELECT_TODAY_GAME_CQL = multiline(function() {/*
   SELECT * 
   FROM baseball_game 
-  WHERE game_id > now() AND game_id < maxTimeuuid(?);
+  WHERE game_date = ?;
 */});
 exports.selectTodayGames = function(callback) {
-  var todayEnd = new Date();
-  todayEnd = new Date(todayEnd.setHours(23, 59, 59, 999));
+  var today = new Date();
+  var date = ('0' + today.getDate()).slice(-2);
+  var month = ('0' + (today.getMonth() + 1)).slice(-2);
+  var year = today.getYear();
+  today = year + '/' + month + '/' + date;
   cassandra.query(
     SELECT_TODAY_GAME_CQL, 
-    [todayEnd], 
+    [today],
     one,
     callback);
-}
+};

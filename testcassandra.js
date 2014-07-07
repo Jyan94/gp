@@ -232,18 +232,20 @@ app.get('/', function(req, res) {
   res.render('hello.hbs', {text: 'ohaiyo sekai'});
 });
 app.listen(3000);*/
+
 var BaseballGame = require('libs/cassandra/baseball/game');
-BaseballGame.insert(
+/*BaseballGame.insert(
 [
   0,
-  'away',
   new Date((new Date()).setHours(23, 59, 59, 999)),
   cql.types.timeuuid((new Date()).setHours(21, 59, 59, 999)),
   0,
+  'away',
   'home',
   ['hello', 'world'],
   ['world'],
-  'normal',
+  'shortAway',
+  'shortHome',
   new Date((new Date()).setHours(20, 59, 59, 999)),
   'open'
 ],
@@ -251,7 +253,10 @@ function (err) {
   if (err) {
     console.log(err);
   }
-});
+  else {
+    console.log('success');
+  }
+});*/
 
 BaseballGame.selectTodayGames(function(err, result) {
   if (err) {
@@ -260,6 +265,6 @@ BaseballGame.selectTodayGames(function(err, result) {
   else {
     console.log(result);
   }
-})
+});
 
 
