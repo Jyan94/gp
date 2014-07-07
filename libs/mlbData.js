@@ -11,7 +11,7 @@ var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 var urlHelper = require('../libs/url_helper_mlb');
 var async = require('async');
-var BaseballStatistics = require('../libs/cassandra/baseballStatistics');
+var BaseballStatistics = require('libs/cassandra/baseball/game.js');
 
 function createRequest(url, callback) {
   console.log(url);
@@ -63,10 +63,18 @@ function getPlayByPlay(event, callback) {
 
 function getEventInfoAndLineups(event_id, callback) {
   var url = urlHelper.getEventInfoAndLineups(event_id);
-  console.log(url);
   createRequest(url, callback);
 }
-
+/*
+getEventInfoAndLineups('000c465f-7c8c-46bb-8ea7-c26b2bc7c296', function(err, result) {
+  if (err) {
+    console.log(err);
+  }
+  else {
+    console.log(result.event.game[0].visitor[0].roster[0].player[0]);
+  }
+})
+*/
 function getDailyEventInfoAndLineups(year, month, day, callback) {
   var url = urlHelper.getDailyEventInfoAndLineups(year, month, day);
   createRequest(url, callback);
@@ -77,11 +85,24 @@ function getDailyBoxscore(year, month, day, callback) {
   createRequest(url, callback);
 }
 
-function updateOrInsert(gameId, startTime, date, homeName,
-  visitorName, homeScore, visitorScore, status, callback) {
+function updateOrInsert(
+  gameId,
+  startTime,
+  date,
+  homeId,
+  shortHomeName,
+  longHomeName,
+  visitorId,
+  shortVisitorName,
+  longVisitorName,
+  homeScore,
+  visitorScore,
+  status,
+  playerList,
+  callback) {
     var fields = [];
-    BaseballStatistics.selectGameUsingId(gameId, function(err, result) {
-      console.log("care result: " + result);
+    BaseballStatistics.select(gameId, function(err, result) {
+      console.log("result: " + result);
     if (result) {
       console.log("2");
       console.log(startTime);
@@ -89,17 +110,14 @@ function updateOrInsert(gameId, startTime, date, homeName,
       console.log(visitorScore);
       console.log(status);
       console.log(gameId);
-      fields = [
-        startTime,
-        date,
-        homeName,
-        visitorName,
-        homeScore,
-        visitorScore,
-        status,
-        gameId
-      ]
-      BaseballStatistics.updateGameSchedule(fields, function(err) {
+      fields = [ {
+        start_time: startTime,
+        status: status,
+        home_score: homeScore,
+        away_score: visitorScore,
+        }
+      ];
+      BaseballStatistics.update(fields, function(err) {
         if (err) {
           console.log("failed Updating: " + err);
           callback(err);
@@ -112,16 +130,21 @@ function updateOrInsert(gameId, startTime, date, homeName,
     else {
       console.log("1");
       fields = [
+      visitorScore, //away_score
+      null, //end_time
       gameId, //game id
+      date, //game_date
+      homeScore, //home_score
+      longVisitorName, // long_away_name
+      longHomeName, //long_home_name
+      playerList, //player
+      null, // no play_by_plays for now -------------
+      shortVisitorName, //short_away_name
+      shortHomeName, //short_home_name
       startTime, //start time of the game
-      date, //date of game
-      homeName, //home team name
-      visitorName, //visitor team name
-      homeScore, //no home score yet
-      visitorScore, //no away score yet
-      status, //status = scheduled
+      status //status = scheduled
       ];
-      BaseballStatistics.insertGameSchedule(fields, function(err) {
+      BaseballStatistics.insert(fields, function(err) {
         if (err) {
           console.log("failed inserted: " + err);
           callback(err);
@@ -138,8 +161,15 @@ function insertNameAndScore(boxscore, callback) {
   var gameId = boxscore.$.id;
   var startTime;
   var date = boxscore.date;
-  var homeName = boxscore.home[0].$.abbr;
-  var visitorName = boxscore.visitor[0].$.abbr;
+
+  var homeId = boxscore.home[0].$.id
+  var shortHomeName = boxscore.home[0].$.abbr;
+  var longHomeName = boxscore.home[0].$.name;
+
+  var visitorId = boxscore.visitor[0].$.id;
+  var shortVisitorName = boxscore.visitor[0].$.abbr;
+  var longVisitorName = boxscore.visitor[0].$.name;
+
   var homeScore;
   var visitorScore;
   var status = boxscore.$.status;
@@ -157,14 +187,65 @@ function insertNameAndScore(boxscore, callback) {
       console.log(result);
       var tmpStartTime = result.event.scheduled_start_time[0];
       startTime = String(new Date(tmpStartTime)).split(" ")[4];
-      updateOrInsert(gameId, startTime, date, homeName, visitorName, homeScore, visitorScore, status, callback);
+      var playerList = [];
+
+      var visitorRosterPrefix = result.event.game[0].visitor[0].roster[0].player;
+      for (var i = 0; i < visitorRosterPrefix.length; i++) {
+        playerList.push(JSON.stringify({
+          athleteId: visitorRosterPrefix[i].id,
+          athleteName: visitorRosterPrefix[i].preferred_name + " " + visitorRosterPrefix[i].last_name,
+          isOnHomeTeam: false,
+          shortTeamName: shortVisitorName,
+          longTeamName: longVisitorName,
+          teamId: visitorId
+        }));
+      }
+      var homeRosterPrefix = result.event.game[0].home[0].roster[0].player;
+      for (var j = 0; j < homeRosterPrefix.length; j++) {
+        playerList.push(JSON.stringify({
+          athleteId: homeRosterPrefix[j].id,
+          athleteName: homeRosterPrefix[j].preferred_name + " " + homeRosterPrefix[j].last_name,
+          isOnHomeTeam: true,
+          shortTeamName: shortHomeName,
+          longTeamName: longHomeName,
+          teamId: homeId
+        }));
+      }
+
+      updateOrInsert(gameId,
+        startTime,
+        date,
+        homeId,
+        shortHomeName,
+        longHomeName,
+        visitorId,
+        shortVisitorName,
+        longVisitorName,
+        homeScore,
+        visitorScore,
+        status,
+        playerList,
+        callback);
     });
   }
   else {
     startTime = null;
     homeScore = parseInt(boxscore.home[0].$.runs);
     visitorScore = parseInt(boxscore.visitor[0].$.runs);
-    updateOrInsert(gameId, startTime, date, homeName, visitorName, homeScore, visitorScore, status, callback);
+    updateOrInsert(gameId,
+      startTime,
+      date,
+      homeId,
+      shortHomeName,
+      longHomeName,
+      visitorId,
+      shortVisitorName,
+      longVisitorName,
+      homeScore,
+      visitorScore,
+      status,
+      null, //playerlist is not necessary since it's already inserted before
+      callback);
   }
 }
 
@@ -190,6 +271,10 @@ var getEachBoxScore = function(year, month, day, callback) {
   });
 }
 
+getEachBoxScore('2014', '07', '07', function(err, result) {
+  console.log(result);
+})
+
 function calculateBoxScore() {
   setInterval(function() {
     var date = new Date();
@@ -202,8 +287,6 @@ function calculateBoxScore() {
     getEachBoxScore(year, month, day)
   }, 360000);
 }
-
-//calculateBoxScore();
 
 
 exports.createRequest = createRequest;
