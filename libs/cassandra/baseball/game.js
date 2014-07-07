@@ -32,6 +32,14 @@ var INSERT_GAME_CQL = multiline(function() {/*
 
 var PLAYERS_INDEX = 6;
 var PLAY_BY_PLAY_INDEX = 7;
+
+/**
+ * inserts game into database
+ * @param  {array}   fields
+ * array of fields to insert into baseball_game
+ * @param  {Function} callback
+ * args: (err)
+ */
 exports.insert = function(fields, callback) {
   fields[PLAYERS_INDEX] = {
     value: fields[PLAYERS_INDEX],
@@ -41,6 +49,7 @@ exports.insert = function(fields, callback) {
     value: fields[PLAY_BY_PLAY_INDEX],
     hint: 'list'
   };
+  console.log(fields);
   cassandra.query(INSERT_GAME_CQL, fields, one, callback);
 };
 
@@ -94,6 +103,11 @@ exports.update = function(fields, gameId, callback) {
   cassandra.query(query, fieldValues, one, callback);
 }
 
+var SELECT_TODAY_GAME_CQL = multiline(function() {/*
+  SELECT * FROM baseball_game WHERE time > ? AND time < ?
+*/});
 exports.selectTodayGames = function(callback) {
-  
+  var now = new Date();
+  var todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
 }

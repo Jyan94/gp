@@ -64,6 +64,13 @@ CREATE TABLE IF NOT EXISTS baseball_game (
 );
 CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 
+/**
+ * players - list of player objects
+ {
+  athleteId: athlete player uuid,
+ }
+ */
+
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   statistic_id timeuuid,
   player_id uuid,

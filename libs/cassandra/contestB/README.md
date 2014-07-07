@@ -24,7 +24,7 @@ daily_prophet serialized objects
       athleteName: name of athlete,
       athleteContestId: integer (0 - numGames in contest) to relate to athletes list,
       gameContestId: integer (0 - numGames in contest) to index into games list,
-      gameId: uuid for game,
+      gameId: timeuuid for game,
       isOnHomeTeam: boolean,
       position: string for position,
       shortTeamName: short string for team,
@@ -54,7 +54,7 @@ daily_prophet serialized objects
       awayTeam: short string for home team (i.e. NYY),
       awayTeamId: uuid for away team,
       gameDate: Date formatted as milliseconds since epoch,
-      gameId: uuid for game,
+      gameId: timeuuid for game,
       homeTeam: short string for home team ,
       homeTeamId: uuid for home team,
     }

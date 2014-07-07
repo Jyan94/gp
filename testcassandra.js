@@ -232,4 +232,25 @@ app.get('/', function(req, res) {
   res.render('hello.hbs', {text: 'ohaiyo sekai'});
 });
 app.listen(3000);*/
+var BaseballGame = require('libs/cassandra/baseball/game');
+BaseballGame.insert(
+[
+  0,
+  'away',
+  new Date((new Date()).setHours(23, 59, 59, 999)),
+  'bcf4d500-fe44-11e3-89b7-c361d0a10fc1',
+  0,
+  'home',
+  ['hello', 'world'],
+  ['world'],
+  'normal',
+  new Date((new Date()).setHours(20, 59, 59, 999)),
+  'open'
+],
+function (err) {
+  if (err) {
+    console.log(err);
+  }
+})
+
 
