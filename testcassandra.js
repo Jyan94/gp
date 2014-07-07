@@ -233,12 +233,20 @@ app.get('/', function(req, res) {
 });
 app.listen(3000);*/
 
+var today = new Date();
+var date = ('0' + today.getDate()).slice(-2);
+var month = ('0' + (today.getMonth() + 1)).slice(-2);
+var year = today.getFullYear();
+console.log(year);
+today = year + '/' + month + '/' + date;
+
 var BaseballGame = require('libs/cassandra/baseball/game');
-/*BaseballGame.insert(
+BaseballGame.insert(
 [
   0,
   new Date((new Date()).setHours(23, 59, 59, 999)),
-  cql.types.timeuuid((new Date()).setHours(21, 59, 59, 999)),
+  '00001111-0000-0000-0000-000011110000',
+  today,
   0,
   'away',
   'home',
@@ -256,7 +264,7 @@ function (err) {
   else {
     console.log('success');
   }
-});*/
+});
 
 BaseballGame.selectTodayGames(function(err, result) {
   if (err) {

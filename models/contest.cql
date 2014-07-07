@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   away_score int,
   end_time timestamp,
   game_id uuid PRIMARY KEY,
-  game_date,
+  game_date text,
   home_score int,
   long_away_name text,
   long_home_name text,  //full name for home team
