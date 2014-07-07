@@ -7,13 +7,12 @@ var configs = require('config/index');
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 var async = require('async');
-var Player = require('../libs/cassandra/baseballPlayer.js');
-var Bet = require('../libs/cassandra/bet.js');
-var User = require('../libs/cassandra/user.js');
-var calculate = require('../libs/applicationServer/calculateMlbFantasyPoints.js');
-var mlbData = require('../libs/mlbData.js');
-var DailyProphet = require('../libs/cassandra/contestB/select.js');
-var Update = require('../libs/cassandra/contestB/update.js')
+var Player = require('libs/cassandra/baseballPlayer.js');
+var Bet = require('libs/cassandra/bet.js');
+var User = require('libs/cassandra/user.js');
+var calculate = require('libs/applicationServer/calculateMlbFantasyPoints.js');
+var mlbData = require('libs/mlbData.js');
+var DailyProphet = require('libs/cassandra/contestB/exports.js');
 
 var sportsdataMlb = require('sportsdata').MLB;
 
@@ -143,7 +142,7 @@ function calculateWinningsForContestant(contestId, contestantPoints, callback) {
       }
       else {
         //change state of contest to processed
-        Update.setToProcess(contestId, function(err) {
+        DailyProphet.setToProcess(contestId, function(err) {
           if (err) {
             callback(err);
           }

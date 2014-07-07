@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS daily_prophet (
   max_wager int,
   maximum_entries int,
   minimum_entries int,
-  pay_outs list<double>,
+  payouts list<double>,
   processed_payouts_time timestamp, //updated after processed payouts
   sport text, //lowercase text
   starting_virtual_money int,

@@ -89,7 +89,7 @@ Schema:
       max_wager int,
       maximum_entries int,
       minimum_entries int,
-      pay_outs list<double>,  //0 will correspond to first place, n-1 index will correspond to nth place
+      payouts list<double>,  //0 will correspond to first place, n-1 index will correspond to nth place
       processed_payouts_time timestamp, //updated after processed payouts
       sport text, //lowercase text
       starting_virtual_money int,

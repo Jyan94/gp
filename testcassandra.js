@@ -266,7 +266,7 @@ function (err) {
   }
 });
 
-BaseballGame.selectTodayGames(function(err, result) {
+BaseballGame.selectTodaysGames(function(err, result) {
   if (err) {
     console.log(err);
   }
