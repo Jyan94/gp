@@ -238,7 +238,7 @@ BaseballGame.insert(
   0,
   'away',
   new Date((new Date()).setHours(23, 59, 59, 999)),
-  'bcf4d500-fe44-11e3-89b7-c361d0a10fc1',
+  cql.types.timeuuid((new Date()).setHours(21, 59, 59, 999)),
   0,
   'home',
   ['hello', 'world'],
@@ -250,6 +250,15 @@ BaseballGame.insert(
 function (err) {
   if (err) {
     console.log(err);
+  }
+});
+
+BaseballGame.selectTodayGames(function(err, result) {
+  if (err) {
+    console.log(err);
+  }
+  else {
+    console.log(result);
   }
 })
 

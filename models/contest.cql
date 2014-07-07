@@ -51,20 +51,23 @@ daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more info
 
 CREATE TABLE IF NOT EXISTS baseball_game (
   away_score int,
-  away_team text,
   end_time timestamp,
   game_id timeuuid PRIMARY KEY,
   home_score int,
-  home_team text, //acronym
+  long_away_name text,
+  long_home_name text,  //full name for home team
   players list<text>,
   play_by_play list<text>,
   season_type text,
-  start_time timestamp,
+  short_away_name text,
+  short_home_name text, //acronym for home team
+  start_time timeuuid,
   status text
 );
 CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 
 /**
+ * game_id - timeuuid initialized
  * players - list of player objects
  {
     athleteId: athlete player uuid,
