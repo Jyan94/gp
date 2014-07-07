@@ -8,7 +8,7 @@ Require the exports.js file to have access to necessary functionality.
 
 daily_prophet serialized objects
 ===================================================
-    athlete_names: list of athlete names
+    athlete_names: list of athlete names (index is athleteContestId)
 
     /*
       the index corresponds to athlete contest id, which corresponds to the 
@@ -18,10 +18,11 @@ daily_prophet serialized objects
 
       the same index strategy applies to gameCOntestId
     */
-    athletes: list of stringified athlete objects:
+    athletes: list (index is athleteContestId) of stringified athlete object:
     {
-      athleteId: uuid of athlete
+      athleteId: uuid of athlete //only athlete variable used in cassandra/daily_prophet module,
       athleteName: name of athlete,
+      athleteContestId: integer (0 - numGames in contest) to relate to athletes list,
       gameContestId: integer (0 - numGames in contest) to index into games list,
       gameId: uuid for game,
       isOnHomeTeam: boolean,
@@ -47,7 +48,7 @@ daily_prophet serialized objects
       ]
     }
 
-    games: list of stringified game objects:
+    games: list (index is gameContestId) of stringified game objects:
     {
       awayTeam: short string for home team (i.e. NYY),
       awayTeamId: uuid for away team,
@@ -87,7 +88,7 @@ Schema:
       max_wager int,
       maximum_entries int,
       minimum_entries int,
-      pay_outs map<text, double>,
+      pay_outs list<double>,  //0 will correspond to first place, n-1 index will correspond to nth place
       processed_payouts_time timestamp, //updated after processed payouts
       sport text, //lowercase text
       starting_virtual_money int,

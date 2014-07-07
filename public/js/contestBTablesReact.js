@@ -90,7 +90,7 @@ var ContestRow = React.createClass({
       </tr>
     );
   }
-})
+});
 
 React.renderComponent(
   <ContestTable url="populateContestBTable" pollInterval={2000} />,

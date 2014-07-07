@@ -2,7 +2,7 @@
 (require('rootpath')());
 
 var constants = require('config/constants');
-var handlebarsHelpers = require('config/handlebarsHelpers');
+var handlebarsHelpers = require('views/handlebarHelpers/helpers');
 
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');

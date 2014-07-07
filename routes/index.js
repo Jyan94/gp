@@ -93,9 +93,10 @@ app.get('/update', graph.update);
 app.get('/data', graph.get);
 
 //tournament
+var contestBTable = require('routes/contestB/table');
 var contestB = require('routes/contestB');
-app.get('/contestB', contestB.renderContestPage);
-app.get('/populateContestBTable', contestB.sendContestTable);
+app.get('/contestB', contestBTable.renderContestPage);
+app.get('/populateContestBTable', contestBTable.sendContestTable);
 app.get('/contestBCreation', contestB.renderContestCreationPage);
 app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);
 app.post('/contestBEntryProcess/:contestId',
