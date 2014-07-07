@@ -144,13 +144,7 @@ var testContestSettings =
   8000,   //max_wager
   3, //maximum_entries
   1, //minimum_entries
-  {
-    0: 1.0,
-    1: 10.0,
-    2: 11.0,
-    3: 12.0,
-    4: 13.0
-  },  //pay_outs
+  [1.0, 10.0, 11.0, 12.0, 13.0], //pay_outs
   null, //processed_payouts_timestamp
   'TEST_SPORT',  //sport
   10000, //starting_virtual_money

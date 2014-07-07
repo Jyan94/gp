@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS daily_prophet (
   max_wager int,
   maximum_entries int,
   minimum_entries int,
-  pay_outs map<text, double>,
+  pay_outs list<double>,
   processed_payouts_time timestamp, //updated after processed payouts
   sport text, //lowercase text
   starting_virtual_money int,
@@ -47,58 +47,10 @@ CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);
 ===================================================
 daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more information
 ===================================================
-athlete_names: list of athlete names
-
-athletes: map of stringified int to stringified athlete object:
-{
-  athleteId: uuid of athlete //only athlete variable used in cassandra/daily_prophet module,
-  athleteName: name of athlete,
-  gameContestId: integer (0 - numGames in contest) to index into games map,
-  gameId: uuid for game,
-  isOnHomeTeam: boolean,
-  position: string for position,
-  shortTeamName: short string for team,
-  longTeamName: full team name,
-  teamId: uuid for team
-}
-
-contestants: map of username to stringified contestant object:
-{
-  instances: [
-  {
-    virtualMoneyRemaining : money remaining
-    wagers: array of amounts wagered, indexed 0 - num athletes initialized to 0's
-    [0, 0, 0, 0, 0, ...]
-    predictions: array of predicted fantasy values
-    [value0, value1, value2, ...]
-    //should add timestamp too, prevent users from changing too frequently
-    lastModified: timestamp formatted as milliseconds since jan 1, 1970
-    joinTime: timestamp formatted as milliseconds since jan 1, 1970
-  },
-  ...
-  ]
-}
-
-games: map of gameContestId (int) to stringified game object:
-{
-  awayTeam: short string for home team (i.e. NYY),
-  awayTeamId: uuid for away team,
-  gameDate: Date formatted as milliseconds since epoch,
-  gameId: uuid for game,
-  homeTeam: short string for home team ,
-  homeTeamId: uuid for home team,
-}
-
-contest states:
-0: after created and before deadline
-1: filled
-2: after deadline
-3: processed payouts
-4: cancelled
 */
 
 /*
-
+need to get change below
 CREATE TYPE IF NOT EXISTS baseball_team (
   team_id uuid,
   team_name text,
