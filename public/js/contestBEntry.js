@@ -22,7 +22,7 @@ $(document).ready(function() {
     if (timer) {
       clearTimeout(timer);
     }
-    
+
     timer = setTimeout(entryFormInputHandler, 500);
 
     return false;

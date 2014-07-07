@@ -41,8 +41,8 @@ var findContests = function (req, res, next, callback) {
 var filterContestFieldsTables = function (req, res, next, contests, callback) {
   var filterFunction = function (contest, callback) {
     callback(
-      null, 
-      { 
+      null,
+      {
         contestId: contest.contest_id,
         sport: contest.sport,
         type: contest.contest_name,
@@ -197,7 +197,7 @@ var renderContestEntryPage = function (req, res, next) {
   if (user.money < contest.entry_fee) {
     res.send(400, 'You do not have enough money to enter this contest.');
   }
-  else if (contestant && contestant.instances.length === 
+  else if (contestant && contestant.instances.length ===
           contest.entries_allowed_per_contestant) {
     res.send(400, 'You have exceeded the maximum number of entries for a user');
   }
@@ -224,9 +224,20 @@ var createInstance = function (params, contest) {
   var time = new Date();
 
   for (var i = 0; i < contest.athletes.length; i++) {
-    wagers[i] = parseInt(params['wager-' + i.toString()]);
-    predictions[i] = parseInt(params['prediction-' + i.toString()]);
-    virtualMoneyRemaining -= parseInt(params['wager-' + i.toString()]); 
+    if (parseInt(params['wager-' + i.toString()])) {
+      wagers[i] = parseInt(params['wager-' + i.toString()]);
+    }
+    else {
+      wagers[i] = 0;
+    }
+
+    if (parseInt(params['prediction-' + i.toString()])) {
+      predictions[i] = parseInt(params['prediction-' + i.toString()]);
+    }
+    else {
+      predictions[i] = 0;
+    }
+    virtualMoneyRemaining -= wagers[i];
   }
 
   return { virtualMoneyRemaining: virtualMoneyRemaining,
@@ -242,7 +253,6 @@ var submitEntry = function(req, res, next, contest, callback) {
   var user = req.user;
   var contestant = null;
   var instance = createInstance(req.body, contest);
-
   ContestB.addAndUpdateContestant(user, contest.contest_id, instance,
     function (err) {
       if (err) {
