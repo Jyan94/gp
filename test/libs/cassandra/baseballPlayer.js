@@ -1,3 +1,23 @@
+'use strict';
+require('rootpath')();
+
+var async = require('async');
+var Player = require('libs/cassandra/baseballPlayer');
+var TESTID = '00000000-0000-0000-0000-000000000002';
+var currentValueIndex = 50;
+var fullNameIndex = 15;
+var firstNameIndex = 10;
+var lastNameIndex = 105;
+var teamIndex = 10;
+var statusIndex = 0;
+var positionIndex = 5;
+var profileUrlIndex = 1;
+var uniformNumberIndex = 13;
+var heightIndex = 180;
+var weightIndex = 200;
+var ageIndex = 31;
+
+
 /*
 'use strict';
 require('rootpath')();
