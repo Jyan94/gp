@@ -6,7 +6,7 @@ var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var one = cql.types.consistencies.one;
 
-//15 fields
+//16 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
     player_id,
@@ -33,7 +33,13 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
 */});
 
 var CURRENT_VALUE_INDEX = 1;
-var STATISTICS_INDEX = 14;
+var STATISTICS_INDEX = 15;
+
+/**
+ * @param  {array}   fields
+ * @param  {Function} callback
+ * args: (err)
+ */
 exports.insert = function (fields, callback) {
   fields[CURRENT_VALUE_INDEX] = {
     value: fields[CURRENT_VALUE_INDEX],
@@ -60,6 +66,14 @@ var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
     player_id = ?;
 */});
+/**
+ * @param  {uuid}   playerId
+ * @param  {object}   fields
+ * keys are fields
+ * values corresponding to keys are update values
+ * @param  {Function} callback
+ * args: (err)
+ */
 exports.update = function (playerId, fields, callback) {
   var fieldNames = [];
   var fieldValues = [];
@@ -83,6 +97,12 @@ exports.update = function (playerId, fields, callback) {
 var SELECT_PLAYER_CQL = multiline(function () {/*
   SELECT * FROM baseball_player WHERE player_id = ?;
 */});
+/**
+ * @param  {uuid}   playerId
+ * @param  {Function} callback
+ * args: (err, result)
+ * result is a player object
+ */
 exports.select = function (playerId, callback) {
   cassandra.queryOneRow(SELECT_PLAYER_CQL, [playerId], one, callback);
 };
@@ -90,6 +110,7 @@ exports.select = function (playerId, callback) {
 var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
   SELECT * FROM baseball_player WHERE team = ?;
 */});
+//not good
 exports.selectUsingTeam = function (team, callback) {
   cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, [team], one, callback);
 }
@@ -119,10 +140,17 @@ exports.selectAllPlayerNames = function(callback) {
 var ADD_STATISTICS_QUERY = multiline(function() {/*
   UPDATE baseball_player SET statistics = statistics + ? WHERE player_id = ?
 */});
-exports.addStatistics = function (playerId, statisticsId, callback) {
+/**
+ * @param {uuid}   playerId
+ * @param {string}   statistic
+ * stringified statistic
+ * @param {Function} callback
+ * args: (err)
+ */
+exports.addStatistic = function (playerId, statistic, callback) {
   cassandra.query(
     ADD_STATISTICS_QUERY, 
-    [[statisticsId], playerId], 
+    [[statistic], playerId], 
     one,
     callback
   );
@@ -134,6 +162,12 @@ var DELETE_SPECIFIC_STATISTICS_QUERY_1 = multiline(function() {/*
 var DELETE_SPECIFIC_STATISTICS_QUERY_2 = multiline(function() {/*
 ] FROM baseball_player WHERE player_id = ? 
 */});
+/**
+ * @param  {uuid}   playerId
+ * @param  {int}   statisticsIndex
+ * @param  {Function} callback
+ * args: (err)
+ */
 exports.deleteStatistics = function (playerId, statisticsIndex, callback) {
   var query = 
     DELETE_SPECIFIC_STATISTICS_QUERY_1 + 
