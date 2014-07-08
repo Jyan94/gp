@@ -160,26 +160,18 @@ calculateWinningsForContestant('bcf4d500-fe44-11e3-89b7-c361d0a10fc1', [{contest
 
 /* use the waterfall to update all the winnings for a particular contest*/
 function calculateWinningsForContest (contestId, callback) {
-  async.waterfall([
-
+  async.waterfall(
+  [
     function(callback) {
       callback(null, contestId);
     },
-
     getGameIds,
-
     checkIfContestIsDone,
-
     calculateFantasyPointsForContest,
-
     calculatePoints,
-
     calculateWinningsForContestant
-    ], function(err) {
-      if (err) {
-        callback(err);
-      }
-    });
+  ], 
+  callback);
 }
 
 /* get all the contests to process */

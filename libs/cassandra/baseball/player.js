@@ -120,22 +120,46 @@ exports.select = function (playerId, callback) {
   cassandra.queryOneRow(SELECT_PLAYER_CQL, [playerId], one, callback);
 };
 
-var SELECT_PLAYERS_USING_TEAM_CQL = multiline(function () {/*
-  SELECT * FROM baseball_player WHERE team = ?;
+
+var SELECT_PLAYERS_USING_LONG_TEAM_CQL = multiline(function () {/*
+  SELECT * FROM baseball_player WHERE long_team_name = ?;
 */});
-//not good
-exports.selectUsingTeam = function (team, callback) {
-  cassandra.query(SELECT_PLAYERS_USING_TEAM_CQL, [team], one, callback);
-}
+/**
+ * @param  {string} team
+ * long team name (full team name)
+ * @param  {Function} callback
+ * args: (err, results)
+ * results is an array of players
+ */
+exports.selectUsingLongTeamName = function (team, callback) {
+  cassandra.query(SELECT_PLAYERS_USING_LONG_TEAM_CQL, [team], one, callback);
+};
+
+var SELECT_PLAYERS_USING_SHORT_TEAM_CQL = multiline(function () {/*
+  SELECT * FROM baseball_player WHERE short_team_name = ?;
+*/});
+/**
+ * @param  {string} team
+ * short team name (three letters)
+ * @param  {Function} callback
+ * args: (err, results)
+ * results is an array of players
+ */
+exports.selectUsingShortTeamName = function (team, callback) {
+  cassandra.query(SELECT_PLAYERS_USING_SHORT_TEAM_CQL, [team], one, callback);
+};
 
 var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
   SELECT * FROM player_images WHERE player_name = ?;
 */});
 /**
- * selects 
- * @param  {[type]}   playerName [description]
- * @param  {Function} callback   [description]
- * @return {[type]}              [description]
+ * !!!!!!!!!!!!!
+ * TODO: NOT GOOD! Should move image into player image field
+ * !!!!!!!!!!!!!
+ * @param  {string}   playerName
+ * @param  {Function} callback
+ * args: (err, results)
+ * where results is an array
  */
 exports.selectImagesUsingPlayerName = function(playerName, callback) {
   cassandra.query(
@@ -143,22 +167,23 @@ exports.selectImagesUsingPlayerName = function(playerName, callback) {
     [playerName], 
     one,
     callback);
-}
+};
 
 var AUTOCOMPLETE_QUERY = multiline(function() {/*
-  SELECT player_id, full_name FROM baseball_player
+  SELECT player_id, full_name FROM baseball_player;
 */});
 /**
  * selects all player names and ids
  * @param  {Function} callback
  * args: (err, result)
+ * result is array of players with ids and fullnames
  */
 exports.selectAllPlayerNames = function(callback) {
   cassandra.query(AUTOCOMPLETE_QUERY, [], one, callback);
 }
 
 var ADD_STATISTICS_QUERY = multiline(function() {/*
-  UPDATE baseball_player SET statistics = statistics + ? WHERE player_id = ?
+  UPDATE baseball_player SET statistics = statistics + ? WHERE player_id = ?;
 */});
 /**
  * adds a single statistic to the player
@@ -170,13 +195,13 @@ var ADD_STATISTICS_QUERY = multiline(function() {/*
  */
 exports.addStatistic = function (playerId, statistic, callback) {
   cassandra.query(ADD_STATISTICS_QUERY, [[statistic], playerId], one, callback);
-}
+};
 
 var DELETE_SPECIFIC_STATISTICS_QUERY_1 = multiline(function() {/*
   DELETE statistics[
 */});
 var DELETE_SPECIFIC_STATISTICS_QUERY_2 = multiline(function() {/*
-] FROM baseball_player WHERE player_id = ? 
+] FROM baseball_player WHERE player_id = ?; 
 */});
 /**
  * @param  {uuid}   playerId
