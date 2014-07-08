@@ -225,5 +225,29 @@ function subtractMoney(currentMoney, difference, userId, callback) {
   updateMoney(currentMoney, difference, userId, false, callback);
 }
 
+function addMoneyToUser(difference, userId, callback) {
+  selectById(userId, function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      updateMoney(result.money, difference, userId, true, callback);
+    }
+  });
+}
+
+function subtractMoneyFromUser(difference, userId, callback) {
+  selectById(userId, function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      updateMoney(result.money, difference, userId, false, callback);
+    }
+  });  
+}
+
 exports.addMoney = addMoney;
 exports.subtractMoney = subtractMoney;
+exports.addMoneyWithoutCurrent = addMoneyToUser;
+exports.subtractMoneyWithoutCurrent = subtractMoneyFromUser;

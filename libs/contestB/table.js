@@ -1,3 +1,8 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 (require('rootpath')());
 
@@ -5,7 +10,7 @@ var async = require('async');
 var configs = require('config/index.js');
 var ContestB = require('libs/cassandra/contestB/exports');
 var POLL_INTERVAL = configs.constants.pollInterval;
-
+//TODO implement better caching, use timestamps to update instead of setInterval
 /*
  * ====================================================================
  * CACHED CONTESTS AND UPDATING CACHED CONTESTS

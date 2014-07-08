@@ -47,7 +47,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     max_wager,
     maximum_entries,
     minimum_entries,
-    pay_outs,
+    payouts,
     processed_payouts_time,
     sport,
     starting_virtual_money,
