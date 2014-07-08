@@ -102,14 +102,20 @@ function updateOrInsert(
   callback) {
     var fields = [];
     BaseballStatistics.select(gameId, function(err, result) {
-      console.log("result: " + result);
+      console.log('result: ' + result);
     if (result) {
       console.log("2");
-      console.log(startTime);
-      console.log(homeScore);
-      console.log(visitorScore);
-      console.log(status);
-      console.log(gameId);
+      console.log('startTime: ' + startTime);
+      console.log('homeScore: ' + homeScore);
+      console.log('visitorScore: ' + visitorScore);
+      console.log('status: ' + status);
+      console.log('gameId: ' + gameId);
+      console.log('date: ' + date);
+      console.log('playerList: ' + playerList);
+      console.log('shortVisitorName: ' + shortVisitorName);
+      console.log('longVisitorName: ' + longVisitorName);
+      console.log('shortHomeName: ' + shortHomeName);
+      console.log('shortVisitorName: ' + shortVisitorName);
       fields = [ {
         start_time: startTime,
         status: status,
@@ -183,7 +189,7 @@ function insertNameAndScore(boxscore, callback) {
         setTimeout(function() {
           insertNameAndScore(boxscore, callback);
         },
-      2001)}
+      6001)}
       console.log(result);
       var tmpStartTime = result.event.scheduled_start_time[0];
       startTime = String(new Date(tmpStartTime)).split(" ")[4];
@@ -192,8 +198,8 @@ function insertNameAndScore(boxscore, callback) {
       var visitorRosterPrefix = result.event.game[0].visitor[0].roster[0].player;
       for (var i = 0; i < visitorRosterPrefix.length; i++) {
         playerList.push(JSON.stringify({
-          athleteId: visitorRosterPrefix[i].id,
-          athleteName: visitorRosterPrefix[i].preferred_name + " " + visitorRosterPrefix[i].last_name,
+          athleteId: visitorRosterPrefix[i].$.id,
+          athleteName: visitorRosterPrefix[i].$.preferred_name + " " + visitorRosterPrefix[i].$.last_name,
           isOnHomeTeam: false,
           shortTeamName: shortVisitorName,
           longTeamName: longVisitorName,
@@ -203,8 +209,8 @@ function insertNameAndScore(boxscore, callback) {
       var homeRosterPrefix = result.event.game[0].home[0].roster[0].player;
       for (var j = 0; j < homeRosterPrefix.length; j++) {
         playerList.push(JSON.stringify({
-          athleteId: homeRosterPrefix[j].id,
-          athleteName: homeRosterPrefix[j].preferred_name + " " + homeRosterPrefix[j].last_name,
+          athleteId: homeRosterPrefix[j].$.id,
+          athleteName: homeRosterPrefix[j].$.preferred_name + " " + homeRosterPrefix[j].$.last_name,
           isOnHomeTeam: true,
           shortTeamName: shortHomeName,
           longTeamName: longHomeName,
@@ -270,11 +276,11 @@ var getEachBoxScore = function(year, month, day, callback) {
     }
   });
 }
-
-getEachBoxScore('2014', '07', '07', function(err, result) {
+/*
+getEachBoxScore('2014', '07', '08', function(err, result) {
   console.log(result);
 })
-
+*/
 function calculateBoxScore() {
   setInterval(function() {
     var date = new Date();
