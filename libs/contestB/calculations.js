@@ -68,9 +68,14 @@ function calculateFantasyPointsForContest (contestId, callback) {
     var playerObjectArr = [];
     for (var i = 0; i < athletes.length; i++) {
       playerObjectArr.push({
+        name: athletes[i].athleteName,
         playerId: athletes[i].athleteId,
         isOnHomeTeam: athletes[i].isOnHomeTeam,
-        gameId: athletes[i].gameId,
+        prefixSchedule: {
+          $: {
+            id: athletes[i].gameId,
+          }
+        }
       });
     }
     async.map(playerObjectArr, calculate.calculateMlbFantasyPoints, function(err, result) {

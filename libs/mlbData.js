@@ -258,7 +258,7 @@ function insertNameAndScore(boxscore, callback) {
 var getEachBoxScore = function(year, month, day, callback) {
   getDailyBoxscore(year, month, day, function(err, result) {
     if (!result.hasOwnProperty('boxscores')) {
-      setTimeout(function () { getEachBoxScore(year, month, day, callback); }, 1001);
+      setTimeout(function () { getEachBoxScore(year, month, day, callback); }, 6001);
     }
     else {
       var boxscore = result.boxscores.boxscore;
