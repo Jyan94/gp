@@ -98,6 +98,9 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   statistics list<text>
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
+CREATE INDEX IF NOT EXISTS ON baseball_player(long_team_name);
+CREATE INDEX IF NOT EXISTS ON baseball_player(short_team_name);
+
 //statistics is list of baseball_player_game_statistics
 /*
 statistics: list of stringified statistics objects
