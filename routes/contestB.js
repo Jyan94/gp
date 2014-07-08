@@ -38,25 +38,57 @@ var findContests = function (req, res, next, callback) {
   });
 }
 
-var filterContestFieldsTables = function (req, res, next, contests, callback) {
-  var filterFunction = function (contest, callback) {
-    callback(
-      null, 
-      { 
-        contestId: contest.contest_id,
-        sport: contest.sport,
-        type: contest.contest_name,
-        contestStartTime: contest.contest_start_time,
-        currentEntries: contest.current_entries,
-        maximumEntries: contest.maximum_entries,
-        entryFee: contest.entry_fee,
-        totalPrizePool: contest.total_prize_pool,
-        startingVirtualMoney: contest.starting_virtual_money
-      });
-  }
+var filterFunctionContestants = function(username, contest, callback) {
+  async.map(Object.keys(contest.contestants),
+    function(key, callback) {
+      var contestant = { username: key,
+                         instanceCount: JSON.parse(contest.contestants[key]).instances.length,
+                       }
 
-  async.map(contests, filterFunction, function (err, result) {
-    //console.log(JSON.stringify(result));
+      callback(null, contestant);
+    }, function (err, result) {
+      callback(err, JSON.parse(contest.contestants[username]).instances, contest, result);
+    });
+}
+
+var filterFunctionMain = function(userContestantInstances, contest, contestants, callback) {
+  callback(
+    null, 
+    { 
+      contestId: contest.contest_id,
+      sport: contest.sport,
+      type: contest.contest_name,
+      contestStartTime: contest.contest_start_time,
+      currentEntries: contest.current_entries,
+      maximumEntries: contest.maximum_entries,
+      entryFee: contest.entry_fee,
+      totalPrizePool: contest.total_prize_pool,
+      startingVirtualMoney: contest.starting_virtual_money,
+      entriesAllowedPerContestant: contest.entries_allowed_per_contestant,
+      games: contest.games,
+      maxWager: contest.max_wager,
+      payOuts: contest.pay_outs,
+      contestants: contestants,
+      userContestantInstances: userContestantInstances
+    });
+}
+
+var filterFunction = function (username) {
+  return function (contest, callback) {
+    async.waterfall([
+      function (callback) {
+        callback(null, username, contest);
+      },
+      filterFunctionContestants,
+      filterFunctionMain
+    ], function (err, result) {
+      callback(err, result);
+    });
+  };
+}
+
+var filterContestFieldsTables = function (req, res, next, contests, callback) {
+  async.map(contests, filterFunction(req.user.username), function (err, result) {
     if (err) {
       res.send(500, 'Server error.');
     }
@@ -87,7 +119,6 @@ var renderTournamentTablesPage = function (req, res, next) {
 */
 
 var sendContestTable = function (req, res, next) {
-  console.log(1211);
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -109,7 +140,7 @@ var sendContestTable = function (req, res, next) {
  */
 
 var renderContestCreationPage = function (req, res, next) {
-
+  
 }
 
 /*
