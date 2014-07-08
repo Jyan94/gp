@@ -4,6 +4,8 @@ require('rootpath')();
 var async = require('async');
 var Player = require('libs/cassandra/baseball/player');
 var TESTID = '00000000-0000-0000-0000-000000000002';
+var SHORT_TEAM_INDEX = 5;
+var LONG_TEAM_INDEX = 6;
 
 function testDelete(callback) {
   Player.delete(TESTID, function (err) {
@@ -21,8 +23,8 @@ var fields =
   'Joe Biden', //full_name
   'Joe',  //first_name
   'Biden',  //last_name
-  'LAC',  //short_team_name
-  'Los Angeles Clippers',  //long_team_name
+  'LAC TEST',  //short_team_name
+  'Los Angeles Clippers TEST',  //long_team_name
   'active', //status
   'shortstop', //position
   'url', //profile url
@@ -33,6 +35,9 @@ var fields =
   'the image', //image
   ['30 RBI']  //statistics
 ];
+
+var addStatistic = 'added statistic';
+
 function testInsert(callback) {
   Player.insert(fields, function (err) {
     if (err) {
@@ -106,6 +111,67 @@ function testSelectByPlayerId(callback) {
   });
 }
 
+function testSelectByTeamName(callback) {
+  async.parallel(
+  [
+    function(callback) {
+      Player.selectUsingLongTeamName(
+        fields[LONG_TEAM_INDEX], 
+        function(err, result) {
+          (err === null).should.be.true;
+          result = result[0];
+          compareAgainstUpdateFields(result);
+          callback(null);
+        });
+    },
+    function(callback) {
+      Player.selectUsingLongTeamName(SHORT_TEAM_INDEX, function(err, result) {
+        (err === null).should.be.true;
+        result = result[0];
+        compareAgainstUpdateFields(result);
+        callback(null);
+      });
+    },
+  ],
+  callback);
+}
+
+function testAddAndDeleteStatistic(callback) {
+  async.waterfall(
+  [
+    function(callback) {
+      Player.addStatistic(TESTID, addStatistic, function(err) {
+        (err === null).should.be.true;
+        callback(null);
+      });
+    },
+    function(callback) {
+      Player.select(TESTID, function(err, result) {
+        (err === null).should.be.true;
+        result.should.have.property('statistics');
+        result.statistics.should.have.length(2);
+        result.statistics[1].should.equal(addStatistic);
+        callback(null);
+      });
+    },
+    function(callback) {
+      Player.deleteStatistics(TESTID, 1, function(err) {
+        (err === null).should.be.true;
+        callback(null);
+      });
+    },
+    function(callback) {
+      Player.select(TESTID, function(err, result) {
+        (err === null).should.be.true;
+        result.should.have.property('statistics');
+        result.statistics.should.have.length(1);
+        callback(null);
+      });
+    }
+  ],
+  callback);
+}
+
 describe('baseballPlayer module test', function () {
   it('test all functions except selectImages and autocomplete',
     function(done) {
@@ -114,6 +180,7 @@ describe('baseballPlayer module test', function () {
         testInsert,
         testUpdate,
         testSelectByPlayerId,
+        testAddAndDeleteStatistic,
         testDelete
         ],
         function (err) {

@@ -26,9 +26,11 @@ daily_prophet serialized objects
       gameContestId: integer (0 - numGames in contest) to index into games list,
       gameId: timeuuid for game,
       isOnHomeTeam: boolean,
+      longTeamName: full team name,
+      longVersusTeamName: full opposing team name,
       position: string for position,
       shortTeamName: short string for team,
-      longTeamName: full team name,
+      shortVersusTeamName: short string for opposing team name,
       teamId: uuid for team
     }
 
