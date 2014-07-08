@@ -6,6 +6,11 @@ var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var one = cql.types.consistencies.one;
 
+var CURRENT_VALUE_INDEX = 1;
+var STATISTICS_INDEX = 15;
+var CURRENT_VALUE_KEY = 'current_value';
+var STATISTICS_KEY = 'statistics';
+
 //16 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
@@ -31,9 +36,6 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
      ?, ?, ?, ?, ?, 
      ?);
 */});
-
-var CURRENT_VALUE_INDEX = 1;
-var STATISTICS_INDEX = 15;
 
 /**
  * @param  {array}   fields
@@ -80,7 +82,17 @@ exports.update = function (playerId, fields, callback) {
   for (var key in fields) {
     if (fields.hasOwnProperty(key)) {
       fieldNames.push(key);
-      fieldValues.push(fields[key]);
+      switch (key) {
+        case CURRENT_VALUE_KEY:
+          fieldValues.push({value: fields[key], hint: 'double'});
+          break;
+        case STATISTICS_KEY:
+          fieldValues.push({value: fields[key], hint: 'list'});
+          break;
+        default:
+          fieldValues.push(fields[key]);
+          break;
+      }
     }
   }
   var query = UPDATE_PLAYER_CQL_1;
@@ -119,6 +131,12 @@ exports.selectUsingTeam = function (team, callback) {
 var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
   SELECT * FROM player_images WHERE player_name = ?;
 */});
+/**
+ * selects 
+ * @param  {[type]}   playerName [description]
+ * @param  {Function} callback   [description]
+ * @return {[type]}              [description]
+ */
 exports.selectImagesUsingPlayerName = function(playerName, callback) {
   cassandra.query(
     SELECT_PLAYER_IMAGES_USING_PLAYERNAME, 
@@ -130,18 +148,20 @@ exports.selectImagesUsingPlayerName = function(playerName, callback) {
 var AUTOCOMPLETE_QUERY = multiline(function() {/*
   SELECT player_id, full_name FROM baseball_player
 */});
+/**
+ * selects all player names and ids
+ * @param  {Function} callback
+ * args: (err, result)
+ */
 exports.selectAllPlayerNames = function(callback) {
-  cassandra.query(
-    AUTOCOMPLETE_QUERY, 
-    [], 
-    cql.types.consistencies.one, 
-    callback);
+  cassandra.query(AUTOCOMPLETE_QUERY, [], one, callback);
 }
 
 var ADD_STATISTICS_QUERY = multiline(function() {/*
   UPDATE baseball_player SET statistics = statistics + ? WHERE player_id = ?
 */});
 /**
+ * adds a single statistic to the player
  * @param {uuid}   playerId
  * @param {string}   statistic
  * stringified statistic
@@ -149,12 +169,7 @@ var ADD_STATISTICS_QUERY = multiline(function() {/*
  * args: (err)
  */
 exports.addStatistic = function (playerId, statistic, callback) {
-  cassandra.query(
-    ADD_STATISTICS_QUERY, 
-    [[statistic], playerId], 
-    one,
-    callback
-  );
+  cassandra.query(ADD_STATISTICS_QUERY, [[statistic], playerId], one, callback);
 }
 
 var DELETE_SPECIFIC_STATISTICS_QUERY_1 = multiline(function() {/*
