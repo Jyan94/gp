@@ -83,42 +83,52 @@ var testContestSettings =
     '{"athleteName":"John Snow00",' +
        '"athleteId":"00000000-0000-0000-0000-000000000000",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"longVersusTeamName": "VERSUS_LONG_TEST", ' +
        '"isOnHomeTeam":true,' + 
        '"position":"test_pitcher",' +
        '"shortTeamName":"TEST_GOT",' + 
-       '"longTeamName":"THE_TEST_GOT", ' +
+       '"shortVersusTeamName": "VERSUS_TEST", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
     '{"athleteName":"John Snow01",' +
        '"athleteId":"00000000-0000-0000-0000-000000000001",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"longVersusTeamName": "VERSUS_LONG_TEST", ' +
        '"isOnHomeTeam":true,' + 
        '"position":"test_pitcher",' +
        '"shortTeamName":"TEST_GOT",' + 
-       '"longTeamName":"THE_TEST_GOT", ' +
+       '"shortVersusTeamName": "VERSUS_TEST", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
     '{"athleteName":"John Snow02",' +
        '"athleteId":"00000000-0000-0000-0000-000000000002",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"longVersusTeamName": "VERSUS_LONG_TEST", ' +
        '"isOnHomeTeam":true,' + 
        '"position":"test_pitcher",' +
        '"shortTeamName":"TEST_GOT",' + 
-       '"longTeamName":"THE_TEST_GOT", ' +
+       '"shortVersusTeamName": "VERSUS_TEST", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
     '{"athleteName":"John Snow03",' +
        '"athleteId":"00000000-0000-0000-0000-000000000003",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"longVersusTeamName": "VERSUS_LONG_TEST", ' +
        '"isOnHomeTeam":true,' + 
        '"position":"test_pitcher",' +
        '"shortTeamName":"TEST_GOT",' + 
-       '"longTeamName":"THE_TEST_GOT", ' +
+       '"shortVersusTeamName": "VERSUS_TEST", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}',
     '{"athleteName":"John Snow04",' +
        '"athleteId":"00000000-0000-0000-0000-000000000004",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
+       '"longTeamName":"THE_TEST_GOT", ' +
+       '"longVersusTeamName": "VERSUS_LONG_TEST", ' +
        '"isOnHomeTeam":true,' + 
        '"position":"test_pitcher",' +
        '"shortTeamName":"TEST_GOT",' + 
-       '"longTeamName":"THE_TEST_GOT", ' +
+       '"shortVersusTeamName": "VERSUS_TEST", ' +
        '"teamId":"00000000-0000-0000-0000-000000000000"}'
   ], //athletes
   0,  //commission_earned

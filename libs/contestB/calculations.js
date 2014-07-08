@@ -67,6 +67,22 @@ function calculateFantasyPointsForContest (contestId, callback) {
     var athletes = result.athletes;
     var playerObjectArr = [];
     for (var i = 0; i < athletes.length; i++) {
+      var homeAbbr;
+      var awayAbbr;
+      var homeName;
+      var awayName;
+      if (athletes[i].isOnHomeTeam) {
+        homeAbbr = athletes[i]. ;
+        awayAbbr = athletes[i]. ;
+        homeName = athletes[i]. ;
+        awayName = athletes[i]. ;
+      }
+      else {
+        homeAbbr = athletes[i]. ;
+        awayAbbr = athletes[i]. ;
+        homeName = athletes[i]. ;
+        awayName = athletes[i]. ;
+      }
       playerObjectArr.push({
         name: athletes[i].athleteName,
         playerId: athletes[i].athleteId,
@@ -74,7 +90,19 @@ function calculateFantasyPointsForContest (contestId, callback) {
         prefixSchedule: {
           $: {
             id: athletes[i].gameId,
-          }
+          },
+          home: [
+            $: {
+              abbr: homeAbbr,
+              name: homeName
+            }
+          ],
+          visitor: [
+            $: {
+              abbr: awayAbbr,
+              name: awayName
+            }
+          ]
         }
       });
     }

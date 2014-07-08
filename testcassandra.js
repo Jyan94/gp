@@ -187,7 +187,7 @@ require('./libs/cassandra/contestB/update.js').insert([
   0,  //commission_earned
   new Date(new Date().getTime() + 100000), //contest_deadline_time
   null, //contest_end_time
-  'bcf4d500-fe44-11e3-89b7-c361d0a10fc1', //contest_id
+  cql.types.timeuuid(), //contest_id
   'THE_DAILY_PROPHET',
   new Date(), //contest_start_time
   0,  //contest_state
