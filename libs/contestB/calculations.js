@@ -8,7 +8,6 @@ var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 var async = require('async');
 var Player = require('libs/cassandra/baseballPlayer.js');
-var Bet = require('libs/cassandra/bet.js');
 var User = require('libs/cassandra/user.js');
 var calculate = require('libs/applicationServer/calculateMlbFantasyPoints.js');
 var mlbData = require('libs/mlbData.js');

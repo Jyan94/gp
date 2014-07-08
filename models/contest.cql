@@ -80,31 +80,6 @@ CREATE INDEX IF NOT EXISTS on baseball_game(game_date);
  }
  */
 
-CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
-  statistic_id timeuuid,
-  player_id uuid,
-  sport text,
-  game_date timestamp,
-  season_year int,
-  season_type text,
-  position_in_game text,
-  singles int,
-  doubles int,
-  triples int,
-  home_runs int,
-  runs int,
-  rbis int, //runs batted in
-  stolen_bases int,
-  caught_stealing_bases int,
-  walks int,
-  earned_runs_allowed int,
-  strikeouts int,
-  walks_and_hits_allowed int,
-  fantasy_points double,
-  PRIMARY KEY (player_id, statistic_id)
-);
-CREATE INDEX IF NOT EXISTS ON baseball_player_game_statistics(player_id);
-
 CREATE TABLE IF NOT EXISTS baseball_player (
   player_id uuid PRIMARY KEY,
   current_value double,
@@ -122,7 +97,30 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   weight int,
   age int,
   image text,
-  statistics list<uuid>
+  statistics list<text>
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics
+/*
+statistics: list of stringified statistics objects
+{
+  sport text,
+  game_date (time in milliseconds since epoch),
+  season_year int,
+  season_type text,
+  position_in_game text,
+  singles int,
+  doubles int,
+  triples int,
+  home_runs int,
+  runs int,
+  rbis int, //runs batted in
+  stolen_bases int,
+  caught_stealing_bases int,
+  walks int,
+  earned_runs_allowed int,
+  strikeouts int,
+  walks_and_hits_allowed int,
+  fantasy_points double
+}
+ */
