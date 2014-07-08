@@ -2,7 +2,7 @@
 require('rootpath')();
 
 var async = require('async');
-var Player = require('libs/cassandra/baseballPlayer');
+var Player = require('libs/cassandra/baseball/player');
 var TESTID = '00000000-0000-0000-0000-000000000002';
 var currentValueIndex = 50;
 var fullNameIndex = 15;
@@ -32,7 +32,7 @@ function testDelete(callback) {
 var fields =
 [
   TESTID, //id
-  {value: 100, hint: 'double'},  //current_value
+  100,  //current_value
   'Joe Biden', //full_name
   'Joe',  //first_name
   'Biden',  //last_name
@@ -46,7 +46,7 @@ var fields =
   1000, //weight
   30,  //age
   'the image', //image
-  '30 RBI'  //statistics
+  ['30 RBI']  //statistics
 ];
 function testInsert(callback) {
   Player.insert(fields, function (err) {
@@ -58,8 +58,24 @@ function testInsert(callback) {
 }
 
 
-var updateParams = 
-[
+var update = 
+{
+  current_value: 100,
+  full_name: 'Barack Obama',
+  first_name: 'Barack',
+  last_name: 'Obama',
+  short_team_name: 'LAL',
+  long_team_name: 'Los Angeles Lakers',
+  status: 'injured',
+  position: 'pitcher',
+  profile_url: 'testerino',
+  uniform_number: '15',
+  height: '71',
+  weight: '400',
+  age: '20',
+  image: 'img.txt',
+  statistics: ['50 RBI']
+}
 'current_value',
 'full_name',
 'first_name',
@@ -79,7 +95,7 @@ var updateParams =
 ]
 var updateFields = 
 [
-{value: 100, hint: 'double'},  //current_value
+100,  //current_value
 'Barack Obama', //full_name
 'Barack',  //first_name
 'Obama',  //last_name
@@ -93,7 +109,7 @@ var updateFields =
 400, //weight
 20,  //age
 'img.txt', //image
-'50 RBI', //statistics
+['50 RBI'], //statistics
 ];
 
 function testUpdate(callback) {

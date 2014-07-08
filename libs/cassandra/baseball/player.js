@@ -4,7 +4,7 @@ require('rootpath')();
 var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
-var one = cql.consistencies.one;
+var one = cql.types.consistencies.one;
 
 //15 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
@@ -14,7 +14,8 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
     full_name,
     first_name,
     last_name,
-    team,
+    long_team_name,
+    short_team_name,
     status,
     position,
     profile_url,
@@ -27,12 +28,17 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
   ) VALUES
     (?, ?, ?, ?, ?, 
      ?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?);
+     ?, ?, ?, ?, ?, 
+     ?);
 */});
 
 var CURRENT_VALUE_INDEX = 1;
 var STATISTICS_INDEX = 14;
 exports.insert = function (fields, callback) {
+  fields[CURRENT_VALUE_INDEX] = {
+    value: fields[CURRENT_VALUE_INDEX],
+    hint: 'double'
+  };
   fields[STATISTICS_INDEX] = {
     value: fields[STATISTICS_INDEX],
     hint: 'list'
