@@ -85,7 +85,6 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   full_name text,
   first_name text,
   last_name text,
-  team_id uuid,
   short_team_name text,
   long_team_name text,
   status text,

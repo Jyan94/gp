@@ -60,7 +60,7 @@ function testInsert(callback) {
 
 var update = 
 {
-  current_value: 100,
+  current_value: {value: 100, hint: 'double'},
   full_name: 'Barack Obama',
   first_name: 'Barack',
   last_name: 'Obama',
@@ -69,51 +69,17 @@ var update =
   status: 'injured',
   position: 'pitcher',
   profile_url: 'testerino',
-  uniform_number: '15',
-  height: '71',
-  weight: '400',
-  age: '20',
+  uniform_number: 15,
+  height: 71,
+  weight: 400,
+  age: 20,
   image: 'img.txt',
-  statistics: ['50 RBI']
+  statistics: {value: ['50 RBI'], hint: 'list'}
 }
-'current_value',
-'full_name',
-'first_name',
-'last_name',
-'team_id',
-'short_team_name',
-'long_team_name',
-'status',
-'position',
-'profile_url',
-'uniform_number',
-'height',
-'weight',
-'age',
-'image',
-'statistics'
-]
-var updateFields = 
-[
-100,  //current_value
-'Barack Obama', //full_name
-'Barack',  //first_name
-'Obama',  //last_name
-'LAL' ,  //short_team_name
-'Los Angeles Lakers',  //long_team_name
-'injured', //status
-'pitcher', //position
-'testerino', //profile_url
-15, //uniform_number
-71, //height
-400, //weight
-20,  //age
-'img.txt', //image
-['50 RBI'], //statistics
-];
+
 
 function testUpdate(callback) {
-  Player.update(TESTID, updateParams, updateFields, function (err) {
+  Player.update(TESTID, update, function (err) {
     if (err) {
       callback(err);
     }
@@ -124,22 +90,22 @@ function testUpdate(callback) {
 function compareAgainstUpdateFields(result) {
   result.should.have.property('player_id', TESTID);
   result.should.have.property(
-    'current_value', updateFields[currentValueIndex].value);
-  result.should.have.property('full_name', updateFields[fullNameIndex]);
-  result.should.have.property('first_name', updateFields[firstNameIndex]);
-  result.should.have.property('last_name', updateFields[lastNameIndex]);
-  result.should.have.property('long_team_name', updateFields[longTeamIndex]);
-  result.should.have.property('short_team_name', updateFields[shortTeamIndex]);
-  result.should.have.property('status', updateFields[statusIndex]);
-  result.should.have.property('position', updateFields[positionIndex]);
-  result.should.have.property('profile_url', updateFields[profileUrlIndex]);
+    'current_value', update.currentValueIndex.value);
+  result.should.have.property('full_name', update.fullNameIndex);
+  result.should.have.property('first_name', update.firstNameIndex);
+  result.should.have.property('last_name', update.lastNameIndex);
+  result.should.have.property('long_team_name', update.longTeamIndex);
+  result.should.have.property('short_team_name', update.shortTeamIndex);
+  result.should.have.property('status', update.statusIndex);
+  result.should.have.property('position', update.positionIndex);
+  result.should.have.property('profile_url', update.profileUrlIndex);
   result.should.have.property(
-    'uniform_number', updateFields[uniformNumberIndex]);
-  result.should.have.property('age', updateFields[ageIndex]);
-  result.should.have.property('height', updateFields[heightIndex]);
-  result.should.have.property('weight', updateFields[weightIndex]);
-  result.should.have.property('image', updateFields[imageIndex]);
-  result.should.have.property('statistics', updateFields[statisticsIndex]);
+    'uniform_number', update.uniformNumberIndex);
+  result.should.have.property('age', update.ageIndex);
+  result.should.have.property('height', update.heightIndex);
+  result.should.have.property('weight', update.weightIndex);
+  result.should.have.property('image', update.imageIndex);
+  result.should.have.property('statistics', update.statisticsIndex);
 }
 
 
@@ -155,30 +121,6 @@ function testSelectByPlayerId(callback) {
   });
 }
 
-function testSelectByTeamId(callback) {
-  Player.selectUsingTeam(updateFields[longTeamIndex], function(err, result) {
-    if (err) {
-      callback(err);
-      console.log(result);
-    }
-    else{
-      result.should.have.length(1);
-      result = result[0];
-      compareAgainstUpdateFields(result);
-      callback(null);
-    }
-  });
-}
-
-function testAutocomplete(callback) {
-  Player.selectAllPlayerNames(function(err, result) {
-    if (err) {
-      callback(err);
-    }
-    callback(null);
-  });
-}
-
 describe('baseballPlayer module test', function () {
   it('test all functions except selectImages and autocomplete',
     function(done) {
@@ -187,7 +129,6 @@ describe('baseballPlayer module test', function () {
         testInsert,
         testUpdate,
         testSelectByPlayerId,
-        testSelectByTeamId,
         testDelete
         ],
         function (err) {

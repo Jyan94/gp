@@ -14,8 +14,8 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
     full_name,
     first_name,
     last_name,
-    long_team_name,
     short_team_name,
+    long_team_name,
     status,
     position,
     profile_url,
@@ -60,7 +60,7 @@ exports.delete = function (playerId, callback) {
 };
 
 var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
-  UPDATE baseball_player SET
+  UPDATE baseball_player SET 
 */});
 var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
@@ -91,6 +91,7 @@ exports.update = function (playerId, fields, callback) {
     }
   }
   query += (' ' + UPDATE_PLAYER_CQL_2);
+  fieldValues.push(playerId);
   cassandra.query(query, fieldValues, one, callback);
 };
 
