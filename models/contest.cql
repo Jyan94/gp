@@ -59,7 +59,6 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   long_home_name text,  //full name for home team
   players list<text>,
   play_by_play list<text>,
-  season_type text,
   short_away_name text,
   short_home_name text, //acronym for home team
   start_time timestamp,
