@@ -101,6 +101,7 @@ exports.update = function(fields, gameId, callback) {
     }
   }
   query += (' ' + UPDATE_GAME_CQL_2);
+  fieldValues.push(gameId);
   cassandra.query(query, fieldValues, one, callback);
 };
 
