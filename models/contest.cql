@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   weight int,
   age int,
   image text,
-  statistics list<uuid>
+  statistics list<text>
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 //statistics is list of baseball_player_game_statistics

@@ -8,7 +8,8 @@ var currentValueIndex = 50;
 var fullNameIndex = 15;
 var firstNameIndex = 10;
 var lastNameIndex = 105;
-var teamIndex = 10;
+var longTeamIndex = 10;
+var shortTeamIndex = 20;
 var statusIndex = 0;
 var positionIndex = 5;
 var profileUrlIndex = 1;
@@ -16,6 +17,175 @@ var uniformNumberIndex = 13;
 var heightIndex = 180;
 var weightIndex = 200;
 var ageIndex = 31;
+var imageIndex = 10;
+var statisticsIndex = 2;
+
+function testDelete(callback) {
+  Player.delete(TESTID, function (err) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  })
+}
+
+var fields =
+[
+  TESTID, //id
+  {value: 100, hint: 'double'},  //current_value
+  'Joe Biden', //full_name
+  'Joe',  //first_name
+  'Biden',  //last_name
+  'LAC',  //short_team_name
+  'Los Angeles Clippers',  //long_team_name
+  'active', //status
+  'shortstop', //position
+  'url', //profile url
+  2, //uniform number
+  71, //height
+  1000, //weight
+  30,  //age
+  'the image', //image
+  '30 RBI'  //statistics
+];
+function testInsert(callback) {
+  Player.insert(fields, function (err) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  });
+}
+
+
+var updateParams = 
+[
+'current_value',
+'full_name',
+'first_name',
+'last_name',
+'team_id',
+'short_team_name',
+'long_team_name',
+'status',
+'position',
+'profile_url',
+'uniform_number',
+'height',
+'weight',
+'age',
+'image',
+'statistics'
+]
+var updateFields = 
+[
+{value: 100, hint: 'double'},  //current_value
+'Barack Obama', //full_name
+'Barack',  //first_name
+'Obama',  //last_name
+'LAL' ,  //short_team_name
+'Los Angeles Lakers',  //long_team_name
+'injured', //status
+'pitcher', //position
+'testerino', //profile_url
+15, //uniform_number
+71, //height
+400, //weight
+20,  //age
+'img.txt', //image
+'50 RBI', //statistics
+];
+
+function testUpdate(callback) {
+  Player.update(TESTID, updateParams, updateFields, function (err) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  });
+}
+
+function compareAgainstUpdateFields(result) {
+  result.should.have.property('player_id', TESTID);
+  result.should.have.property(
+    'current_value', updateFields[currentValueIndex].value);
+  result.should.have.property('full_name', updateFields[fullNameIndex]);
+  result.should.have.property('first_name', updateFields[firstNameIndex]);
+  result.should.have.property('last_name', updateFields[lastNameIndex]);
+  result.should.have.property('long_team_name', updateFields[longTeamIndex]);
+  result.should.have.property('short_team_name', updateFields[shortTeamIndex]);
+  result.should.have.property('status', updateFields[statusIndex]);
+  result.should.have.property('position', updateFields[positionIndex]);
+  result.should.have.property('profile_url', updateFields[profileUrlIndex]);
+  result.should.have.property(
+    'uniform_number', updateFields[uniformNumberIndex]);
+  result.should.have.property('age', updateFields[ageIndex]);
+  result.should.have.property('height', updateFields[heightIndex]);
+  result.should.have.property('weight', updateFields[weightIndex]);
+  result.should.have.property('image', updateFields[imageIndex]);
+  result.should.have.property('statistics', updateFields[statisticsIndex]);
+}
+
+
+function testSelectByPlayerId(callback) {
+  Player.select(TESTID, function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      compareAgainstUpdateFields(result);
+      callback(null);
+    }
+  });
+}
+
+function testSelectByTeamId(callback) {
+  Player.selectUsingTeam(updateFields[longTeamIndex], function(err, result) {
+    if (err) {
+      callback(err);
+      console.log(result);
+    }
+    else{
+      result.should.have.length(1);
+      result = result[0];
+      compareAgainstUpdateFields(result);
+      callback(null);
+    }
+  });
+}
+
+function testAutocomplete(callback) {
+  Player.selectAllPlayerNames(function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  });
+}
+
+describe('baseballPlayer module test', function () {
+  it('test all functions except selectImages and autocomplete',
+    function(done) {
+      async.waterfall([
+        testDelete,
+        testInsert,
+        testUpdate,
+        testSelectByPlayerId,
+        testSelectByTeamId,
+        testDelete
+        ],
+        function (err) {
+          if (err) {
+            console.log(err);
+            console.log(err.stack);
+          }
+          else {
+            done();
+          }
+        });
+    }
+  );
+});
 
 
 /*

@@ -8,7 +8,7 @@
 (require('rootpath')());
 
 var cql = require('config/index').cassandra.cql;
-var testUserParams0 = 
+var testUserParams0 =
 [
   '00000000-0000-0000-0000-000000000000',
   'test0@test.com',
