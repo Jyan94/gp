@@ -6,6 +6,15 @@ var Player = require('libs/cassandra/baseball/player');
 var TESTID = '00000000-0000-0000-0000-000000000002';
 var SHORT_TEAM_INDEX = 5;
 var LONG_TEAM_INDEX = 6;
+var STATISTICS_INDEX = 15;
+
+var testDate0 = new Date();
+var date = ('0' + testDate0.getDate()).slice(-2);
+var month = ('0' + (testDate0.getMonth() + 1)).slice(-2);
+var year = 1990;
+testDate0 = year + '/' + month + '/' + date;
+++year;
+var testDate1 = year + '/' + month + '/' + date;
 
 function testDelete(callback) {
   Player.delete(TESTID, function (err) {
@@ -33,8 +42,9 @@ var fields =
   1000, //weight
   30,  //age
   'the image', //image
-  ['30 RBI']  //statistics
+  {}  //statistics
 ];
+fields[STATISTICS_INDEX][testDate0] = '30 rbi';
 
 var addStatistic = 'added statistic';
 
@@ -43,7 +53,9 @@ function testInsert(callback) {
     if (err) {
       callback(err);
     }
-    callback(null);
+    else {
+      callback(null);
+    }
   });
 }
 
@@ -64,16 +76,18 @@ var update =
   weight: 400,
   age: 20,
   image: 'img.txt',
-  statistics: ['50 RBI']
+  statistics: {}
 }
-
+update.statistics[testDate0] = '30 rbi';
 
 function testUpdate(callback) {
   Player.update(TESTID, update, function (err) {
     if (err) {
       callback(err);
     }
-    callback(null);
+    else {
+      callback(null);
+    }
   });
 }
 
@@ -140,7 +154,7 @@ function testAddAndDeleteStatistic(callback) {
   async.waterfall(
   [
     function(callback) {
-      Player.addStatistic(TESTID, addStatistic, function(err) {
+      Player.addStatistic(TESTID, testDate1, addStatistic, function(err) {
         (err === null).should.be.true;
         callback(null);
       });
@@ -149,13 +163,13 @@ function testAddAndDeleteStatistic(callback) {
       Player.select(TESTID, function(err, result) {
         (err === null).should.be.true;
         result.should.have.property('statistics');
-        result.statistics.should.have.length(2);
-        result.statistics[1].should.equal(addStatistic);
+        Object.keys(result.statistics).should.have.length(2);
+        //result.statistics[1].should.equal(addStatistic);
         callback(null);
       });
     },
     function(callback) {
-      Player.deleteStatistics(TESTID, 1, function(err) {
+      Player.deleteStatistics(TESTID, testDate1, function(err) {
         (err === null).should.be.true;
         callback(null);
       });
@@ -164,7 +178,7 @@ function testAddAndDeleteStatistic(callback) {
       Player.select(TESTID, function(err, result) {
         (err === null).should.be.true;
         result.should.have.property('statistics');
-        result.statistics.should.have.length(1);
+        Object.keys(result.statistics).should.have.length(1);
         callback(null);
       });
     }
