@@ -95,15 +95,15 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   weight int,
   age int,
   image text,
-  statistics list<text>
+  statistics map<text, text>
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 CREATE INDEX IF NOT EXISTS ON baseball_player(long_team_name);
 CREATE INDEX IF NOT EXISTS ON baseball_player(short_team_name);
 
-//statistics is list of baseball_player_game_statistics
+//statistics is map of date baseball_player_game_statistics
 /*
-statistics: list of stringified statistics objects
+statistics: map of date (formatted as year/mm/dd) to stringified statistics objects
 {
   sport text,
   game_date (time in milliseconds since epoch),
