@@ -11,7 +11,7 @@ ul {
   width: 90%;
   overflow: hidden;
 }
- 
+
 
 /* Links */
 a,
@@ -37,6 +37,7 @@ a:hover {
 
 html,
 body {
+  font-family: 'Roboto', sans-serif;
   height: 100%;
   background-color: #000;
   background-image: url(../../assets/static/stadiumBack.jpg);
@@ -100,7 +101,7 @@ body {
   width: 100%;
 }
 
-.aaronRodgers .fadeIn {  
+.aaronRodgers .fadeIn {
   position: absolute;
   top: 0;
 
@@ -153,6 +154,7 @@ body {
   line-height: 48px;
   float: left;
 }
+
 .masthead-nav li a {
   font-size: 16px;
   color: #ddd; /* IE8 proofing */
@@ -201,6 +203,7 @@ body {
 .mastfoot {
   color: #999; /* IE8 proofing */
   color: rgba(255,255,255,.5);
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 
@@ -218,7 +221,7 @@ body {
     margin-left: -3%;
     margin-top: -10px;
     padding-top: 10px;
-  
+
 }
   .mastfoot {
     position: relative;

@@ -39,6 +39,11 @@ exports.auth = {
     '"Please check your email for a verification link." ]}'
 };
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
+/*
+ * ====================================================================
+ * CONTESTB constants
+ * ====================================================================
+ */
 exports.contestB = {
   //for update.js states
   OPEN: 0,
@@ -53,11 +58,21 @@ exports.contestB = {
   //time in milliseconds (2 hours)
   MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 120 * 60000
 };
+/*
+ * ====================================================================
+ * Facebook login
+ * ====================================================================
+ */
 exports.FacebookStrategy = {
     clientID: "855194074508903",
     clientSecret: "f0eba05b866e9921a7d88071d800bb72",
     callbackURL: "http://localhost:3000/auth/facebook/callback"
 };
+/*
+ * ====================================================================
+ * Registry things
+ * ====================================================================
+ */
 exports.signupResponseValues = {
   userTaken: 1,
   emailTaken: 2,
@@ -67,6 +82,11 @@ exports.PassportLocalStrategyObject = {
   usernameField: 'username',
   passwordField: 'password'
 };
+/*
+ * ====================================================================
+ * SMTP send email and verification
+ * ====================================================================
+ */
 exports.SMTP = {
   name: 'SMTP',
   configObject: {
@@ -92,4 +112,19 @@ exports.verificationMessages = {
   noMatch: 'Your verification code does not match!',
   alreadyVerified: 'Your account is already verified!',
   invalidPage: 'You should not have reached this page!'
+}
+/*
+ * ====================================================================
+ * CONTEST UPDATE INTERVAL
+ * ====================================================================
+ */
+exports.pollInterval = 2000;
+/*
+ * ====================================================================
+ * Valid sports
+ * ====================================================================
+ */
+exports.validSports = {
+  baseball: 1,
+  football: 1
 }

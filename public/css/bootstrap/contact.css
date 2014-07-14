@@ -27,7 +27,11 @@ a:hover {
 html,
 body {
   height: 100%;
-  background-color: #012148;
+  background-color: #000;
+  background-image: url(../../stadiumBack.jpg);
+  background-position: center 100px;
+  background-repeat: no-repeat;
+  background-size: auto;
 }
 body {
   color: #fff;

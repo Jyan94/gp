@@ -1,3 +1,4 @@
+'use strict';
 var cassandra = require('./libs/cassandra/cql');
 var cql = require('./config/index.js').cassandra.cql;
 var multiline = require('multiline');
@@ -141,7 +142,8 @@ var hello = {
 require('./libs/cassandra/contestB/update.js').insert([
   ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
   //athlete_names
-  [ '{"athleteName":"John Snow00",' +
+  [
+    '{"athleteName":"John Snow00",' +
        '"athleteId":"00000000-0000-0000-0000-000000000000",' +
        '"gameContestId":0,"gameId":"00000000-0000-0000-0000-000000000000",' +
        '"isOnHomeTeam":true,' + 
@@ -180,13 +182,13 @@ require('./libs/cassandra/contestB/update.js').insert([
        '"position":"test_pitcher",' +
        '"shortTeamName":"TEST_GOT",' + 
        '"longTeamName":"THE_TEST_GOT", ' +
-       '"teamId":"00000000-0000-0000-0000-000000000000"}',
+       '"teamId":"00000000-0000-0000-0000-000000000000"}'
   ], //athletes
   0,  //commission_earned
-  new Date(new Date().getTime() + 1000000), //contest_deadline_time
+  new Date(new Date().getTime() + 100000), //contest_deadline_time
   null, //contest_end_time
   'bcf4d500-fe44-11e3-89b7-c361d0a10fc1', //contest_id
-  'THE_DAILY_PROPHET_TEST',
+  'THE_DAILY_PROPHET',
   new Date(), //contest_start_time
   0,  //contest_state
   {}, //contestants
@@ -194,8 +196,7 @@ require('./libs/cassandra/contestB/update.js').insert([
   0, //current_entries
   2, //entries_allowed_per_contestant
   1000, //entry_fee
-  [
-    '{"awayTeam":"TEST_A",' +
+  [    '{"awayTeam":"TEST_A",' +
        '"awayTeamId":"00000000-0000-0000-0000-000000000000",' +
        '"gameDate":1403899335204,' +
        '"gameId":"00000000-0000-0000-0000-000000000000",' +
@@ -206,15 +207,9 @@ require('./libs/cassandra/contestB/update.js').insert([
   8000,   //max_wager
   3, //maximum_entries
   1, //minimum_entries
-  {
-    0: 1.0,
-    1: 10.0,
-    2: 11.0,
-    3: 12.0,
-    4: 13.0
-  },  //pay_outs
+  [1.0, 10.0, 11.0, 12.0, 13.0], //pay_outs
   null, //processed_payouts_timestamp
-  'world',  //sport
+  'TEST_SPORT',  //sport
   10000, //starting_virtual_money
   10  //total_prize_pool
 ], function (err, result) {
@@ -222,7 +217,6 @@ require('./libs/cassandra/contestB/update.js').insert([
     console.log(err);
   }
 });
-
 //console.log(JSON.stringify(hello));
 /*
 var hbs = require('hbs');
@@ -239,3 +233,46 @@ app.get('/', function(req, res) {
 });
 app.listen(3000);*/
 
+/*var today = new Date();
+var date = ('0' + today.getDate()).slice(-2);
+var month = ('0' + (today.getMonth() + 1)).slice(-2);
+var year = today.getFullYear();
+console.log(year);
+today = year + '/' + month + '/' + date;
+
+var BaseballGame = require('libs/cassandra/baseball/game');
+BaseballGame.insert(
+[
+  0,
+  new Date((new Date()).setHours(23, 59, 59, 999)),
+  '00001111-0000-0000-0000-000011110000',
+  today,
+  0,
+  'away',
+  'home',
+  ['hello', 'world'],
+  ['world'],
+  'shortAway',
+  'shortHome',
+  new Date((new Date()).setHours(20, 59, 59, 999)),
+  'open'
+],
+function (err) {
+  if (err) {
+    console.log(err);
+  }
+  else {
+    console.log('success');
+  }
+});
+
+BaseballGame.selectTodaysGames(function(err, result) {
+  if (err) {
+    console.log(err);
+  }
+  else {
+    console.log(result);
+  }
+});
+
+*/

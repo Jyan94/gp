@@ -93,6 +93,7 @@ app.get('/update', graph.update);
 app.get('/data', graph.get);
 
 //tournament
+var contestBTable = require('routes/contest/table');
 var contestB = require('routes/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);

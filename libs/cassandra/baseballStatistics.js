@@ -36,7 +36,8 @@ var UPDATE_GAME_CQL = multiline(function() {/*
   away_score = ?,
   status = ?
   WHERE gsis_id = ?
-*/})
+*/});
+
 exports.updateGameSchedule = function(fields, callback) {
   cassandra.query(UPDATE_GAME_CQL, fields, cql.types.consistencies.one, callback);
 }

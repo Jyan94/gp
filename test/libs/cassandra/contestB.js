@@ -8,7 +8,7 @@
 (require('rootpath')());
 
 var cql = require('config/index').cassandra.cql;
-var testUserParams0 = 
+var testUserParams0 =
 [
   '00000000-0000-0000-0000-000000000000',
   'test0@test.com',
@@ -144,13 +144,7 @@ var testContestSettings =
   8000,   //max_wager
   3, //maximum_entries
   1, //minimum_entries
-  {
-    0: 1.0,
-    1: 10.0,
-    2: 11.0,
-    3: 12.0,
-    4: 13.0
-  },  //pay_outs
+  [1.0, 10.0, 11.0, 12.0, 13.0], //payouts
   null, //processed_payouts_timestamp
   'TEST_SPORT',  //sport
   10000, //starting_virtual_money
@@ -236,7 +230,7 @@ function verifyContestEssentials(queryResult) {
     'max_wager',
     'maximum_entries',
     'minimum_entries',
-    'pay_outs',
+    'payouts',
     'processed_payouts_time',
     'sport',
     'starting_virtual_money',

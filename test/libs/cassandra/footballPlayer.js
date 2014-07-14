@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 require('rootpath')();
 
 var async = require('async');
@@ -171,4 +171,4 @@ describe('footballPlayer module test', function () {
         });
     }
   );
-});
+});*/

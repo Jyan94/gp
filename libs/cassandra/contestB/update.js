@@ -47,7 +47,7 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     max_wager,
     maximum_entries,
     minimum_entries,
-    pay_outs,
+    payouts,
     processed_payouts_time,
     sport,
     starting_virtual_money,
@@ -91,21 +91,17 @@ exports.insert  = function(settings, callback) {
     value: settings[GAMES_INDEX], 
     hint: 'list'
   };
-  for (var key in settings[PAY_OUTS_INDEX]) {
-    if (settings[PAY_OUTS_INDEX].hasOwnProperty(key)) {
-      settings[PAY_OUTS_INDEX][key] = {
-        value: settings[PAY_OUTS_INDEX][key],
-        hint: 'double'
-      };
-    }
+  for (var i = 0; i !== settings[PAY_OUTS_INDEX].length; ++i) {
+    settings[PAY_OUTS_INDEX][i] = {
+      value: settings[PAY_OUTS_INDEX][i],
+      hint: 'double'
+    };
   }
   settings[PAY_OUTS_INDEX] = {
     value: settings[PAY_OUTS_INDEX], 
-    hint: 'map'
+    hint: 'list'
   };
-  cassandra.query(INSERT_CONTEST_QUERY, settings, quorum, function(err) {
-    callback(err);
-  });
+  cassandra.query(INSERT_CONTEST_QUERY, settings, quorum, callback);
 };
 
 /* 

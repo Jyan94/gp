@@ -8,7 +8,7 @@ Require the exports.js file to have access to necessary functionality.
 
 daily_prophet serialized objects
 ===================================================
-    athlete_names: list of athlete names
+    athlete_names: list of athlete names (index is athleteContestId)
 
     /*
       the index corresponds to athlete contest id, which corresponds to the 
@@ -16,14 +16,15 @@ daily_prophet serialized objects
       for example the 0th element athlete corresponds 
       to the 0th element wager and 0th element prediction
 
-      the same index strategy applies to gameCOntestId
+      the same index strategy applies to gameContestId
     */
-    athletes: list of stringified athlete objects:
+    athletes: list (index is athleteContestId) of stringified athlete object:
     {
-      athleteId: uuid of athlete
+      athleteId: uuid of athlete //only athlete variable used in cassandra/daily_prophet module,
       athleteName: name of athlete,
+      athleteContestId: integer (0 - numGames in contest) to relate to athletes list,
       gameContestId: integer (0 - numGames in contest) to index into games list,
-      gameId: uuid for game,
+      gameId: timeuuid for game,
       isOnHomeTeam: boolean,
       position: string for position,
       shortTeamName: short string for team,
@@ -33,6 +34,7 @@ daily_prophet serialized objects
 
     contestants: map of username to stringified contestant object:
     {
+      userId: contestant userId,
       instances: [
       {
         virtualMoneyRemaining : money remaining
@@ -47,12 +49,12 @@ daily_prophet serialized objects
       ]
     }
 
-    games: list of stringified game objects:
+    games: list (index is gameContestId) of stringified game objects:
     {
       awayTeam: short string for home team (i.e. NYY),
       awayTeamId: uuid for away team,
       gameDate: Date formatted as milliseconds since epoch,
-      gameId: uuid for game,
+      gameId: timeuuid for game,
       homeTeam: short string for home team ,
       homeTeamId: uuid for home team,
     }
@@ -87,7 +89,7 @@ Schema:
       max_wager int,
       maximum_entries int,
       minimum_entries int,
-      pay_outs map<text, double>,
+      payouts list<double>,  //0 will correspond to first place, n-1 index will correspond to nth place
       processed_payouts_time timestamp, //updated after processed payouts
       sport text, //lowercase text
       starting_virtual_money int,

@@ -1,3 +1,150 @@
+'use strict';
+require('rootpath')();
+
+var async = require('async');
+var Player = require('libs/cassandra/baseball/player');
+var TESTID = '00000000-0000-0000-0000-000000000002';
+var currentValueIndex = 50;
+var fullNameIndex = 15;
+var firstNameIndex = 10;
+var lastNameIndex = 105;
+var longTeamIndex = 10;
+var shortTeamIndex = 20;
+var statusIndex = 0;
+var positionIndex = 5;
+var profileUrlIndex = 1;
+var uniformNumberIndex = 13;
+var heightIndex = 180;
+var weightIndex = 200;
+var ageIndex = 31;
+var imageIndex = 10;
+var statisticsIndex = 2;
+
+function testDelete(callback) {
+  Player.delete(TESTID, function (err) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  })
+}
+
+var fields =
+[
+  TESTID, //id
+  100,  //current_value
+  'Joe Biden', //full_name
+  'Joe',  //first_name
+  'Biden',  //last_name
+  'LAC',  //short_team_name
+  'Los Angeles Clippers',  //long_team_name
+  'active', //status
+  'shortstop', //position
+  'url', //profile url
+  2, //uniform number
+  71, //height
+  1000, //weight
+  30,  //age
+  'the image', //image
+  ['30 RBI']  //statistics
+];
+function testInsert(callback) {
+  Player.insert(fields, function (err) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  });
+}
+
+
+var update = 
+{
+  current_value: {value: 100, hint: 'double'},
+  full_name: 'Barack Obama',
+  first_name: 'Barack',
+  last_name: 'Obama',
+  short_team_name: 'LAL',
+  long_team_name: 'Los Angeles Lakers',
+  status: 'injured',
+  position: 'pitcher',
+  profile_url: 'testerino',
+  uniform_number: 15,
+  height: 71,
+  weight: 400,
+  age: 20,
+  image: 'img.txt',
+  statistics: {value: ['50 RBI'], hint: 'list'}
+}
+
+
+function testUpdate(callback) {
+  Player.update(TESTID, update, function (err) {
+    if (err) {
+      callback(err);
+    }
+    callback(null);
+  });
+}
+
+function compareAgainstUpdateFields(result) {
+  result.should.have.property('player_id', TESTID);
+  result.should.have.property(
+    'current_value', update.currentValueIndex.value);
+  result.should.have.property('full_name', update.fullNameIndex);
+  result.should.have.property('first_name', update.firstNameIndex);
+  result.should.have.property('last_name', update.lastNameIndex);
+  result.should.have.property('long_team_name', update.longTeamIndex);
+  result.should.have.property('short_team_name', update.shortTeamIndex);
+  result.should.have.property('status', update.statusIndex);
+  result.should.have.property('position', update.positionIndex);
+  result.should.have.property('profile_url', update.profileUrlIndex);
+  result.should.have.property(
+    'uniform_number', update.uniformNumberIndex);
+  result.should.have.property('age', update.ageIndex);
+  result.should.have.property('height', update.heightIndex);
+  result.should.have.property('weight', update.weightIndex);
+  result.should.have.property('image', update.imageIndex);
+  result.should.have.property('statistics', update.statisticsIndex);
+}
+
+
+function testSelectByPlayerId(callback) {
+  Player.select(TESTID, function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      compareAgainstUpdateFields(result);
+      callback(null);
+    }
+  });
+}
+
+describe('baseballPlayer module test', function () {
+  it('test all functions except selectImages and autocomplete',
+    function(done) {
+      async.waterfall([
+        testDelete,
+        testInsert,
+        testUpdate,
+        testSelectByPlayerId,
+        testDelete
+        ],
+        function (err) {
+          if (err) {
+            console.log(err);
+            console.log(err.stack);
+          }
+          else {
+            done();
+          }
+        });
+    }
+  );
+});
+
+
 /*
 'use strict';
 require('rootpath')();

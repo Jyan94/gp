@@ -140,6 +140,9 @@ React.renderComponent(
 var ContestDialogBox = React.createClass({
   render: function() {
     var contest = this.props.data;
+    var contest.games = contest.games.map(function(game) {
+      return JSON.parse(game);
+    });
     return (
       <div className='contest-dialog-box' style={{'text-align': 'center'}}>
         <div className='contest-dialog-box-header'>
@@ -160,10 +163,6 @@ var ContestDialogBox = React.createClass({
 
 var ContestDialogBoxGames = React.createClass({
   render: function() {
-    var games = this.props.data.map(function(game) {
-      return JSON.parse(game);
-    })
-    console.log(games);
     var gameTeamNodes = games.map(function(game) {
       return (
         <td>
@@ -217,6 +216,9 @@ var ContestDialogBoxTabs = React.createClass({
 
   render: function() {
     var contest = this.props.data;
+    var athletes = contest.athletes.map(function (athlete) {
+      return JSON.parse(athlete);
+    })
     return (
       <div className='contest-dialog-box-tab-container'>
         <ul className='contest-dialog-box-tab-menu'>
@@ -227,26 +229,50 @@ var ContestDialogBoxTabs = React.createClass({
         </ul>
         <div className='contest-dialog-box-tab-content-top-border'>
         </div>
-        <div className='contest-dialog-box-tab-content active' id='tab1-content'>
-          <p> Pick players from the following list and determine their values: </p>
-          <p> Derek Jeter (SS - NYY) </p>
-          <p> Alex Rodriguez (? - NYY) </p>
-          <br></br>
-          <br></br>
-          <p> Scoring Categories </p>
-          <p> Hitters: 1B = 1pt, 2B = 2pts, 3B = 3pts, HR = 4pts, RBI = 1pt, R = 1pt, BB = 1pt, SB = 2pts, HBP = 1, Out (calculated as at bats - hits) = -.25pt  
+        <ContestDialogBoxTab1 data={contest} />
+        <ContestDialogBoxTab2 data={contest.contestants} />
+        <ContestDialogBoxTab3 data={contest.payouts} />
+        <ContestDialogBoxTab4 data={{"athletes": athletes, "userContestantInstances": contest.userContestantInstances}} />
+      </div>
+    );
+  }
+});
+
+
+var ContestDialogBoxTab1 = React.createClass({
+  render: function() {
+    var contest = this.props.data;
+    var athleteNodes = contest.athletes.map(function(athlete) {
+      return (
+        <tr>
+          <td>{athlete.athleteName}</td>
+          <td>{athlete.isOnHomeTeam ? :}</td>
+          <td>{athlete.position}</td>
+        </tr>
+      );
+    });
+    return (
+      <div className='contest-dialog-box-tab-content active' id='tab1-content'>
+        <p> Pick players from the following list and determine their values: </p>
+        <table style={{width: 700}}>
+          <tr>
+            <th>Athlete Name</th>
+            <th>Team Name</th>
+            <th>Position</th>
+          </tr>
+          {athleteNodes}
+        </table>
+        <br></br>
+        <br></br>
+        <p> Scoring Categories </p>
+        <p>
+          Hitters: 1B = 1pt, 2B = 2pts, 3B = 3pts, HR = 4pts, RBI = 1pt, R = 1pt, BB = 1pt, SB = 2pts, HBP = 1, Out (calculated as at bats - hits) = -.25pt  
           <br></br>
           Pitchers: W = 4pts, ER = -1pt, SO = 1pt, IP = 1pt
-          </p>
-          <br></br>
-          <p> *Must invest all ${contest.startingVirtualMoney} of starting virtual money </p>
-          <p> *Maximum investment amount is ${contest.maxWager} on a single player </p>
-        </div>
-        <ContestDialogBoxTab2 data={contest.contestants} />
-        <ContestDialogBoxTab3 data={contest.payOuts} />
-        <ContestDialogBoxTab4 data={contest.userContestantInstances} />
-        <div className='contest-dialog-box-tab-content' id='tab4-content'>
-        </div>
+        </p>
+        <br></br>
+        <p> *Must invest all ${contest.startingVirtualMoney} of starting virtual money </p>
+        <p> *Maximum investment amount is ${contest.maxWager} on a single player </p>
       </div>
     );
   }
@@ -258,7 +284,7 @@ var ContestDialogBoxTab2 = React.createClass({
       return (
         <tr>
           <td>{contestant.username}</td>
-          <td>{contestant.instancesCount}</td>
+          <td>{contestant.instanceCount}</td>
         </tr>
       );
     });
@@ -266,6 +292,10 @@ var ContestDialogBoxTab2 = React.createClass({
       <div className='contest-dialog-box-tab-content' id='tab2-content'>
         <p> List of Participants:  </p>
         <table id='participants' style={{width: 700}}>
+          <tr>
+            <th>Username</th>
+            <th>Number of Instances</th>
+          </tr>
           {contestantNodes}
         </table>
       </div>
@@ -275,44 +305,25 @@ var ContestDialogBoxTab2 = React.createClass({
 
 var ContestDialogBoxTab3 = React.createClass({
   render: function() {
-    var payOuts = this.props.data;
-    var payOutNodes = Object.keys(payOuts).map(function(key) {
+    var payouts = this.props.data;
+    var payoutNodes = Object.keys(payouts).map(function(key) {
       return (
         <tr>
           <td>{key}</td>
-          <td>${payOuts[key]}</td>
+          <td>${payouts[key]}</td>
         </tr>
       );
     });
-    console.log(payOutNodes);
+    console.log(payoutNodes);
     return (
       <div className='contest-dialog-box-tab-content' id='tab3-content'>
         <p> List of Payouts:  </p>
         <table id='payouts' style={{width: 700}}>
-          {payOutNodes}
-        </table>
-      </div>
-    );
-  }
-});
-
-var ContestDialogBoxTab3 = React.createClass({
-  render: function() {
-    var payOuts = this.props.data;
-    var payOutNodes = Object.keys(payOuts).map(function(key) {
-      return (
-        <tr>
-          <td>{key}</td>
-          <td>${payOuts[key]}</td>
-        </tr>
-      );
-    });
-    console.log(payOutNodes);
-    return (
-      <div className='contest-dialog-box-tab-content' id='tab3-content'>
-        <p> List of Payouts:  </p>
-        <table id='payouts' style={{width: 700}}>
-          {payOutNodes}
+          <tr>
+            <th>Placing</th>
+            <th>Payout</th>
+          </tr>
+          {payoutNodes}
         </table>
       </div>
     );
@@ -321,18 +332,34 @@ var ContestDialogBoxTab3 = React.createClass({
 
 var ContestDialogBoxTab4 = React.createClass({
   render: function() {
-    var userContestantInstances = this.props.data;
-    console.log(userContestantInstances);
+    var athletes = this.props.data.athletes;
+    var userContestantInstances = this.props.data.userContestantInstances;
     var userContestantInstanceNodes = userContestantInstances.map(
       function(userContestantInstance, index) {
+        console.log(userContestantInstance);
+        var betNodes = athletes.map(function(athlete, index) {
+          return (
+            <tr>
+              <td>{athlete.athleteName}</td>
+              <td>{userContestantInstance.predictions[index]}</td>
+              <td>${userContestantInstance.wagers[index]}</td>
+            </tr>
+          );
+        });
         return (
           <tr>
-            <td>{index + 1}</td>
-            <td>${userContestantInstance.virtualMoneyRemaining}</td>
-            <td>{userContestantInstance.wagers}</td>
-            <td>{userContestantInstance.predictions}</td>
-            <td>{userContestantInstance.lastModified}</td>
-            <td>{userContestantInstance.joinTime}</td>
+            <div>
+              <p>Instance: {index + 1} Money Remaining: ${userContestantInstance.virtualMoneyRemaining}</p>
+              <table style={{width: 700}}>
+                <tr>
+                  <th>Athlete Name</th>
+                  <th>Prediction</th>
+                  <th>Wager</th>
+                </tr>
+                {betNodes}
+              </table>
+              <p>Last Modified: {userContestantInstance.lastModified} Join Time: {userContestantInstance.joinTime}</p>
+            </div>
           </tr>
         );
       });

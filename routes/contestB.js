@@ -39,36 +39,52 @@ var findContests = function (req, res, next, callback) {
 }
 
 var filterFunctionContestants = function(username, contest, callback) {
-  async.map(Object.keys(contest.contestants),
-    function(key, callback) {
-      var contestant = { username: key,
-                         instanceCount: JSON.parse(contest.contestants[key]).instances.length,
-                       }
+  var contestants = contest.contestants;
+  var contestantList = []
 
-      callback(null, contestant);
-    }, function (err, result) {
-      callback(err, JSON.parse(contest.contestants[username]).instances, contest, result);
-    });
+  if (contestants) {
+    contestantList = Object.keys(contestants);
+
+    async.map(contestantList,
+      function(key, callback) {
+        var contestant = { username: key,
+                           instanceCount: JSON.parse(contestants[key]).instances.length,
+                         }
+
+        callback(null, contestant);
+      }, function (err, result) {
+        if (contestantList.indexOf(username) < 0) {
+          callback(err, [], contest, result);
+        }
+        else {
+          callback(err, JSON.parse(contestants[username]).instances, contest, result);
+        }
+      });
+  }
+  else {
+    callback(null, [], contest, []);
+  }
 }
 
 var filterFunctionMain = function(userContestantInstances, contest, contestants, callback) {
   callback(
     null, 
-    { 
+    {
+      athletes: contest.athletes,
+      contestants: contestants,
       contestId: contest.contest_id,
-      sport: contest.sport,
-      type: contest.contest_name,
       contestStartTime: contest.contest_start_time,
       currentEntries: contest.current_entries,
-      maximumEntries: contest.maximum_entries,
-      entryFee: contest.entry_fee,
-      totalPrizePool: contest.total_prize_pool,
-      startingVirtualMoney: contest.starting_virtual_money,
       entriesAllowedPerContestant: contest.entries_allowed_per_contestant,
+      entryFee: contest.entry_fee,
       games: contest.games,
+      maximumEntries: contest.maximum_entries,
       maxWager: contest.max_wager,
-      payOuts: contest.pay_outs,
-      contestants: contestants,
+      payouts: contest.payouts,
+      sport: contest.sport,
+      startingVirtualMoney: contest.starting_virtual_money,
+      totalPrizePool: contest.total_prize_pool,
+      type: contest.contest_name,
       userContestantInstances: userContestantInstances
     });
 }
@@ -100,23 +116,6 @@ var filterContestFieldsTables = function (req, res, next, contests, callback) {
     }
   });
 }
-
-/*
-var renderTournamentTablesPage = function (req, res, next) {
-  async.waterfall([
-    function (callback) {
-      callback(null, req, res, next);
-    },
-    findTournaments,
-    filterTournamentFieldsTables
-  ],
-  function (err) {
-    if (err) {
-      next(err);
-    }
-  });
-}
-*/
 
 var sendContestTable = function (req, res, next) {
   async.waterfall([
@@ -228,7 +227,7 @@ var renderContestEntryPage = function (req, res, next) {
   if (user.money < contest.entry_fee) {
     res.send(400, 'You do not have enough money to enter this contest.');
   }
-  else if (contestant && contestant.instances.length === 
+  else if (contestant && contestant.instances.length ===
           contest.entries_allowed_per_contestant) {
     res.send(400, 'You have exceeded the maximum number of entries for a user');
   }
@@ -255,9 +254,20 @@ var createInstance = function (params, contest) {
   var time = new Date();
 
   for (var i = 0; i < contest.athletes.length; i++) {
-    wagers[i] = parseInt(params['wager-' + i.toString()]);
-    predictions[i] = parseInt(params['prediction-' + i.toString()]);
-    virtualMoneyRemaining -= parseInt(params['wager-' + i.toString()]); 
+    if (parseInt(params['wager-' + i.toString()])) {
+      wagers[i] = parseInt(params['wager-' + i.toString()]);
+    }
+    else {
+      wagers[i] = 0;
+    }
+
+    if (parseInt(params['prediction-' + i.toString()])) {
+      predictions[i] = parseInt(params['prediction-' + i.toString()]);
+    }
+    else {
+      predictions[i] = 0;
+    }
+    virtualMoneyRemaining -= wagers[i];
   }
 
   return { virtualMoneyRemaining: virtualMoneyRemaining,
@@ -273,7 +283,6 @@ var submitEntry = function(req, res, next, contest, callback) {
   var user = req.user;
   var contestant = null;
   var instance = createInstance(req.body, contest);
-
   ContestB.addAndUpdateContestant(user, contest.contest_id, instance,
     function (err) {
       if (err) {
