@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS pending_bets (
     user_id uuid,
     long_position boolean,
     player_id uuid,
-    bet_value double,
-    multiplier double,
+    wager double,
+    fantasy_value double,
     game_id uuid,
     expiration timeuuid,
 );
@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS current_bets (
     long_better_id uuid,
     short_better_id uuid,
     player_id uuid,
-    bet_value double,
-    multiplier double,
+    wager double,
+    fantasy_value double,
     game_id uuid,
     expiration timeuuid
 );
@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS past_bets (
     long_better_id uuid,
     short_better_id uuid,
     player_id uuid,
-    bet_value double,
-    multiplier double,
+    wager double,
+    fantasy_value double,
     long_better_payoff bigint,
     short_better_payoff bigint,
     game_id uuid,
@@ -69,6 +69,18 @@ CREATE TABLE IF NOT EXISTS past_bets (
 );
 
 CREATE INDEX IF NOT EXISTS ON past_bets(player_id);
+
+CREATE TABLE IF NOT EXISTS secondary_bets (
+    bet_id timeuuid PRIMARY KEY,
+    price double,
+    long_better_id uuid,
+    short_better_id uuid,
+    player_id uuid,
+    wager double,
+    bet_value double,
+    game_id uuid,
+    expiration timeuuid,
+);
 
 /*to-do condense bet tables by giving bet an int as state*/
 

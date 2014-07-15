@@ -3,7 +3,7 @@ var sportsdataMlb = require('sportsdata').MLB;
 
 sportsdataNfl.init('t', 1, 'rmbgzsxq9n4j2yyqx4g6vafy', 2013, 'REG');
 sportsdataMlb.init('t', 4, 'grnayxvqv4zxsamxhsc59agu', 2014, 'REG');
-var BaseballPlayerStatistics = require('libs/cassandra/baseball/game.js')
+var BaseballPlayerStatistics = require('libs/cassandra/baseball/player.js')
 
 /* calculates the fantasy points for a specific player*/
 exports.calculateMlbFantasyPoints = function(playerObject, callback) {
