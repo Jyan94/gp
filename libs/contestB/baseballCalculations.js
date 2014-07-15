@@ -182,8 +182,8 @@ function getAllContests (callback) {
     for (var i = 0; i < result.length; i++) {
       contestIdArr.push(result[i].contest_id);
     }
+    callback(null, contestIdArr);
   });
-  callback(null, contestIdArr);
 }
 
 function calculateAll(callback) {

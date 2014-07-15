@@ -12,7 +12,7 @@ var async = require('async');
 var multiline = require('multiline');
 
 var cql = configs.cassandra.cql;
-var states = configs.constants.contestB;
+var states = configs.constants.contestB.STATES;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
@@ -101,31 +101,33 @@ exports.selectByUsername = function(username, callback) {
 var SELECT_BY_STATE_QUERY = multiline(function() {/*
   SELECT *
     FROM daily_prophet
-    WHERE contest_state = ?;
+    WHERE contest_state = ?
+    AND sport = ?
+    ALLOW FILTERING;
 */});
 
-function selectByState(state, callback) {
-  cassandra.query(SELECT_BY_STATE_QUERY, [state], one, callback);
+function selectByState(state, sport, callback) {
+  cassandra.query(SELECT_BY_STATE_QUERY, [state, sport], one, callback);
 }
 
-exports.selectOpen = function(callback) {
-  selectByState(OPEN, callback);
+exports.selectOpen = function(sport, callback) {
+  selectByState(OPEN, sport, callback);
 }
 
-exports.selectFilled = function(callback) {
-  selectByState(FILLED, callback);
+exports.selectFilled = function(sport, callback) {
+  selectByState(FILLED, sport, callback);
 }
 
-exports.selectContestsToProcess = function(callback) {
-  selectByState(TO_PROCESS, callback);
+exports.selectContestsToProcess = function(sport, callback) {
+  selectByState(TO_PROCESS, sport, callback);
 }
 
-exports.selectProcessed = function(callback) {
-  selectByState(PROCESSED, callback);
+exports.selectProcessed = function(sport, callback) {
+  selectByState(PROCESSED, sport, callback);
 }
 
-exports.selectCancelled = function(callback) {
-  selectByState(CANCELLED, callback);
+exports.selectCancelled = function(sport, callback) {
+  selectByState(CANCELLED, sport, callback);
 }
 
 var SELECT_BY_SPORT_QUERY = multiline(function() {/*

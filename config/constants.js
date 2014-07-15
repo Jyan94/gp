@@ -41,20 +41,29 @@ exports.auth = {
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
 /*
  * ====================================================================
+ * Cassandra constants
+ * ====================================================================
+ */
+exports.cassandra = {
+  APPLIED: '[applied]'
+};
+/*
+ * ====================================================================
  * CONTESTB constants
  * ====================================================================
  */
 exports.contestB = {
   //for update.js states
-  OPEN: 0,
-  FILLED: 1,
-  TO_PROCESS: 2,
-  PROCESSED: 3,
-  CANCELLED: 4,
+  STATES: {
+    OPEN: 0,
+    FILLED: 1,
+    TO_PROCESS: 2,
+    PROCESSED: 3,
+    CANCELLED: 4,
+  },
   //for retrying to atomically update times and tries
   MAX_WAIT: 10000,
   //for checking if lightweight transaction went through
-  APPLIED: '[applied]',
   //time in milliseconds (2 hours)
   MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 120 * 60000
 };
@@ -127,4 +136,18 @@ exports.pollInterval = 2000;
 exports.validSports = {
   baseball: 1,
   football: 1
+}
+/*
+ * ====================================================================
+ * contest A bets
+ * ====================================================================
+ */
+exports.contestAbets = {
+  STATES: {
+    PENDING: 0,
+    ACTIVE: 1,
+    LOCKED: 2,
+    PROCESSED: 3,
+    EXPIRED: 4
+  }
 }
