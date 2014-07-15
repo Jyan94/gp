@@ -11,9 +11,9 @@ daily_prophet serialized objects
     athlete_names: list of athlete names (index is athleteContestId)
 
     /*
-      the index corresponds to athlete contest id, which corresponds to the 
+      the index corresponds to athlete contest id, which corresponds to the
       contestant instance's wagers and predictions array
-      for example the 0th element athlete corresponds 
+      for example the 0th element athlete corresponds
       to the 0th element wager and 0th element prediction
 
       the same index strategy applies to gameContestId
@@ -69,7 +69,7 @@ daily_prophet serialized objects
     4: cancelled (CANCELLED)
     See the exports.js file to see api functions to interface with setting and getting state
 
-Schema: 
+Schema:
 
     CREATE TABLE IF NOT EXISTS daily_prophet (
       athlete_names list<text>,

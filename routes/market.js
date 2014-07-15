@@ -55,8 +55,8 @@ var getBetInfosFromPlayerId = function (req, res, next, callback) {
           betInfo[i] = {
             betId: rows[i].bet_id,
             longPosition: rows[i].long_position,
-            betValue: rows[i].bet_value,
-            multiplier: rows[i].multiplier
+            wager: rows[i].wager,
+            betValue: rows[i].bet_value
           }
         }
 
@@ -122,48 +122,36 @@ var submitBet = function (req, res, next) {
   var betId = cql.types.timeuuid();
   var longPosition = null;
 
-  if (req.body.longOrShort === 'Above') {
+  if (req.body.longOrShort === 'Over') {
     longPosition = true;
   }
   else {
     longPosition = false;
   }
-
-  SpendingPower.calculateSpendingPowerWithAddition(req.user.user_id,
-    req.user.money,
-    req.params.playerId,
+  Bet.insertPending(
+    [
+    betId,
+    req.user.user_id,
     longPosition,
-    parseFloat(req.body.price),
-    parseFloat(req.body.shareNumber),
-    function(err, result) {
-      var spendingPower = result;
-      console.log(spendingPower);
-
-      if (spendingPower >= 0) {
-        Bet.insertPending(
-        [
-        betId,
-        req.user.user_id,
-        longPosition,
-        req.params.playerId,
-        {value: parseFloat(req.body.price), hint: 'double'},
-        {value: parseFloat(req.body.shareNumber), hint: 'double'},
-        null,
-        null
-        ],
-        function(err){
-          if (err) {
-            res.send(500, { error: messages.databaseError });
-          }
-          else {
-            SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
-            req.flash('info', messages.submitted);
-            res.redirect('/market/' + req.params.playerId)
-          }
-        });
+    req.params.playerId,
+    {value: parseFloat(req.body.wagerAmount), hint: 'double'},
+    {value: parseFloat(req.body.fantasyValue), hint: 'double'},
+    null,
+    null
+    ],
+    function(err){
+      if (err) {
+        res.send(500, { error: messages.databaseError });
       }
       else {
-        res.send(400, { error: messages.spendingPowerError });
+        Bet.subtractMoneyFromUser(parseFloat(req.body.wagerAmount) ,req.user.user_id, function(err) {
+          if (err) {
+            next(err);
+          }
+        })
+          //SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
+          //req.flash('info', messages.submitted);
+          //res.redirect('/market/' + req.params.playerId)
       }
     });
 }
@@ -202,45 +190,33 @@ var insertBet = function (req, res, next, result, callback) {
       longBetterId = req.user.user_id;
       shortBetterId = currentBet.user_id;
     }
-
-    SpendingPower.calculateSpendingPowerWithAddition(
-    req.user.user_id,
-    req.user.money,
-    currentBet.player_id,
-    currentBet.long_position,
-    parseFloat(currentBet.multiplier),
-    parseFloat(currentBet.bet_value),
-    function(err, result) {
-      var spendingPower = result;
-      console.log(spendingPower);
-
-      if (spendingPower >= 0) {
-        Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
-        shortBetterId, currentBet.player_id,
-        {value: parseFloat(currentBet.bet_value), hint: 'double'},
-        {value: parseFloat(currentBet.multiplier), hint: 'double'},
-        currentBet.game_id, currentBet.expiration],
-        function (err) {
+    Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
+    shortBetterId, currentBet.player_id,
+    {value: parseFloat(currentBet.wager), hint: 'double'},
+    {value: parseFloat(currentBet.bet_value), hint: 'double'},
+    currentBet.game_id, currentBet.expiration],
+    function (err) {
+      if (err) {
+        res.send(500, { error: messages.databaseError });
+      }
+      else {
+        TimeseriesBets.insert(currentBet.player_id,
+          parseFloat(currentBet.bet_value),
+          function(err){
           if (err) {
             res.send(500, { error: messages.databaseError });
           }
           else {
-            TimeseriesBets.insert(currentBet.player_id,
-              parseFloat(currentBet.bet_value),
-              function(err){
-                if (err) {
-                  res.send(500, { error: messages.databaseError });
-                }
-                else {
-                  SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
-                  res.send('Bet taken successfully.');
-                }
-              });
-            }
-          });
-      }
-      else {
-        res.send(400, { error: messages.spendingPowerError });
+            Bet.subtractMoneyFromUser(parseFloat(currentBet.wager), req.user.user_id, function(err) {
+              if (err) {
+                next(err);
+              }
+              else {
+                res.send('Bet taken successfully.');
+              }
+            });
+          }
+        });
       }
     });
   }

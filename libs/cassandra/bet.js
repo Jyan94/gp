@@ -23,7 +23,7 @@ var WAGER_INDEX = 17;
 var INSERT_BET_CQL = multiline(function() {/*
   INSERT INTO contest_A_bets (
     athlete_id,
-    bet_id timeuuid,
+    bet_id,
     bet_state,
     expiration,
     fantasy_value,
@@ -43,7 +43,7 @@ var INSERT_BET_CQL = multiline(function() {/*
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?);
+    ?, ?);
 */});
 /**
  * inserts a contestA bet into database
@@ -359,5 +359,5 @@ function recallResale(betId, userId, isLongBetter, callback) {
     query = RECALL_SHORT_BETTER_RESALE_CQL;
   }
   cassandra.query(query, [betId, userId], one, callback);
-
 }
+

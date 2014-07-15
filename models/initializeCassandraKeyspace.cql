@@ -28,6 +28,22 @@ CREATE INDEX IF NOT EXISTS ON users (email);
 CREATE TABLE IF NOT EXISTS contest_A_bets (
     athlete_id uuid,
     bet_id timeuuid PRIMARY KEY,
+<<<<<<< HEAD
+    bet_state int,
+    expiration timestamp,
+=======
+    user_id uuid,
+    long_position boolean,
+    player_id uuid,
+    wager double,
+    fantasy_value double,
+    game_id uuid,
+    expiration timeuuid,
+);
+
+CREATE TABLE IF NOT EXISTS contest_A_bets (
+    athlete_id uuid,
+    bet_id timeuuid,
     bet_state int,
     expiration timestamp,
     fantasy_value double,
@@ -53,6 +69,32 @@ CREATE INDEX IF NOT EXISTS ON contest_A_bets(short_better_username);
 
 //*_resell_value and *_resell_expiration will be null if not for resell
 //bet_state: 0 (pending), 1 (active), 2 (locked), 3 (processed) 
+=======
+    player_id uuid,
+    wager double,
+    fantasy_value double,
+    long_better_payoff bigint,
+    short_better_payoff bigint,
+    game_id uuid,
+    expiration timeuuid
+);
+
+CREATE INDEX IF NOT EXISTS ON past_bets(player_id);
+
+CREATE TABLE IF NOT EXISTS secondary_bets (
+    bet_id timeuuid PRIMARY KEY,
+    price double,
+    long_better_id uuid,
+    short_better_id uuid,
+    player_id uuid,
+    wager double,
+    bet_value double,
+    game_id uuid,
+    expiration timeuuid,
+);
+
+/*to-do condense bet tables by giving bet an int as state*/
+>>>>>>> 15cf142277e5e6c2045c8d13e6d63b8104de2820
 
 CREATE TABLE IF NOT EXISTS football_player (
     player_id uuid PRIMARY KEY,
