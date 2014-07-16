@@ -6,21 +6,22 @@
   if (e.target.className === 'enterbtn') {
     return true;
   }
-  else {
+  else if (e.target.localName === 'td') {
+    console.log(e.target.localName);
     // State changes
     $('body').toggleClass('dialogIsOpen');
   }
 });*/
 
 // Something happens
-$('.contest-dialog-box-backdrop').on('click', function () {
+/*$('.contest-dialog-box-backdrop').on('click', function () {
 
   // State changes
   $('body').toggleClass('dialogIsOpen');
 
-});
+});*/
 
-$(document).ready(function () {
+/*$(document).ready(function () {
   var activeTabIndex = -1;
   var tabNames = ['tab1', 'tab2', 'tab3']
 
@@ -40,4 +41,4 @@ $(document).ready(function () {
 
     return false;
   });
-});
+});*/

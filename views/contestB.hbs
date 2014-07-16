@@ -32,11 +32,11 @@
             <h1> Open Contests </h1>
           </div>
           <div class="table-container-header-button-container">
-            <a class="enterbtn" href="/contestCreation">Create a Contest</a>
+            <a class="enterbtn" href="/contestBCreation">Create a Contest</a>
           </div>
         </div>
         <div id="contestTable" class="table-container-main">
-          <!-- <table id="contests" align="center" style="width:1000px">
+          <!--table align="center" style="width:1000px">
             <thead>
               <tr>
                 <th>Sport</th>
@@ -51,29 +51,27 @@
               </tr>
             </thead>
 
-            <tbody>
-              {{#each contests}}
-                  <tr>
-                    <td>{{this.sport}}</td>
-                    <td>{{this.type}}</td>
-                    <td>{{this.type}}</td>
-                    <td>{{this.contestStartTime}}</td>
-                    <td>{{this.currentEntries}} / {{this.maximumEntries}}</td>
-                    <td>{{this.entryFee}}</td>
-                    <td>{{this.totalPrizePool}}</td>
-                    <td>{{this.startingVirtualMoney}}</td>
-                    <td>
-                      <a class="enterbtn" href="/contestEntry/{{this.contestId}}">Enter</a>
-                    </td>
-                  </tr>
-              {{/each}}
+            <tbody id="contestTableBody">
+              <tr>
+                <td>{{this.sport}}</td>
+                <td>{{this.type}}</td>
+                <td>{{this.type}}</td>
+                <td>{{this.contestStartTime}}</td>
+                <td>{{this.currentEntries}} / {{this.maximumEntries}}</td>
+                <td>{{this.entryFee}}</td>
+                <td>{{this.totalPrizePool}}</td>
+                <td>{{this.startingVirtualMoney}}</td>
+                <td>
+                  <a class="enterbtn" href="/contestEntry/{{this.contestId}}">Enter</a>
+                </td>
+              </tr>
             </tbody>
-          </table> -->
+          </table-->
         </div>
       </div>
     </div>
 
-    <div class="contest-dialog-box-backdrop">
+    <!--div class="contest-dialog-box-backdrop">
     </div>
 
     <div class="contest-dialog-box" align="center">
@@ -97,7 +95,6 @@
           <td>7pm EST</td>
           </tr>
           </table>
-          </div>
         </div>
         <div class="contest-dialog-box-tab-container">
           <ul class="contest-dialog-box-tab-menu">
@@ -121,8 +118,6 @@
             <br>
             <p><font size="2">*Must choose at least 2 players, each investing at least $2,000</font></p>
             <p><font size="2">*Maximum investment amount is $8,000 on a single player</font></p>
-
-
           </div>
           <div class="contest-dialog-box-tab-content" id="tab2-content">
           <p><font size="5"> List of Participants: </font></p>
@@ -154,12 +149,18 @@
           </div>
         </div>
       </div>
+    </div-->
+
+    <div id="contest-backdrop-wrapper">
+    </div>
+
+    <div id="contest-dialog-box-wrapper">
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="http://fb.me/react-with-addons-0.10.0.min.js"></script>
+    <script src="http://fb.me/react-with-addons-0.10.0.js"></script>
     <script src="http://fb.me/JSXTransformer-0.10.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script type="text/jsx" src="/js/contestBTablesReact.js"></script>

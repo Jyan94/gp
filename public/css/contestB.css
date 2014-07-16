@@ -146,7 +146,7 @@ p {
   z-index: 3;
 }
 
-.contest-dialog-box-backdrop {
+.contest-backdrop {
   background-color: #000;
   box-sizing: border-box;
   height: 100%;
@@ -184,7 +184,7 @@ p {
 
 }
 
-.dialogIsOpen .contest-dialog-box-backdrop {
+.dialogIsOpen .contest-backdrop {
   opacity: 0.5;
 
   /* Clickable */
@@ -218,6 +218,10 @@ p {
   padding: 5px 10px 5px 10px;
   background-color: #191919;
   color: #fff;
+}
+
+#games {
+  width: 100%;
 }
 
 .contest-dialog-box-tab-container {

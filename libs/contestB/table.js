@@ -41,8 +41,10 @@ function filterContestFields(contests, callback) {
 
 function updateCachedContests() {
   async.waterfall(
-  [
-    ContestB.selectOpen,
+  [ 
+    function(callback) {
+      ContestB.selectOpen('TEST_SPORT', callback);
+    },
     filterContestFields
   ],
   function(err, results) {

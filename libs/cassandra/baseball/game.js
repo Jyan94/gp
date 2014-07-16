@@ -112,7 +112,7 @@ var SELECT_TODAYS_GAME_CQL = multiline(function() {/*
 */});
 exports.selectTodaysGames = function(callback) {
   var today = new Date();
-  var date = ('0' + today.getDate()).slice(-2);
+  var date = ('0' + (today.getDate() - 3)).slice(-2);
   var month = ('0' + (today.getMonth() + 1)).slice(-2);
   var year = today.getFullYear();
   today = year + '/' + month + '/' + date;

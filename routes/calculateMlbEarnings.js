@@ -82,7 +82,7 @@ function reduceMatrixToArray(matrix, year, week, day, retCallback) {
  calculateMlbFantasyPoints function which gets the fantasy point
  for a specific player*/
 function getAllFantasyPoints(playerObjects, callback) {
-  console.log(playerObjects.length);
+  console.log(playerObjects);
 
   async.map(playerObjects, calculate.calculateMlbFantasyPoints,
     function(err, result) {
@@ -233,7 +233,7 @@ function checkCurrentBets () {
   checkEndGames(year, month, day);
 }
 
-//checkEndGames(2014, '06', '22');
+checkEndGames(2014, '06', '22');
 
 exports.getAllPlayerIdForGame = getAllPlayerIdForGame;
 exports.getAllPlayerIds = getAllPlayerIds;

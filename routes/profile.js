@@ -60,7 +60,7 @@ var getUser = function(req, res, next, callback) {
 }
 
 var getBetsFromUser = function(req, res, next, userInfo, callback) {
-  Bet.selectUsingUserId('all_bets', userInfo.user_id,
+  /*Bet.selectUsingUserId('all_bets', userInfo.user_id,
     function (err, result) {
       if (err) {
         next(err);
@@ -73,7 +73,11 @@ var getBetsFromUser = function(req, res, next, userInfo, callback) {
                                 pastBetInfo: result.pastBets
         });
       }
-  });
+  });*/
+ res.render('profile', { userInfo: userInfo,
+                                pendingBetInfo: [],
+                                currentBetInfo:  [],
+                                pastBetInfo: []});
 }
 
 var retrieveProfile = function(req, res, next) {

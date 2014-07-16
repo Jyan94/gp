@@ -3,10 +3,9 @@
 /* Padding below the footer and lighter body text */
 
 body {
-  padding-bottom: 40px;
-  color: #fffffa;
-  background-color: #000;
-  box-shadow: inset 0 0 100px rgba(110,110,0,.5);
+  height: 100%;
+  color: #FFF;
+  background: -webkit-linear-gradient(rgba(4, 36, 59, 1), rgba(20, 87, 143, 1));
   font-family: 'Roboto', sans-serif;
 }
 
@@ -14,49 +13,35 @@ body {
 
 /* CUSTOMIZE THE NAVBAR
 -------------------------------------------------- */
-.masthead{
-  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+.masthead {
+  height: 80px;
+  box-shadow: #4686B2 0 0 30px -1px inset;
 }
-
-/* Padding for spacing */
-.inner {
-  padding: 10px;
+.masthead-brand img {
+    max-height: 100%;
 }
-
-/*
- * Header
- */
-.masthead-brand {
-  margin-bottom: 10px;
-  margin-top: 0px;
-  margin-left: 30px;
-}
-
 .masthead-nav > li {
-  display: inline-block;
+  display: block;
+  line-height: 48px;
+  float: left;
 }
-.masthead-nav > li + li {
-  margin-left: 20px;
-}
-.masthead-nav > li > a {
-  padding-right: 0;
-  padding-left: 0;
+
+.masthead-nav li a {
   font-size: 16px;
-  font-weight: bold;
-  color: #fff; /* IE8 proofing */
-  color: rgba(255,255,255,.75);
-  border-bottom: 2px solid transparent;
+  color: #ddd; /* IE8 proofing */
+  color: rgba(255,255,255,.9);
 }
 .masthead-nav > li > a:hover,
 .masthead-nav > li > a:focus {
-  background-color: transparent;
-  border-bottom-color: rgba(255,255,255,.25);
+  background-color: rgba(255,255,255,.045);
+  box-shadow: rgba(7, 7, 7, 1) 0 0 8px -2px inset;
 }
 .masthead-nav > .active > a,
 .masthead-nav > .active > a:hover,
 .masthead-nav > .active > a:focus {
-  color: #fff;
-  border-bottom-color: #fff;
+  background-color: rgba(255,255,255,.06);
+  cursor: default;
+  box-shadow: rgba(7, 7, 7, 1) 0 0 8px -2px inset;
 }
 
 @media (min-width: 768px) {
@@ -131,12 +116,13 @@ body {
     margin-bottom: 20px;
     font-size: 21px;
     line-height: 1.4;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'fantasy', 'Arial', sans-serif;
   }
 
   .featurette-heading {
-    font-size: 50px;
-    font-family: 'Roboto', sans-serif;
+    font-size: 40px;
+    font-family: 'fantasy', 'Arial', sans-serif;
+    font-weight: 900;
   }
 }
 
