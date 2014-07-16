@@ -98,6 +98,7 @@ var contestB = require('routes/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);
 app.get('/contestBCreation', contestB.renderContestCreationPage);
+app.post('/contestBCreationProcess', contestB.contestCreationProcess);
 app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);
 app.post('/contestBEntryProcess/:contestId',
   contestB.contestEntryProcess);

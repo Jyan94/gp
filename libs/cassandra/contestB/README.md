@@ -53,11 +53,13 @@ daily_prophet serialized objects
 
     games: list (index is gameContestId) of stringified game objects:
     {
-      awayTeam: short string for home team (i.e. NYY),
+      shortAwayTeam: short string for away team (i.e. NYY),
+      longAwayTeam: full name for home team,
       awayTeamId: uuid for away team,
       gameDate: Date formatted as milliseconds since epoch,
       gameId: timeuuid for game,
-      homeTeam: short string for home team ,
+      shortHomeTeam: short string for home team,
+      longHomeTeam: full name for home team,
       homeTeamId: uuid for home team,
     }
 

@@ -185,7 +185,7 @@ require('./libs/cassandra/contestB/update.js').insert([
        '"teamId":"00000000-0000-0000-0000-000000000000"}'
   ], //athletes
   0,  //commission_earned
-  new Date(new Date().getTime() + 100000), //contest_deadline_time
+  new Date(new Date().getTime() + 1000000), //contest_deadline_time
   null, //contest_end_time
   cql.types.timeuuid(), //contest_id
   'THE_DAILY_PROPHET',

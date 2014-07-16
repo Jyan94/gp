@@ -24,10 +24,13 @@ print xmlDoc
 
 teamList = xmlDoc.getElementsByTagName('team')
 for team in teamList:
-	print 'in for loop'
-	teamName = team.attributes['abbr'].value
-	playerList = team.getElementsByTagName('player')
-	for player in playerList:
+  print 'in for loop'
+  teamAttributes = team.attributes
+  shortTeamName = teamAttributes['abbr'].value
+  longTeamName = teamAttributes['market'].value + ' ' + teamAttributes['name'].value
+  teamId = teamAttributes['id'].value
+  playerList = team.getElementsByTagName('player')
+  for player in playerList:
 		playerAttributes = player.attributes
 		playerId = playerAttributes['id'].value
 		firstName = playerAttributes['preferred_name'].value
@@ -37,11 +40,11 @@ for team in teamList:
 		uniformNumber = parseNumber(playerAttributes['jersey'].value)
 		height = parseNumber(playerAttributes['height'].value)
 		weight = parseNumber(playerAttributes['weight'].value)
-		print(fullName, teamName)
+		print(fullName, shortTeamName)
 		session.execute(
         """
-        INSERT INTO baseball_player (player_id, full_name, first_name, last_name, team, position, uniform_number, height, weight)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO baseball_player (player_id, full_name, first_name, last_name, short_team_name, long_team_name, team_id, position, uniform_number, height, weight)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        , (uuid.UUID('{' + playerId + '}'), fullName, firstName, lastName, teamName, position, uniformNumber, height, weight)
+        , (uuid.UUID('{' + playerId + '}'), fullName, firstName, lastName, shortTeamName, longTeamName, uuid.UUID('{' + teamId + '}'), position, uniformNumber, height, weight)
       )
