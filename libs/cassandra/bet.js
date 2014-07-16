@@ -3,6 +3,7 @@
 
 var cassandra = require('libs/cassandra/cql');
 var configs = require('config/index.js');
+var async = require('async');
 var cql = configs.cassandra.cql;
 var multiline = require('multiline');
 var one = cql.types.consistencies.one;
@@ -16,8 +17,8 @@ var EXPIRED = states.EXPIRED;
 var MINUTES_IN_MILLISECOND = 60000;
 
 var FANTASY_VALUE_INDEX = 4;
-var LONG_RESELL_VALUE_INDEX = 11;
-var SHORT_RESELL_VALUE_INDEX = 15;
+var OVER_RESELL_VALUE_INDEX = 11;
+var UNDER_RESELL_VALUE_INDEX = 15;
 var WAGER_INDEX = 17;
 
 var INSERT_BET_CQL = multiline(function() {/*
@@ -28,16 +29,16 @@ var INSERT_BET_CQL = multiline(function() {/*
     expiration,
     fantasy_value,
     game_id,
-    is_selling_long_position,
-    is_selling_short_position,
-    long_better_id,
-    long_better_username,
-    long_better_resell_value,
-    long_better_resell_expiration,
-    short_better_id,
-    short_better_username,
-    short_better_resell_value,
-    short_better_resell_expiration,
+    is_selling_over_position,
+    is_selling_under_position,
+    over_better_id,
+    over_better_username,
+    over_better_resell_expiration,
+    over_better_resell_value,
+    under_better_id,
+    under_better_username,
+    under_better_resell_expiration,
+    under_better_resell_value,
     wager
   ) VALUES (
     ?, ?, ?, ?, ?, 
@@ -58,12 +59,12 @@ function insert(params, callback) {
     value: params[FANTASY_VALUE_INDEX],
     hint: 'double'
   };
-  params[LONG_RESELL_VALUE_INDEX] = {
-    value: params[LONG_RESELL_VALUE_INDEX],
+  params[OVER_RESELL_VALUE_INDEX] = {
+    value: params[OVER_RESELL_VALUE_INDEX],
     hint: 'double'
   };
-  params[SHORT_RESELL_VALUE_INDEX] = {
-    value: params[SHORT_RESELL_VALUE_INDEX],
+  params[UNDER_RESELL_VALUE_INDEX] = {
+    value: params[UNDER_RESELL_VALUE_INDEX],
     hint: 'double'
   };
   params[WAGER_INDEX] = {
@@ -85,19 +86,19 @@ function insertPending(
   isLongBetter,
   callback) {
 
-  var longBetterId = null;
-  var longBetterUsername = null;
-  var shortBetterId = null;
-  var shortBetterUsername = null;
+  var overBetterId = null;
+  var overBetterUsername = null;
+  var underBetterId = null;
+  var underBetterUsername = null;
   var isSellingLongPosition = null;
 
   if (isLongBetter) {
-    longBetterId = userId;
-    longBetterUsername = username;
+    overBetterId = userId;
+    overBetterUsername = username;
   }
   else {
-    shortBetterId = userId;
-    shortBetterUsername = username;
+    underBetterId = userId;
+    underBetterUsername = username;
   }
 
   insert(
@@ -112,12 +113,12 @@ function insertPending(
     gameId,
     !isLongBetter,
     isLongBetter,
-    longBetterId,
-    longBetterUsername,
+    overBetterId,
+    overBetterUsername,
     null,
     null,
-    shortBetterId,
-    shortBetterUsername,
+    underBetterId,
+    underBetterUsername,
     null,
     null,
     wager
@@ -125,45 +126,45 @@ function insertPending(
   callback);
 }
 
-var TAKE_LONG_BETTER_CQL = multiline(function() {/*
+var TAKE_OVER_BETTER_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
     bet_state = ?,
     expiration = null,
-    is_selling_long_position = false,
-    long_better_id = ?,
-    long_better_username = ?
+    is_selling_over_position = false,
+    over_better_id = ?,
+    over_better_username = ?
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    is_selling_long_position = true;
+    is_selling_over_position = true;
 */});
-var TAKE_SHORT_BETTER_CQL = multiline(function() {/*
+var TAKE_UNDER_BETTER_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
     bet_state = ?,
     expiration = null,
-    is_selling_short_position = false,
-    short_better_id = ?,
-    short_better_username = ?
+    is_selling_under_position = false,
+    under_better_id = ?,
+    under_better_username = ?
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    is_selling_long_position = false;
+    is_selling_over_position = false;
 */});
 function takePending(betId, userId, username, isLongBetter, callback) {
   var query;
   if (isLongBetter) {
-    query = TAKE_LONG_BETTER_CQL;
+    query = TAKE_OVER_BETTER_CQL;
   }
   else {
-    query = TAKE_SHORT_BETTER_CQL;
+    query = TAKE_UNDER_BETTER_CQL;
   }
   cassandra.query(
     query, 
@@ -172,38 +173,38 @@ function takePending(betId, userId, username, isLongBetter, callback) {
     callback);
 }
 
-var RESELL_LONG_BETTER_CQL = multiline(function() {/*
+var RESELL_OVER_BETTER_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
-    is_selling_long_position = true,
-    long_better_resell_value = ?,
-    long_better_resell_expiration = ?
+    is_selling_over_position = true,
+    over_better_resell_value = ?,
+    over_better_resell_expiration = ?
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    long_better_id = ?
+    over_better_id = ?
   AND
-    is_selling_long_position = false;
+    is_selling_over_position = false;
 */});
 
-var RESELL_SHORT_BETTER_CQL = multiline(function() {/*
+var RESELL_UNDER_BETTER_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
-    is_selling_short_position = true,
-    short_better_resell_value = ?,
-    short_better_resell_expiration = ?
+    is_selling_under_position = true,
+    under_better_resell_value = ?,
+    under_better_resell_expiration = ?
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    short_better_id = ?
+    under_better_id = ?
   AND
-    is_selling_short_position = false;
+    is_selling_under_position = false;
 */});
 function placeResell(
   betId, 
@@ -216,10 +217,10 @@ function placeResell(
   var isResellingLongBetter = isLongBetter;
   var query;
   if (isResellingLongBetter) {
-    query = RESELL_LONG_BETTER_CQL;
+    query = RESELL_OVER_BETTER_CQL;
   }
   else {
-    query = RESELL_SHORT_BETTER_CQL;
+    query = RESELL_UNDER_BETTER_CQL;
   }
   cassandra.query(
     query, 
@@ -234,45 +235,45 @@ function placeResell(
     callback);
 }
 
-var TAKE_LONG_BETTER_RESELL_CQL = multiline(function() {/*
+var TAKE_OVER_BETTER_RESELL_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
-    is_selling_long_position = false,
-    long_better_id = ?,
-    long_better_username = ?,
-    long_better_resell_value = null,
-    long_better_resell_expiration = null
+    is_selling_over_position = false,
+    over_better_id = ?,
+    over_better_username = ?,
+    over_better_resell_value = null,
+    over_better_resell_expiration = null
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    is_selling_long_position = true;
+    is_selling_over_position = true;
 */});
-var TAKE_SHORT_BETTER_RESELL_CQL = multiline(function() {/*
+var TAKE_UNDER_BETTER_RESELL_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
-    is_selling_short_position = false,
-    short_better_id = ?,
-    short_better_username = ?,
-    short_better_resell_value = null,
-    short_better_resell_expiration = null
+    is_selling_under_position = false,
+    under_better_id = ?,
+    under_better_username = ?,
+    under_better_resell_value = null,
+    under_better_resell_expiration = null
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    is_selling_short_position = true;
+    is_selling_under_position = true;
 */});
 function takeResell(betId, userId, username, isBuyingLongBetter, callback) {
   var query = null;
   if (isBuyingLongBetter) {
-    query = TAKE_LONG_BETTER_CQL;
+    query = TAKE_OVER_BETTER_CQL;
   }
   else {
-    query = TAKE_SHORT_BETTER_CQL;
+    query = TAKE_UNDER_BETTER_CQL;
   }
   cassandra.query(
     query,
@@ -281,83 +282,100 @@ function takeResell(betId, userId, username, isBuyingLongBetter, callback) {
     callback);
 }
 
-var DELETE_LONG_BETTER_PENDING_CQL = multiline(function() {/*
+var DELETE_OVER_BETTER_PENDING_CQL = multiline(function() {/*
   DELETE FROM 
     contest_A_bets
   WHERE
     bet_id = ?
   IF
-    long_better_id = ?
+    bet_state = ?
   AND
-    short_better_id = null;
+    over_better_id = ?
+  AND
+    under_better_id = null;
 */});
-var DELETE_SHORT_BETTER_PENDING_CQL = multiline(function() {/*
+var DELETE_UNDER_BETTER_PENDING_CQL = multiline(function() {/*
   DELETE FROM 
     contest_A_bets
   WHERE
     bet_id = ?
   IF
-    short_better_id = ?
+    bet_state = ?
   AND
-    long_better_id = null;
+    under_better_id = ?
+  AND
+    over_better_id = null;
 */});
 function deletePendingBet(betId, userId, isLongBetter, callback) {
   var query;
   if (isLongBetter) {
-    query = DELETE_LONG_BETTER_PENDING_CQL;
+    query = DELETE_OVER_BETTER_PENDING_CQL;
   }
   else {
-    query = DELETE_SHORT_BETTER_PENDING_CQL;
+    query = DELETE_UNDER_BETTER_PENDING_CQL;
   }
-  cassandra.query(query, [betId, userId], one, callback);
+  cassandra.query(query, [betId, PENDING, userId], one, callback);
 }
 
-var DELETE_SHORT_BETTER_PENDING_CQL = multiline(function() {/*
+var DELETE_UNDER_BETTER_PENDING_CQL = multiline(function() {/*
   DELETE FROM 
     contest_A_bets
   WHERE
     bet_id = ?;
 */});
 function deleteBet(betId, callback) {
-  cassandra.query(DELETE_SHORT_BETTER_PENDING_CQL, [betId], one, callback);
+  cassandra.query(DELETE_UNDER_BETTER_PENDING_CQL, [betId], one, callback);
 }
 
-var RECALL_LONG_BETTER_RESALE_CQL = multiline(function() {/*
+var RECALL_OVER_BETTER_RESELL_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
-    is_selling_long_position = false,
-    short_better_resell_value = null,
-    short_better_resell_expiration = null
+    is_selling_over_position = false,
+    under_better_resell_value = null,
+    under_better_resell_expiration = null
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    is_selling_short_position = true;
+    is_selling_under_position = true;
 */});
-var RECALL_SHORT_BETTER_RESALE_CQL = multiline(function() {/*
+var RECALL_UNDER_BETTER_RESELL_CQL = multiline(function() {/*
   UPDATE
     contest_A_bets
   SET
-    is_selling_short_position = false,
-    short_better_resell_value = null,
-    short_better_resell_expiration = null
+    is_selling_under_position = false,
+    under_better_resell_value = null,
+    under_better_resell_expiration = null
   WHERE
     bet_id = ?
   IF
     bet_state = ?
   AND
-    is_selling_short_position = false;
+    is_selling_under_position = false;
 */});
-function recallResale(betId, userId, isLongBetter, callback) {
+function recallResell(betId, userId, isLongBetter, callback) {
   var query;
   if (isLongBetter) {
-    query = RECALL_LONG_BETTER_RESALE_CQL;
+    query = RECALL_OVER_BETTER_RESELL_CQL;
   }
   else {
-    query = RECALL_SHORT_BETTER_RESALE_CQL;
+    query = RECALL_UNDER_BETTER_RESELL_CQL;
   }
   cassandra.query(query, [betId, userId], one, callback);
 }
 
+var SELECT_BET_BY_OVER_BETTER_USER_ID = multiline(function(){/*
+  SELECT * FROM contest_A_bets WHERE over_better_id = ?;
+*/});
+var SELECT_BET_BY_UNDER_BETTER_USER_ID = multiline(function(){/*
+  SELECT * FROM contest_A_bets WHERE under_better_id = ?;
+*/});
+/*
+function selectByUserId(userId, callback) {
+  var getContests = function
+  async.parallel(
+  [
+  ])
+}*/
