@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 require('rootpath')();
 
 var async = require('async');
@@ -237,4 +237,4 @@ describe('bet module test', function () {
         });
     }
   );
-});
+});*/

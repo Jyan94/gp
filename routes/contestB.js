@@ -30,7 +30,7 @@ var renderContestPage = function (req, res, next) {
  */
 
 var findContests = function (req, res, next, callback) {
-  ContestB.selectOpen(function (err, result) {
+  ContestB.selectOpen('baseball', function (err, result) {
     if (err) {
       res.send(500, 'Database error.');
     }
@@ -241,32 +241,37 @@ var renderContestCreationPage = function (req, res, next) {
 var removeDuplicatesContestCreation = function (req, res, next, callback) {
   var keys = Object.keys(req.body);
 
-  async.map(keys,
-    function (elem, callback) {
-      callback(null, elem.substring(49));
-    },
-    function (err, result) {
-      if (err) {
-        next(err);
-      }
-      else {
-        var idArray = result;
+  if (keys.length === 0) {
+    res.redirect('/contestB');
+  }
+  else {
+    async.map(keys,
+      function (elem, callback) {
+        callback(null, elem.substring(49));
+      },
+      function (err, result) {
+        if (err) {
+          next(err);
+        }
+        else {
+          var idArray = result;
 
-        async.filter(keys,
-          function (elem, callback) {
-            callback(keys.indexOf(elem) === idArray.indexOf(elem.substring(49)) ? true : false);
-          },
-          function (result) {
-            async.map(result,
-              function (elem, callback) {
-                callback(null, elem.substring(49));
-              },
-              function (err, result) {
-                callback(err, req, res, next, result);
-              });
-          });
-      }
-    });
+          async.filter(keys,
+            function (elem, callback) {
+              callback(keys.indexOf(elem) === idArray.indexOf(elem.substring(49)) ? true : false);
+            },
+            function (result) {
+              async.map(result,
+                function (elem, callback) {
+                  callback(null, elem.substring(49));
+                },
+                function (err, result) {
+                  callback(err, req, res, next, result);
+                });
+            });
+        }
+      });
+  }
 }
 
 var filterContestCreationGames = function (gameId, callback) {
@@ -372,10 +377,7 @@ var submitContest = function (req, res, next, games, players, deadlineTime, call
       else {
         var settings = modes.createTypeOne(players, games, deadlineTime, 'baseball');
 
-        console.log(1);
-
         ContestB.insert(settings, function (err, result) {
-          console.log(2);
           if (err) {
             next(err);
           }

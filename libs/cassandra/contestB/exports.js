@@ -153,6 +153,7 @@ exports.timeseries = timeseries;
  *
  * =============================================================================
  * select by state queries:
+ * @param  {string} sport
  * @param  {Function} callback
  * args: (err, result)
  * result is an array of rows

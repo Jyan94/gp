@@ -67,10 +67,45 @@ function calculateFantasyPointsForContest (contestId, callback) {
     var athletes = result.athletes;
     var playerObjectArr = [];
     for (var i = 0; i < athletes.length; i++) {
+      var homeAbbr;
+      var awayAbbr;
+      var homeName;
+      var awayName;
+      if (athletes[i].isOnHomeTeam) {
+        homeAbbr = athletes[i].shortTeamName;
+        awayAbbr = athletes[i].shortVersusTeamName;
+        homeName = athletes[i].longTeamName;
+        awayName = athletes[i].longVersusTeamName;
+      }
+      else {
+        homeAbbr = athletes[i].shortVersusTeamName;
+        awayAbbr = athletes[i].shortTeamName;
+        homeName = athletes[i].longVersusTeamName;
+        awayName = athletes[i].longTeamName;
+      }
       playerObjectArr.push({
+        name: athletes[i].athleteName,
         playerId: athletes[i].athleteId,
         isOnHomeTeam: athletes[i].isOnHomeTeam,
-        gameId: athletes[i].gameId,
+        prefixSchedule: {
+          '$': {
+            id: athletes[i].gameId,
+          },
+          home: [
+            {$: {
+                abbr: homeAbbr,
+                name: homeName
+              }
+            }
+          ],
+          visitor: [
+            {$: {
+                abbr: awayAbbr,
+                name: awayName
+              }
+            }
+          ]
+        }
       });
     }
     async.map(playerObjectArr, calculate.calculateMlbFantasyPoints, function(err, result) {
@@ -160,18 +195,26 @@ calculateWinningsForContestant('bcf4d500-fe44-11e3-89b7-c361d0a10fc1', [{contest
 
 /* use the waterfall to update all the winnings for a particular contest*/
 function calculateWinningsForContest (contestId, callback) {
-  async.waterfall(
-  [
+  async.waterfall([
+
     function(callback) {
       callback(null, contestId);
     },
+
     getGameIds,
+
     checkIfContestIsDone,
+
     calculateFantasyPointsForContest,
+
     calculatePoints,
+
     calculateWinningsForContestant
-  ], 
-  callback);
+    ], function(err) {
+      if (err) {
+        callback(err);
+      }
+    });
 }
 
 /* get all the contests to process */
@@ -182,8 +225,8 @@ function getAllContests (callback) {
     for (var i = 0; i < result.length; i++) {
       contestIdArr.push(result[i].contest_id);
     }
+    callback(null, contestIdArr);
   });
-  callback(null, contestIdArr);
 }
 
 function calculateAll(callback) {

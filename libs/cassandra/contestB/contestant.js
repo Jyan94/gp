@@ -14,7 +14,7 @@ var cql = configs.cassandra.cql;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
-var APPLIED = configs.constants.contestB.APPLIED;
+var APPLIED = configs.constants.cassandra.APPLIED;
 var SEMICOLON = ';';
 
 /*

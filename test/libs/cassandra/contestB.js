@@ -173,12 +173,14 @@ var athleteIds =
 var testInstance = {
   virtualMoneyRemaining: 0,
   wagers: [2000, 2000, 3000, 1000, 2000],
-  predictions: [10, 20, 30, 40, 50]
+  predictions: [10, 20, 30, 40, 50],
+  joinTime: new Date()
 };
 var testInstance2 = {
   virtualMoneyRemaining: 0,
   wagers: [2000, 2000, 2000, 2000, 2000],
-  predictions: [10, 20, 30, 40, 40]
+  predictions: [10, 20, 30, 40, 40],
+  joinTime: new Date()
 };
 var USER_ID_INDEX = 0;
 
@@ -194,7 +196,7 @@ var AddAndUpdateContestant =
 
 var configs = require('config/index');
 var cql = configs.cassandra.cql;
-var states = configs.constants.contestB;
+var states = configs.constants.contestB.STATES;
 
 var OPEN = states.OPEN;
 var FILLED = states.FILLED;
@@ -378,8 +380,7 @@ function testContestant(callback) {
   async.waterfall(
   [
     function(callback) {
-      User.select(
-        'user_id', 
+      User.selectById(
         testUserParams0[USER_ID_INDEX], 
         function (err, result) {
           if (err) {
@@ -393,8 +394,7 @@ function testContestant(callback) {
         });
     },
     function(callback) {
-      User.select(
-        'user_id', 
+      User.selectById(
         testUserParams1[USER_ID_INDEX], 
         function (err, result) {
           if (err) {
@@ -493,8 +493,7 @@ function testContestant(callback) {
         });
     },
     function(callback) {
-      User.select(
-        'user_id', 
+      User.selectById(
         testUserParams0[USER_ID_INDEX], 
         function (err, result) {
           if (err) {
@@ -518,7 +517,8 @@ function testContestant(callback) {
           'wagers', 
           'predictions', 
           'virtualMoneyRemaining',
-          'lastModified');
+          'lastModified',
+          'joinTime');
         contestant.instances[0].should.have.property(
           'wagers', testInstance.wagers);
         contestant.instances[0].should.have.property(
@@ -551,7 +551,8 @@ function testContestant(callback) {
           'wagers', 
           'predictions', 
           'virtualMoneyRemaining',
-          'lastModified');
+          'lastModified',
+          'joinTime');
         contestant.instances[0].should.have.property(
           'wagers', testInstance.wagers);
         contestant.instances[0].should.have.property(
@@ -605,7 +606,8 @@ function testContestant(callback) {
           'wagers', 
           'predictions', 
           'virtualMoneyRemaining',
-          'lastModified');
+          'lastModified',
+          'joinTime');
         contestant.instances[1].should.have.property(
           'wagers', testInstance2.wagers);
         contestant.instances[1].should.have.property(

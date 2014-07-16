@@ -72,7 +72,7 @@ html(lang="en")
                           div.bet-info
                             | Long Position: #{item.long_position}
                           a(href=item.bet_id class = 'delete-bet' id='delete-bet-' + item.bet_id style='cursor: pointer')
-                            img(src='../deleteButton.png' width='20' height='30')
+                            img(src='../assets/common/deleteButton.png' width='20' height='30')
         div#current-bets-tab.tab-content
           h1 Current Bets
           div.bet-container
@@ -144,13 +144,13 @@ html(lang="en")
       div.flash-error.flash-error-fade#flash-error-profile-4
         div.padded-less
           div
-            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            img(src='../assets/error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
             h3(style='padding: 4px') Database Error
             p Something went wrong with the database.
       div.flash-error.flash-error-fade#flash-error-profile-5
         div.padded-less
           div
-            img(src='../error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
+            img(src='../assets/error_message_icon.png' width='30' height='30' style='margin-right: 5px; float: left;')
             h3(style='padding: 4px') Bet Deleter Error
             p You can't delete someone else's bet.
       script(src='/js/paypal.js')

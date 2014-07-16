@@ -108,7 +108,7 @@ function createSettings(
  * parameters for contest_b insert query
  */
 function createType1Settings(athletes, games, deadlineTime, sport) {
-  var athletesObj = {};
+  var athletesObj = [];
   var athleteNames = [];
   for (var i = 0; i !== athletes.length; ++i) {
     athletesObj[i] = JSON.stringify(athletes[i]);
