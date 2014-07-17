@@ -3,10 +3,21 @@
 /* Padding below the footer and lighter body text */
 
 body {
+  font-family: 'Roboto', sans-serif;
   height: 100%;
   color: #FFF;
-  background: -webkit-linear-gradient(rgba(4, 36, 59, 1), rgba(20, 87, 143, 1));
-  font-family: 'Roboto', sans-serif;
+  background: -webkit-linear-gradient(rgba(0, 0, 0, 1), rgba(20, 87, 143, 1));
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.wrap {
+  margin: 0 auto;
+  width: 90%;
+  overflow: hidden;
 }
 
 
@@ -54,6 +65,7 @@ body {
 }
 
 
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 
@@ -61,6 +73,7 @@ body {
 .carousel {
   height: 500px;
   margin-bottom: 60px;
+  border-color: black;
 }
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
@@ -104,6 +117,17 @@ body {
 
 @media (min-width: 768px) {
 
+  /* Pull out the header and footer */
+  .masthead {
+    position: relative;
+    top: 0;
+    z-index: 100;
+    width:106%;
+    margin-left: -3%;
+    margin-top: -10px;
+    padding-top: 10px;
+
+}
   /* Remove the edge padding needed for mobile */
   .marketing {
     padding-right: 0;
