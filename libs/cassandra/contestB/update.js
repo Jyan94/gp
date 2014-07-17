@@ -79,28 +79,36 @@ exports.insert  = function(settings, callback) {
     value: settings[ATHLETE_NAMES_INDEX], 
     hint: 'list'
   };
+
   settings[ATHLETES_INDEX] = {
     value: settings[ATHLETES_INDEX], 
     hint: 'list'
   };
+
   settings[CONTESTANTS_INDEX] = {
     value: settings[CONTESTANTS_INDEX], 
     hint: 'map'
   };
+
   settings[GAMES_INDEX] = {
     value: settings[GAMES_INDEX], 
     hint: 'list'
   };
-  for (var i = 0; i !== settings[PAY_OUTS_INDEX].length; ++i) {
-    settings[PAY_OUTS_INDEX][i] = {
-      value: settings[PAY_OUTS_INDEX][i],
+
+  var payouts = [];
+  var payoutsKeys = Object.keys(settings[PAY_OUTS_INDEX]);
+
+  for (var i = 0; i !== payoutsKeys.length; i++) {
+    payouts[i] = {
+      value: settings[PAY_OUTS_INDEX][payoutsKeys[i]],
       hint: 'double'
     };
   }
   settings[PAY_OUTS_INDEX] = {
-    value: settings[PAY_OUTS_INDEX], 
+    value: payouts, 
     hint: 'list'
   };
+
   cassandra.query(INSERT_CONTEST_QUERY, settings, quorum, callback);
 };
 
