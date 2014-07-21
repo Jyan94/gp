@@ -138,7 +138,7 @@ var hello = {
   homeTeam: 'TEST_B',
   homeTeamId: '00000000-0000-0000-0000-000000000001',
 }*/
-
+/*
 require('./libs/cassandra/contestB/update.js').insert([
   ['John Snow00', 'John Snow01', 'John Snow02', 'John Snow03', 'John Snow04'],
   //athlete_names
@@ -217,6 +217,7 @@ require('./libs/cassandra/contestB/update.js').insert([
     console.log(err);
   }
 });
+*/
 //console.log(JSON.stringify(hello));
 /*
 var hbs = require('hbs');
@@ -276,3 +277,18 @@ BaseballGame.selectTodaysGames(function(err, result) {
 });
 
 */
+
+/*var q1 = 'insert into test(num, people, numbers, booleans) values (1, [\'hi\'], [7], [true]);';
+cassandra.query(q1, [], cql.types.consistencies.one, function (err) {
+  if(err) {
+    console.log(err);
+  }
+})*/
+/*
+var query = 'update test set testdouble[?] = ? where num = ?;'
+cassandra.query(query, [0, 2.1, 1], cql.types.consistencies.one, function(err) {
+  if (err) {
+    console.log(err);
+  }
+})*/
+
