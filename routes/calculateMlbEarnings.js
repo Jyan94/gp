@@ -28,7 +28,7 @@ function getAllPlayerIdForGame(prefixScheduleElement, callback) {
     for (var i = 0; i < result.length; i++) {
       retArray.push({
         'name': result[i].$.preferred_name + " " + result[i].$.last_name,
-        'playerId': result[i].$.id,
+        'athleteId': result[i].$.id,
         'isOnHomeTeam': true,
         'prefixSchedule': prefixScheduleElement
       })
@@ -39,7 +39,7 @@ function getAllPlayerIdForGame(prefixScheduleElement, callback) {
     for (var j = 0; j < result.length; j++) {
       retArray.push({
         'name': result[j].$.preferred_name + " " + result[j].$.last_name,
-        'playerId': result[j].$.id,
+        'athleteId': result[j].$.id,
         'isOnHomeTeam': false,
         'prefixSchedule': prefixScheduleElement
       })
@@ -49,7 +49,7 @@ function getAllPlayerIdForGame(prefixScheduleElement, callback) {
   }
 }
 
-/* goes through all the games in a particular day and gets the playerIds*/
+/* goes through all the games in a particular day and gets the athleteIds*/
 function getAllPlayerIds(prefixSchedule, year, week, day, callback) {
   async.map(prefixSchedule, getAllPlayerIdForGame,
     function(err, result) {
@@ -98,8 +98,8 @@ function getAllFantasyPoints(playerObjects, callback) {
 }
 
 /* gets all the bets on a specific player*/
-function getBetsFromPlayerId (playerId, callback) {
-  Bet.selectUsingPlayerId('current_bets', playerId, function(err, result) {
+function getBetsFromPlayerId (athleteId, callback) {
+  Bet.selectUsingPlayerId('current_bets', athleteId, function(err, result) {
     if (err) {
       console.log(err);
     }
@@ -111,13 +111,13 @@ function getBetsFromPlayerId (playerId, callback) {
 
 /* gets the bets on all the players*/
 function getBets(playerObjects, fantasyPointsArray, callback) {
-  var playerIdArr = [];
+  var athleteIdArr = [];
 
   for (var i = 0; i < playerObjects.length; i++) {
-    playerIdArr.push(playerObjects[i].playerId);
+    athleteIdArr.push(playerObjects[i].athleteId);
   }
 
-  async.map(playerIdArr, getBetsFromPlayerId, function(err, result) {
+  async.map(athleteIdArr, getBetsFromPlayerId, function(err, result) {
     if (err) {
       console.log(err);
     }
@@ -144,7 +144,7 @@ function calculateBet(bet, fantasyPoints, callback) {
       }
       else {
         Bet.insertPast([rows.bet_id, rows.long_better_id, rows.short_better_id,
-                        rows.player_id,
+                        rows.athlete_id,
                         {value: parseFloat(rows.bet_value), hint: 'double'},
                         {value: parseFloat(rows.multiplier), hint: 'double'},
                         {value: parseFloat(longWinnings), hint: 'double'},
@@ -192,7 +192,7 @@ function calculateAllWinnings(schedule, year, week, day) {
       function(callback) {
         callback(null, prefixSchedule, year, week, day);
       },
-      //first waterfall function, gets list of players and player_id
+      //first waterfall function, gets list of players and athlete_id
       getAllPlayerIds,
       //reduce matrix to single array
       reduceMatrixToArray,

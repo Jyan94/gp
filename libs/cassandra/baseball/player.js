@@ -14,7 +14,7 @@ var STATISTICS_KEY = 'statistics';
 //16 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
-    player_id,
+    athlete_id,
     current_value,
     full_name,
     first_name,
@@ -31,9 +31,9 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
     image,
     statistics
   ) VALUES
-    (?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?, 
+    (?, ?, ?, ?, ?,
+     ?, ?, ?, ?, ?,
+     ?, ?, ?, ?, ?,
      ?);
 */});
 
@@ -55,28 +55,28 @@ exports.insert = function (fields, callback) {
 };
 
 var DELETE_PLAYER_CQL = multiline(function() {/*
-  DELETE FROM baseball_player WHERE player_id = ?;
+  DELETE FROM baseball_player WHERE athlete_id = ?;
 */});
-exports.delete = function (playerId, callback) {
-  cassandra.query(DELETE_PLAYER_CQL, [playerId], one, callback);
+exports.delete = function (athleteId, callback) {
+  cassandra.query(DELETE_PLAYER_CQL, [athleteId], one, callback);
 };
 
 var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
-  UPDATE baseball_player SET 
+  UPDATE baseball_player SET
 */});
 var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
-    player_id = ?;
+    athlete_id = ?;
 */});
 /**
- * @param  {uuid}   playerId
+ * @param  {uuid}   athleteId
  * @param  {object}   fields
  * keys are fields
  * values corresponding to keys are update values
  * @param  {Function} callback
  * args: (err)
  */
-exports.update = function (playerId, fields, callback) {
+exports.update = function (athleteId, fields, callback) {
   var fieldNames = [];
   var fieldValues = [];
   for (var key in fields) {
@@ -103,21 +103,21 @@ exports.update = function (playerId, fields, callback) {
     }
   }
   query += (' ' + UPDATE_PLAYER_CQL_2);
-  fieldValues.push(playerId);
+  fieldValues.push(athleteId);
   cassandra.query(query, fieldValues, one, callback);
 };
 
 var SELECT_PLAYER_CQL = multiline(function () {/*
-  SELECT * FROM baseball_player WHERE player_id = ?;
+  SELECT * FROM baseball_player WHERE athlete_id = ?;
 */});
 /**
- * @param  {uuid}   playerId
+ * @param  {uuid}   athleteId
  * @param  {Function} callback
  * args: (err, result)
  * result is a player object
  */
-exports.select = function (playerId, callback) {
-  cassandra.queryOneRow(SELECT_PLAYER_CQL, [playerId], one, callback);
+exports.select = function (athleteId, callback) {
+  cassandra.queryOneRow(SELECT_PLAYER_CQL, [athleteId], one, callback);
 };
 
 
@@ -163,14 +163,14 @@ var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
  */
 exports.selectImagesUsingPlayerName = function(playerName, callback) {
   cassandra.query(
-    SELECT_PLAYER_IMAGES_USING_PLAYERNAME, 
-    [playerName], 
+    SELECT_PLAYER_IMAGES_USING_PLAYERNAME,
+    [playerName],
     one,
     callback);
 };
 
 var AUTOCOMPLETE_QUERY = multiline(function() {/*
-  SELECT player_id, full_name FROM baseball_player;
+  SELECT athlete_id, full_name FROM baseball_player;
 */});
 /**
  * selects all player names and ids
@@ -183,11 +183,11 @@ exports.selectAllPlayerNames = function(callback) {
 }
 
 var ADD_STATISTICS_QUERY = multiline(function() {/*
-  UPDATE baseball_player SET statistics[?] = ? where player_id = ?;
+  UPDATE baseball_player SET statistics[?] = ? where athlete_id = ?;
 */});
 /**
  * adds a single statistic to the player
- * @param {uuid}   playerId
+ * @param {uuid}   athleteId
  * @param {string} formattedDate
  * date formatted as 'year/mm/dd'
  * @param {string}   statistic
@@ -195,27 +195,27 @@ var ADD_STATISTICS_QUERY = multiline(function() {/*
  * @param {Function} callback
  * args: (err)
  */
-exports.addStatistic = function (playerId, formattedDate, statistic, callback) {
+exports.addStatistic = function (athleteId, formattedDate, statistic, callback) {
   cassandra.query(
-    ADD_STATISTICS_QUERY, 
-    [formattedDate, statistic, playerId], 
-    one, 
+    ADD_STATISTICS_QUERY,
+    [formattedDate, statistic, athleteId],
+    one,
     callback);
 };
 
 var DELETE_SPECIFIC_STATISTICS_QUERY = multiline(function() {/*
-  DELETE statistics[?] FROM baseball_player WHERE player_id = ?; 
+  DELETE statistics[?] FROM baseball_player WHERE athlete_id = ?;
 */});
 /**
- * @param  {uuid}   playerId
+ * @param  {uuid}   athleteId
  * @param  {string} formattedDate
  * @param  {Function} callback
  * args: (err)
  */
-exports.deleteStatistics = function (playerId, formattedDate, callback) {
+exports.deleteStatistics = function (athleteId, formattedDate, callback) {
   cassandra.query(
-    DELETE_SPECIFIC_STATISTICS_QUERY, 
-    [formattedDate, playerId],
-    one, 
+    DELETE_SPECIFIC_STATISTICS_QUERY,
+    [formattedDate, athleteId],
+    one,
     callback);
 }

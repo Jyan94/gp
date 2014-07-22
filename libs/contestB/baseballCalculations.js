@@ -85,7 +85,7 @@ function calculateFantasyPointsForContest (contestId, callback) {
       }
       playerObjectArr.push({
         name: athletes[i].athleteName,
-        playerId: athletes[i].athleteId,
+        athleteId: athletes[i].athleteId,
         isOnHomeTeam: athletes[i].isOnHomeTeam,
         prefixSchedule: {
           '$': {

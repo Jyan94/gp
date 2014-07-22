@@ -12,6 +12,7 @@ var modes = require('libs/contestB/modes.js');
 var cql = configs.cassandra.cql;
 
 var messages = configs.constants.contestStrings;
+var contestBSizesNormal = configs.constants.contestBSizesNormal;
 
 /*
  * ====================================================================
@@ -166,7 +167,7 @@ var filterEligibleGamesHelperMain = function (player, callback) {
           callback(
             null, 
             {
-              playerId: result.player_id,
+              athleteId: result.athlete_id,
               fullName: result.full_name,
               shortTeamName: result.short_team_name,
               position: result.position
@@ -177,7 +178,7 @@ var filterEligibleGamesHelperMain = function (player, callback) {
 }
 
 var filterEligibleGamesHelper = function (game, callback) {
-  async.map(game.players, filterEligibleGamesHelperMain,
+  async.map(game.players ? game.players : [], filterEligibleGamesHelperMain,
     function (err, result) {
       if (err) {
         callback(err);
@@ -238,11 +239,71 @@ var renderContestCreationPage = function (req, res, next) {
  * ====================================================================
  */
 
-var removeDuplicatesContestCreation = function (req, res, next, callback) {
-  var keys = Object.keys(req.body);
+var parseParamsContestCreation = function (req, res, next, callback) {
+  var body = req.body;
+  var keys = Object.keys(body);
+  var params = {};
 
-  if (keys.length === 0) {
-    res.redirect('/contestB');
+  if (keys.indexOf('is-fifty-fifty') < 0) {
+    res.send(400, 'Need a value for fifty-fifty.');
+  }
+  else if (keys.indexOf('entry-fee') < 0) {
+    res.send(400, 'Need a value for entry fee.');
+  }
+  else if (keys.indexOf('maximum-entries') < 0) {
+    res.send(400, 'Need a value for maximum entries.');
+  }
+  else if (keys.indexOf('starting-virtual-money') < 0) {
+    res.send(400, 'Need a value for starting virtual money.');
+  }
+  else {
+    var isFiftyFifty = body['is-fifty-fifty'];
+    var entryFee = Number(body['entry-fee']);
+    var maximumEntries = Number(body['maximum-entries']);
+    var startingVirtualMoney = Number(body['starting-virtual-money']);
+
+    if (['true', 'false'].indexOf(isFiftyFifty) < 0) {
+      res.send(400, 'Need a valid value for fifty-fifty.');
+    }
+    else if ((isNaN(entryFee)) || (entryFee < 0)
+             || (entryFee > 1000) || (entryFee % 5 !== 0)) {
+      res.send(400, 'Need a valid value for entry fee.');
+    }
+    else if ((isNaN(maximumEntries))
+             || ((isFiftyFifty === 'true') && ((maximumEntries < 3)
+                                               || (maximumEntries > 2001)
+                                               || (maximumEntries % 2 !== 1)))
+             || ((isFiftyFifty === 'false') && (contestBSizesNormal.indexOf(maximumEntries) < 0))) {
+      res.send(400, 'Need a valid value for maximum entries.');
+    }
+    else if ((isNaN(startingVirtualMoney)) || (startingVirtualMoney < 1000)
+             || (startingVirtualMoney > 1000000)
+             || (startingVirtualMoney % 1000 !== 0)) {
+      res.send(400, 'Need a valid value for starting virtual money.');
+    }
+    else {
+      params.isFiftyFifty = (body['is-fifty-fifty'] === 'true' ? true : false);
+      params.entryFee = Number(body['entry-fee']);
+      params.maximumEntries = Number(body['maximum-entries']);
+      params.startingVirtualMoney = Number(body['starting-virtual-money']);
+
+      async.filter(keys,
+        function (key, callback) {
+          callback((key.length === 85) && (key.substring(0, 7) === 'player-')
+                   && (key.substring(43, 49) === '-game-'));
+        },
+        function (result) {
+          callback(null, req, res, next, params, result);
+        });
+    }
+  }
+}
+
+//keys is an array with only the athlete checkbox values
+var removeDuplicatesContestCreation = function (req, res, next, params,
+                                                keys, callback) {
+  if (keys.length < 2) {
+    res.send(400, 'Need at least two athletes for contest creation.');
   }
   else {
     async.map(keys,
@@ -258,7 +319,7 @@ var removeDuplicatesContestCreation = function (req, res, next, callback) {
 
           async.filter(keys,
             function (elem, callback) {
-              callback(keys.indexOf(elem) === idArray.indexOf(elem.substring(49)) ? true : false);
+              callback(keys.indexOf(elem) === idArray.indexOf(elem.substring(49)));
             },
             function (result) {
               async.map(result,
@@ -266,7 +327,7 @@ var removeDuplicatesContestCreation = function (req, res, next, callback) {
                   callback(null, elem.substring(49));
                 },
                 function (err, result) {
-                  callback(err, req, res, next, result);
+                  callback(err, req, res, next, params, keys, result);
                 });
             });
         }
@@ -298,10 +359,11 @@ var filterContestCreationGames = function (gameId, callback) {
   })
 }
 
-var getGamesForContestCreation = function (req, res, next, gameIdList, callback) {
+var getGamesForContestCreation = function (req, res, next, params, keys,
+                                           gameIdList, callback) {
   async.map(gameIdList, filterContestCreationGames,
     function (err, games) {
-      callback(err, req, res, next, gameIdList, games);
+      callback(err, req, res, next, params, keys, gameIdList, games);
     })
 }
 
@@ -322,20 +384,20 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
             callback(null, null);
           }
           else {
-            isOnHomeTeam = (player.short_team_name === game.short_home_name);
+            isOnHomeTeam = (player.short_team_name === game.shortHomeTeam);
             callback(null,
               {
-                athleteId: player.player_id,
+                athleteId: player.athlete_id,
                 athleteName: player.full_name,
                 athleteContestId: keys.indexOf(elem),
                 gameContestId: gameContestId,
-                gameId: game.game_id,
+                gameId: game.gameId,
                 isOnHomeTeam: isOnHomeTeam,
                 longTeamName: player.long_team_name,
                 longVersusTeamName: (isOnHomeTeam ? game.longAwayTeam : game.longHomeTeam),
                 position: player.position,
                 shortTeamName: player.short_team_name,
-                shortVersusTeamName: (isOnHomeTeam ? game.awayTeam : game.homeTeam),
+                shortVersusTeamName: (isOnHomeTeam ? game.shortAwayTeam : game.shortHomeTeam),
                 teamId: player.team_id
               });
           }
@@ -344,27 +406,29 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
   }
 }
 
-var getAthletesForContestCreation = function (req, res, next, gameIdList, games, callback) {
-  var keys = Object.keys(req.body);
-
+var getAthletesForContestCreation = function (req, res, next, params, keys,
+                                              gameIdList, games, callback) {
   async.map(keys, filterContestCreationAthletes(gameIdList, games, keys),
     function (err, players) {
-      callback(err, req, res, next, games, players);
+      callback(err, req, res, next, params, games, players);
     });
 }
 
-var getDeadlineTimeForContestCreation = function (req, res, next, games, players, callback) {
+var getDeadlineTimeForContestCreation = function (req, res, next, params,
+                                                  games, players, callback) {
   async.reduce(games, games[0].gameDate,
     function (memo, game, callback) {
       callback(null, game.gameDate < memo ? game.gameDate : memo);
     },
     function (err, deadlineTime) {
-      callback(err, req, res, next, games, players, new Date(deadlineTime - 7200000));
+      callback(err, req, res, next, params, games, players,
+               new Date(deadlineTime + 720000000));
     });
 }
 
 
-var submitContest = function (req, res, next, games, players, deadlineTime, callback) {
+var submitContest = function (req, res, next, params, games, players,
+                              deadlineTime, callback) {
   var filterFunction = function (elem, callback) {
     callback(null, JSON.stringify(elem));
   }
@@ -374,8 +438,13 @@ var submitContest = function (req, res, next, games, players, deadlineTime, call
       if (err) {
         next(err);
       }
-      else {
-        var settings = modes.createTypeOne(players, games, deadlineTime, 'baseball');
+      else {        
+        var settings = modes.createTypeOne(players, games, deadlineTime,
+                                           params.entryFee,
+                                           params.isFiftyFifty,
+                                           params.maximumEntries,
+                                           'baseball',
+                                           params.startingVirtualMoney);
 
         ContestB.insert(settings, function (err, result) {
           if (err) {
@@ -389,11 +458,12 @@ var submitContest = function (req, res, next, games, players, deadlineTime, call
     });
 }
 
-var contestCreationProcess = function (req, res, next) { 
+var contestCreationProcess = function (req, res, next) {
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
     },
+    parseParamsContestCreation,
     removeDuplicatesContestCreation,
     getGamesForContestCreation,
     getAthletesForContestCreation,
@@ -413,7 +483,7 @@ var contestCreationProcess = function (req, res, next) {
  * ====================================================================
  */
 
-var findContestByContestIdCheck = function (req, res, next, callback) {
+var findContestByContestIdCheckEntry = function (req, res, next, callback) {
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -445,12 +515,13 @@ var filterContestFieldsEntry = function (req, res, next, contest, callback) {
     else {
       contestInfo = { contestId: contest.contest_id,
                       athletes: result,
+                      maxWager: contest.max_wager,
                       startingVirtualMoney: contest.starting_virtual_money
                     };
 
       res.render('contestBEntry.hbs', { link: 'logout',
-                                          display: 'Logout',
-                                          contestInfo: contestInfo });
+                                        display: 'Logout',
+                                        contestInfo: contestInfo });
     }
   });
 }
@@ -464,7 +535,7 @@ var renderContestEntryPage = function (req, res, next) {
       function (callback) {
         callback(null, req, res, next);
       },
-      findContestByContestIdCheck,
+      findContestByContestIdCheckEntry,
       filterContestFieldsEntry
     ],
     function (err) {
@@ -501,7 +572,7 @@ var renderContestEntryPage = function (req, res, next) {
   }
 }*/
 
-var findContestByContestId = function (req, res, next, callback) {
+var findContestByContestIdEntry = function (req, res, next, callback) {
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -545,10 +616,9 @@ var createInstance = function (params, contest) {
 }
 
 var submitEntry = function(req, res, next, contest, callback) {
-  var user = req.user;
-  var contestant = null;
   var instance = createInstance(req.body, contest);
-  ContestB.addAndUpdateContestant(user, contest.contest_id, instance,
+
+  ContestB.addAndUpdateContestant(req.user, contest.contest_id, instance,
     function (err) {
       if (err) {
         next(err);
@@ -568,7 +638,7 @@ var contestEntryProcess = function (req, res, next) {
       function (callback) {
         callback(null, req, res, next);
       },
-      findContestByContestId,
+      findContestByContestIdEntry,
       //entryProcessCheck,
       submitEntry
     ],
@@ -577,11 +647,165 @@ var contestEntryProcess = function (req, res, next) {
         next(err);
       }
     });
-    /*submitEntry(req, res, next, function (err, result) {
+  }
+}
+
+
+/*
+ * ====================================================================
+ * CONTEST EDIT
+ * ====================================================================
+ */
+
+var findContestByContestIdCheckEdit = function (req, res, next, callback) {
+  ContestB.selectById(req.params.contestId, function (err, result) {
+    if (err) {
+      res.send(404, 'Contest not found.');
+    }
+    else if ((new Date()).getTime() > result.contest_deadline_time.getTime()) {
+      res.send(400, 'Contest is past deadline time.');
+    }
+    else {
+      callback(null, req, res, next, result);
+    }
+  });
+}
+
+// Need names, not numbers, as keys of athletes
+var filterContestFieldsEdit = function (req, res, next, contest, callback) {
+  var contestantInstanceIndex = req.params.contestantInstanceIndex;
+  var contestant = contest.contestants[req.user.username];
+  var contestantInstance = {};
+  var contestInfo = {};
+
+  var parseAthlete = function(athlete, callback) {
+    callback(null, JSON.parse(athlete));
+  };
+
+  if (typeof(contestant) === 'undefined') {
+    res.send(404, 'Contestant not found.');
+  }
+  else {
+    contestantInstance = JSON.parse(contestant).instances[contestantInstanceIndex];
+
+    if (typeof(contestantInstance) === 'undefined') {
+      res.send(404, 'Contestant Instance not found.');
+    }
+    else{
+      async.map(contest.athletes, parseAthlete, function(err, result) {
+        if (err) {
+          res.send(500, 'Server error.');
+        }
+        else {
+          contestInfo = { contestId: contest.contest_id,
+                          contestantInstanceIndex: contestantInstanceIndex,
+                          contestantInstance: contestantInstance,
+                          athletes: result,
+                          maxWager: contest.max_wager,
+                          startingVirtualMoney: contest.starting_virtual_money
+                        };
+
+          res.render('contestBEdit.hbs', { link: 'logout',
+                                           display: 'Logout',
+                                           contestInfo: contestInfo });
+        }
+      });
+    }
+  }
+}
+
+var renderContestEditPage = function (req, res, next) {
+  if (typeof(req.params.contestId) === 'undefined') {
+    res.send(404, 'Not a valid contest ID.');
+  }
+  else if (typeof(req.params.contestantInstanceIndex) === 'undefined') {
+    res.send(404, 'Not a valid instance index.');
+  }
+  else {
+    async.waterfall([
+      function (callback) {
+        callback(null, req, res, next);
+      },
+      findContestByContestIdCheckEdit,
+      filterContestFieldsEdit
+    ],
+    function (err) {
       if (err) {
         next(err);
       }
-    });*/
+    });
+  }
+}
+
+/*
+ * ====================================================================
+ * CONTEST EDIT PROCESS
+ * ====================================================================
+ */
+var findContestByContestIdEdit = function (req, res, next, callback) {
+  ContestB.selectById(req.params.contestId, function (err, result) {
+    if (err) {
+      res.send(404, 'Contest not found.');
+    }
+    else {
+      callback(null, req, res, next, result);
+    }
+  });
+}
+
+var submitEdit = function(req, res, next, contest, callback) {
+  var user = req.user;
+  var contestantInstanceIndex = req.params.contestantInstanceIndex;
+  var contestant = contest.contestants[user.username];
+  var contestantInstance = {};
+  var instance = null;
+
+  if (typeof(contestant) === 'undefined') {
+    res.send(404, 'Contestant not found.');
+  }
+  else {
+    contestantInstance = JSON.parse(contestant).instances[contestantInstanceIndex];
+
+    if (typeof(contestantInstance) === 'undefined') {
+      res.send(404, 'Contestant Instance not found.');
+    }
+    else {
+      instance = createInstance(req.body, contest);
+
+      ContestB.updateContestantInstance(user, contestantInstanceIndex,
+                                        instance, contest.contest_id,
+        function (err) {
+          if (err) {
+            next(err);
+          }
+          else {
+            res.redirect('/contestB');
+          }
+        });
+    }
+  }
+}
+
+var contestEditProcess = function (req, res, next) {
+  if (typeof(req.params.contestId) === 'undefined') {
+    res.send(404, 'Not a valid contest ID.');
+  }
+  else if (typeof(req.params.contestantInstanceIndex) === 'undefined') {
+    res.send(404, 'Not a valid instance index.');
+  }
+  else {
+    async.waterfall([
+      function (callback) {
+        callback(null, req, res, next);
+      },
+      findContestByContestIdEdit,
+      submitEdit
+    ],
+    function (err) {
+      if (err) {
+        next(err);
+      }
+    });
   }
 }
 
@@ -597,3 +821,5 @@ exports.renderContestCreationPage = renderContestCreationPage;
 exports.contestCreationProcess = contestCreationProcess;
 exports.renderContestEntryPage = renderContestEntryPage;
 exports.contestEntryProcess = contestEntryProcess;
+exports.renderContestEditPage = renderContestEditPage;
+exports.contestEditProcess = contestEditProcess;

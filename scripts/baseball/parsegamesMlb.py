@@ -13,10 +13,11 @@ version = '4'
 today = datetime.date.today()
 year = str(today.year)
 month = ('0' + str(today.month) if today.month < 10 else str(today.month))
-day = ('0' + str(today.day - 3) if (today.day - 3) < 10 else str(today.day - 3))
+day = ('0' + str(today.day) if today.day < 10 else str(today.day))
 date = year + '/' + month + '/' + day
 key = 'grnayxvqv4zxsamxhsc59agu'
 url = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/daily/event/' + date + '.xml?api_key=' + key
+print url
 
 def getPlayers(event, side):
   players = []
@@ -27,26 +28,30 @@ def getPlayers(event, side):
   longTeamName = teamAttributes['market'].value + ' ' + teamAttributes['name'].value
   teamId = teamAttributes['id'].value
 
-  playersList = event.getElementsByTagName('game')[0].getElementsByTagName(side)[0]
-  rosterPlayerList = playersList.getElementsByTagName('roster')[0].getElementsByTagName('player')
-  lineupPlayerList = [player.attributes['id'].value for player in playersList.getElementsByTagName('lineup')[0].getElementsByTagName('player')]
+  if (len(event.getElementsByTagName('game')[0].getElementsByTagName(side)) == 0):
+    return (teamId, shortTeamName, longTeamName, players)
+  else:
+    playersList = event.getElementsByTagName('game')[0].getElementsByTagName(side)[0]
 
-  for player in rosterPlayerList:
-    playerAttributes = player.attributes
-    athleteId = playerAttributes['id'].value
+    if len(playersList.getElementsByTagName('roster')) == 0:
+      return (teamId, shortTeamName, longTeamName, players)
+    else:
+      rosterPlayerList = playersList.getElementsByTagName('roster')[0].getElementsByTagName('player')
 
-    if athleteId in lineupPlayerList:
-      athleteName = playerAttributes['preferred_name'].value + ' ' + playerAttributes['last_name'].value
-      newPlayer = { 'athleteId': athleteId, 'athleteName': athleteName, 'isOnHomeTeam': isOnHomeTeam, 'shortTeamName': shortTeamName, 'longTeamName': longTeamName, 'teamId': teamId }
-      players.append(json.dumps(newPlayer))
+      for player in rosterPlayerList:
+        playerAttributes = player.attributes
+        athleteId = playerAttributes['id'].value
 
-  return (teamId, shortTeamName, longTeamName, players)
+        athleteName = playerAttributes['preferred_name'].value + ' ' + playerAttributes['last_name'].value
+        newPlayer = { 'athleteId': athleteId, 'athleteName': athleteName, 'isOnHomeTeam': isOnHomeTeam, 'shortTeamName': shortTeamName, 'longTeamName': longTeamName, 'teamId': teamId }
+        players.append(json.dumps(newPlayer))
+
+      return (teamId, shortTeamName, longTeamName, players)
 
 f = requests.get(url).text;
 xmlDoc = minidom.parseString(f);
 
 eventList = xmlDoc.getElementsByTagName('events')[0].getElementsByTagName('event')
-print(2)
 for event in eventList:
   eventAttributes = event.attributes
   gameId = eventAttributes['id'].value
@@ -57,7 +62,6 @@ for event in eventList:
   awayInfo = getPlayers(event, 'visitor')
   homeInfo = getPlayers(event, 'home')
 
-  print 1
   print gameId
 
   session.execute(

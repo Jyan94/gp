@@ -5,6 +5,7 @@
  */
 'use strict';
 (require('rootpath')());
+var async = require('async');
 var configs = require('config/index.js');
 var cql = configs.cassandra.cql;
 var contestB = require('libs/cassandra/contestB/exports');
@@ -107,7 +108,7 @@ function createSettings(
  * @return {array}
  * parameters for contest_b insert query
  */
-function createType1Settings(athletes, games, deadlineTime, sport) {
+function createType1SettingsDeprecated(athletes, games, deadlineTime, sport) {
   var athletesObj = [];
   var athleteNames = [];
   for (var i = 0; i !== athletes.length; ++i) {
@@ -133,4 +134,145 @@ function createType1Settings(athletes, games, deadlineTime, sport) {
   );
 }
 
-exports.createTypeOne = createType1Settings;
+function createType1Settings () {
+  var payoutsListNormal = {};
+  payoutsListNormal[2] = [1.8];
+  payoutsListNormal[3] = [2.7];
+  payoutsListNormal[5] = [3, 1.5];
+  payoutsListNormal[10] = [4, 3, 2];
+  payoutsListNormal[12] = [5, 3, 2];
+  payoutsListNormal[14] = [6, 3.5, 2.5];
+  payoutsListNormal[23] = [8, 5, 4, 3];
+  payoutsListNormal[56] = [17, 10, 6, 4, 3];
+  for (var i = 5; i < 10; i++) {
+    payoutsListNormal[56][i] = 2;
+  }
+  payoutsListNormal[112] = [25, 16, 12, 7, 5];
+  for (var i = 5; i < 20; i++) {
+    if (i < 10) {
+      payoutsListNormal[112][i] = 3;
+    }
+    else {
+      payoutsListNormal[112][i] = 2;
+    }
+  }
+  payoutsListNormal[167] = [30, 15, 12, 10];
+  for (var i = 4; i < 25; i++) {
+    if (i < 6) {
+      payoutsListNormal[167][i] = 7.5;
+    }
+    else if (i < 9) {
+      payoutsListNormal[167][i] = 5;
+    }
+    else if (i < 14) {
+      payoutsListNormal[167][i] = 4;
+    }
+    else {
+      payoutsListNormal[167][i] = 3;
+    }
+  }
+  payoutsListNormal[230] = [40, 27, 18, 12, 8];
+  for (var i = 5; i < 40; i++) {
+    if (i < 10) {
+      payoutsListNormal[230][i] = 4;
+    }
+    else if (i < 20) {
+      payoutsListNormal[230][i] = 3;
+    }
+    else if (i < 30) {
+      payoutsListNormal[230][i] = 2.5;
+    }
+    else {
+      payoutsListNormal[230][i] = 2;
+    }
+  }
+  payoutsListNormal[1150] = [100, 65, 40, 30, 25, 20, 16, 14, 13, 11];
+  for (var i = 10; i < 225; i++) {
+    if (i < 15) {
+      payoutsListNormal[1150][i] = 10;
+    }
+    else if (i < 20) {
+      payoutsListNormal[1150][i] = 8;
+    }
+    else if (i < 30) {
+      payoutsListNormal[1150][i] = 6;
+    }
+    else if (i < 40) {
+      payoutsListNormal[1150][i] = 5;
+    }
+    else if (i < 50) {
+      payoutsListNormal[1150][i] = 4;
+    }
+    else if (i < 100) {
+      payoutsListNormal[1150][i] = 3.4;
+    }
+    else if (i < 150) {
+      payoutsListNormal[1150][i] = 2.4;
+    }
+    else {
+      payoutsListNormal[1150][i] = 2;
+    }
+  }
+
+  var totalPrizePoolList = {
+                         2: 1.8,
+                         3: 2.7,
+                         5: 4.5,
+                         10: 9,
+                         12: 10,
+                         14: 12,
+                         23: 20,
+                         56: 50,
+                         112: 100,
+                         167: 150,
+                         230: 200,
+                         1150: 1014
+                       }
+
+  return function (athletes, games, deadlineTime, entryFee, isFiftyFifty,
+                   maximumEntries, sport, startingVirtualMoney) {
+    var athletesObj = [];
+    var athleteNames = [];
+    for (var i = 0; i !== athletes.length; ++i) {
+      athletesObj[i] = JSON.stringify(athletes[i]);
+      athleteNames.push(athletes[i].athleteName);
+    }
+
+    var payouts = [];
+    var totalPrizePool = null;
+    if (isFiftyFifty) {
+      payouts = Array.apply(null, { length: (maximumEntries - 1) / 2 }).map(
+        function () {
+          return 2 * entryFee;
+        });
+      totalPrizePool = (maximumEntries - 1) * entryFee;
+    }
+    else {
+      payouts = payoutsListNormal[maximumEntries].map(
+        function (payout) {
+          return payout * entryFee;
+        });
+      totalPrizePool = totalPrizePoolList[maximumEntries] * entryFee
+    }
+
+    return createSettings(
+      athleteNames, //athleteNames
+      athletesObj, //athletes
+      deadlineTime, //deadlineTime
+      10, //cooldownMinutes
+      Math.floor(maximumEntries * 0.5), //entriesAllowedPerContestant
+      entryFee, //entryFee
+      games,  //games
+      isFiftyFifty,  //isfiftyfifty
+      Math.floor(startingVirtualMoney * 0.8), //maxWager
+      maximumEntries, //maximumEntries
+      Math.floor(totalPrizePool / entryFee),  //minimumEntries
+      payouts, //payouts
+      sport,  //sport
+      startingVirtualMoney,  //startingVirtualMoney
+      totalPrizePool  //totalPrizePool
+    );
+  }
+}
+
+exports.createTypeOne = createType1Settings();

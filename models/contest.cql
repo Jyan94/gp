@@ -33,13 +33,13 @@ CREATE INDEX IF NOT EXISTS ON daily_prophet(KEYS(contestants));
 CREATE INDEX IF NOT EXISTS ON daily_prophet(athlete_names);
 
 CREATE TABLE IF NOT EXISTS timeseries_daily_prophet (
-    player_id uuid,
+    athlete_id uuid,
     time timeuuid,
     fantasy_value double,
     virtual_money_wagered int,
     username text,
     active boolean,
-    PRIMARY KEY (player_id, time)
+    PRIMARY KEY (athlete_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
 CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);
 
@@ -50,6 +50,7 @@ daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more info
 */
 
 CREATE TABLE IF NOT EXISTS baseball_game (
+  athletes list<text>,
   away_score int,
   away_id uuid,
   end_time timestamp,
@@ -59,7 +60,6 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   home_id uuid,
   long_away_name text,
   long_home_name text,  //full name for home team
-  players list<text>,
   play_by_play list<text>,
   short_away_name text,
   short_home_name text, //acronym for home team
@@ -70,8 +70,8 @@ CREATE INDEX IF NOT EXISTS on baseball_game(game_date);
 CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 
 /**
- * game_id - timeuuid initialized
- * players - list of player objects
+ game_id - timeuuid initialized
+ athletes - list of athlete objects
  {
     athleteId: athlete player uuid,
     athleteName: name of athlete,
@@ -80,10 +80,11 @@ CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
     longTeamName: full team name,
     teamId: uuid for team
  }
+ status: 'closed', 'scheduled', 'ongoing'?
  */
 
 CREATE TABLE IF NOT EXISTS baseball_player (
-  player_id uuid PRIMARY KEY,
+  athlete_id uuid PRIMARY KEY,
   current_value double,
   full_name text,
   first_name text,

@@ -428,6 +428,8 @@ function testContestant(callback) {
             (err === null).should.be.true;
           }
           else {
+            results[0].athlete_names.
+              should.have.length(testContestSettings[0].value.length);
             callback(null);
           }
         });

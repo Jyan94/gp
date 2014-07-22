@@ -42,21 +42,21 @@
 
               <tbody>
                 <form id="entry-form-1" action="/contestBEntryProcess/{{contestInfo.contestId}}" method="post">
-                  {{#each contestInfo.athletes}}
+                  {{#contestBEntryHelper contestInfo}}
                     <tr>
-                      <td> {{this.athleteName}} </td>
+                      <td> {{this.athlete.athleteName}} </td>
                         <td>
-                          <input class="entry-form-input prediction" type="number" name="prediction-{{@index}}" placeholder="Your prediction" required=true min="0" step="0.01"></input>
+                          <input class="entry-form-input prediction" type="number" name="prediction-{{this.index}}" placeholder="Your prediction" required=true min="0" step="0.01"></input>
                         </td>
                         <td>
-                          <input class="entry-form-input wager" type="number" name="wager-{{@index}}" placeholder="Your wager" required=true min="0" max="8000" step="1"></input>
+                          <input class="entry-form-input wager" type="number" name="wager-{{this.index}}" placeholder="Your wager" required=true min="0" max={{this.maxWager}} step="1"></input>
                         </td>
                       </fieldset>
                       <td>
                         <button type="button" class="entry-form-button"> 5 for 5 </button>
                       </td>
                     </tr>
-                  {{/each}}
+                  {{/contestBEntryHelper}}
                 </form>
               </tbody>
 

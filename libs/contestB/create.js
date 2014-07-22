@@ -35,7 +35,7 @@ function selectAndFilterAthletes(sport, athleteIds, callback) {
         callback(
           null,
           {
-            athleteId: result.player_id,
+            athleteId: result.athlete_id,
             athleteName: result.full_name,
             athleteContestId: athleteContestIds[athleteId],
             position: result.position,

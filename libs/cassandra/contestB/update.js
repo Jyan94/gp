@@ -95,12 +95,11 @@ exports.insert  = function(settings, callback) {
     hint: 'list'
   };
 
-  var payouts = [];
-  var payoutsKeys = Object.keys(settings[PAY_OUTS_INDEX]);
+  var payouts = settings[PAY_OUTS_INDEX];
 
-  for (var i = 0; i !== payoutsKeys.length; i++) {
+  for (var i = 0; i !== payouts.length; i++) {
     payouts[i] = {
-      value: settings[PAY_OUTS_INDEX][payoutsKeys[i]],
+      value: payouts[i],
       hint: 'double'
     };
   }

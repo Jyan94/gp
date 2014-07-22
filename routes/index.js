@@ -69,10 +69,11 @@ app.get('/autocomp', autocomplete.autocomp);
 
 //market
 var market = require('routes/market');
-app.get('/market/:playerId', market.renderPlayerPage);
-app.post('/submitForm/:playerId', market.submitBet);
-app.post('/addBets/:playerId', market.takeBet);
-app.get('/market', market.getDailyScores);
+
+app.get('/market/:athleteId', market.renderAthletePage);
+//app.post('/submitForm/:athleteId', market.submitBet);
+app.post('/addBets/:athleteId', market.takeBet);
+app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');
@@ -102,6 +103,10 @@ app.post('/contestBCreationProcess', contestB.contestCreationProcess);
 app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);
 app.post('/contestBEntryProcess/:contestId',
   contestB.contestEntryProcess);
+app.get('/contestBEdit/:contestId/:contestantInstanceIndex',
+  contestB.renderContestEditPage);
+app.post('/contestBEditProcess/:contestId/:contestantInstanceIndex',
+  contestB.contestEditProcess);
 
 //error handling middleware logs errors and sends 500
 var errorHandler = require('routes/error/error');

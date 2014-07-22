@@ -11,8 +11,8 @@ var USERIDTHIRD = '12000000-0000-0000-0000-000000005eb5';
 var PLAYERID = '00000000-0000-0000-0000-000000000001';
 var betIdIndex = 0
 var userIdIndex = 1;
-var longPositionIndex = 2;
-var playerIdIndex = 3;
+var OVERPositionIndex = 2;
+var athleteIdIndex = 3;
 var betValueIndex = 4;
 var multiplierIndex = 5;
 var gameIdIndex = 6;
@@ -38,8 +38,8 @@ var pendingFields =
 [
 'bet_id',
 'user_id',
-'long_position',
-'player_id',
+'OVER_position',
+'athlete_id',
 'bet_value',
 'multiplier',
 'game_id',
@@ -50,8 +50,8 @@ var pendingParamsFirst =
 [
 BETIDFIRST, //bet_id
 USERIDFIRST, //user_id
-true, //long_position
-PLAYERID, //player_id
+true, //OVER_position
+PLAYERID, //athlete_id
 { value: 100, hint: 'double' }, //bet_value
 { value: 10, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id
@@ -62,8 +62,8 @@ var pendingParamsSecond =
 [
 BETIDSECOND, //bet_id
 USERIDSECOND, //user_id
-false, //long_position
-PLAYERID, //player_id
+false, //OVER_position
+PLAYERID, //athlete_id
 { value: 200, hint: 'double' }, //bet_value
 { value: 3, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id
@@ -88,9 +88,9 @@ function testInsertPending(callback) {
 var currentFields =
 [
 'bet_id',
-'long_better_id',
-'short_better_id',
-'player_id',
+'OVER_better_id',
+'UNDER_better_id',
+'athlete_id',
 'bet_value',
 'multiplier',
 'game_id',
@@ -101,8 +101,8 @@ var currentParamsFirst =
 [
 BETIDFIRST, //bet_id
 USERIDFIRST, //user_id
-USERIDSECOND, //long_position
-PLAYERID, //player_id
+USERIDSECOND, //OVER_position
+PLAYERID, //athlete_id
 { value: 100, hint: 'double' }, //bet_value
 { value: 10, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id
@@ -113,8 +113,8 @@ var currentParamsSecond =
 [
 BETIDSECOND, //bet_id
 USERIDTHIRD, //user_id
-USERIDSECOND, //long_position
-PLAYERID, //player_id
+USERIDSECOND, //OVER_position
+PLAYERID, //athlete_id
 { value: 200, hint: 'double' }, //bet_value
 { value: 3, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id

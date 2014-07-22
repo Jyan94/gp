@@ -1,0 +1,69 @@
+'use strict';
+require('rootpath')();
+
+var configs = require('config/index');
+var positions = configs.constants.contestAbets.POSITIONS;
+
+var async = require('async');
+
+var contestAGlobals = configs.globals.contestA;
+var pendingBets = contestAGlobals.pendingBets;
+var resellBets = contestAGlobals.resellBets;
+var takenBets = contestAGlobals.takenBets;
+var OVER = positions.OVER;
+var UNDER = positions.UNDER;
+
+function getUserPending(username, callback) {
+  async.filter(pendingBets, function(bet, callback) {
+    callback(bet.better === username);
+  }, callback);
+}
+
+function getUserResell(username, callback) {
+  async.filter(resellBets, function(bet, callback) {
+    callback(
+      (bet.isSellingPosition[OVER] &&
+        bet.bettorUsernames[OVER] === username) ||
+      (bet.isSellingPosition[UNDER] &&
+        bet.bettorUsernames[UNDER] === username));
+  }, callback);
+}
+
+function getUserTaken(username, callback) {
+  async.filter(takenBets, function(bet, callback) {
+    callback(
+      (bet.isSellingPosition[OVER] &&
+        bet.bettorUsernames[OVER] === username) ||
+      (bet.isSellingPosition[UNDER] &&
+        bet.bettorUsernames[UNDER] === username));
+  }, callback);
+}
+
+function getPrimaryMarket(username, callback) {
+  async.filter(pendingBets, function(bet, callback) {
+    callback(bet.better !== username);
+  }, callback);
+}
+
+function getSecondaryMarket(username, callback) {
+  async.filter(resellBets, function(bet, callback) {
+    callback(
+      bet.bettorUsernames[OVER] !== username &&
+      bet.bettorUsernames[UNDER] !== username);
+  }, callback);
+}
+
+function getMarketPendingByAthleteId(username, athleteId, callback) {
+  async.filter(pendingBets, function(bet, callback) {
+    callback(
+      (athleteId === bet.athleteId) &&
+      (username !== bet.better));
+  }, callback);
+}
+
+exports.getUserPending = getUserPending;
+exports.getUserResell = getUserResell;
+exports.getUserTaken = getUserTaken;
+exports.getPrimaryMarket = getPrimaryMarket;
+exports.getSecondaryMarket = getSecondaryMarket;
+exports.getMarketPendingByAthleteId = getMarketPendingByAthleteId;

@@ -51,7 +51,7 @@ exports.selectGameUsingId = function(id, callback) {
 };
 
 var SELECT_GAME_DATE = multiline(function() {/*
-  SELECT * FROM baseball_game WHERE date = ?;
+  SELECT * FROM baseball_game WHERE game_date = ?;
 */});
 
 exports.selectGameUsingDate = function(date, callback) {
@@ -66,7 +66,7 @@ exports.selectGameUsingDate = function(date, callback) {
  *
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   game_id uuid PRIMARY KEY,
-  player_id uuid,
+  athlete_id uuid,
   sport text,
   date timestamp,
   season_year int,
