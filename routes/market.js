@@ -127,4 +127,4 @@ var takeBet = function(req, res, next, callback) {
 //exports above functions
 exports.renderAthletePage = renderAthletePage;
 exports.takeBet = takeBet;*/
-exports.getDailyScores = getDailyScores;
+//exports.getDailyScores = getDailyScores;
