@@ -58,7 +58,8 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?
-  );
+  )
+  IF NOT EXISTS;
 */});
 
 var ATHLETE_NAMES_INDEX = 0;

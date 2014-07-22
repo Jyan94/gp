@@ -79,7 +79,8 @@ function insertPending(info, user, callback) {
 //betId, fantasyValue, isOverNotUnder, wager,
 /**
  * info has fields
- * athleteId, betId, fantasyValue, isOverNotUnder, wager
+ * athleteId, athleteName, athleteTeam, betId, 
+ * fantasyValue, opponent, overNotUnder, payoff, wager, time, opponent
  * @param  {object}   info
  * @param  {Function} callback
  * args: (err)
@@ -118,14 +119,56 @@ function takePending(info, user, callback) {
         info.athleteId,
         info.betId,
         info.fantasyValue,
-        info.isOverNotUnder,
+        info.overNotUnder,
         user.username,
         info.wager,
         takePendingCallback);
     },
     function(callback) {
-      BetHistory.insertHistory();
+      async.parallel(
+      [
+        //for user
+        function(callback) {
+          BetHistory.insert(
+            info.athleteId,
+            info.athleteName,
+            info.athleteTeam,
+            info.betId,
+            info.fantasyValue,
+            info.opponent,
+            info.overNotUnder,
+            info.payoff,
+            info.wager,
+            false,
+            user.username);
+        },
+        //for opponent
+        function(callback) {
+          BetHistory.insert(
+            info.athleteId,
+            info.athleteName,
+            info.athleteTeam,
+            info.betId,
+            info.fantasyValue,
+            user.username,
+            !info.overNotUnder,
+            info.payoff,
+            info.wager,
+            true,
+            info.opponent);
+        },
+        //for timeseries
+        function(callback) {
+          Timeseries.insert(
+            info.athleteId,
+            info.fantasyValue,
+            info.wager,
+            callback);
+        }
+      ], callback);
     }
   ], callback);
 }
+
+
 

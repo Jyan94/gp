@@ -41,7 +41,6 @@ function insertUser(uuid, body, res, next) {
         null, //address
         null, //payment_info
         {value: 10000.0, hint: 'double'}, //money
-        {value: 10000.0, hint: 'double'}, //spending_power
         null, //fbid
         0,  //vip_status
         defaultPlayerImage //image
@@ -133,11 +132,6 @@ var processSignup = function(req, res, next) {
       };
 
       User.selectByEmail(body.email, selectEmailCallback);
-    },
-
-    //verify uuid
-    function(callback) {
-      verifyUniqueUuid(uuid, callback);
     }
   ],
   function(err) {

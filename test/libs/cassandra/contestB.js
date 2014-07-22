@@ -23,7 +23,6 @@ var testUserParams0 =
   'address',
   'paymentinfo',
   {value: 2000, hint: 'double'},
-  {value: 2000, hint: 'double'},
   'fbid',
   0,
   'image'
@@ -43,7 +42,6 @@ var testUserParams1 =
   20,
   'address',
   'paymentinfo',
-  {value: 1000, hint: 'double'},
   {value: 1000, hint: 'double'},
   'fbid',
   0,
@@ -437,7 +435,6 @@ function testContestant(callback) {
     function(callback) {
       ++numInstances0;
       ++numContestants;
-      //console.log(numInstances0);
       AddContestant.addContestant(
         user0, 
         contest.contest_id, 

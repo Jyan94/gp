@@ -2,11 +2,12 @@
 require('rootpath')();
 
 var cassandra = require('libs/cassandra/cql');
-var cql = require('config/index.js').cassandra.cql;
+var configs = require('config/index.js');
+var cql = configs.cassandra.cql;
 var multiline = require('multiline');
 var one = cql.types.consistencies.one;
 var quorum = cql.types.consistencies.quorum;
-var APPLIED = '[applied]';
+var APPLIED = configs.constants.cassandra.APPLIED;
 
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
@@ -23,7 +24,6 @@ var INSERT_USER_CQL = multiline(function() {/*
     address, 
     payment_info, 
     money, 
-    spending_power, 
     fbid,
     vip_status, 
     image
@@ -31,7 +31,8 @@ var INSERT_USER_CQL = multiline(function() {/*
     (?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
-     ?, ?);
+     ?)
+  IF NOT EXISTS;
 */});
 exports.insert = function (params, callback) {
   //parse values
@@ -81,21 +82,6 @@ exports.update = function (userId, fields, params, callback) {
       callback(err);
     });
 };
-
-var UPDATE_SPENDINGPOWER_CQL = multiline(function() {/*
-  UPDATE users SET spending_power = ? WHERE user_id = ?
-*/})
-exports.updateSpendingPower = function(spendingPower, userId, callback) {
-  var params = [{value: spendingPower, hint: 'double'}, userId];
-  cassandra.query(UPDATE_SPENDINGPOWER_CQL,
-   params,
-  cql.types.consistencies.one,
-  function(err) {
-    if (err) {
-      callback(err);
-    }
-  })
-}
 
 var SELECT_USER_CQL = multiline(function () {/*
   SELECT * FROM users WHERE
@@ -149,10 +135,7 @@ exports.selectMultiple = function selectMultiple(params, callback) {
   }
 
   query = SELECT_USERS_MULTIPLE_CQL + ' (' + filter + ');';
-  cassandra.query(query, params, one,
-    function (err, result) {
-      callback(err, result);
-    });
+  cassandra.query(query, params, one, callback);
 }
 
 /* 
@@ -209,7 +192,7 @@ function updateMoney(currentMoney, difference, userId, isAdd, callback) {
       UPDATE_MONEY_CQL, 
       [
         {value: newMoney, hint: 'double'}, 
-        userId, 
+        userId,
         {value: currentMoney, hint: 'double'}
       ],
       quorum,

@@ -154,11 +154,11 @@ function insertPending(
   var otherPosition;
   if (isOverBetter) {
     position = OVER;
-    position = UNDER;
+    otherPosition = UNDER;
   }
   else {
     position = UNDER;
-    position = OVER;
+    otherPosition = OVER;
   }
   bettorUsernames[position] = username;
   expirations[otherPosition] = expiration;

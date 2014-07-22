@@ -22,6 +22,7 @@ var INSERT_BET_HISTORY_CQL = multiline(function() {/*
   INSERT INTO contest_a_bets_history (
     athlete_id,
     athlete_name,
+    athlete_team,
     bet_id,
     fantasy_value,
     opponent,
@@ -53,6 +54,7 @@ function insert(params, callback) {
 function insertHistory(
   athleteId,
   athleteName,
+  athleteTeam,
   betId,
   fantasyValue,
   opponent,
@@ -66,7 +68,8 @@ function insertHistory(
   insert(
   [
     athleteId, 
-    athleteName, 
+    athleteName,
+    athleteTeam, 
     betId,
     fantasyValue, 
     opponent, 
