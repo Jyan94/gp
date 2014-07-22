@@ -59,8 +59,8 @@ CREATE TABLE IF NOT EXISTS baseball_game (
   home_id uuid,
   long_away_name text,
   long_home_name text,  //full name for home team
-  players list<text>,
   play_by_play list<text>,
+  players list<text>,
   short_away_name text,
   short_home_name text, //acronym for home team
   start_time timestamp,
@@ -70,8 +70,8 @@ CREATE INDEX IF NOT EXISTS on baseball_game(game_date);
 CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 
 /**
- * game_id - timeuuid initialized
- * players - list of player objects
+ game_id - timeuuid initialized
+ players - list of player objects
  {
     athleteId: athlete player uuid,
     athleteName: name of athlete,
@@ -80,6 +80,7 @@ CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
     longTeamName: full team name,
     teamId: uuid for team
  }
+ status: 'closed', 'scheduled', 'ongoing'?
  */
 
 CREATE TABLE IF NOT EXISTS baseball_player (

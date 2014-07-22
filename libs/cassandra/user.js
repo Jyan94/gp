@@ -212,7 +212,7 @@ function updateMoney(currentMoney, difference, userId, isAdd, callback) {
         userId, 
         {value: currentMoney, hint: 'double'}
       ],
-      quorum, 
+      quorum,
       updateMoneyCallback);
   }
 }

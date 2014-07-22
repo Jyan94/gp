@@ -134,10 +134,10 @@ function insertPending(
   expirationTimeMinutes,
   fantasyValue,
   gameId,
-  sport,
-  wager,
-  username,
   isOverBetter,
+  sport,
+  username,
+  wager,
   callback) {
 
   var betterUsernames = [DEFAULT_USERNAME, DEFAULT_USERNAME];
@@ -284,7 +284,17 @@ function placeResell(
       position
     ],
     one,
-    callback);
+    function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (result[APPLIED]) {
+        callback(null);
+      }
+      else {
+        callback(new Error(APPLIED));
+      }
+    });
 }
 
 var TAKE_RESELL_CQL = multiline(function() {/*

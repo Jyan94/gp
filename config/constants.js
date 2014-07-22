@@ -163,6 +163,15 @@ exports.contestAbets = {
   }
 };
 
+exports.game = {
+  hasEnded: function(game) {
+    if (game.status === 'closed') {
+      return true;
+    }
+    return false;
+  }
+}
+
 exports.globals = {
   SEMICOLON: ';',
   MINUTE_IN_MILLISECONDS: 60000,
