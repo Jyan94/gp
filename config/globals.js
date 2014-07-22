@@ -3,7 +3,7 @@
  * @type {Object}
  */
 exports.contestA = {
-  pendingBets: [],
+  pendingBets: [{athleteId: '10154eef-8834-48e0-97e7-d7436367534c', athleteName: 'Adrian Gonzalez', seller: 'hello world'}],
   resellBets: [],
   takenBets: []
 }
@@ -13,5 +13,5 @@ exports.contestA = {
  * @type {Object}
  */
 exports.contestB = {
-  contests: [] 
+  contests: []
 }

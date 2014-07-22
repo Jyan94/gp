@@ -7,8 +7,6 @@ var client = configs.cassandra.client;
 
 var async = require('async');
 
-var Bet = require('libs/cassandra/bet.js');
-var User = require('libs/cassandra/user.js');
 var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var mlbData = require('libs/mlbData.js');
@@ -17,6 +15,9 @@ var SpendingPower = require('libs/calculateSpendingPower');
 
 var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;
+var marketGlobals = configs.globals.contestA;
+var pendingBets = marketGlobals.pendingBets;
+
 
 var getDailyScores = function(req, res, next) {
   var date = new Date();
@@ -41,29 +42,14 @@ var getDailyScores = function(req, res, next) {
 }
 
 var getBetInfosFromPlayerId = function (req, res, next, callback) {
-  var rows = null;
-  var betInfo = [];
 
-  Bet.selectUsingPlayerId('pending_bets', req.params.playerId,
-    function(err, result) {
-      if (err) {
-        next(err);
-      }
-      else {
-        rows = result;
-
-        for (var i = 0; i < rows.length; i++) {
-          betInfo[i] = {
-            betId: rows[i].bet_id,
-            longPosition: rows[i].long_position,
-            wager: rows[i].wager,
-            betValue: rows[i].bet_value
-          }
-        }
-
-        callback(null, req, res, next, betInfo);
-      }
-    });
+  async.filter(pendingBets, function(bet, callback) {
+    callback(
+      (req.params.playerId === bet.athleteId) &&
+      (req.user.username !== bet.seller));
+  }, function(results) {
+    res.render('market', results);
+  });
 }
 
 var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
