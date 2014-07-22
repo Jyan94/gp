@@ -46,6 +46,7 @@ CREATE INDEX IF NOT EXISTS ON contest_a_bets(bet_state);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(bettor_usernames);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(game_id);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(is_selling_position);
+
 /*
 is_selling_position - boolean for sells position,
 CAREFUL FOR PENDING
@@ -158,8 +159,9 @@ CREATE TABLE IF NOT EXISTS player_images (
 );
 
 CREATE TABLE IF NOT EXISTS timeseries_bets (
-    athlete_id text,
-    time timeuuid,
+    athlete_id uuid,
+    fantasy_value double,
     price double,
+    time timeuuid,
     PRIMARY KEY (athlete_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);

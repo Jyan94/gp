@@ -89,3 +89,13 @@ exports.athletes = {
     }
   }
 }
+
+exports.games = {
+  Baseball: {
+    //gameId: object
+  }
+}
+
+exports.currentSportsInSeason = {
+  
+}

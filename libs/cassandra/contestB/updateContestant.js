@@ -16,6 +16,8 @@ var async = require('async');
 var minuteInMilliseconds = configs.constants.globals.MINUTE_IN_MILLISECONDS;
 var millisecondsToStr = configs.constants.globals.millisecondsToStr;
 
+var COOLDOWN_MSG = configs.constants.contestB.COOLDOWN_MSG;
+
 /**
  * verifies if the instance
  * @param  {object}   user 
@@ -139,6 +141,9 @@ function compareInstances(user, oldInstance, newInstance, contest, callback) {
     };
     async.each(timeseriesUpdates, updateTimeseriesTable, callback);
   }
+  else {
+    callback(null);
+  }
 }
 
 /**
@@ -183,8 +188,10 @@ function updateInstance(
       contestant.instances[instanceIndex].lastModified + 
       cooldownInMilliseconds;
     var difference = lastModifiedPlusCooldown - now;
-    callback(new Error('cooldown has not expired yet ' 
-      + millisecondsToStr(difference) + ' remaining'));
+    callback(new Error(
+      'cooldown has not expired yet ' + 
+      millisecondsToStr(difference) + 
+      ' remaining'));
   }
   else {
     var compareCallback = function(err) {

@@ -14,6 +14,8 @@ var cql = configs.cassandra.cql;
 var quorum = cql.types.consistencies.quorum;
 var one = cql.types.consistencies.one;
 
+var states = configs.constants.contestB.STATES;
+var OPEN = states.OPEN;
 var APPLIED = configs.constants.cassandra.APPLIED;
 var SEMICOLON = configs.constants.globals.SEMICOLON;
 

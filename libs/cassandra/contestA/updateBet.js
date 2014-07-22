@@ -6,6 +6,8 @@ var cql = configs.cassandra.cql;
 var async = require('async');
 var User = require('libs/cassandra/user');
 var UpdateBet = require('libs/cassandra/contestA/update');
+var Timeseries = require('./timeseries');
+var BetHistory = require('./betHistory');
 
 var constants = configs.constants;
 var APPLIED = constants.cassandra.APPLIED;
@@ -74,10 +76,10 @@ function insertPending(info, user, callback) {
     }
   ], callback);
 }
-//betId, isOverNotUnder, wager,
+//betId, fantasyValue, isOverNotUnder, wager,
 /**
  * info has fields
- * betId, isOverNotUnder, wager
+ * athleteId, betId, fantasyValue, isOverNotUnder, wager
  * @param  {object}   info
  * @param  {Function} callback
  * args: (err)
@@ -113,14 +115,16 @@ function takePending(info, user, callback) {
     },
     function(callback) {
       UpdateBet.takePending(
+        info.athleteId,
         info.betId,
-        user.username,
+        info.fantasyValue,
         info.isOverNotUnder,
+        user.username,
         info.wager,
         takePendingCallback);
     },
     function(callback) {
-
+      BetHistory.insertHistory();
     }
   ], callback);
 }

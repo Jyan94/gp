@@ -150,6 +150,7 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
  * args: (err)
  */
 function updateContestState(nextState, contestId, callback) {
+  //need to do function(err) {callback(err)} for callback
   cassandra.query(
     UPDATE_STATE_QUERY, 
     [nextState, contestId], 
