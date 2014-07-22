@@ -26,7 +26,7 @@ var INSERT_BET_CQL = multiline(function() {/*
     athlete_team,
     bet_id,
     bet_state,
-    better_usernames,
+    bettor_usernames,
     expirations,
     fantasy_value,
     game_id,
@@ -140,7 +140,7 @@ function insertPending(
   wager,
   callback) {
 
-  var betterUsernames = [DEFAULT_USERNAME, DEFAULT_USERNAME];
+  var bettorUsernames = [DEFAULT_USERNAME, DEFAULT_USERNAME];
   var isSellingPosition = [false, false];
   var expiration = new Date(
     ((new Date()).getTime()) + 
@@ -160,7 +160,7 @@ function insertPending(
     position = UNDER;
     position = OVER;
   }
-  betterUsernames[position] = username;
+  bettorUsernames[position] = username;
   expirations[otherPosition] = expiration;
   isSellingPosition[otherPosition] = true;
   prices[otherPosition] = wager;
@@ -172,7 +172,7 @@ function insertPending(
     athleteTeam,
     betId,
     PENDING,
-    betterUsernames,
+    bettorUsernames,
     expirations,
     fantasyValue,
     gameId,
@@ -190,7 +190,7 @@ var TAKE_PENDING_BET_CQL = multiline(function() {/*
     contest_a_bets
   SET
     bet_state = ?,
-    better_usernames[?] = ?,
+    bettor_usernames[?] = ?,
     expirations[?] = 0
     is_selling_position[?] = false
   WHERE
@@ -250,7 +250,7 @@ var RESELL_BETTER_CQL = multiline(function() {/*
   IF
     bet_state = ?
   AND
-    better_usernames[?] = ?
+    bettor_usernames[?] = ?
   AND
     is_selling_position[?] = false;
 */});
@@ -301,7 +301,7 @@ var TAKE_RESELL_CQL = multiline(function() {/*
   UPDATE
     contest_a_bets
   SET
-    better_usernames[?] = ?,
+    bettor_usernames[?] = ?,
     is_selling_position[?] = false,
     expirations[?] = ?,
     old_prices[?] = ?,
@@ -353,9 +353,9 @@ var DELETE_PENDING_BET_CQL = multiline(function() {/*
   IF
     bet_state = ?
   AND
-    better_usernames[?] = ?
+    bettor_usernames[?] = ?
   AND
-    better_usernames[?] = ?;
+    bettor_usernames[?] = ?;
 */});
 function deletePending(betId, username, isOverBetter, callback) {
   var position1;
@@ -404,7 +404,7 @@ var RECALL_RESELL_CQL = multiline(function() {/*
   IF
     bet_state = ?
   AND
-    better_usernames[?] = ?
+    bettor_usernames[?] = ?
   AND
     is_selling_position[?] = true
   AND

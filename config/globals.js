@@ -9,7 +9,7 @@ generic bet:
   athleteName text, --
   athleteTeam text, --
   betId timeuuid, --
-  betterUsernames list<text> ??,    
+  bettorUsernames list<text> ??,    
   expirations list<timestamp>,  ??  
   fantasyValue double, --
   gameId uuid, --
@@ -45,7 +45,7 @@ resell bet format:
   betId timeuuid, --
 
   isSellingPosition - array of length 2 contains 2 booleans
-  betterUsernames - array of length 2 contains users for respective positions
+  bettorUsernames - array of length 2 contains users for respective positions
   expirations - array of length 2 contains expirations for bets
   prices - array of length 2 contains prices for resell positions
 
