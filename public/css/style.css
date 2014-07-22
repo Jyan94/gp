@@ -38,7 +38,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-image: url(../assets/stadium_night.jpg);
+
   background-size: 100%;
   font-family: 'Helvetica', 'Arial', 'sans-serif';
 }
@@ -230,6 +230,13 @@ input {
   background-position: center;
   vertical-align: bottom;
 }
+.masthead-brand {
+  height: 120px;
+  width: 200px;
+  float: left;
+  margin-top: 5px;
+  margin-left: -200px;
+}
 #settings {
   display: none;
   position: relative;
@@ -297,12 +304,16 @@ input {
   margin: 0px 0px 0px;
   padding: 0px 0px;
   overflow: hidden;
+  z-index: 9999999;
+  position: fixed;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-transition: all 0.2s ease-in-out, border 0s linear 0.2s;
   -moz-transition: all 0.2s ease-in-out, border 0s linear 0.2s;
 }
 .dropdown-menu.active {
+  z-index: 9999999;
+  position: fixed;
   border: 1px solid #ddc;
   height: 151px;
   padding: 5px 0px;
@@ -555,14 +566,16 @@ input {
 /*----------------------------------------------------------------------------*/
 
 .scorecontainer {
-  background-color: #1e90ff;
-  overflow: scroll;
   width: 980px;
-  height: 200px;
+  height: 100px;
+  background: -webkit-gradient(linear, 25% 0%, 0% 0%, from(rgba(20, 87, 143, 1)), to(rgba(0, 0, 0, 1)));
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
   opacity: 0.7;
 }
 .score {
-  float: left;
+  display: inline-block;
   background-color: white;
   width: 110px;
   padding: 10px;

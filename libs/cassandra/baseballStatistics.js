@@ -51,7 +51,7 @@ exports.selectGameUsingId = function(id, callback) {
 };
 
 var SELECT_GAME_DATE = multiline(function() {/*
-  SELECT * FROM baseball_game WHERE date = ?;
+  SELECT * FROM baseball_game WHERE game_date = ?;
 */});
 
 exports.selectGameUsingDate = function(date, callback) {

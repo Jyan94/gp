@@ -26,7 +26,8 @@ var getDailyScores = function(req, res, next) {
   var day = date.getDate();
   day = (day < 10 ? '0' : '') + day;
 
-  var gameDate = '' + year + '/' + month + '/' + day;
+  var gameDate = '2014/07/13';
+  //var gameDate = '' + year + '/' + month + '/' + day;
   console.log(gameDate);
 
   BaseballStatistics.selectGameUsingDate(gameDate, function(err, result) {

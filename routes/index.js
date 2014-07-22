@@ -72,7 +72,7 @@ var market = require('routes/market');
 app.get('/market/:playerId', market.renderPlayerPage);
 app.post('/submitForm/:playerId', market.submitBet);
 app.post('/addBets/:playerId', market.takeBet);
-app.get('/market', market.getDailyScores);
+app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');
