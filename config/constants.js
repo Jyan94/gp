@@ -65,7 +65,8 @@ exports.contestB = {
   MAX_WAIT: 10000,
   //for checking if lightweight transaction went through
   //time in milliseconds (2 hours)
-  MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 120 * 60000
+
+  MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 120 * 60000,
 };
 /*
  * ====================================================================

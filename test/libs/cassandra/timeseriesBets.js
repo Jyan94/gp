@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 require('rootpath')();
 
 var async = require('async');
@@ -73,4 +73,4 @@ describe('timeseries module: insert, select, delete', function () {
         });
     }
   );
-});
+});*/

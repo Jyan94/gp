@@ -202,7 +202,13 @@ var TAKE_PENDING_BET_CQL = multiline(function() {/*
   AND
     is_selling_position[?] = true;
 */});
-function takePending(betId, username, boughtOverBet, wager, callback) {
+function takePending(
+  betId, 
+  boughtOverBet, 
+  username, 
+  wager, 
+  callback) {
+
   var position;
   if (boughtOverBet) {
     position = OVER;
