@@ -12,7 +12,7 @@ var PLAYERID = '00000000-0000-0000-0000-000000000001';
 var betIdIndex = 0
 var userIdIndex = 1;
 var OVERPositionIndex = 2;
-var playerIdIndex = 3;
+var athleteIdIndex = 3;
 var betValueIndex = 4;
 var multiplierIndex = 5;
 var gameIdIndex = 6;
@@ -39,7 +39,7 @@ var pendingFields =
 'bet_id',
 'user_id',
 'OVER_position',
-'player_id',
+'athlete_id',
 'bet_value',
 'multiplier',
 'game_id',
@@ -51,7 +51,7 @@ var pendingParamsFirst =
 BETIDFIRST, //bet_id
 USERIDFIRST, //user_id
 true, //OVER_position
-PLAYERID, //player_id
+PLAYERID, //athlete_id
 { value: 100, hint: 'double' }, //bet_value
 { value: 10, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id
@@ -63,7 +63,7 @@ var pendingParamsSecond =
 BETIDSECOND, //bet_id
 USERIDSECOND, //user_id
 false, //OVER_position
-PLAYERID, //player_id
+PLAYERID, //athlete_id
 { value: 200, hint: 'double' }, //bet_value
 { value: 3, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id
@@ -90,7 +90,7 @@ var currentFields =
 'bet_id',
 'OVER_better_id',
 'UNDER_better_id',
-'player_id',
+'athlete_id',
 'bet_value',
 'multiplier',
 'game_id',
@@ -102,7 +102,7 @@ var currentParamsFirst =
 BETIDFIRST, //bet_id
 USERIDFIRST, //user_id
 USERIDSECOND, //OVER_position
-PLAYERID, //player_id
+PLAYERID, //athlete_id
 { value: 100, hint: 'double' }, //bet_value
 { value: 10, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id
@@ -114,7 +114,7 @@ var currentParamsSecond =
 BETIDSECOND, //bet_id
 USERIDTHIRD, //user_id
 USERIDSECOND, //OVER_position
-PLAYERID, //player_id
+PLAYERID, //athlete_id
 { value: 200, hint: 'double' }, //bet_value
 { value: 3, hint: 'double' }, // multiplier
 '10000000-0000-0000-0000-000000000001', //game_id

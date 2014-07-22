@@ -167,7 +167,7 @@ var filterEligibleGamesHelperMain = function (player, callback) {
           callback(
             null, 
             {
-              playerId: result.player_id,
+              athleteId: result.athlete_id,
               fullName: result.full_name,
               shortTeamName: result.short_team_name,
               position: result.position
@@ -387,7 +387,7 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
             isOnHomeTeam = (player.short_team_name === game.shortHomeTeam);
             callback(null,
               {
-                athleteId: player.player_id,
+                athleteId: player.athlete_id,
                 athleteName: player.full_name,
                 athleteContestId: keys.indexOf(elem),
                 gameContestId: gameContestId,

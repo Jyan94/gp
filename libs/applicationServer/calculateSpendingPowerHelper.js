@@ -23,7 +23,7 @@ exports.calculate = function(result, userId, money, callback) {
     // if position has already been taken into account,
     // playerCheckedArr.indexOf(i) != -1
     if (playerCheckedArr.indexOf(i) === -1) {
-      var playerId = result[i].player_id;
+      var athleteId = result[i].athlete_id;
 
       for (var j = i; j < result.length; j++) {
         var bet = result[j];
@@ -31,7 +31,7 @@ exports.calculate = function(result, userId, money, callback) {
 
         // if user has other positions of the same player, check to see if
         // the position has already been taken into account
-        if (playerId === bet.player_id) {
+        if (athleteId === bet.athlete_id) {
 
           //Since pending_bets and current_bets have a different structure in
           //database, we have to take care of them separately.  If player2.user_id

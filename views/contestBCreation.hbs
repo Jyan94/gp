@@ -40,7 +40,7 @@
                       {{#contestBCreationHelperAway this}}
                         <div class="players-box"  id="players-box-game-{{this.gameId}}">
                           <div class="players-checkbox">
-                            <input type="checkbox" name="player-{{this.player.playerId}}-game-{{this.gameId}}">
+                            <input type="checkbox" name="player-{{this.player.athleteId}}-game-{{this.gameId}}">
                           </div>
                           <div class="players-info">
                             {{this.player.fullName}} {{this.player.position}}
@@ -52,7 +52,7 @@
                       {{#contestBCreationHelperHome this}}
                         <div class="players-box" id="players-box-game-{{this.gameId}}">
                           <div class="players-checkbox">
-                            <input type="checkbox" name="player-{{this.player.playerId}}-game-{{this.gameId}}">
+                            <input type="checkbox" name="player-{{this.player.athleteId}}-game-{{this.gameId}}">
                           </div>
                           <div class="players-info">
                             {{this.player.fullName}} {{this.player.position}}

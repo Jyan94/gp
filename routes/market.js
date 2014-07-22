@@ -73,6 +73,10 @@ var renderAthletePage = function (req, res, next, callback) {
 }
 /*
 //post to '/submitForm/:playerId'
+=======
+
+//post to '/submitForm/:athleteId'
+>>>>>>> f0275bbf2da621e71c7f16b80ea3ff9a232a73ac
 var submitBet = function (req, res, next) {
   var betId = cql.types.timeuuid();
   var longPosition = null;
@@ -88,7 +92,7 @@ var submitBet = function (req, res, next) {
     betId,
     req.user.user_id,
     longPosition,
-    req.params.playerId,
+    req.params.athleteId,
     {value: parseFloat(req.body.wagerAmount), hint: 'double'},
     {value: parseFloat(req.body.fantasyValue), hint: 'double'},
     null,
@@ -106,7 +110,7 @@ var submitBet = function (req, res, next) {
         })
           //SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
           //req.flash('info', messages.submitted);
-          //res.redirect('/market/' + req.params.playerId)
+          //res.redirect('/market/' + req.params.athleteId)
       }
     });
 }
@@ -125,7 +129,6 @@ var takeBet = function(req, res, next, callback) {
     req.body,
     req.params.user_id,
     callback);
-
 }
 
 //exports above functions

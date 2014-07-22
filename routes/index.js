@@ -69,9 +69,10 @@ app.get('/autocomp', autocomplete.autocomp);
 
 //market
 var market = require('routes/market');
-app.get('/market/:playerId', market.renderAthletePage);
-//app.post('/submitForm/:playerId', market.submitBet);
-app.post('/addBets/:playerId', market.takeBet);
+
+app.get('/market/:athleteId', market.renderAthletePage);
+//app.post('/submitForm/:athleteId', market.submitBet);
+app.post('/addBets/:athleteId', market.takeBet);
 app.get('/markethome', market.getDailyScores);
 
 //profile

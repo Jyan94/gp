@@ -66,7 +66,7 @@ exports.selectGameUsingDate = function(date, callback) {
  *
 CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
   game_id uuid PRIMARY KEY,
-  player_id uuid,
+  athlete_id uuid,
   sport text,
   date timestamp,
   season_year int,

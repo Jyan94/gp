@@ -106,12 +106,12 @@ Schema:
     CREATE INDEX IF NOT EXISTS ON daily_prophet(athlete_names);
 
     CREATE TABLE IF NOT EXISTS timeseries_daily_prophet (
-        player_id uuid,
+        athlete_id uuid,
         time timeuuid,
         fantasy_value double,
         virtual_money_wagered int,
         username text,
         active boolean,
-        PRIMARY KEY (player_id, time)
+        PRIMARY KEY (athlete_id, time)
     ) WITH CLUSTERING ORDER BY (time ASC);
     CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);

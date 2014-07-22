@@ -8,7 +8,7 @@ var multiline = require('multiline');
 //15 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
-    player_id,
+    athlete_id,
     current_value,
     full_name,
     first_name,
@@ -40,12 +40,12 @@ exports.insert = function (fields, callback) {
 };
 
 var DELETE_PLAYER_CQL = multiline(function() {/*
-  DELETE FROM baseball_player WHERE player_id = ?;
+  DELETE FROM baseball_player WHERE athlete_id = ?;
 */});
-exports.delete = function (playerId, callback) {
+exports.delete = function (athleteId, callback) {
   cassandra.query(
     DELETE_PLAYER_CQL, 
-    [playerId], 
+    [athleteId], 
     cql.types.consistencies.one, 
     callback);
 };
@@ -55,9 +55,9 @@ var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
 */});
 var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
-    player_id = ?;
+    athlete_id = ?;
 */});
-exports.update = function (playerId, fields, params, callback) {
+exports.update = function (athleteId, fields, params, callback) {
   var fieldsLength = fields.length;
   var paramsLength = params.length;
   var updates = '';
@@ -73,18 +73,18 @@ exports.update = function (playerId, fields, params, callback) {
   }
   cassandra.query(
     UPDATE_PLAYER_CQL_1 + ' ' + updates + ' ' + UPDATE_PLAYER_CQL_2,
-    params.concat([playerId]), 
+    params.concat([athleteId]), 
     cql.types.consistencies.one,
     callback);
 };
 
 var SELECT_PLAYER_CQL = multiline(function () {/*
-  SELECT * FROM baseball_player WHERE player_id = ?;
+  SELECT * FROM baseball_player WHERE athlete_id = ?;
 */});
-exports.select = function (playerId, callback) {
+exports.select = function (athleteId, callback) {
   cassandra.queryOneRow(
     SELECT_PLAYER_CQL,
-    [playerId], 
+    [athleteId], 
     cql.types.consistencies.one,
     callback);
 };
@@ -113,7 +113,7 @@ exports.selectImagesUsingPlayerName = function(playerName, callback) {
 }
 
 var AUTOCOMPLETE_QUERY = multiline(function() {/*
-  SELECT player_id, full_name FROM baseball_player
+  SELECT athlete_id, full_name FROM baseball_player
 */});
 exports.selectAllPlayerNames = function(callback) {
   cassandra.query(
@@ -124,24 +124,24 @@ exports.selectAllPlayerNames = function(callback) {
 }
 
 var ADD_STATISTICS_QUERY = multiline(function() {/*
-  UPDATE baseball_player SET statistics = statistics + ? WHERE player_id = ?
+  UPDATE baseball_player SET statistics = statistics + ? WHERE athlete_id = ?
 */});
-exports.addStatistics = function (playerId, statisticsId, callback) {
+exports.addStatistics = function (athleteId, statisticsId, callback) {
   cassandra.query(
     ADD_STATISTICS_QUERY, 
-    [[statisticsId], playerId], 
+    [[statisticsId], athleteId], 
     cql.types.consistencies.one,
     callback
   );
 }
 
 var DELETE_SPECIFIC_STATISTICS_QUERY = multiline(function() {/*
-  UPDATE baseball_player SET statistics = statistics - ? WHERE player_id = ?
+  UPDATE baseball_player SET statistics = statistics - ? WHERE athlete_id = ?
 */});
-exports.deleteStatistics = function (playerId, statisticsId, callback) {
+exports.deleteStatistics = function (athleteId, statisticsId, callback) {
   cassandra.query(
     DELETE_SPECIFIC_STATISTICS_QUERY, 
-    [[statisticsId], playerId], 
+    [[statisticsId], athleteId], 
     cql.types.consistencies.one,
     callback
   );
