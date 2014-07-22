@@ -11,13 +11,13 @@ var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var mlbData = require('libs/mlbData.js');
 var BaseballStatistics = require('libs/cassandra/baseballStatistics');
-var SpendingPower = require('libs/calculateSpendingPower');
 
 var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;
-var marketGlobals = configs.globals.contestA;
-var pendingBets = marketGlobals.pendingBets;
+var marketGlobals = configs.globals;
+var pendingBets = marketGlobals.contestA.pendingBets;
 var baseballAthletes = marketGlobals.athletes.Baseball.athletes;
+var updateBet = require('libs/cassandra/contestA/updateBet.js')
 
 
 var getDailyScores = function(req, res, next) {
@@ -52,51 +52,15 @@ function getBetInfosFromAthleteId(params, user, callback) {
   });
 }
 
-  var playerId = req.params.playerId;
-  var fullName = null;
-  var team;
-  var position;
-
-  Player.select(playerId, function(err, result) {
-    if (err) {
-      next(err);
-    }
-    else {
-      fullName = result.full_name;
-      team = result.team;
-      position = result.position;
-
-      Player.selectImagesUsingPlayerName(fullName, function(err, result) {
-        if (result.length === 0) {
-          res.render('market', {betinfo: betInfo,
-            imageUrl: defaultImage,
-            playerId: playerId,
-            fullName: fullName,
-            team: team,
-            position: position});
-        }
-        else {
-          res.render('market', {betinfo: betInfo,
-            imageUrl: result[0].image_url,
-            playerId: playerId,
-            fullName: fullName,
-            team: team,
-            position: position});
-        }
-      });
-    }
-  });
-}
-
-var renderAthletePage = function (req, res, next) {
+var renderAthletePage = function (req, res, next, callback) {
   getBetInfosFromAthleteId(req.params, req.user, function(bets) {
-    athlete = baseballAthletes[req.params.athleteId];
-    if (athleteId) {
+    var athlete = baseballAthletes[req.params.athleteId];
+    if (athlete.athleteId) {
       res.render(
         'market',
         {
           bets: bets,
-          imageUrl: athleteImage
+          imageUrl: athlete.athleteImage,
           athleteId: athlete.athleteId,
           athleteName: athlete.athleteName,
           athleteTeam: athlete.athleteTeam,
@@ -106,22 +70,8 @@ var renderAthletePage = function (req, res, next) {
       callback(new Error('invalid athlete id'));
     }
   });
-  async.waterfall([
-    function(callback) {
-      getBetInfosFromPlayerId(req.params, req.user, callback),
-    },
-    function(bets, callback) {
-
-    }
-    getImageFromPlayerId,
-    ],
-    function (err) {
-      if (err) {
-        next(err);
-      }
-    });
 }
-
+/*
 //post to '/submitForm/:playerId'
 var submitBet = function (req, res, next) {
   var betId = cql.types.timeuuid();
@@ -160,95 +110,25 @@ var submitBet = function (req, res, next) {
       }
     });
 }
+*/
 
-var getBet = function (req, res, next, callback) {
-  var betId = req.body.betId;
+/**
+ * [takeBet description]
+ * @param  {[type]}   req      [description]
+ * @param  {[type]}   res      [description]
+ * @param  {Function} next     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+var takeBet = function(req, res, next, callback) {
+  updateBet.takePending(
+    req.body,
+    req.params.user_id,
+    callback);
 
-  Bet.selectMultiple('pending_bets', [betId],
-    function(err, result) {
-      if (err) {
-        res.send(500, { error: messages.databaseError });
-      }
-      else if (result.length === 0) {
-        res.send(400, { error: messages.betAlreadyTakenError });
-      }
-      else {
-        callback(null, req, res, next, result);
-      }
-    });
-}
-
-var insertBet = function (req, res, next, result, callback) {
-  var currentBet = result[0];
-  var longBetterId = null;
-  var shortBetterId = null;
-
-  if (req.user.user_id === currentBet.user_id) {
-    res.send(400, { error: messages.betTakerError });
-  }
-  else {
-    if (currentBet.long_position === 'true') {
-      longBetterId = currentBet.user_id;
-      shortBetterId = req.user.user_id;
-    }
-    else {
-      longBetterId = req.user.user_id;
-      shortBetterId = currentBet.user_id;
-    }
-    Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
-    shortBetterId, currentBet.player_id,
-    {value: parseFloat(currentBet.wager), hint: 'double'},
-    {value: parseFloat(currentBet.bet_value), hint: 'double'},
-    currentBet.game_id, currentBet.expiration],
-    function (err) {
-      if (err) {
-        res.send(500, { error: messages.databaseError });
-      }
-      else {
-        TimeseriesBets.insert(currentBet.player_id,
-          parseFloat(currentBet.bet_value),
-          function(err){
-          if (err) {
-            res.send(500, { error: messages.databaseError });
-          }
-          else {
-            Bet.subtractMoneyFromUser(parseFloat(currentBet.wager), req.user.user_id, function(err) {
-              if (err) {
-                next(err);
-              }
-              else {
-                res.send('Bet taken successfully.');
-              }
-            });
-          }
-        });
-      }
-    });
-  }
-}
-
-//post to '/addBets/:playerId'
-var takeBet = function (req, res, next) {
-  var currentBet = null;
-  var longBetterId = null;
-  var shortBetterId = null;
-
-  async.waterfall([
-    function (callback) {
-      callback(null, req, res, next);
-    },
-    getBet,
-    insertBet
-    ],
-    function (err) {
-      if (err) {
-        next(err);
-      }
-    });
 }
 
 //exports above functions
-exports.renderPlayerPage = renderPlayerPage;
-exports.submitBet = submitBet;
+exports.renderAthletePage = renderAthletePage;
 exports.takeBet = takeBet;
 exports.getDailyScores = getDailyScores;

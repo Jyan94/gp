@@ -10,7 +10,6 @@ var cql = configs.cassandra.cql;
 var fs = require('fs');
 var url = require('url');
 var multiline = require('multiline');
-var SpendingPower = require('libs/calculateSpendingPower')
 
 var messages = configs.constants.profileStrings;
 

@@ -12,14 +12,14 @@ var APPLIED = constants.cassandra.APPLIED;
 
 //need to verify gameId and athlete in game!!!
 function verifyGameIdAndAthlete(
-  athleteId, 
-  athleteName, 
-  athleteTeam, 
-  gameId, 
+  athleteId,
+  athleteName,
+  athleteTeam,
+  gameId,
   sport,
   callback) {
 
-  callback(null); 
+  callback(null);
 }
 
 /**
@@ -30,7 +30,7 @@ function verifyGameIdAndAthlete(
   athleteTeam,
   expirationTimeMinutes,
   fantasyValue,
-  gameId, 
+  gameId,
   isOverBetter,
   sport,
   wager
@@ -77,7 +77,7 @@ function insertPending(info, user, callback) {
 //betId, isOverNotUnder, wager,
 /**
  * info has fields
- * betId, user, isOverNotUnder, wager
+ * betId, isOverNotUnder, wager
  * @param  {object}   info
  * @param  {Function} callback
  * args: (err)
@@ -86,9 +86,9 @@ function takePending(info, user, callback) {
   var takePendingCallback = function(err) {
     if (err && err.message === APPLIED) {
       User.addMoney(
-        user.money - info.wager, 
-        info.wager, 
-        user.user_id, 
+        user.money - info.wager,
+        info.wager,
+        user.user_id,
         function(err) {
           if (err) {
             callback(err);
@@ -120,7 +120,7 @@ function takePending(info, user, callback) {
         takePendingCallback);
     },
     function(callback) {
-      
+
     }
   ], callback);
 }
