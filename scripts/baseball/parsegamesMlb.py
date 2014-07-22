@@ -13,7 +13,7 @@ version = '4'
 today = datetime.date.today()
 year = str(today.year)
 month = ('0' + str(today.month) if today.month < 10 else str(today.month))
-day = ('0' + str(today.day - 2) if (today.day - 2) < 10 else str(today.day - 2))
+day = ('0' + str(today.day - 3) if (today.day - 3) < 10 else str(today.day - 3))
 date = year + '/' + month + '/' + day
 key = 'grnayxvqv4zxsamxhsc59agu'
 url = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/daily/event/' + date + '.xml?api_key=' + key
@@ -57,7 +57,7 @@ for event in eventList:
   awayInfo = getPlayers(event, 'visitor')
   homeInfo = getPlayers(event, 'home')
 
-  print 2
+  print 1
   print gameId
 
   session.execute(
