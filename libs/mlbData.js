@@ -143,8 +143,8 @@ function updateOrInsert(
       homeScore, //home_score
       longVisitorName, // long_away_name
       longHomeName, //long_home_name
-      null, // no play_by_plays for now -------------
       playerList, //player
+      null, // no play_by_plays for now -------------
       shortVisitorName, //short_away_name
       shortHomeName, //short_home_name
       startTime, //start time of the game

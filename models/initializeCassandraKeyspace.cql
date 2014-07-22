@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS contest_a_bets (
     athlete_team text,
     bet_id timeuuid PRIMARY KEY,
     bet_state int,  //
-    better_usernames list<text>,    //
+    bettor_usernames list<text>,    //
     expirations list<timestamp>,   //    
     fantasy_value double,
     game_id uuid,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS contest_a_bets (
 );
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(athlete_name);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(bet_state);
-CREATE INDEX IF NOT EXISTS ON contest_a_bets(better_usernames);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(bettor_usernames);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(game_id);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(is_selling_position);
 /*

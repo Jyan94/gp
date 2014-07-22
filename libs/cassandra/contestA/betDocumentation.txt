@@ -4,7 +4,7 @@
     athlete_team text, --
     bet_id timeuuid PRIMARY KEY, --
     bet_state int,  --
-    better_usernames list<text> ??,    
+    bettor_usernames list<text> ??,    
     expirations list<timestamp>,  ??  
     fantasy_value double, --
     game_id uuid, --

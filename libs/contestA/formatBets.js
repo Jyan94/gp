@@ -23,9 +23,9 @@ function getUserResell(username, callback) {
   async.filter(resellBets, function(bet, callback) {
     callback(
       (bet.isSellingPosition[OVER] &&
-        bet.betterUsernames[OVER] === username) ||
+        bet.bettorUsernames[OVER] === username) ||
       (bet.isSellingPosition[UNDER] &&
-        bet.betterUsernames[UNDER] === username));
+        bet.bettorUsernames[UNDER] === username));
   }, callback);
 }
 
@@ -33,9 +33,9 @@ function getUserTaken(username, callback) {
   async.filter(takenBets, function(bet, callback) {
     callback(
       (bet.isSellingPosition[OVER] &&
-        bet.betterUsernames[OVER] === username) ||
+        bet.bettorUsernames[OVER] === username) ||
       (bet.isSellingPosition[UNDER] &&
-        bet.betterUsernames[UNDER] === username));
+        bet.bettorUsernames[UNDER] === username));
   }, callback);
 }
 
@@ -48,8 +48,8 @@ function getPrimaryMarket(username, callback) {
 function getSecondaryMarket(username, callback) {
   async.filter(resellBets, function(bet, callback) {
     callback(
-      bet.betterUsernames[OVER] !== username &&
-      bet.betterUsernames[UNDER] !== username);
+      bet.bettorUsernames[OVER] !== username &&
+      bet.bettorUsernames[UNDER] !== username);
   }, callback);
 }
 

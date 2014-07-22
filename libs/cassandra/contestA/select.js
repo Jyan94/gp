@@ -43,10 +43,10 @@ function formatBet(bet, sellingOverNotUnder, mode) {
     sellingPosition = UNDER;
   }
 
-  if ((bet.is_selling_position[OVER] && 
-        bet.better_usernames[OVER] !== DEFAULT_USERNAME)||
-      (bet.is_selling_position[UNDER] && 
-        bet.better_usernames[UNDER] !== DEFAULT_USERNAME)) {
+  if ((bet.is_selling_position[OVER] &&
+        bet.bettor_usernames[OVER] !== DEFAULT_USERNAME)||
+      (bet.is_selling_position[UNDER] &&
+        bet.bettor_usernames[UNDER] !== DEFAULT_USERNAME)) {
     retVal.isResell = true;
   }
   else {
@@ -59,21 +59,21 @@ function formatBet(bet, sellingOverNotUnder, mode) {
     if (bet.is_selling_position[OVER]) {
       retVal.resellExpiration = bet.over_better_resell_expiration;
       retVal.resellValue = bet.over_better_resell_value;
-      retVal.betterUsername = bet.better_usernames[OVER];
+      retVal.betterUsername = bet.bettor_usernames[OVER];
     }
     else {
       //opponent better
-      retVal.betterUsername = bet.better_usernames[UNDER];
+      retVal.betterUsername = bet.bettor_usernames[UNDER];
     }
   }
   else {
     if (bet.is_selling_position[UNDER]) {
       retVal.resellExpiration = bet.under_better_resell_expiration;
       retVal.resellValue = bet.under_better_resell_value;
-      retVal.betterUsername = bet.better_usernames[UNDER];
+      retVal.betterUsername = bet.bettor_usernames[UNDER];
     }
     else {
-      retVal.betterUsername = bet.better_usernames[OVER];
+      retVal.betterUsername = bet.bettor_usernames[OVER];
     }
   }
   return retVal;
@@ -108,11 +108,11 @@ function selectByBetId(betId, callback) {
 }
 
 function createSelectByUsernameQuery(username) {
-  return 
-    'SELECT * FROM contest_A_bets WHERE better_usernames CONTAINS \'' +
+  return
+    'SELECT * FROM contest_A_bets WHERE bettor_usernames CONTAINS \'' +
     username +
     '\';';
-} 
+}
 function selectByUsername(username, callback) {
   if(username.indexOf(SEMICOLON) === -1) {
     var query = createSelectByUsernameQuery(username);
@@ -124,8 +124,8 @@ function selectByUsername(username, callback) {
 }
 
 var SELECT_SELLING_BETS_CQL = multiline(function(){/*
-  SELECT * 
-  FROM contest_A_bets 
+  SELECT *
+  FROM contest_A_bets
   WHERE is_selling_position CONTAINS true;
 */});
 function selectResellBets(callback) {
@@ -133,8 +133,8 @@ function selectResellBets(callback) {
 }
 
 var SELECT_BETS_BY_STATE_CQL = multiline(function(){/*
-  SELECT * 
-  FROM contest_A_bets 
+  SELECT *
+  FROM contest_A_bets
   WHERE bet_state = ?;
 */});
 function selectBetsByState(state, callback) {
@@ -157,7 +157,7 @@ function selectExpiredBets(callback) {
   selectBetsByState(EXPIRED, callback);
 }
 /*
-cases: 
+cases:
  //PROFILE STUFF
  your pending:
  name, fantasy value, payoff, over/under, wager
@@ -179,9 +179,9 @@ cases:
 */
 
 function constructProfilePendingSelectCql(username) {
-  return 
+  return
     'SELECT * FROM contest_a_bets WHERE bet_state = ? ' +
-    'AND better_usernames CONTAINS \'' + 
+    'AND bettor_usernames CONTAINS \'' +
     username +
     '\' ALLOW FILTERING;';
 }
@@ -201,8 +201,8 @@ function constructStateAndSellingQuery(state, bool) {
     'SELECT * FROM contest_a_bets WHERE bet_state =' +
     state +
     ' AND' +
-    'is_selling_position CONTAINS ' + 
-    bool + 
+    'is_selling_position CONTAINS ' +
+    bool +
     ' ALLOW FILTERING;';
 }
 function selectProfileResell(username, callback) {
@@ -212,22 +212,22 @@ function selectProfileResell(username, callback) {
 
     function(callback) {
       cassandra.query(
-        constructStateAndSellingQuery(ACTIVE, true), 
-        [], 
-        one, 
+        constructStateAndSellingQuery(ACTIVE, true),
+        [],
+        one,
         callback);
     },
 
     function(bets, callback) {
       async.filter(
-        bets, 
+        bets,
         function(bet, callback) {
           callback(
-            (bet.better_usernames[OVER] === username && 
+            (bet.bettor_usernames[OVER] === username &&
              bet.is_selling_position[OVER]) ||
-            (bet.better_usernames[UNDER] === username && 
+            (bet.bettor_usernames[UNDER] === username &&
              bet.is_selling_position[UNDER]));
-        }, 
+        },
         callback);
     }
 
@@ -239,21 +239,21 @@ function selectProfileTaken(username, callback) {
   [
     function(callback) {
       cassandra.query(
-        constructStateAndSellingQuery(ACTIVE, false), 
-        [], 
-        one, 
+        constructStateAndSellingQuery(ACTIVE, false),
+        [],
+        one,
         callback);
     },
     function(bets, callback) {
       async.filter(
-        bets, 
+        bets,
         function(bet, callback) {
           callback(
-            (bet.better_usernames[OVER] === username && 
+            (bet.bettor_usernames[OVER] === username &&
              !bet.is_selling_position[OVER]) ||
-            (bet.better_usernames[UNDER] === username && 
+            (bet.bettor_usernames[UNDER] === username &&
              !bet.is_selling_position[UNDER]));
-        }, 
+        },
         callback);
     }
   ], callback);
@@ -270,8 +270,8 @@ function selectPrimaryMarket(username, callback) {
         bets,
         function(bet, callback) {
           callback(
-            bet.better_usernames[OVER] !== username && 
-            bet.better_usernames[UNDER] !== username);
+            bet.bettor_usernames[OVER] !== username &&
+            bet.bettor_usernames[UNDER] !== username);
         }, callback);
     }
   ], callback);
@@ -292,8 +292,8 @@ function selectSecondaryMarket(username, callback) {
         bets,
         function(bet, callback) {
           callback(
-            bet.better_usernames[OVER] !== username && 
-            bet.better_usernames[UNDER] !== username);
+            bet.bettor_usernames[OVER] !== username &&
+            bet.bettor_usernames[UNDER] !== username);
         }, callback);
     }
   ], callback);
