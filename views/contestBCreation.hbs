@@ -74,8 +74,31 @@
               </thead>
               <tbody>
                 <tr>
-                  <td> Blah </td>
-                  <td> Blah </td> 
+                  <td> Fifty-fifty </td>
+                  <td>
+                    <select name="is-fifty-fifty" id="is-fifty-fifty">
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td> Entry Fee </td>
+                  <td>
+                    <input type="number" name="entry-fee" placeholder="Entry Fee" min="0" max="1000" required="true" step="5" value ="10" id="entry-fee">
+                  </td>
+                </tr>
+                <tr>
+                  <td> Maximum Entries </td>
+                  <td>
+                    <input type="number" name="maximum-entries" placeholder="Maximum Entries" min="3" max="2001" required="true" step="2" value ="11" id="maximum-entries">
+                  </td>
+                </tr>
+                <tr>
+                  <td> Starting Virtual Money </td>
+                  <td>
+                    <input type="number" name="starting-virtual-money" placeholder="Starting Virtual Money" min="1000" max="100000" required="true" step="1000" value="10000" id="starting-virtual-money">
+                  </td>
                 </tr>
               </tbody>
             </table>

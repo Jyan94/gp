@@ -30,21 +30,23 @@ def getPlayers(event, side):
 
   if (len(event.getElementsByTagName('game')[0].getElementsByTagName(side)) == 0):
     return (teamId, shortTeamName, longTeamName, players)
-  else:
+  else: 
     playersList = event.getElementsByTagName('game')[0].getElementsByTagName(side)[0]
-
-    if len(playersList.getElementsByTagName('roster')) == 0:
+    
+    if (len(playersList.getElementsByTagName('roster')) == 0) or (len(playersList.getElementsByTagName('lineup')) == 0):
       return (teamId, shortTeamName, longTeamName, players)
     else:
       rosterPlayerList = playersList.getElementsByTagName('roster')[0].getElementsByTagName('player')
+      lineupPlayerList = [player.attributes['id'].value for player in playersList.getElementsByTagName('lineup')[0].getElementsByTagName('player')]
 
       for player in rosterPlayerList:
         playerAttributes = player.attributes
         athleteId = playerAttributes['id'].value
 
-        athleteName = playerAttributes['preferred_name'].value + ' ' + playerAttributes['last_name'].value
-        newPlayer = { 'athleteId': athleteId, 'athleteName': athleteName, 'isOnHomeTeam': isOnHomeTeam, 'shortTeamName': shortTeamName, 'longTeamName': longTeamName, 'teamId': teamId }
-        players.append(json.dumps(newPlayer))
+        if athleteId in lineupPlayerList:
+          athleteName = playerAttributes['preferred_name'].value + ' ' + playerAttributes['last_name'].value
+          newPlayer = { 'athleteId': athleteId, 'athleteName': athleteName, 'isOnHomeTeam': isOnHomeTeam, 'shortTeamName': shortTeamName, 'longTeamName': longTeamName, 'teamId': teamId }
+          players.append(json.dumps(newPlayer))
 
       return (teamId, shortTeamName, longTeamName, players)
 

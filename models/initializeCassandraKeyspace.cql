@@ -25,34 +25,53 @@ CREATE TABLE IF NOT EXISTS users(
 CREATE INDEX IF NOT EXISTS ON users (username);
 CREATE INDEX IF NOT EXISTS ON users (email);
 
-CREATE TABLE IF NOT EXISTS contest_A_bets (
+CREATE TABLE IF NOT EXISTS contest_a_bets (
     athlete_id uuid,
-    bet_id timeuuid,
-    bet_state int,
-    expiration timestamp,
+    athlete_name text,
+    athlete_team text,
+    bet_id timeuuid PRIMARY KEY,
+    bet_state int,  //
+    better_usernames list<text>,    //
+    expirations list<timestamp>,   //    
     fantasy_value double,
     game_id uuid,
-    is_selling_long_position boolean,
-    is_selling_short_position boolean,
-    over_better_id uuid,
-    over_better_username text,
-    over_better_resell_value double,
-    over_better_resell_expiration timestamp,
-    under_better_id uuid,
-    under_better_username text,
-    under_better_resell_value double,
-    under_better_resell_expiration timestamp,
-    wager double
+    is_selling_position list<boolean>,  //
+    old_prices list<double>,
+    payoff double,
+    prices list<double>,
+    sport text
 );
-CREATE INDEX IF NOT EXISTS ON contest_A_bets(bet_state);
-CREATE INDEX IF NOT EXISTS ON contest_A_bets(game_id);
-CREATE INDEX IF NOT EXISTS ON contest_A_bets(long_better_id);
-CREATE INDEX IF NOT EXISTS ON contest_A_bets(long_better_username);
-CREATE INDEX IF NOT EXISTS ON contest_A_bets(short_better_id);
-CREATE INDEX IF NOT EXISTS ON contest_A_bets(short_better_username);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(athlete_name);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(bet_state);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(better_usernames);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(game_id);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(is_selling_position);
+/*
+is_selling_position - boolean for sells position,
+CAREFUL FOR PENDING
+if selling over, the pending bet will be placed by the under better
+prices[POSITION] - price for position, if pending refers to other position
+expirations[POSITION] - expiration for position, if pending refers to other position
+ */
+
+CREATE TABLE IF NOT EXISTS contest_a_bets_history (
+    athlete_id uuid,
+    athlete_name text,
+    athlete_team text,
+    bet_id timeuuid,
+    opponent text,
+    over_not_under boolean,
+    payoff double,
+    price double,
+    sell_not_buy boolean,
+    time timeuuid,
+    username text,
+    PRIMARY KEY (username, time)
+) WITH CLUSTERING ORDER BY (time ASC);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets_history(bet_id);
 
 //*_resell_value and *_resell_expiration will be null if not for resell
-//bet_state: 0 (pending), 1 (active), 2 (locked), 3 (processed) 
+//bet_state: 0 (pending), 1 (active), 2 (processed) 
 /*to-do condense bet tables by giving bet an int as state*/
 
 CREATE TABLE IF NOT EXISTS football_player (

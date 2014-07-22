@@ -20,8 +20,8 @@ var INSERT_GAME_CQL = multiline(function() {/*
     home_score,
     long_away_name,
     long_home_name,
-    players,
     play_by_play,
+    players,
     short_away_name,
     short_home_name,
     start_time,
@@ -31,10 +31,8 @@ var INSERT_GAME_CQL = multiline(function() {/*
     ?, ?, ?, ?, ?,
     ?, ?, ?);
 */});
-
-var PLAYERS_INDEX = 7;
-var PLAY_BY_PLAY_INDEX = 8;
-
+var PLAY_BY_PLAY_INDEX = 7;
+var PLAYERS_INDEX = 8;
 /**
  * inserts game into database
  * @param  {array}   fields
@@ -112,7 +110,7 @@ var SELECT_TODAYS_GAME_CQL = multiline(function() {/*
 */});
 exports.selectTodaysGames = function(callback) {
   var today = new Date();
-  var date = ('0' + (today.getDate() - 3)).slice(-2);
+  var date = ('0' + (today.getDate() - 1)).slice(-2);
   var month = ('0' + (today.getMonth() + 1)).slice(-2);
   var year = today.getFullYear();
   today = year + '/' + month + '/' + date;

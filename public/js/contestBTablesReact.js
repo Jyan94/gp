@@ -167,14 +167,15 @@ var ContestDialogBoxGames = React.createClass({
     var gameTeamNodes = games.map(function(game) {
       return (
         <td>
-          {game.homeTeam} at {game.awayTeam}
+          {game.shortHomeTeam} at {game.shortAwayTeam}
         </td>
       );
     });
     var gameTimeNodes = games.map(function(game) {
+      var gameDate = (new Date(game.gameDate)).toString();
       return (
         <td>
-          {game.gameDate}
+          {gameDate}
         </td>
       );
     });
@@ -219,7 +220,7 @@ var ContestDialogBoxTabs = React.createClass({
     var contest = this.props.data;
     contest.athletes = contest.athletes.map(function (athlete) {
       return JSON.parse(athlete);
-    })
+    });
     return (
       <div className='contest-dialog-box-tab-container'>
         <ul className='contest-dialog-box-tab-menu'>
@@ -233,7 +234,7 @@ var ContestDialogBoxTabs = React.createClass({
         <ContestDialogBoxTab1 data={contest} />
         <ContestDialogBoxTab2 data={contest.contestants} />
         <ContestDialogBoxTab3 data={contest.payouts} />
-        <ContestDialogBoxTab4 data={{"athletes": contest.athletes, "userContestantInstances": contest.userContestantInstances}} />
+        <ContestDialogBoxTab4 data={{"athletes": contest.athletes, "userContestantInstances": contest.userContestantInstances, "contestId" : contest.contestId}} />
       </div>
     );
   }
@@ -243,12 +244,11 @@ var ContestDialogBoxTabs = React.createClass({
 var ContestDialogBoxTab1 = React.createClass({
   render: function() {
     var contest = this.props.data;
-    var game = contest.games[0];
     var athleteNodes = contest.athletes.map(function(athlete) {
       return (
         <tr>
           <td>{athlete.athleteName}</td>
-          <td>{athlete.isOnHomeTeam ? game.homeTeam : game.awayTeam}</td>
+          <td>{athlete.shortTeamName}</td>
           <td>{athlete.position}</td>
         </tr>
       );
@@ -257,12 +257,16 @@ var ContestDialogBoxTab1 = React.createClass({
       <div className='contest-dialog-box-tab-content active' id='tab1-content'>
         <p> Pick players from the following list and determine their values: </p>
         <table style={{width: 700}}>
-          <tr>
-            <th>Athlete Name</th>
-            <th>Team Name</th>
-            <th>Position</th>
-          </tr>
-          {athleteNodes}
+          <thead>
+            <tr>
+              <th>Athlete Name</th>
+              <th>Team Name</th>
+              <th>Position</th>
+            </tr>
+          </thead>
+          <tbody>
+            {athleteNodes}
+          </tbody>
         </table>
         <br></br>
         <br></br>
@@ -311,12 +315,11 @@ var ContestDialogBoxTab3 = React.createClass({
     var payoutNodes = Object.keys(payouts).map(function(key) {
       return (
         <tr>
-          <td>{key}</td>
+          <td>{Number(key) + 1}</td>
           <td>${payouts[key]}</td>
         </tr>
       );
     });
-    console.log(payoutNodes);
     return (
       <div className='contest-dialog-box-tab-content' id='tab3-content'>
         <p> List of Payouts:  </p>
@@ -335,11 +338,10 @@ var ContestDialogBoxTab3 = React.createClass({
 var ContestDialogBoxTab4 = React.createClass({
   render: function() {
     var athletes = this.props.data.athletes;
+    var contestId = this.props.data.contestId;
     var userContestantInstances = this.props.data.userContestantInstances;
-    console.log(userContestantInstances, 3);
     var userContestantInstanceNodes = userContestantInstances.map(
       function(userContestantInstance, index) {
-        console.log(userContestantInstance);
         var betNodes = athletes.map(function(athlete, index) {
           return (
             <tr>
@@ -350,18 +352,20 @@ var ContestDialogBoxTab4 = React.createClass({
           );
         });
         return (
-          <div>
-            <p>Instance: {index + 1} Money Remaining: {'$' + userContestantInstance.virtualMoneyRemaining}</p>
-            <table style={{width: 700}}>
-              <tr>
-                <th>Athlete Name</th>
-                <th>Prediction</th>
-                <th>Wager</th>
-              </tr>
-              {betNodes}
-            </table>
-            <p>Last Modified: {userContestantInstance.lastModified} Join Time: {userContestantInstance.joinTime}</p>
-          </div>
+          <a href={'/contestBEdit/' + contestId + '/' + index}>
+            <div className='contest-dialog-box-bet-wrapper'>
+              <p>Instance: {index + 1} Money Remaining: {'$' + userContestantInstance.virtualMoneyRemaining}</p>
+              <table style={{width: 700}}>
+                <tr>
+                  <th>Athlete Name</th>
+                  <th>Prediction</th>
+                  <th>Wager</th>
+                </tr>
+                {betNodes}
+              </table>
+              <p>Last Modified: {userContestantInstance.lastModified} Join Time: {userContestantInstance.joinTime}</p>
+            </div>
+          </a>
         );
       });
     return (

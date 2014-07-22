@@ -102,6 +102,10 @@ app.post('/contestBCreationProcess', contestB.contestCreationProcess);
 app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);
 app.post('/contestBEntryProcess/:contestId',
   contestB.contestEntryProcess);
+app.get('/contestBEdit/:contestId/:contestantInstanceIndex',
+  contestB.renderContestEditPage);
+app.post('/contestBEditProcess/:contestId/:contestantInstanceIndex',
+  contestB.contestEditProcess);
 
 //error handling middleware logs errors and sends 500
 var errorHandler = require('routes/error/error');

@@ -146,8 +146,86 @@ exports.contestAbets = {
   STATES: {
     PENDING: 0,
     ACTIVE: 1,
-    LOCKED: 2,
-    PROCESSED: 3,
-    EXPIRED: 4
+    PROCESSED: 2,
+    EXPIRED: 3
+  },
+  POSITIONS: {
+    OVER: 1,
+    UNDER: 0
+  },
+  DEFAULT_USERNAME: '-',
+  BET_TYPES: {
+    PROFILE_PENDING: 0,
+    PROFILE_RESELL: 1,
+    PROFILE_TAKEN: 2,
+    MARKET_PENDING: 3,
+    SECONDARY_MARKET: 4
+  }
+};
+
+exports.game = {
+  hasEnded: function(game) {
+    if (game.status === 'closed') {
+      return true;
+    }
+    return false;
   }
 }
+
+exports.globals = {
+  SEMICOLON: ';',
+  MINUTE_IN_MILLISECONDS: 60000,
+/**
+ * converts milliseconds to readable string
+ * @param  {int} milliseconds
+ * @return {string}
+ */
+  millisecondsToStr: function(milliseconds) {
+    function numberEnding (number) {
+      return (number > 1) ? 's' : '';
+    }
+    var temp = Math.floor(milliseconds / 1000);
+    var years = Math.floor(temp / 31536000);
+    if (years) {
+      return years + ' year' + numberEnding(years);
+    }
+    var days = Math.floor((temp %= 31536000) / 86400);
+    if (days) {
+      return days + ' day' + numberEnding(days);
+    }
+    var hours = Math.floor((temp %= 86400) / 3600);
+    if (hours) {
+      return hours + ' hour' + numberEnding(hours);
+    }
+    var minutes = Math.floor((temp %= 3600) / 60);
+    if (minutes) {
+      return minutes + ' minute' + numberEnding(minutes);
+    }
+    var seconds = temp % 60;
+    if (seconds) {
+      return seconds + ' second' + numberEnding(seconds);
+    }
+    return 'less than a second';
+  },
+  DEFAULT_USER_UUIDS: 
+  [
+    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-000000000001',
+    exports.contestAbets.DEFAULT_USER_UUID
+  ],
+  notADefaultUserUuid: function(uuid) {
+    return exports.globals.DEFAULT_USER_UUIDS.indexOf(uuid) > -1 ? true : false;
+  },
+  DEFAULT_USERNAMES:
+  [
+    exports.contestAbets.DEFAULT_USERNAME
+  ]
+}
+
+/*
+ * ====================================================================
+ * contest B Sizes
+ * ====================================================================
+ */
+exports.contestBSizesNormal = 
+  [2, 3, 5, 10, 12, 14, 23, 56, 112, 167, 230, 1150];
