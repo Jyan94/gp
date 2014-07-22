@@ -16,8 +16,9 @@ var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;
 var marketGlobals = configs.globals;
 var pendingBets = marketGlobals.contestA.pendingBets;
-var baseballAthletes = marketGlobals.athletes.Baseball.athletes;
+var baseballAthletes = marketGlobals.athletes.Baseball;
 var updateBet = require('libs/cassandra/contestA/updateBet.js')
+var FilteredBets = require('libs/contestA/formatBets.js');
 
 
 var getDailyScores = function(req, res, next) {
@@ -42,41 +43,32 @@ var getDailyScores = function(req, res, next) {
   });
 }
 
-function getBetInfosFromAthleteId(params, user, callback) {
-  async.filter(pendingBets, function(bet, callback) {
-    callback(
-      (params.athleteId === bet.athleteId) &&
-      (user.username !== bet.seller));
-  }, function(results) {
-    callback(null, results);
-  });
-}
-
-var renderAthletePage = function (req, res, next, callback) {
-  getBetInfosFromAthleteId(req.params, req.user, function(bets) {
-    var athlete = baseballAthletes[req.params.athleteId];
-    if (athlete.athleteId) {
-      res.render(
-        'market',
-        {
-          bets: bets,
-          imageUrl: athlete.athleteImage,
-          athleteId: athlete.athleteId,
-          athleteName: athlete.athleteName,
-          athleteTeam: athlete.athleteTeam,
-        });
-    }
-    else {
-      callback(new Error('invalid athlete id'));
-    }
-  });
+var renderAthletePage = function (req, res, next) {
+  console.log(req.params.athleteId);
+  FilteredBets.getMarketPendingByAthleteId(
+    req.user.username,
+    req.params.athleteId,
+    function(bets){
+      var athlete = baseballAthletes[req.params.athleteId];
+      if (req.params.athleteId) {
+        res.render(
+          'market',
+          {
+            bets: bets,
+            image: athlete.athleteImage,
+            athleteId: athlete.athleteId,
+            athleteName: athlete.athleteName,
+            athleteTeam: athlete.athleteTeam,
+            athletePosition: athlete.athletePosition
+          });
+      }
+      else {
+        next(new Error('invalid athlete id'));
+      }
+    });
 }
 /*
 //post to '/submitForm/:playerId'
-=======
-
-//post to '/submitForm/:athleteId'
->>>>>>> f0275bbf2da621e71c7f16b80ea3ff9a232a73ac
 var submitBet = function (req, res, next) {
   var betId = cql.types.timeuuid();
   var longPosition = null;

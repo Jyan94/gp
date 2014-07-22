@@ -23,9 +23,9 @@ html(lang="en")
           include graph
         div.profilebottom
           center
-            h2=fullName
-            h4=team
-            h4=position
+            h2=athleteName
+            h4=athleteTeam
+            h4=athletePosition
 
       div.betcontainer
         center
@@ -36,11 +36,11 @@ html(lang="en")
                 th='Wager Amount'
                 th='Take Bets'
             tbody
-              each item in betinfo
-                if (item.longPosition===false)
+              each item in bets
+                if (item.overNotUnder===false)
                   tr
                     td
-                      h2=item.wager
+                      h2=item.price
                     td
                       h2=item.betValue
                     td
@@ -49,7 +49,7 @@ html(lang="en")
                 else
                   tr
                     td
-                      h2=item.wager
+                      h2=item.price
                     td
                       h2=item.betValue
                     td

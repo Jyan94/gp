@@ -4,7 +4,7 @@ require('rootpath')();
 var configs = require('config/index');
 
 var async = require('async');
-var Bet = require('libs/cassandra/bet');
+//var Bet = require('libs/cassandra/bet');
 var User = require('libs/cassandra/user');
 var cql = configs.cassandra.cql;
 var fs = require('fs');

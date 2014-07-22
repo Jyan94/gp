@@ -9,8 +9,8 @@ generic bet:
   athleteName text, --
   athleteTeam text, --
   betId timeuuid, --
-  betterUsernames list<text> ??,    
-  expirations list<timestamp>,  ??  
+  betterUsernames list<text> ??,
+  expirations list<timestamp>,  ??
   fantasyValue double, --
   gameId uuid, --
   isSellingPosition list<boolean>, ??
@@ -59,12 +59,12 @@ TO DO taken bet formatting
 exports.contestA = {
   pendingBets: [
     {
-      athleteId: '10154eef-8834-48e0-97e7-d7436367534c', 
-      athleteName: 'Adrian Gonzalez', 
+      athleteId: '10154eef-8834-48e0-97e7-d7436367534c',
+      athleteName: 'Adrian Gonzalez',
       athleteTeam: 'LA',
       better: 'hello world',
       overNotUnder: true,
-
+      price: 12
     }
     ],
   resellBets: [],
@@ -81,14 +81,11 @@ exports.contestB = {
 
 exports.athletes = {
   Baseball: {
-    athletes:
-    {
-      '10154eef-8834-48e0-97e7-d7436367534c': {
-        athleteName: 'Adrian Gonzalez',
-        athleteTeam: 'LA',
-        position: 'IF',
-        image: 'www.google.com'
-      }
+    '10154eef-8834-48e0-97e7-d7436367534c': {
+      athleteName: 'Adrian Gonzalez',
+      athleteTeam: 'LA',
+      athletePosition: 'IF',
+      athleteImage: 'www.google.com'
     }
   }
 }
