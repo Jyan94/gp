@@ -276,6 +276,17 @@ var testStates = function(callback) {
   async.waterfall(
   [
     function(callback) {
+      UpdateContest.delete(CONTESTID, function(err) {
+        callback(err);
+      });
+    },
+    function(callback) {
+      User.remove(testUserParams0[USER_ID_INDEX], callback);
+    },
+    function(callback) {
+      User.remove(testUserParams1[USER_ID_INDEX], callback);
+    },
+    function(callback) {
       User.insert(testUserParams0, callback);
     },
     function(callback) {
@@ -702,8 +713,9 @@ function testContestant(callback) {
     if (err) {
       console.log(err);
     }
-    (err === null).should.be.true;
-    callback(null);
+    else {
+      callback(null);      
+    }
   });
 }
 
@@ -714,7 +726,6 @@ function tests(callback) {
       console.log(err.stack);
       console.trace();
     }
-    (err === null).should.be.true;
     async.waterfall([
       function(callback) {
         UpdateContest.delete(CONTESTID, function(err) {
@@ -725,6 +736,21 @@ function tests(callback) {
         async.each(athleteIds, function(athleteId, callback){
           TimeseriesValues.removeValues(athleteId, callback);
         }, callback);
+      },
+      function(callback) {
+        User.remove(testUserParams0[USER_ID_INDEX], callback);
+      },
+      function(callback) {
+        User.remove(testUserParams1[USER_ID_INDEX], callback);
+      },
+      function(callback) {
+        if (err) {
+          callback(err);
+          (err === null).should.be.true;
+        }
+        else {
+          callback(null);
+        }
       }
     ], callback);
   };

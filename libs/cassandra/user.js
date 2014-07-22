@@ -37,7 +37,7 @@ var INSERT_USER_CQL = multiline(function() {/*
 var USER_ID_INDEX = 0;
 exports.insert = function (params, callback) {
   //parse values
-  cassandra.query(INSERT_USER_CQL, params, one,
+  cassandra.queryOneRow(INSERT_USER_CQL, params, one,
     function (err, result) {
       if (err) {
         callback(err);
@@ -55,11 +55,10 @@ exports.insert = function (params, callback) {
 var DELETE_USER_CQL = multiline(function() {/*
   DELETE FROM users WHERE user_id = ?;
 */});
-exports.delete = function (userId, callback) {
-  cassandra.query(DELETE_USER_CQL, [userId], one,
-    function (err) {
-      callback(err);
-    });
+exports.remove = function (userId, callback) {
+  cassandra.query(DELETE_USER_CQL, [userId], one, function(err) {
+    callback(err);
+  });
 };
 
 var UPDATE_USER_CQL_1 = multiline(function() {/*
@@ -86,11 +85,11 @@ exports.update = function (userId, fields, params, callback) {
     }
   }
 
-  cassandra.query(UPDATE_USER_CQL_1 + ' ' + updates + ' ' + UPDATE_USER_CQL_2,
-    params.concat([userId]), cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+  cassandra.query(
+    UPDATE_USER_CQL_1 + ' ' + updates + ' ' + UPDATE_USER_CQL_2,
+    params.concat([userId]), 
+    one,
+    callback);
 };
 
 var SELECT_USER_CQL = multiline(function () {/*
@@ -104,11 +103,11 @@ function select(field, value, callback) {
     callback(new Error(field + ' is not a searchable field.'));
   }
   else {
-    cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
-      [value], one,
-      function(err, result) {
-        callback(err, result);
-    });
+    cassandra.queryOneRow(
+      SELECT_USER_CQL + ' ' + field + ' = ?;',
+      [value], 
+      one,
+      callback);
   }
 }
 

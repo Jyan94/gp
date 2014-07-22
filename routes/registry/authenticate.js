@@ -17,7 +17,6 @@ var defaultPlayerImage = configs.constants.defaultPlayerImage;
 var messages = configs.constants.auth;
 
 function localStrategyVerify(username, password, done) {
-  console.log(password);
   var selectCallback = function (err, result) {
     if (err) {
       return done(err);
