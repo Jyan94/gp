@@ -71,13 +71,13 @@ exports.addAndUpdateContestant = addAndUpdateContestant.addAndUpdateContestant;
  * =============================================================================
  * inserts prices into timeseries and sets it as an active prediction
  * 
- * @function insert(playerId, 
+ * @function insert(athleteId, 
  *                  fantasyValue, 
  *                  virtualMoneyWagered, 
  *                  username, 
  *                  callback)
  *                  
- * @param  {uuid}   playerId
+ * @param  {uuid}   athleteId
  * @param  {double}   fantasyValue
  * @param  {int}   virtualMoneyWagered
  * @param  {string}   username
@@ -86,11 +86,11 @@ exports.addAndUpdateContestant = addAndUpdateContestant.addAndUpdateContestant;
  * args: (err)
  *
  * =============================================================================
- * removes all timeseries values associated with playerId
+ * removes all timeseries values associated with athleteId
  * 
- * @function removeValues(playerId, callback)
+ * @function removeValues(athleteId, callback)
  *
- * @param  {uuid}   playerId
+ * @param  {uuid}   athleteId
  * @param  {Function} callback
  * args: (err)
  *
@@ -98,9 +98,9 @@ exports.addAndUpdateContestant = addAndUpdateContestant.addAndUpdateContestant;
  * meant for directly sending to the frontend
  * returns a list of rows for fantasy values between two times: start and end
  *
- * @function selectTimeRange(playerId, start, end, callback)
+ * @function selectTimeRange(athleteId, start, end, callback)
  * 
- * @param  {uuid}     playerId
+ * @param  {uuid}     athleteId
  * @param  {object}   start
  * Date Object
  * @param  {object}   end
@@ -112,9 +112,9 @@ exports.addAndUpdateContestant = addAndUpdateContestant.addAndUpdateContestant;
  * =============================================================================
  * returns all rows for prices on a given player between start and now
  * 
- * @function selectSinceTime(playerId, start, callback)
+ * @function selectSinceTime(athleteId, start, callback)
  *
- * @param  {uuid}     playerId
+ * @param  {uuid}     athleteId
  * @param  {object}   start
  * Date Object
  * @param  {Function} callback  
@@ -125,9 +125,9 @@ exports.addAndUpdateContestant = addAndUpdateContestant.addAndUpdateContestant;
  * active refers to if the prediction was made for a contest not yet resolved
  * this is how the five-for-five determines which values are up to date
  * 
- * @function selectActivePlayerValues(playerId, callback)
+ * @function selectActivePlayerValues(athleteId, callback)
  * 
- * @param  {uuid}   playerId
+ * @param  {uuid}   athleteId
  * @param  {Function} callback
  * args: (err, result) where result is an array of values
  */

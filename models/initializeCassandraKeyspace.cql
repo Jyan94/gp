@@ -75,7 +75,7 @@ CREATE INDEX IF NOT EXISTS ON contest_a_bets_history(bet_id);
 /*to-do condense bet tables by giving bet an int as state*/
 
 CREATE TABLE IF NOT EXISTS football_player (
-    player_id uuid PRIMARY KEY,
+    athlete_id uuid PRIMARY KEY,
     current_value double,
     full_name text,
     first_name text,
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS football_meta (
 );
 
 CREATE TABLE IF NOT EXISTS football_player_stat (
-    player_id uuid PRIMARY KEY,
+    athlete_id uuid PRIMARY KEY,
     season_year int,
     season_type text,
     finished boolean,
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS football_player_stat (
 );
 
 CREATE TABLE IF NOT EXISTS football_market_value (
-    player_id uuid PRIMARY KEY,
+    athlete_id uuid PRIMARY KEY,
     start_time timeuuid,
     end_time timeuuid,
     position text,
@@ -158,8 +158,8 @@ CREATE TABLE IF NOT EXISTS player_images (
 );
 
 CREATE TABLE IF NOT EXISTS timeseries_bets (
-    player_id text,
+    athlete_id text,
     time timeuuid,
     price double,
-    PRIMARY KEY (player_id, time)
+    PRIMARY KEY (athlete_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);

@@ -17,16 +17,16 @@ $(function() {
   $('.bet').each(function(index, element) {
     $('#' + element.id).click(function(e) {
       e.preventDefault();
-      var playerId = $(element).attr('href');
+      var athleteId = $(element).attr('href');
       var betId = element.id.substring(3);
       var data = {betId: betId};
       $.ajax({
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
-        url: '../addBets/' + playerId,
+        url: '../addBets/' + athleteId,
         success: function (response) {
-          window.location.href = '/market/' + playerId
+          window.location.href = '/market/' + athleteId
         },
         error: function (response) {
           var parsedResponse = JSON.parse(response.responseText);
@@ -44,7 +44,7 @@ $(function() {
 
 $('#betForm').submit(function(e) {
   e.preventDefault();
-  var playerId = $('#betForm.pure-form')[0].action.substring(33);
+  var athleteId = $('#betForm.pure-form')[0].action.substring(33);
   var inputs = $('#betForm input');
   var values = {};
   inputs.each(function() {
@@ -63,9 +63,9 @@ $('#betForm').submit(function(e) {
     type: 'POST',
     data: JSON.stringify(values),
     contentType: 'application/json',
-    url: '../submitForm/' + playerId,
+    url: '../submitForm/' + athleteId,
     success: function (response) {
-      window.location.href = '/market/' + playerId;
+      window.location.href = '/market/' + athleteId;
     },
     error: function (response) {
       var parsedResponse = JSON.parse(response.responseText);

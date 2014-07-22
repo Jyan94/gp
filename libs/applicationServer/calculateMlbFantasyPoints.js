@@ -7,7 +7,7 @@ var BaseballPlayerStatistics = require('libs/cassandra/baseball/player.js')
 
 /* calculates the fantasy points for a specific player*/
 exports.calculateMlbFantasyPoints = function(playerObject, callback) {
-  var playerId = playerObject.playerId; //player is id not name
+  var athleteId = playerObject.athleteId; //player is id not name
   var isOnHomeTeam = playerObject.isOnHomeTeam;
   var gameId = playerObject.prefixSchedule.$.id;
   var shortHomeTeam = playerObject.prefixSchedule.home[0].$.abbr;
@@ -68,7 +68,7 @@ exports.calculateMlbFantasyPoints = function(playerObject, callback) {
         var strikeouts = null;
 
         for (var j = 0; j < length; j++) {
-          if (playerId === prefixPitching[j].$.id) {
+          if (athleteId === prefixPitching[j].$.id) {
             bool = true;
 
             if (prefixPitching[j].games[0].$.win === 1) {
@@ -107,7 +107,7 @@ exports.calculateMlbFantasyPoints = function(playerObject, callback) {
 
         length = prefixHitting.length;
         for (var i = 0; i < length; i++) {
-          if (playerId === prefixHitting[i].$.id && bool === false) {
+          if (athleteId === prefixHitting[i].$.id && bool === false) {
             /*
             console.log("s: " + parseInt(prefixHitting[i].onbase[0].$.s));
             console.log("d: " + parseInt(2*prefixHitting[i].onbase[0].$.d));
@@ -151,7 +151,7 @@ exports.calculateMlbFantasyPoints = function(playerObject, callback) {
         }
 
         BaseballPlayerStatistics.addPlayerStatistics(
-          playerId, //player_id
+          athleteId, //athlete_id
             'MLB', //sport
             inGamePosition, //in_game_position
             shortHomeTeam,//shortHomeTeam

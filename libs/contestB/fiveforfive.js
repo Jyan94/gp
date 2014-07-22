@@ -52,13 +52,13 @@ function selectFive(results, callback) {
  * if there are, sort and select five randomly
  * @param  {object}   user
  * from req.user, must have properties username and money
- * @param  {uuid}   playerId
+ * @param  {uuid}   athleteId
  * id for athlete
  * @param  {Function} callback
  * args: (err, results)
  * where results is an array of length 5 containing fantasy values
  */
-function fiveForFive(user, playerId, callback) {
+function fiveForFive(user, athleteId, callback) {
   if (user.money < FIVE) {
     callback(new Error('not enough money'));
   }
@@ -85,7 +85,7 @@ function fiveForFive(user, playerId, callback) {
 
     async.waterfall([
       function(callback) {
-        DailyProphet.timeseries.selectActivePlayerValues(playerId, callback);
+        DailyProphet.timeseries.selectActivePlayerValues(athleteId, callback);
       },
       function(fantasyValues, callback) {
         async.reject(fantasyValues, function(datapoint, callback) {

@@ -196,7 +196,7 @@ var insertBet = function (req, res, next, result, callback) {
       shortBetterId = currentBet.user_id;
     }
     Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
-    shortBetterId, currentBet.player_id,
+    shortBetterId, currentBet.athlete_id,
     {value: parseFloat(currentBet.wager), hint: 'double'},
     {value: parseFloat(currentBet.bet_value), hint: 'double'},
     currentBet.game_id, currentBet.expiration],
@@ -205,7 +205,7 @@ var insertBet = function (req, res, next, result, callback) {
         res.send(500, { error: messages.databaseError });
       }
       else {
-        TimeseriesBets.insert(currentBet.player_id,
+        TimeseriesBets.insert(currentBet.athlete_id,
           parseFloat(currentBet.bet_value),
           function(err){
           if (err) {

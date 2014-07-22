@@ -120,7 +120,7 @@ function takePending(info, user, callback) {
         takePendingCallback);
     },
     function(callback) {
-      
+
     }
   ], callback);
 }

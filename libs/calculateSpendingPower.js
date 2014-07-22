@@ -76,7 +76,7 @@ exports.updateSpendingPower = function(userId, money) {
 /* calculate the spending power if the user made or took another bet */
 exports.calculateSpendingPowerWithAddition = function(userId,
   money,
-  playerId,
+  athleteId,
   positionBool,
   multiplier,
   betValue,
@@ -95,7 +95,7 @@ exports.calculateSpendingPowerWithAddition = function(userId,
 
       result.push({
         'user_id': userId,
-        'player_id': playerId,
+        'athlete_id': athleteId,
         'long_position': positionBool,
         'bet_value' : betValue,
         'multiplier' : multiplier,

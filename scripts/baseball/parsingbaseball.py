@@ -43,7 +43,7 @@ for team in teamList:
 		print(fullName, shortTeamName)
 		session.execute(
         """
-        INSERT INTO baseball_player (player_id, full_name, first_name, last_name, short_team_name, long_team_name, team_id, position, uniform_number, height, weight)
+        INSERT INTO baseball_player (athlete_id, full_name, first_name, last_name, short_team_name, long_team_name, team_id, position, uniform_number, height, weight)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         , (uuid.UUID('{' + playerId + '}'), fullName, firstName, lastName, shortTeamName, longTeamName, uuid.UUID('{' + teamId + '}'), position, uniformNumber, height, weight)
