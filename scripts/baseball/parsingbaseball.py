@@ -32,7 +32,7 @@ for team in teamList:
   playerList = team.getElementsByTagName('player')
   for player in playerList:
 		playerAttributes = player.attributes
-		playerId = playerAttributes['id'].value
+		athleteId = playerAttributes['id'].value
 		firstName = playerAttributes['preferred_name'].value
 		lastName = playerAttributes['last_name'].value
 		fullName = firstName + ' ' + lastName
@@ -46,5 +46,5 @@ for team in teamList:
         INSERT INTO baseball_player (athlete_id, full_name, first_name, last_name, short_team_name, long_team_name, team_id, position, uniform_number, height, weight)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        , (uuid.UUID('{' + playerId + '}'), fullName, firstName, lastName, shortTeamName, longTeamName, uuid.UUID('{' + teamId + '}'), position, uniformNumber, height, weight)
+        , (uuid.UUID('{' + athleteId + '}'), fullName, firstName, lastName, shortTeamName, longTeamName, uuid.UUID('{' + teamId + '}'), position, uniformNumber, height, weight)
       )

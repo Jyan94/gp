@@ -16,10 +16,10 @@ print length
 for num in range(0, length):
   title = data["assetlist"]["asset"][num]["title"][1: -1]
   print title
-  playerId = data["assetlist"]["asset"][num]["@athlete_id"]
+  athleteId = data["assetlist"]["asset"][num]["@athlete_id"]
   href = data["assetlist"]["asset"][num]["links"]["link"][0]["@href"]
   url = 'http://api.sportsdatallc.org/mlb-images-t2/usat' + href + '?api_key=9drv6ypfuenurvjw9z52fba6'
-  #urllib.urlretrieve(url, '/Users/Owner2/Documents/GPbaseball/' + playerId + '.jpg')
+  #urllib.urlretrieve(url, '/Users/Owner2/Documents/GPbaseball/' + athleteId + '.jpg')
   session.execute(
         """
         INSERT INTO player_images (player_name, image_url)

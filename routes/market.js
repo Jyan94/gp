@@ -52,12 +52,12 @@ function getBetInfosFromAthleteId(params, user, callback) {
   });
 }
 
-  var playerId = req.params.playerId;
+  var athleteId = req.params.athleteId;
   var fullName = null;
   var team;
   var position;
 
-  Player.select(playerId, function(err, result) {
+  Player.select(athleteId, function(err, result) {
     if (err) {
       next(err);
     }
@@ -70,7 +70,7 @@ function getBetInfosFromAthleteId(params, user, callback) {
         if (result.length === 0) {
           res.render('market', {betinfo: betInfo,
             imageUrl: defaultImage,
-            playerId: playerId,
+            athleteId: athleteId,
             fullName: fullName,
             team: team,
             position: position});
@@ -78,7 +78,7 @@ function getBetInfosFromAthleteId(params, user, callback) {
         else {
           res.render('market', {betinfo: betInfo,
             imageUrl: result[0].image_url,
-            playerId: playerId,
+            athleteId: athleteId,
             fullName: fullName,
             team: team,
             position: position});
@@ -122,7 +122,7 @@ var renderAthletePage = function (req, res, next) {
     });
 }
 
-//post to '/submitForm/:playerId'
+//post to '/submitForm/:athleteId'
 var submitBet = function (req, res, next) {
   var betId = cql.types.timeuuid();
   var longPosition = null;
@@ -138,7 +138,7 @@ var submitBet = function (req, res, next) {
     betId,
     req.user.user_id,
     longPosition,
-    req.params.playerId,
+    req.params.athleteId,
     {value: parseFloat(req.body.wagerAmount), hint: 'double'},
     {value: parseFloat(req.body.fantasyValue), hint: 'double'},
     null,
@@ -156,7 +156,7 @@ var submitBet = function (req, res, next) {
         })
           //SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
           //req.flash('info', messages.submitted);
-          //res.redirect('/market/' + req.params.playerId)
+          //res.redirect('/market/' + req.params.athleteId)
       }
     });
 }
@@ -227,7 +227,7 @@ var insertBet = function (req, res, next, result, callback) {
   }
 }
 
-//post to '/addBets/:playerId'
+//post to '/addBets/:athleteId'
 var takeBet = function (req, res, next) {
   var currentBet = null;
   var longBetterId = null;
