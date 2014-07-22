@@ -9,8 +9,8 @@ var multiline = require('multiline');
 var DELIM = '-';
 
 var INSERT_PRICE_CQL = multiline(function() {/*
-  INSERT INTO timeseries_bets (
-    player_id, time, price
+  INSERT INTO timeseries_contest_a_bets (
+    athlete_id, time, price
   ) VALUES 
     (?, ?, ?);
 */});
@@ -34,8 +34,8 @@ exports.insert = function (playerId, price, callback) {
 };
 
 var DELETE_PRICE_CQL = multiline(function() {/*
-  DELETE FROM timeseries_bets WHERE
-    player_id
+  DELETE FROM timeseries_contest_a_bets WHERE
+    athlete_id
   IN
     (?);
 */});
@@ -55,7 +55,7 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
   FROM 
     timeseries_bets
   WHERE
-    player_id=?
+    athlete_id=?
   AND
     time > maxTimeuuid(?)
   AND
@@ -74,10 +74,10 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
  * @param  {Function} 
  * callback  [callback function to pass results]
  */
-exports.selectTimeRange = function (playerId, start, end, callback) {
+exports.selectTimeRange = function (athleteId, start, end, callback) {
   cassandra.query(
     SELECT_TIMERANGE_CQL,
-    [playerId.split(DELIM).join(''), start, end], 
+    [athleteId, start, end], 
     cql.types.consistencies.one, 
     function(err, result) {
       callback(err, result);

@@ -118,6 +118,10 @@ function takePending(info, user, callback) {
         info.isOverNotUnder,
         info.wager,
         takePendingCallback);
+    },
+    function(callback) {
+      
     }
   ], callback);
 }
+

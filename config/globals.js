@@ -15,3 +15,9 @@ exports.contestA = {
 exports.contestB = {
   contests: []
 }
+
+exports.athletes = {
+  Baseball: {
+    images: {}
+  }
+}
