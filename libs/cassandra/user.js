@@ -34,11 +34,21 @@ var INSERT_USER_CQL = multiline(function() {/*
      ?)
   IF NOT EXISTS;
 */});
+var USER_ID_INDEX = 0;
 exports.insert = function (params, callback) {
   //parse values
   cassandra.query(INSERT_USER_CQL, params, one,
-    function (err) {
-      callback(err);
+    function (err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (result[APPLIED]) {
+        callback(null);
+      }
+      else {
+        params[USER_ID_INDEX] = cql.types.uuid();
+        exports.insert(params, callback);
+      }
     });
 };
 
