@@ -13,6 +13,7 @@ var one = cql.types.consistencies.one;
 
 var INSERT_GAME_CQL = multiline(function() {/*
   INSERT INTO baseball_game (
+    athletes,
     away_score,
     end_time,
     game_id,
@@ -21,18 +22,17 @@ var INSERT_GAME_CQL = multiline(function() {/*
     long_away_name,
     long_home_name,
     play_by_play,
-    players,
     short_away_name,
     short_home_name,
     start_time,
     status
   ) VALUES (
-    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
     ?, ?, ?);
 */});
-var PLAY_BY_PLAY_INDEX = 7;
-var PLAYERS_INDEX = 8;
+var ATHLETES_INDEX = 0;
+var PLAY_BY_PLAY_INDEX = 8;
 /**
  * inserts game into database
  * @param  {array}   fields
@@ -41,8 +41,8 @@ var PLAYERS_INDEX = 8;
  * args: (err)
  */
 exports.insert = function(fields, callback) {
-  fields[PLAYERS_INDEX] = {
-    value: fields[PLAYERS_INDEX],
+  fields[ATHLETES_INDEX] = {
+    value: fields[ATHLETES_INDEX],
     hint: 'list'
   };
   fields[PLAY_BY_PLAY_INDEX] = {
@@ -104,8 +104,8 @@ exports.update = function(fields, gameId, callback) {
 };
 
 var SELECT_TODAYS_GAME_CQL = multiline(function() {/*
-  SELECT * 
-  FROM baseball_game 
+  SELECT *
+  FROM baseball_game
   WHERE game_date = ?;
 */});
 exports.selectTodaysGames = function(callback) {

@@ -17,6 +17,7 @@ var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;
 var marketGlobals = configs.globals.contestA;
 var pendingBets = marketGlobals.pendingBets;
+var baseballAthletes = marketGlobals.athletes.Baseball.athletes;
 
 
 var getDailyScores = function(req, res, next) {
@@ -41,18 +42,16 @@ var getDailyScores = function(req, res, next) {
   });
 }
 
-var getBetInfosFromPlayerId = function (req, res, next, callback) {
-
+function getBetInfosFromAthleteId(params, user, callback) {
   async.filter(pendingBets, function(bet, callback) {
     callback(
-      (req.params.playerId === bet.athleteId) &&
-      (req.user.username !== bet.seller));
+      (params.athleteId === bet.athleteId) &&
+      (user.username !== bet.seller));
   }, function(results) {
-    res.render('market', results);
+    callback(null, results);
   });
 }
 
-var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
   var playerId = req.params.playerId;
   var fullName = null;
   var team;
@@ -89,12 +88,31 @@ var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
   });
 }
 
-var renderPlayerPage = function (req, res, next) {
+var renderAthletePage = function (req, res, next) {
+  getBetInfosFromAthleteId(req.params, req.user, function(bets) {
+    athlete = baseballAthletes[req.params.athleteId];
+    if (athleteId) {
+      res.render(
+        'market',
+        {
+          bets: bets,
+          imageUrl: athleteImage
+          athleteId: athlete.athleteId,
+          athleteName: athlete.athleteName,
+          athleteTeam: athlete.athleteTeam,
+        });
+    }
+    else {
+      callback(new Error('invalid athlete id'));
+    }
+  });
   async.waterfall([
-    function (callback) {
-      callback(null, req, res, next);
+    function(callback) {
+      getBetInfosFromPlayerId(req.params, req.user, callback),
     },
-    getBetInfosFromPlayerId,
+    function(bets, callback) {
+
+    }
     getImageFromPlayerId,
     ],
     function (err) {

@@ -14,7 +14,7 @@ var STATISTICS_KEY = 'statistics';
 //16 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
-    player_id,
+    athlete_id,
     current_value,
     full_name,
     first_name,
@@ -31,9 +31,9 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
     image,
     statistics
   ) VALUES
-    (?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?, 
-     ?, ?, ?, ?, ?, 
+    (?, ?, ?, ?, ?,
+     ?, ?, ?, ?, ?,
+     ?, ?, ?, ?, ?,
      ?);
 */});
 
@@ -62,7 +62,7 @@ exports.delete = function (playerId, callback) {
 };
 
 var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
-  UPDATE baseball_player SET 
+  UPDATE baseball_player SET
 */});
 var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
@@ -163,8 +163,8 @@ var SELECT_PLAYER_IMAGES_USING_PLAYERNAME = multiline(function() {/*
  */
 exports.selectImagesUsingPlayerName = function(playerName, callback) {
   cassandra.query(
-    SELECT_PLAYER_IMAGES_USING_PLAYERNAME, 
-    [playerName], 
+    SELECT_PLAYER_IMAGES_USING_PLAYERNAME,
+    [playerName],
     one,
     callback);
 };
@@ -197,14 +197,14 @@ var ADD_STATISTICS_QUERY = multiline(function() {/*
  */
 exports.addStatistic = function (playerId, formattedDate, statistic, callback) {
   cassandra.query(
-    ADD_STATISTICS_QUERY, 
-    [formattedDate, statistic, playerId], 
-    one, 
+    ADD_STATISTICS_QUERY,
+    [formattedDate, statistic, playerId],
+    one,
     callback);
 };
 
 var DELETE_SPECIFIC_STATISTICS_QUERY = multiline(function() {/*
-  DELETE statistics[?] FROM baseball_player WHERE player_id = ?; 
+  DELETE statistics[?] FROM baseball_player WHERE player_id = ?;
 */});
 /**
  * @param  {uuid}   playerId
@@ -214,8 +214,8 @@ var DELETE_SPECIFIC_STATISTICS_QUERY = multiline(function() {/*
  */
 exports.deleteStatistics = function (playerId, formattedDate, callback) {
   cassandra.query(
-    DELETE_SPECIFIC_STATISTICS_QUERY, 
+    DELETE_SPECIFIC_STATISTICS_QUERY,
     [formattedDate, playerId],
-    one, 
+    one,
     callback);
 }

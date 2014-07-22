@@ -3,7 +3,7 @@
  * @type {Object}
  */
 exports.contestA = {
-  pendingBets: [{athleteId: '10154eef-8834-48e0-97e7-d7436367534c', athleteName: 'Adrian Gonzalez', seller: 'hello world'}],
+  pendingBets: [{athleteId: '10154eef-8834-48e0-97e7-d7436367534c', athleteName: 'Adrian Gonzalez', athleteTeam: 'LA',seller: 'hello world'}],
   resellBets: [],
   takenBets: []
 }
@@ -18,6 +18,14 @@ exports.contestB = {
 
 exports.athletes = {
   Baseball: {
-    images: {}
+    athletes:
+    {
+      '10154eef-8834-48e0-97e7-d7436367534c': {
+        athleteName: 'Adrian Gonzalez',
+        athleteTeam: 'LA',
+        position: 'IF',
+        image: 'www.google.com'
+      }
+    }
   }
 }
