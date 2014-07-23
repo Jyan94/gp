@@ -5,57 +5,60 @@ var cassandra = require('libs/cassandra/cql');
 var cql = require('config/index.js').cassandra.cql;
 var async = require('async');
 var multiline = require('multiline');
-
-var DELIM = '-';
+var one = cql.types.consistencies.one;
 
 var INSERT_PRICE_CQL = multiline(function() {/*
-  INSERT INTO timeseries_bets (
-    player_id, time, price
+  INSERT INTO timeseries_contest_a_bets (
+    athlete_id, fantasy_value, price, time
   ) VALUES 
-    (?, ?, ?);
+    (?, ?, ?, ?);
 */});
 
 /**
  * inserts prices into timeseries 
- * need to take out '-' in player_id in order to place it as key in database
+ * @param  {uuid}   athleteId
+ * @param  {double} fantasyValue
+ * @param  {double}   price
+ * @param  {Function} callback
+ * args: err
  */
-exports.insert = function (playerId, price, callback) {
+exports.insert = function (athleteId, fantasyValue, price, callback) {
   cassandra.query(
     INSERT_PRICE_CQL, 
     [
-    playerId.split(DELIM).join(''), 
-    cql.types.timeuuid(), 
-    {value: price, hint: 'double'}
+    athleteId,
+    {value: fantasyValue, hint: 'double'},
+    {value: price, hint: 'double'},
+    cql.types.timeuuid()
     ], 
-    cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+    one,
+    callback);
 };
 
 var DELETE_PRICE_CQL = multiline(function() {/*
-  DELETE FROM timeseries_bets WHERE
-    player_id
-  IN
-    (?);
+  DELETE FROM timeseries_contest_a_bets WHERE athlete_id = ?;
 */});
-exports.deletePrices = function (playerId, callback) {
+/**
+ * deletes bets from database
+ * @param  {uuid}   athleteId
+ * @param  {Function} callback
+ * args: err
+ */
+exports.deletePrices = function (athleteId, callback) {
   cassandra.query(
     DELETE_PRICE_CQL,
-    [playerId.split(DELIM).join('')],
-    cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+    [athleteId],
+    one,
+    callback);
 }
 
 var SELECT_TIMERANGE_CQL = multiline(function () {/*
   SELECT  
-    price, dateOf(time) 
+    fantasy_value, dateOf(time) 
   FROM 
     timeseries_bets
   WHERE
-    player_id=?
+    athlete_id=?
   AND
     time > maxTimeuuid(?)
   AND
@@ -66,31 +69,30 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
  * returns a list of rows for prices updated 
  * between two times: start and end
  * @param  {uuid}
- * playerId [player uniquely identified id]
+ * athleteId [player uniquely identified id]
  * @param  {Date object}   
  * start     [start date]
  * @param  {Date object}   
  * end       [end date]
  * @param  {Function} 
- * callback  [callback function to pass results]
+ * callback
+ * args: err, result
  */
-exports.selectTimeRange = function (playerId, start, end, callback) {
+exports.selectTimeRange = function (athleteId, start, end, callback) {
   cassandra.query(
     SELECT_TIMERANGE_CQL,
-    [playerId.split(DELIM).join(''), start, end], 
-    cql.types.consistencies.one, 
-    function(err, result) {
-      callback(err, result);
-  });
+    [athleteId, start, end], 
+    one,
+    callback);
 };
 
 var UNTIL_NOW_CQL = multiline(function () {/*
   SELECT  
-    price, dateOf(time) 
+    fantasy_value, dateOf(time) 
   FROM 
     timeseries_bets
   WHERE
-    player_id=?
+    athlete_id=?
   AND
     time > maxTimeuuid(?)
   AND
@@ -100,20 +102,19 @@ var UNTIL_NOW_CQL = multiline(function () {/*
 /**
  * returns all rows for prices on a given player between start and now
  * @param  {uuid}
- * playerId [player uniquely identified id]
+ * athleteId [player uniquely identified id]
  * @param  {Date object}   
  * start     [start date]
  * @param  {Date object}   
  * end       [end date]
  * @param  {Function} 
  * callback  [callback function to pass results]
+ * args: err, results
  */
-exports.selectSinceTime = function (playerId, start, callback) {
+exports.selectSinceTime = function (athleteId, start, callback) {
   cassandra.query(
     UNTIL_NOW_CQL,
-    [playerId.split(DELIM).join(''), start], 
-    cql.types.consistencies.one, 
-    function(err, result) {
-      callback(err, result);
-  });
+    [athleteId, start], 
+    one,
+    callback);
 };

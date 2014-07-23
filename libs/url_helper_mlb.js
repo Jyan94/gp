@@ -132,8 +132,8 @@ function createDailyEventInfoAndLineups(year, month, day) {
     return createUrlWithEndpointAndDate('daily/event', year, month, day);
 }
 
-function createPlayerProfiles(player_id) {
-    return createUrlWithEndpointAndEvent('player/profile', player_id);
+function createPlayerProfiles(athlete_id) {
+    return createUrlWithEndpointAndEvent('player/profile', athlete_id);
 }
 
 function createEventInfoAndLineups(event_id) {
@@ -188,8 +188,8 @@ module.exports = {
     getDailyEventInfoAndLineups: function(year, month, day) {
         return createDailyEventInfoAndLineups(year, month, day);
     },
-    getPlayerProfiles: function(player_id) {
-        return createUrlWithEndpointAndEvent('player/profile', player_id);
+    getPlayerProfiles: function(athlete_id) {
+        return createUrlWithEndpointAndEvent('player/profile', athlete_id);
     },
     getEventInfoAndLineups: function(event_id) {
         return createEventInfoAndLineups(event_id);

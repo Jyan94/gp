@@ -21,7 +21,7 @@ var FILLED = states.FILLED;
 var TO_PROCESS = states.TO_PROCESS;
 var PROCESSED = states.PROCESSED;
 var CANCELLED = states.CANCELLED;
-var SEMICOLON = ';';
+var SEMICOLON = configs.constants.globals.SEMICOLON;
 
 /*
  * ====================================================================
@@ -77,37 +77,61 @@ var SELECT_USERNAME_QUERY_2 = multiline(function() {/*
  * result is a row object
  */
 exports.selectByUsername = function(username, callback) {
-  var SELECT_USERNAME_QUERY = SELECT_USERNAME_QUERY_1;
-  SELECT_USERNAME_QUERY += username;
-  SELECT_USERNAME_QUERY += SELECT_USERNAME_QUERY_2;
-  cassandra.query(
-    SELECT_USERNAME_QUERY, 
-    [], 
-    one,     
-    function (err, result) {
-      if (err) {
-        callback(err);
-      }
-      else if (!result) {
-        callback(new Error('contests not found'));
-      }
-      else {
-        callback(null, result);
-      }
-    });
+  if(username.indexOf(SEMICOLON) === -1) {
+    var SELECT_USERNAME_QUERY = SELECT_USERNAME_QUERY_1;
+    SELECT_USERNAME_QUERY += username;
+    SELECT_USERNAME_QUERY += SELECT_USERNAME_QUERY_2;
+    cassandra.query(
+      SELECT_USERNAME_QUERY, 
+      [], 
+      one,     
+      function (err, result) {
+        if (err) {
+          callback(err);
+        }
+        else if (!result) {
+          callback(new Error('contests not found'));
+        }
+        else {
+          callback(null, result);
+        }
+      });
+  }
+  else {
+    callback(new Error('invalid name request'));
+  }
 }
 
 
 var SELECT_BY_STATE_QUERY = multiline(function() {/*
   SELECT *
     FROM daily_prophet
-    WHERE contest_state = ?
-    AND sport = ?
-    ALLOW FILTERING;
+    WHERE contest_state = ?;
 */});
 
+/**
+ * @param  {int}   state
+ * @param  {text}   sport
+ * @param  {Function} callback
+ * args: (err, results)
+ */
 function selectByState(state, sport, callback) {
-  cassandra.query(SELECT_BY_STATE_QUERY, [state, sport], one, callback);
+
+  cassandra.query(SELECT_BY_STATE_QUERY, [state], one, function(err, contests) {
+    if (err) {
+      callback(err);
+    }
+    else {
+
+      async.filter(contests, function(contest, callback) {
+        callback(contest.sport === sport);
+      }, function(results) {
+        callback(null, results);
+      });
+
+    }
+  });
+
 }
 
 exports.selectOpen = function(sport, callback) {

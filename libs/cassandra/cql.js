@@ -35,9 +35,7 @@ exports.queryOneRow = function(cql, params, consistency, callback) {
  * takes arguments err, result where result is number of retries
  */
 exports.queryBatch = function(cql, consistency, callback) {
-  client.executeBatch(cql, consistency, function(err, result) {
-    callback(err, result);
-  });
+  client.executeBatch(cql, consistency, callback);
 };
 
 /**

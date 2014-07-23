@@ -4,13 +4,12 @@ require('rootpath')();
 var configs = require('config/index');
 
 var async = require('async');
-var Bet = require('libs/cassandra/bet');
+//var Bet = require('libs/cassandra/bet');
 var User = require('libs/cassandra/user');
 var cql = configs.cassandra.cql;
 var fs = require('fs');
 var url = require('url');
 var multiline = require('multiline');
-var SpendingPower = require('libs/calculateSpendingPower')
 
 var messages = configs.constants.profileStrings;
 

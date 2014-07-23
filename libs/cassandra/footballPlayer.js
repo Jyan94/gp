@@ -7,7 +7,7 @@ var multiline = require('multiline');
 
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO football_player (
-    player_id, current_value, full_name, first_name, last_name, team, status,
+    athlete_id, current_value, full_name, first_name, last_name, team, status,
     position, profile_url, uniform_number, height, weight, age, image
   ) VALUES
     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
@@ -21,10 +21,10 @@ exports.insert = function (fields, callback) {
 };
 
 var DELETE_PLAYER_CQL = multiline(function() {/*
-  DELETE FROM football_player WHERE player_id = ?;
+  DELETE FROM football_player WHERE athlete_id = ?;
 */});
-exports.delete = function (playerId, callback) {
-  cassandra.query(DELETE_PLAYER_CQL, [playerId], cql.types.consistencies.one,
+exports.delete = function (athleteId, callback) {
+  cassandra.query(DELETE_PLAYER_CQL, [athleteId], cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
@@ -35,9 +35,9 @@ var UPDATE_PLAYER_CQL_1 = multiline(function() {/*
 */});
 var UPDATE_PLAYER_CQL_2 = multiline(function() {/*
   WHERE
-    player_id = ?;
+    athlete_id = ?;
 */});
-exports.update = function (playerId, fields, params, callback) {
+exports.update = function (athleteId, fields, params, callback) {
   var fieldsLength = fields.length;
   var paramsLength = params.length;
   var updates = '';
@@ -56,18 +56,18 @@ exports.update = function (playerId, fields, params, callback) {
 
   cassandra.query(UPDATE_PLAYER_CQL_1 + ' ' + updates + ' '
     + UPDATE_PLAYER_CQL_2,
-    params.concat([playerId]), cql.types.consistencies.one,
+    params.concat([athleteId]), cql.types.consistencies.one,
     function (err) {
       callback(err);
     });
 };
 
 var SELECT_PLAYER_CQL = multiline(function () {/*
-  SELECT * FROM football_player WHERE player_id = ?;
+  SELECT * FROM football_player WHERE athlete_id = ?;
 */});
-exports.select = function (playerId, callback) {
+exports.select = function (athleteId, callback) {
   cassandra.queryOneRow(SELECT_PLAYER_CQL,
-    [playerId], cql.types.consistencies.one,
+    [athleteId], cql.types.consistencies.one,
     function(err, result) {
       callback(err, result);
   });
@@ -97,7 +97,7 @@ exports.selectImagesUsingPlayerName = function(playerName, callback) {
 }
 
 var AUTOCOMPLETE_QUERY = multiline(function() {/*
-  SELECT player_id, full_name FROM football_player
+  SELECT athlete_id, full_name FROM football_player
 */});
 exports.selectAllPlayerNames = function(callback) {
   cassandra.query(AUTOCOMPLETE_QUERY, [], cql.types.consistencies.one,

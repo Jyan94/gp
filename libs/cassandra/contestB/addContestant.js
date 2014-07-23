@@ -101,7 +101,14 @@ function addUserInstanceToContest(user, contest, callback) {
                 user.money - contest.entry_fee,
                 contest.entry_fee,
                 user.user_id,
-                callback);
+                function(adderr) {
+                  if (adderr) {
+                    callback(adderr);
+                  }
+                  else {
+                    callback(err);
+                  }
+                });
             }
             else {
               callback(null);

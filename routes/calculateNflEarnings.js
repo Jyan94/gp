@@ -48,7 +48,7 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
               for (var i = 0; i < result.length; i++) {
                 retArray.push({
                   'name': result[i].full_name,
-                  'id': result[i].player_id,
+                  'id': result[i].athlete_id,
                   'isOnHomeTeam': true,
                   'prefixSchedule': prefixSchedElement
                 });
@@ -69,7 +69,7 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
               for (var i = 0; i < result.length; i++) {
                 arr.push({
                   'name': result[i].full_name,
-                  'id': result[i].player_id,
+                  'id': result[i].athlete_id,
                   'isOnHomeTeam': false,
                   'prefixSchedule': prefixSchedElement
                 });
@@ -84,8 +84,8 @@ function findClosedSchedulesAndPlayers(prefixSchedElement, callback) {
   }
 }
 
-function getBetsFromPlayerId(playerId, callback) {
-  Bet.selectUsingPlayerId('current_bets', playerId,
+function getBetsFromPlayerId(athleteId, callback) {
+  Bet.selectUsingPlayerId('current_bets', athleteId,
     function (err, result) {
       if (err) {
         console.log(err);
@@ -124,7 +124,7 @@ function calculateBet(bet, fantasyPoints, callback) {
 //Waterfall functions start here
 
 //first waterfall function
-//gets list of players + player_id
+//gets list of players + athlete_id
 function getPlayers(prefixSchedule, year, week, callback) {
   async.map(
     prefixSchedule,
@@ -144,7 +144,7 @@ function getPlayers(prefixSchedule, year, week, callback) {
 function getBetIds(players, year, week, callback) {
   console.log(players);
   var mapArray = [];
-  var playerIds = [];
+  var athleteIds = [];
   var currentGame = null;
   var currentPlayer = null;
 
@@ -161,24 +161,24 @@ function getBetIds(players, year, week, callback) {
         'year': year,
         'week': week
       });
-      playerIds.push(currentPlayer.id);
+      athleteIds.push(currentPlayer.id);
     }
   }
   //returns an array of fantasy points as result
-  //matches playerIds array
+  //matches athleteIds array
   console.log(mapArray);
   async.map(mapArray, calculate.calculateNflFantasyPoints,
     function (err, result) {
       if (err) {
         console.log(err);
       } else {
-        callback(null, playerIds, result);
+        callback(null, athleteIds, result);
       }
     });
 }
 
-function getBetsPlayerId(playerIds, fantasyPointsArray, callback) {
-  async.map(playerIds, getBetsFromPlayerId,
+function getBetsPlayerId(athleteIds, fantasyPointsArray, callback) {
+  async.map(athleteIds, getBetsFromPlayerId,
     function (err, result) {
       //result is an array of bet arrays
       if (err) {
@@ -225,11 +225,11 @@ function calculateAllFantasyPoints(schedule, year, week) {
       callback(null, prefixSchedule, year, week);
     },
     //first waterfall function
-    //gets list of players + player_id
+    //gets list of players + athlete_id
     getPlayers,
     //second waterfall function
     //get all bet ids associated with player
-    //result.rows is list of players and player_id queried from database
+    //result.rows is list of players and athlete_id queried from database
     getBetIds,
     //third waterfall function
     //get all bet ids corresponding to given player id

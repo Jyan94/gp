@@ -14,13 +14,13 @@ var defaultPlayerImage = constants.defaultPlayerImage;
 var SMTP = constants.SMTP;
 var smtpTransport = nodemailer.createTransport(SMTP.name, SMTP.configObject);
 
-function insertUser(body, res, next) {
+function insertUser(uuid, body, res, next) {
   var bcryptHashCallback = function(err, hash) {
     if (err) {
       next(err);
     }
     else {
-      var userId = cql.types.uuid();
+      var userId = uuid;
       var verificationCode = cql.types.timeuuid();
       var verified = false;
       if (configs.isDev()) {
@@ -41,7 +41,6 @@ function insertUser(body, res, next) {
         null, //address
         null, //payment_info
         {value: 10000.0, hint: 'double'}, //money
-        {value: 10000.0, hint: 'double'}, //spending_power
         null, //fbid
         0,  //vip_status
         defaultPlayerImage //image
@@ -62,7 +61,8 @@ function insertUser(body, res, next) {
           res.send({value: responseValues.success});
         }
         else {
-          var MailOptions= SMTP.createMailOptions(body.email, verificationCode);
+          var MailOptions = 
+            SMTP.createMailOptions(body.email, verificationCode);
           smtpTransport.sendMail(MailOptions, sendMailCallback);
         }
       };
@@ -76,8 +76,27 @@ function insertUser(body, res, next) {
   bcrypt.hash(body.password, null, null, bcryptHashCallback);
 }
 
+function verifyUniqueUuid(uuid, callback) {
+  while (constants.globals.notADefaultUserUuid(uuid)) {
+    uuid = cql.types.uuid();
+  }
+  User.selectById(uuid, function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    else if (result) {
+      uuid = cql.types.uuid();
+      verifyUniqueUuid(uuid, callback);
+    }
+    else {
+      callback(null);
+    }
+  });
+}
+
 var processSignup = function(req, res, next) {
   var body = req.body;
+  var uuid = cql.types.uuid();
   
   async.waterfall(
   [
@@ -95,7 +114,7 @@ var processSignup = function(req, res, next) {
         }
       };
 
-      User.select('username', body.username, selectUsernameCallback);
+      User.selectByUsername(body.username, selectUsernameCallback);
     },
 
     //email lookup
@@ -112,7 +131,7 @@ var processSignup = function(req, res, next) {
         }
       };
 
-      User.select('email', body.email, selectEmailCallback);
+      User.selectByEmail(body.email, selectEmailCallback);
     }
   ],
   function(err) {
@@ -120,7 +139,7 @@ var processSignup = function(req, res, next) {
       next(err);
     }
     else {
-      insertUser(body, res, next);
+      insertUser(uuid, body, res, next);
     }
   });
 }

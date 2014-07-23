@@ -1,7 +1,7 @@
 //real time updates query database every few seconds
 
 //get the player id from url (last element after split)
-var playerId = document.URL.split('/')[document.URL.split('/').length - 1];
+var athleteId = document.URL.split('/')[document.URL.split('/').length - 1];
 
 //real time updates
 function getRealTimeData() {
@@ -17,7 +17,7 @@ function getRealTimeData() {
       type: 'GET',
       data: {
         'lastUpdate': lastUpdate,
-        'playerId': playerId
+        'athleteId': athleteId
       },
 
       //accepts an array with elements that have fields:
@@ -149,7 +149,7 @@ $(function() {
     url: '/data',
     type: 'GET',
     data: {
-      'playerId': playerId
+      'athleteId': athleteId
     },
     success: function (data) {
       createGraph(data);

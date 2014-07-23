@@ -30,9 +30,9 @@ def getPlayers(event, side):
 
   if (len(event.getElementsByTagName('game')[0].getElementsByTagName(side)) == 0):
     return (teamId, shortTeamName, longTeamName, players)
-  else: 
+  else:
     playersList = event.getElementsByTagName('game')[0].getElementsByTagName(side)[0]
-    
+
     if len(playersList.getElementsByTagName('roster')) == 0:
       return (teamId, shortTeamName, longTeamName, players)
     else:

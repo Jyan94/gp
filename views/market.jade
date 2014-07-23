@@ -7,7 +7,7 @@ html(lang="en")
     div.content
       div.feed
         center
-          form#betForm.pure-form(action='/submitForm/' + playerId method='post')
+          form#betForm.pure-form(action='/submitForm/' + athleteId method='post')
             input(type='number' name='wagerAmount' placeholder='Wager Amount' autofocus=true required=true style='width:200px' min="0" step="0.01")
             input(type='number' name='fantasyValue' placeholder='Fantasy Value' required=true style='width: 200px' min="1" step="1")
             input(id = 'radioFormA' type='radio' name='longOrShort' value='Over' checked='checked')
@@ -23,9 +23,9 @@ html(lang="en")
           include graph
         div.profilebottom
           center
-            h2=fullName
-            h4=team
-            h4=position
+            h2=athleteName
+            h4=athleteTeam
+            h4=athletePosition
 
       div.betcontainer
         center
@@ -36,24 +36,24 @@ html(lang="en")
                 th='Wager Amount'
                 th='Take Bets'
             tbody
-              each item in betinfo
-                if (item.longPosition===false)
+              each item in bets
+                if (item.overNotUnder===false)
                   tr
                     td
-                      h2=item.wager
+                      h2=item.price
                     td
                       h2=item.betValue
                     td
-                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                      a(href=athleteId class = 'bet' id='bet'+item.betId style='cursor: pointer')
                         img(src='../assets/uparrow.png' width='50' height='40')
                 else
                   tr
                     td
-                      h2=item.wager
+                      h2=item.price
                     td
                       h2=item.betValue
                     td
-                      a(href=playerId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                      a(href=athleteId class = 'bet' id='bet'+item.betId style='cursor: pointer')
                         img(src='../assets/downarrow.png' width='50' height='40')
       div.flash-error.flash-error-fade#flash-error-market-3
         div.padded-less

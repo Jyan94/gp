@@ -1,22 +1,25 @@
 'use strict';
 require('rootpath')();
-var configs = require('config/index');
+/*var configs = require('config/index');
 
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 
 var async = require('async');
 
-var Bet = require('libs/cassandra/bet.js');
-var User = require('libs/cassandra/user.js');
 var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var mlbData = require('libs/mlbData.js');
 var BaseballStatistics = require('libs/cassandra/baseballStatistics');
-var SpendingPower = require('libs/calculateSpendingPower');
 
 var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;
+var marketGlobals = configs.globals;
+var pendingBets = marketGlobals.contestA.pendingBets;
+var baseballAthletes = marketGlobals.athletes.Baseball;
+var updateBet = require('libs/cassandra/contestA/updateBet.js')
+var FilteredBets = require('libs/contestA/formatBets.js');
+
 
 var getDailyScores = function(req, res, next) {
   var date = new Date();
@@ -26,7 +29,8 @@ var getDailyScores = function(req, res, next) {
   var day = date.getDate();
   day = (day < 10 ? '0' : '') + day;
 
-  var gameDate = '' + year + '/' + month + '/' + day;
+  var gameDate = '2014/07/13';
+  //var gameDate = '' + year + '/' + month + '/' + day;
   console.log(gameDate);
 
   BaseballStatistics.selectGameUsingDate(gameDate, function(err, result) {
@@ -39,84 +43,31 @@ var getDailyScores = function(req, res, next) {
   });
 }
 
-var getBetInfosFromPlayerId = function (req, res, next, callback) {
-  var rows = null;
-  var betInfo = [];
-
-  Bet.selectUsingPlayerId('pending_bets', req.params.playerId,
-    function(err, result) {
-      if (err) {
-        next(err);
+var renderAthletePage = function (req, res, next) {
+  console.log(req.params.athleteId);
+  FilteredBets.getMarketPendingByAthleteId(
+    req.user.username,
+    req.params.athleteId,
+    function(bets){
+      var athlete = baseballAthletes[req.params.athleteId];
+      if (req.params.athleteId) {
+        res.render(
+          'market',
+          {
+            bets: bets,
+            image: athlete.athleteImage,
+            athleteId: athlete.athleteId,
+            athleteName: athlete.athleteName,
+            athleteTeam: athlete.athleteTeam,
+            athletePosition: athlete.athletePosition
+          });
       }
       else {
-        rows = result;
-
-        for (var i = 0; i < rows.length; i++) {
-          betInfo[i] = {
-            betId: rows[i].bet_id,
-            longPosition: rows[i].long_position,
-            wager: rows[i].wager,
-            betValue: rows[i].bet_value
-          }
-        }
-
-        callback(null, req, res, next, betInfo);
+        next(new Error('invalid athlete id'));
       }
     });
-}
-
-var getImageFromPlayerId = function (req, res, next, betInfo, callback) {
-  var playerId = req.params.playerId;
-  var fullName = null;
-  var team;
-  var position;
-
-  Player.select(playerId, function(err, result) {
-    if (err) {
-      next(err);
-    }
-    else {
-      fullName = result.full_name;
-      team = result.team;
-      position = result.position;
-
-      Player.selectImagesUsingPlayerName(fullName, function(err, result) {
-        if (result.length === 0) {
-          res.render('market', {betinfo: betInfo,
-            imageUrl: defaultImage,
-            playerId: playerId,
-            fullName: fullName,
-            team: team,
-            position: position});
-        }
-        else {
-          res.render('market', {betinfo: betInfo,
-            imageUrl: result[0].image_url,
-            playerId: playerId,
-            fullName: fullName,
-            team: team,
-            position: position});
-        }
-      });
-    }
-  });
-}
-
-var renderPlayerPage = function (req, res, next) {
-  async.waterfall([
-    function (callback) {
-      callback(null, req, res, next);
-    },
-    getBetInfosFromPlayerId,
-    getImageFromPlayerId,
-    ],
-    function (err) {
-      if (err) {
-        next(err);
-      }
-    });
-}
-
+}*/
+/*
 //post to '/submitForm/:playerId'
 var submitBet = function (req, res, next) {
   var betId = cql.types.timeuuid();
@@ -133,7 +84,7 @@ var submitBet = function (req, res, next) {
     betId,
     req.user.user_id,
     longPosition,
-    req.params.playerId,
+    req.params.athleteId,
     {value: parseFloat(req.body.wagerAmount), hint: 'double'},
     {value: parseFloat(req.body.fantasyValue), hint: 'double'},
     null,
@@ -151,99 +102,29 @@ var submitBet = function (req, res, next) {
         })
           //SpendingPower.updateSpendingPower(req.user.user_id, req.user.money);
           //req.flash('info', messages.submitted);
-          //res.redirect('/market/' + req.params.playerId)
+          //res.redirect('/market/' + req.params.athleteId)
       }
     });
 }
+*/
 
-var getBet = function (req, res, next, callback) {
-  var betId = req.body.betId;
-
-  Bet.selectMultiple('pending_bets', [betId],
-    function(err, result) {
-      if (err) {
-        res.send(500, { error: messages.databaseError });
-      }
-      else if (result.length === 0) {
-        res.send(400, { error: messages.betAlreadyTakenError });
-      }
-      else {
-        callback(null, req, res, next, result);
-      }
-    });
-}
-
-var insertBet = function (req, res, next, result, callback) {
-  var currentBet = result[0];
-  var longBetterId = null;
-  var shortBetterId = null;
-
-  if (req.user.user_id === currentBet.user_id) {
-    res.send(400, { error: messages.betTakerError });
-  }
-  else {
-    if (currentBet.long_position === 'true') {
-      longBetterId = currentBet.user_id;
-      shortBetterId = req.user.user_id;
-    }
-    else {
-      longBetterId = req.user.user_id;
-      shortBetterId = currentBet.user_id;
-    }
-    Bet.insertCurrent(req.user.user_id, [currentBet.bet_id, longBetterId,
-    shortBetterId, currentBet.player_id,
-    {value: parseFloat(currentBet.wager), hint: 'double'},
-    {value: parseFloat(currentBet.bet_value), hint: 'double'},
-    currentBet.game_id, currentBet.expiration],
-    function (err) {
-      if (err) {
-        res.send(500, { error: messages.databaseError });
-      }
-      else {
-        TimeseriesBets.insert(currentBet.player_id,
-          parseFloat(currentBet.bet_value),
-          function(err){
-          if (err) {
-            res.send(500, { error: messages.databaseError });
-          }
-          else {
-            Bet.subtractMoneyFromUser(parseFloat(currentBet.wager), req.user.user_id, function(err) {
-              if (err) {
-                next(err);
-              }
-              else {
-                res.send('Bet taken successfully.');
-              }
-            });
-          }
-        });
-      }
-    });
-  }
-}
-
-//post to '/addBets/:playerId'
-var takeBet = function (req, res, next) {
-  var currentBet = null;
-  var longBetterId = null;
-  var shortBetterId = null;
-
-  async.waterfall([
-    function (callback) {
-      callback(null, req, res, next);
-    },
-    getBet,
-    insertBet
-    ],
-    function (err) {
-      if (err) {
-        next(err);
-      }
-    });
+/**
+ * [takeBet description]
+ * @param  {[type]}   req      [description]
+ * @param  {[type]}   res      [description]
+ * @param  {Function} next     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+/*
+var takeBet = function(req, res, next, callback) {
+  updateBet.takePending(
+    req.body,
+    req.params.user_id,
+    callback);
 }
 
 //exports above functions
-exports.renderPlayerPage = renderPlayerPage;
-exports.submitBet = submitBet;
-exports.takeBet = takeBet;
-exports.getDailyScores = getDailyScores;
+exports.renderAthletePage = renderAthletePage;
+exports.takeBet = takeBet;*/
+//exports.getDailyScores = getDailyScores;

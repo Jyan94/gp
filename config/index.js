@@ -2,7 +2,8 @@
 (require('rootpath')());
 
 var constants = require('config/constants');
-var handlebarsHelpers = require('views/handlebarHelpers/helpers');
+var globals = require('config/globals');
+var handlebarsHelpers = require('views/handlebarsHelpers/helpers');
 
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
@@ -14,9 +15,8 @@ var hbs = require('hbs');
 var helmet = require('helmet');
 var methodOverride = require('method-override');
 var morgan = require('morgan');
-var session = require('express-session');
 var path = require('path');
-var multiline = require('multiline');
+var session = require('express-session');
 
 //cassandra configurations
 var cassandraConfig = {
@@ -49,7 +49,7 @@ var config = {
         hbs.registerHelper(key, handlebarsHelpers[key]);
       }
     }
-
+    hbs.registerPartials(path.join(__dirname, '../views/handlebarsPartials'));
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
@@ -74,6 +74,7 @@ var config = {
     cql: cql,
     client: client
   },
+  globals: globals,
   isDev: function() {
     return process.env.NODE_ENV === 'development';
   },

@@ -1,0 +1,38 @@
+  /**
+    athlete_id uuid, --
+    athlete_name text, --
+    athlete_team text, --
+    bet_id timeuuid PRIMARY KEY, --
+    bet_state int,  --
+    bettor_usernames list<text> ??,    
+    expirations list<timestamp>,  ??  
+    fantasy_value double, --
+    game_id uuid, --
+    is_selling_position list<boolean>, ??
+    old_prices,
+    payoff double, --
+    prices list<double>, ??
+    sport text --
+   */
+/*
+cases: 
+ //PROFILE STUFF
+ your pending:
+ name, fantasy value, payoff, over/under, wager
+ if (state === pending)
+ your resell:
+ name, fantasy value, payoff, over/under, purchased price, opponent
+ if (state === active && isSellingPosition contains true && matches with username index)
+ your taken:
+ name, fantasy value, payoff, over/under, purchased price, opponent
+ if (state === active && isSellingPosition contains false && matches with username index)
+
+ //MARKET STUFF
+ pending market:
+ name, fantasy value, payoff, over/under, wager, better
+ if (state === pending)
+ secondary market:
+ name, fantasy value, payoff, over/under, listed price, seller
+ if (state === active && isSellingPosition contains true)
+ */
+  //check if position is being sold is already possessed by a current user

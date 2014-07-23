@@ -2,16 +2,25 @@ doctype html
 html(lang="en")
   head
     include common/base_head
+    script(src='/js/jquery/jquery-ui-1.10.4.custom.js')
+    link(rel="stylesheet" href="css/flexslider.css" type="text/css")
+    link(rel="stylesheet" href="css/demo.css" type="text/css" media="screen")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js")
+    script(src="js/jquery/jquery.flexslider.js")
+    script(type="text/javascript" src="js/flexsliderscoreboard.js")
+
   body
     include banner
     div.content
-      div.scorecontainer
-        each item in result
-          div.score
-            if (item.start_time)
-              h5=item.home_team
-              h5=item.away_team
-              h5=item.start_time
-            else
-              h5=item.home_team + "  " + item.home_score
-              h5=item.away_team + "  " + item.away_score
+      div.flexslider
+        ul.slides
+          each item in result
+            li
+              div.score
+                if (item.start_time)
+                  h5=item.short_home_name
+                  h5=item.short_away_name
+                  h5=item.start_time
+                else
+                  h5=item.short_home_name + "  " + item.home_score
+                  h5=item.short_away_name + "  " + item.away_score

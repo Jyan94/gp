@@ -13,7 +13,6 @@ var urlHelper = require('../libs/url_helper_mlb');
 var async = require('async');
 var Player = require('../libs/cassandra/baseballPlayer.js');
 //app.use('/', require('../app.js'));
-var Bet = require('../libs/cassandra/bet.js');
 var User = require('../libs/cassandra/user.js');
 var ContestB = require('../libs/cassandra/contestB.js');
 var contestBModes = require('configs/contestBModes');
