@@ -185,14 +185,17 @@ function insertPending(
   callback);
 }
 
+//everything after is_selling_position is extra verification and bet history
 var TAKE_PENDING_BET_CQL = multiline(function() {/*
   UPDATE
     contest_a_bets
   SET
     bet_state = ?,
     bettor_usernames[?] = ?,
-    expirations[?] = 0
-    is_selling_position[?] = false
+    expirations[?] = 0,
+    is_selling_position[?] = false,
+    old_prices[?] = ?,
+    prices[?] = 0
   WHERE
     bet_id = ?
   IF
@@ -200,21 +203,40 @@ var TAKE_PENDING_BET_CQL = multiline(function() {/*
   AND
     prices[?] = ?
   AND
-    is_selling_position[?] = true;
+    is_selling_position[?] = true
+
+  AND
+    athlete_id = ?
+  AND
+    athlete_name = ?
+  AND
+    athlete_team = ?
+  AND
+    bettor_usernames[?] = ?
+  AND
+    fantasy_value = ?;
 */});
 function takePending(
-  betId, 
-  boughtOverBet, 
+  athleteId,
+  athleteName,
+  athleteTeam,
+  betId,
+  fantasyValue,
+  opponent,
+  overNotUnder,
   username, 
   wager, 
   callback) {
 
   var position;
-  if (boughtOverBet) {
+  var otherPosition;
+  if (overNotUnder) {
     position = OVER;
+    otherPosition = UNDER;
   }
   else {
     position = UNDER;
+    otherPosition = OVER;
   }
   cassandra.query(
     TAKE_PENDING_BET_CQL,
@@ -224,11 +246,21 @@ function takePending(
       username,
       position,
       position,
+      position,
+      wager,
+      position,
       betId,
       PENDING,
       position,
       wager,
-      position
+      position,
+
+      athleteId,
+      athleteName,
+      athleteTeam,
+      otherPosition,
+      opponent,
+      fantasyValue
     ],
     one,
     function(err, result) {
@@ -263,10 +295,10 @@ var RESELL_BETTER_CQL = multiline(function() {/*
 
 function placeResell(
   betId,
-  username,
   expirationTime,
-  resellPrice,
   isOverBetter,
+  resellPrice,
+  username,
   callback) {
 
   var position;
@@ -303,6 +335,7 @@ function placeResell(
     });
 }
 
+//everything after is_selling_position is extra verification and bet history
 var TAKE_RESELL_CQL = multiline(function() {/*
   UPDATE
     contest_a_bets
@@ -319,16 +352,41 @@ var TAKE_RESELL_CQL = multiline(function() {/*
   AND
     prices[?] = ?
   AND
-    is_selling_position[?] = true;
+    is_selling_position[?] = true
+
+  AND
+    athlete_id = ?
+  AND
+    athlete_name = ?
+  AND
+    athlete_team = ?
+  AND
+    bettor_usernames[?] = ?
+  AND
+    fantasy_value = ?;
 */});
 
-function takeResell(betId, username, overNotUnder, resellPrice, callback) {
+function takeResell(
+  athleteId,
+  athleteName,
+  athleteTeam,
+  betId,
+  fantasyValue,
+  opponent,
+  overNotUnder, 
+  resellPrice,
+  username,  
+  callback) {
+  
   var position;
+  var otherPosition;
   if (overNotUnder) {
     position = OVER;
+    otherPosition = UNDER;
   }
   else {
     position = UNDER;
+    otherPosition = OVER;
   }
   cassandra.query(
     TAKE_RESELL_CQL,
@@ -345,7 +403,14 @@ function takeResell(betId, username, overNotUnder, resellPrice, callback) {
       ACTIVE,
       position,
       resellPrice,
-      position
+      position,
+
+      athleteId,
+      athleteName,
+      athleteTeam,
+      otherPosition,
+      opponent,
+      fantasyValue
     ],
     one,
     callback);
