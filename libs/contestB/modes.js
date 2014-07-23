@@ -266,7 +266,7 @@ function createType1Settings () {
       isFiftyFifty,  //isfiftyfifty
       Math.floor(startingVirtualMoney * 0.8), //maxWager
       maximumEntries, //maximumEntries
-      Math.floor(totalPrizePool / entryFee),  //minimumEntries
+      0,//Math.floor(totalPrizePool / entryFee),  //minimumEntries
       payouts, //payouts
       sport,  //sport
       startingVirtualMoney,  //startingVirtualMoney

@@ -164,6 +164,16 @@ exports.timeseries = timeseries;
  * selectContestsToProcess
  * selectProcessed
  * selectCancelled
+ *
+ * =============================================================================
+ * select by state range queries:
+ * @param  {string} sport
+ * @param  {Function} callback
+ * args: (err, result)
+ * result is an array of rows
+ *
+ * functions:
+ * selectOpenToFilled
  * 
  * =============================================================================
  * @function selectBySport(sport, callback)

@@ -24,7 +24,7 @@ function selectAndFilterAthletes(sport, athleteIds, callback) {
   }
   var Athlete = null;
   switch(sport) {
-    case 'baseball': Athlete = BaseballPlayer; break;
+    case 'Baseball': Athlete = BaseballPlayer; break;
   }
   var mapFunc = function(athleteId, callback) {
     Athlete.select(athleteId, function(err, result) {

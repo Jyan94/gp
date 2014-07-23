@@ -170,6 +170,9 @@ function compareInstances(user, oldInstance, newInstance, contest, callback) {
     };
     async.each(timeseriesUpdates, updateTimeseriesTable, callback);
   }
+  else {
+    callback(null);
+  }
 }
 
 /**
@@ -228,7 +231,7 @@ function updateInstance(
         Contestant.updateContestant(
           user.username, 
           JSON.stringify(contestant), 
-          contest.contest_id, 
+          contest.contest_id,
           callback);
       }
     };

@@ -130,6 +130,24 @@ exports.selectCancelled = function(sport, callback) {
   selectByState(CANCELLED, sport, callback);
 }
 
+var SELECT_BY_STATE_RANGE_QUERY = multiline(function() {/*
+  SELECT *
+    FROM daily_prophet
+    WHERE contest_state >= ?
+    AND contest_state <= ?
+    AND sport = ?
+    ALLOW FILTERING;
+*/});
+
+function selectByStateRange(lowerState, upperState, sport, callback) {
+  cassandra.query(SELECT_BY_STATE_RANGE_QUERY,
+                  [lowerState, upperState, sport], one, callback);
+}
+
+exports.selectOpenToFilled = function(sport, callback) {
+  selectByStateRange(OPEN, FILLED, sport, callback);
+}
+
 var SELECT_BY_SPORT_QUERY = multiline(function() {/*
   SELECT *
     FROM daily_prophet
