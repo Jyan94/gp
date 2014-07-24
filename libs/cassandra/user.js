@@ -11,35 +11,35 @@ var APPLIED = configs.constants.cassandra.APPLIED;
 
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
-    user_id, 
+    age,
     email,
-    verified, 
-    verified_time, 
-    ver_code,
-    username, 
-    password, 
-    first_name,
-    last_name, 
-    age, 
-    address, 
-    payment_info, 
-    money, 
-    fbid,
-    vip_status, 
-    image
+    facebook_id,
+    first_name, 
+    image,
+    last_name,
+    money,
+    password,
+    payment_info,
+    privilege_level,
+    user_id,
+    username,
+    verification_code,
+    verified,
+    verified_time
   ) VALUES
     (?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
-     ?, ?, ?, ?, ?,
-     ?)
+     ?, ?, ?, ?, ?)
   IF NOT EXISTS;
 */});
-var USER_ID_INDEX = 0;
-exports.insert = function (params, callback) {
-  //parse values
+
+var MONEY_INDEX = 6;
+var USER_ID_INDEX = 10;
+function insertUser(params, callback) {
   cassandra.queryOneRow(INSERT_USER_CQL, params, one,
     function (err, result) {
       if (err) {
+        console.log(params);
         callback(err);
       }
       else if (result[APPLIED]) {
@@ -47,9 +47,17 @@ exports.insert = function (params, callback) {
       }
       else {
         params[USER_ID_INDEX] = cql.types.uuid();
-        exports.insert(params, callback);
+        insertUser(params, callback);
       }
     });
+}
+
+exports.insert = function (params, callback) {
+  params[MONEY_INDEX] = {
+    value: params[MONEY_INDEX],
+    hint: 'double'
+  };
+  insertUser(params, callback);
 };
 
 var DELETE_USER_CQL = multiline(function() {/*

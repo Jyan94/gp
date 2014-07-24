@@ -126,6 +126,7 @@ statistics: map of game_id to stringified statistics objects
   earned_runs_allowed int,
   strikeouts int,
   walks_and_hits_allowed int,
-  fantasy_points double
+  fantasy_points double,
+  processed boolean
 }
  */

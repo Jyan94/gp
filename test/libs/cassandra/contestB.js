@@ -10,42 +10,40 @@
 var cql = require('config/index').cassandra.cql;
 var testUserParams0 =
 [
-  '00000000-0000-0000-0000-000000000000',
-  'test0@test.com',
-  true,
-  new Date(),
-  null,
-  't0',
-  'world',
-  'first name',
-  'last name',
   20,
-  'address',
-  'paymentinfo',
-  {value: 2000, hint: 'double'},
+  'test0@test.com',
   'fbid',
-  0,
-  'image'
+  'first name',
+  'image',
+  'last name',
+  2000,
+  'password',
+  'payment_info',
+  10, //privilege level
+  '00000000-0000-0000-0000-000000000000',
+  't0',
+  null,
+  true,
+  new Date()
 ];
 
 var testUserParams1 = 
 [
-  '00000000-0000-0000-0000-000000000001',
-  'test1@test.com',
-  true,
-  new Date(),
-  null,
-  't1',
-  'world',
-  'first name',
-  'last name',
   20,
-  'address',
-  'paymentinfo',
-  {value: 1000, hint: 'double'},
+  'test1@test.com',
   'fbid',
-  0,
-  'image'
+  'first name',
+  'image',
+  'last name',
+  1000,
+  'password',
+  'payment_info',
+  10, //privilege level
+  '00000000-0000-0000-0000-000000000001',
+  't1',
+  null,
+  true,
+  new Date()
 ];
 
 /*
@@ -180,7 +178,7 @@ var testInstance2 = {
   predictions: [10, 20, 30, 40, 40],
   joinTime: new Date()
 };
-var USER_ID_INDEX = 0;
+var USER_ID_INDEX = 10;
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
 var RemoveContestant = require('libs/cassandra/contestB/removeContestant');
@@ -745,6 +743,8 @@ function tests(callback) {
       },
       function(callback) {
         if (err) {
+          console.log(err);
+          console.trace();
           callback(err);
           (err === null).should.be.true;
         }

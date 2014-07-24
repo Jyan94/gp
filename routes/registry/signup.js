@@ -28,22 +28,22 @@ function insertUser(uuid, body, res, next) {
       }
       var fields =
       [
-        userId, //user_id
-        body.email, //email
-        verified, //verified
-        null, //verfied_time
-        verificationCode, //verification_code
-        body.username, //username
-        hash, //password
-        body.firstName, //first_name
-        body.lastName,  //last_name
         null, //age
-        null, //address
+        body.email, //email
+        null, //facebook_id
+        body.firstName, //first_name
+        defaultPlayerImage, //image
+        body.lastName, //last_name
+        10000.0, //starting money
+        hash, //password
         null, //payment_info
-        {value: 10000.0, hint: 'double'}, //money
-        null, //fbid
-        0,  //vip_status
-        defaultPlayerImage //image
+        0, //privilege level
+        userId, //user_id
+        body.username, //username
+        verificationCode, //verification_code
+        verified, //verified
+        null, //verication_time
+        10000.0 //virtual_money
       ];
       var sendMailCallback = function(err, response) {
         if (err) {

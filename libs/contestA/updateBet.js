@@ -1,3 +1,8 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 (require('rootpath')());
 
@@ -6,9 +11,9 @@ var cql = configs.cassandra.cql;
 var async = require('async');
 var User = require('libs/cassandra/user');
 var UpdateBet = require('libs/cassandra/contestA/update');
-var Timeseries = require('./timeseries');
-var BetHistory = require('./betHistory');
-
+var Timeseries = require('libs/casandra/contestA/timeseries');
+var BetHistory = require('libs/cassandra/contestA/betHistory');
+ 
 var constants = configs.constants;
 var APPLIED = constants.cassandra.APPLIED;
 

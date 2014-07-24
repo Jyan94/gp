@@ -79,6 +79,35 @@ function addUserInstanceToContest(user, contest, callback) {
     callback(new Error('exceeded maximum entries for user'));
   }
   else {
+    var addContestant = function(callback) {
+      var addContestantCallback = function(err) {
+        if (err) {
+          //restore user to money before add if add contestant fails
+          User.addMoney(
+            user.money - contest.entry_fee,
+            contest.entry_fee,
+            user.user_id,
+            function(addMoneyErr) {
+              if (addMoneyErr) {
+                callback(addMoneyErr);
+              }
+              else {
+                callback(err);
+              }
+            });
+        }
+        else {
+          callback(null);
+        }
+      };
+      Contestant.addContestant(
+        user.username, 
+        contestant, 
+        contest.current_entries, 
+        contest.contest_id,
+        addContestantCallback);
+    }
+
     var waterfallArray =
     [
       function(callback) {
@@ -89,31 +118,7 @@ function addUserInstanceToContest(user, contest, callback) {
           callback);
       },
       function(callback) {
-        Contestant.addContestant(
-          user.username, 
-          contestant, 
-          contest.current_entries, 
-          contest.contest_id,
-          function(err) {
-            if (err) {
-              //restore user to money before add if add contestant fails
-              User.addMoney(
-                user.money - contest.entry_fee,
-                contest.entry_fee,
-                user.user_id,
-                function(adderr) {
-                  if (adderr) {
-                    callback(adderr);
-                  }
-                  else {
-                    callback(err);
-                  }
-                });
-            }
-            else {
-              callback(null);
-            }
-          });
+        addContestant(callback);
       }
     ];
 
@@ -137,7 +142,6 @@ function addUserInstanceToContest(user, contest, callback) {
     }
     var newlyAddedIndex = contestant.instances.length - 1;
     contestant = JSON.stringify(contestant);
-
     //if contest.contestants is null, initialize it
     //make sure it's updated for addAndUpdateContestant
     if (!contest.contestants) {
