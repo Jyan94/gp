@@ -258,6 +258,17 @@ function subtractMoneyFromUser(difference, userId, callback) {
   });  
 }
 
+function subtractMoneyFromUserUsingUsername(difference, username, callback) {
+  selectByUsername(username, function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      updateMoney(result.money, difference, result.user_id, false, callback);
+    }
+  });
+}
+
 exports.addMoney = addMoney;
 exports.subtractMoney = subtractMoney;
 exports.addMoneyWithoutCurrent = addMoneyToUser;

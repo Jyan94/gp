@@ -9,7 +9,7 @@ var ContestB = require('libs/cassandra/contestB/exports');
 var BaseballPlayer = require('libs/cassandra/baseball/player');
 var Game = require('libs/cassandra/baseball/game');
 var modes = require('libs/contestB/modes.js');
-var calculate = require('libs/contestB/calculations.js');
+var calculate = require('libs/contestB/baseballCalculations.js');
 var cql = configs.cassandra.cql;
 
 var messages = configs.constants.contestStrings;
@@ -179,7 +179,7 @@ var filterEligibleGamesHelperMain = function (player, callback) {
 }
 
 var filterEligibleGamesHelper = function (game, callback) {
-  async.map(game.players ? game.players : [], filterEligibleGamesHelperMain,
+  async.map(game.athletes ? game.athletes : [], filterEligibleGamesHelperMain,
     function (err, result) {
       if (err) {
         callback(err);
@@ -191,11 +191,11 @@ var filterEligibleGamesHelper = function (game, callback) {
             callback(
               null,
               {
+                athletes: result,
                 gameId: game.game_id,
                 gameDate: game.game_date,
                 longAwayName: game.long_away_name,
                 longHomeName: game.long_home_name,
-                players: result,
                 shortAwayName: game.short_away_name,
                 shortHomeName: game.short_home_name,
                 startTime: game.start_time
@@ -423,7 +423,7 @@ var getDeadlineTimeForContestCreation = function (req, res, next, params,
     },
     function (err, deadlineTime) {
       callback(err, req, res, next, params, games, players,
-               new Date(deadlineTime + 720000000));
+               new Date(deadlineTime - 600000));
     });
 }
 
@@ -659,21 +659,23 @@ var contestEntryProcess = function (req, res, next) {
  */
 
 var findContestByContestIdCheckEdit = function (req, res, next, callback) {
+  var currentTime = (new Date()).getTime();
+
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
     }
-    else if ((new Date()).getTime() > result.contest_deadline_time.getTime()) {
+    else if (currentTime > result.contest_deadline_time.getTime()) {
       res.send(400, 'Contest is past deadline time.');
     }
     else {
-      callback(null, req, res, next, result);
+      callback(null, req, res, next, result, currentTime);
     }
   });
 }
 
 // Need names, not numbers, as keys of athletes
-var filterContestFieldsEdit = function (req, res, next, contest, callback) {
+var filterContestFieldsEdit = function (req, res, next, contest, currentTime, callback) {
   var contestantInstanceIndex = req.params.contestantInstanceIndex;
   var contestant = contest.contestants[req.user.username];
   var contestantInstance = {};
@@ -692,7 +694,10 @@ var filterContestFieldsEdit = function (req, res, next, contest, callback) {
     if (typeof(contestantInstance) === 'undefined') {
       res.send(404, 'Contestant Instance not found.');
     }
-    else{
+    else if ((currentTime - contestantInstance.lastModified) / 60000 < contest.cooldown_minutes) {
+      res.send(400, Math.ceil(contest.cooldown_minutes - (currentTime - contestantInstance.lastModified) / 60000) + ' minutes of cooldown time left.');
+    }
+    else {
       async.map(contest.athletes, parseAthlete, function(err, result) {
         if (err) {
           res.send(500, 'Server error.');
@@ -936,6 +941,10 @@ function setRepeat (func, interval) {
 
 setRepeat(examineContestsOpenAndFilled, 1000);
 setRepeat(examineContestsToProcess, 1000);
+
+examineContestsToProcess(function (err) {
+  console.log(err);
+})
 
 /*
  * ====================================================================
