@@ -1,3 +1,7 @@
 $(document).ready(function() {
-  $('#betTable').dataTable()
+  $('#betTable').dataTable({
+    "bInfo": false,
+    "iDisplayLength": 7,
+    "bLengthChange": false
+  })
 });
