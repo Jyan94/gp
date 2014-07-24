@@ -291,4 +291,3 @@ cassandra.query(query, [0, 2.1, 1], cql.types.consistencies.one, function(err) {
     console.log(err);
   }
 })*/
-

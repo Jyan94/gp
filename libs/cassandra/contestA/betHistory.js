@@ -40,11 +40,16 @@ var INSERT_BET_HISTORY_CQL = multiline(function() {/*
   ) VALUES (
     ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?,
-    ?);
+    ?, ?);
 */});
-var PAYOFF_INDEX = 6;
-var PRICE_INDEX = 7;
+var FANTASY_VALUE_INDEX = 4;
+var PAYOFF_INDEX = 7;
+var PRICE_INDEX = 8;
 function insert(params, callback) {
+  params[FANTASY_VALUE_INDEX] = {
+    value: params[FANTASY_VALUE_INDEX],
+    hint: 'double'
+  };
   params[PAYOFF_INDEX] = {
     value: params[PAYOFF_INDEX],
     hint: 'double'
@@ -78,7 +83,8 @@ function insertHistory(
     betId,
     fantasyValue, 
     opponent, 
-    overNotUnder, 
+    overNotUnder,
+    payoff, 
     price, 
     sellNotBuy, 
     cql.types.timeuuid(),
@@ -92,7 +98,7 @@ var DELETE_BET_HISTORY_WITH_USERNAME_CQL = multiline(function() {/*
   WHERE
     username = ?;
 */});
-function deleteHistoryUsingUsername(username, callback) {
+function deleteUsingUsername(username, callback) {
   cassandra.query(
     DELETE_BET_HISTORY_WITH_USERNAME_CQL, 
     [username], 
@@ -106,7 +112,7 @@ var DELETE_BET_HISTORY_WITH_ID_CQL = multiline(function() {/*
   WHERE
     bet_id = ?;
 */});
-function deleteHistoryUsingBetId(betId, callback) {
+function deleteUsingBetId(betId, callback) {
   cassandra.query(
     DELETE_BET_HISTORY_WITH_USERNAME_CQL,
     [betId],
@@ -115,5 +121,5 @@ function deleteHistoryUsingBetId(betId, callback) {
 }
 
 exports.insertHistory = insertHistory;
-exports.deleteHistoryUsingUsername = deleteHistoryUsingUsername;
-exports.deleteHistoryUsingBetId = deleteHistoryUsingBetId;
+exports.deleteUsingUsername = deleteUsingUsername;
+exports.deleteUsingBetId = deleteUsingBetId;

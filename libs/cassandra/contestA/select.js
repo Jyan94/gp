@@ -29,7 +29,7 @@ var SELECT_BET_BY_ID_CQL = multiline(function(){/*
 */});
 
 function selectByBetId(betId, callback) {
-  cassandra.query(SELECT_BET_BY_ID_CQL, [betId], one, callback);
+  cassandra.queryOneRow(SELECT_BET_BY_ID_CQL, [betId], one, callback);
 }
 
 function createSelectByUsernameQuery(username) {
