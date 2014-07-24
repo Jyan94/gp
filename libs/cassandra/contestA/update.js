@@ -15,7 +15,7 @@ var constants = configs.constants;
 var states = constants.contestAbets.STATES;
 var OVER = constants.contestAbets.POSITIONS.OVER;
 var UNDER = constants.contestAbets.POSITIONS.UNDER;
-var MINUTES_IN_MILLISECONDS = constants.globals.MINUTES_IN_MILLISECONDS;
+var MINUTE_IN_MILLISECONDS = constants.globals.MINUTE_IN_MILLISECONDS;
 var DEFAULT_USERNAME = constants.contestAbets.DEFAULT_USERNAME;
 var APPLIED = constants.cassandra.APPLIED;
 
@@ -46,7 +46,7 @@ var INSERT_BET_CQL = multiline(function() {/*
     ?, ?, ?, ?);
 */});
 
-var bettor_usernames_INDEX = 5;
+var BETTOR_USERNAMES_INDEX = 5;
 var EXPIRATIONS_INDEX = 6;
 var FANTASY_VALUE_INDEX = 7;
 var IS_SELLING_POSITION_INDEX = 9;
@@ -63,13 +63,13 @@ var PRICES_INDEX = 12;
  * args (err)
  */
 function insert(params, callback) {
-  params[bettor_usernames_INDEX] = {
-    value: params[bettor_usernames_INDEX],
-    hint: 'list'
+  params[BETTOR_USERNAMES_INDEX] = {
+    value: params[BETTOR_USERNAMES_INDEX],
+    hint: 'map'
   };
   params[EXPIRATIONS_INDEX] = {
     value: params[EXPIRATIONS_INDEX],
-    hint: 'list'
+    hint: 'map'
   };
   params[FANTASY_VALUE_INDEX] = {
     value: params[FANTASY_VALUE_INDEX],
@@ -77,7 +77,7 @@ function insert(params, callback) {
   };
   params[IS_SELLING_POSITION_INDEX] = {
     value: params[IS_SELLING_POSITION_INDEX],
-    hint: 'list'
+    hint: 'map'
   };
   params[PAYOFF_INDEX] = {
     value: params[PAYOFF_INDEX],
@@ -94,7 +94,7 @@ function insert(params, callback) {
   };
   params[OLD_PRICES_INDEX] = {
     value: params[OLD_PRICES_INDEX],
-    hint: 'list'
+    hint: 'map'
   };
 
   params[PRICES_INDEX][OVER] = {
@@ -107,9 +107,8 @@ function insert(params, callback) {
   };
   params[PRICES_INDEX] = {
     value: params[PRICES_INDEX],
-    hint: 'list'
+    hint: 'map'
   };
-
   cassandra.query(INSERT_BET_CQL, params, one, callback);
 }
 /**
@@ -149,8 +148,8 @@ function insertPending(
   var isSellingPosition = [false, false];
   var expiration = new Date(
     ((new Date()).getTime()) +
-    (expirationTimeMinutes * MINUTES_IN_MILLISECONDS));
-  var expirations = [0, 0];
+    (expirationTimeMinutes * MINUTE_IN_MILLISECONDS));
+  var expirations = [new Date(0), new Date(0)];
   var payoff = 2 * wager;
   var oldPrices = [wager, wager];
   var prices = [0, 0];
@@ -187,7 +186,9 @@ function insertPending(
     prices,
     sport
   ],
-  callback);
+  function(err) {
+    callback(err);
+  });
 }
 
 //everything after is_selling_position is extra verification and bet history
@@ -243,7 +244,7 @@ function takePending(
     position = UNDER;
     otherPosition = OVER;
   }
-  cassandra.query(
+  cassandra.queryOneRow(
     TAKE_PENDING_BET_CQL,
     [
       ACTIVE,
@@ -313,12 +314,12 @@ function placeResell(
   else {
     position = UNDER;
   }
-  cassandra.query(
+  cassandra.queryOneRow(
     RESELL_BETTER_CQL,
     [
       position,
       position,
-      new Date((new Date()).getTime()+expirationTime * MINUTES_IN_MILLISECONDS),
+      new Date((new Date()).getTime()+expirationTime * MINUTE_IN_MILLISECONDS),
       position,
       resellPrice,
       betId,
@@ -393,7 +394,7 @@ function takeResell(
     position = UNDER;
     otherPosition = OVER;
   }
-  cassandra.query(
+  cassandra.queryOneRow(
     TAKE_RESELL_CQL,
     [
       position,
@@ -418,7 +419,17 @@ function takeResell(
       fantasyValue
     ],
     one,
-    callback);
+    function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (result[APPLIED]) {
+        callback(null);
+      }
+      else {
+        callback(new Error(APPLIED));
+      }
+    });
 }
 
 var DELETE_PENDING_BET_CQL = multiline(function() {/*
@@ -431,9 +442,11 @@ var DELETE_PENDING_BET_CQL = multiline(function() {/*
   AND
     bettor_usernames[?] = ?
   AND
-    bettor_usernames[?] = ?;
+    bettor_usernames[?] = ?
+  AND
+    prices[?] = ?;
 */});
-function deletePending(betId, username, isOverBetter, callback) {
+function deletePending(betId, isOverBetter, username, wager, callback) {
   var position1;
   var position2;
   if (isOverBetter) {
@@ -444,7 +457,7 @@ function deletePending(betId, username, isOverBetter, callback) {
     position1 = UNDER;
     position2 = OVER;
   }
-  cassandra.query(
+  cassandra.queryOneRow(
     DELETE_PENDING_BET_CQL,
     [
       betId,
@@ -452,10 +465,22 @@ function deletePending(betId, username, isOverBetter, callback) {
       position1,
       username,
       position2,
-      DEFAULT_USERNAME
+      DEFAULT_USERNAME,
+      position2,
+      {value: wager, hint: 'double'}
     ],
     one,
-    callback);
+    function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (result[APPLIED]) {
+        callback(null);
+      }
+      else {
+        callback(new Error(APPLIED));
+      }
+    });
 }
 
 var DELETE_BET_CQL = multiline(function() {/*
@@ -510,7 +535,17 @@ function recallResell(betId, isOverBetter, price, username, callback) {
       price
     ],
     one,
-    callback);
+    function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (result[APPLIED]) {
+        callback(null);
+      }
+      else {
+        callback(new Error(APPLIED));
+      }
+    });
 }
 
 exports.insertPending = insertPending;

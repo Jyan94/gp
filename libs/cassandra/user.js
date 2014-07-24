@@ -39,7 +39,6 @@ function insertUser(params, callback) {
   cassandra.queryOneRow(INSERT_USER_CQL, params, one,
     function (err, result) {
       if (err) {
-        console.log(params);
         callback(err);
       }
       else if (result[APPLIED]) {

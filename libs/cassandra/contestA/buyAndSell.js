@@ -10,9 +10,9 @@ var configs = require('config/index.js');
 var cql = configs.cassandra.cql;
 var async = require('async');
 var User = require('libs/cassandra/user');
-var UpdateBet = require('libs/cassandra/contestA/update');
-var Timeseries = require('libs/casandra/contestA/timeseries');
-var BetHistory = require('libs/cassandra/contestA/betHistory');
+var UpdateBet = require('./update');
+var Timeseries = require('./timeseries');
+var BetHistory = require('./betHistory');
  
 var constants = configs.constants;
 var APPLIED = constants.cassandra.APPLIED;
@@ -187,13 +187,24 @@ function takePending(info, user, callback) {
 //info contains
 //
 function placeResell(info, user, callback) {
+  var placeResellCallback = function(err) {
+    if (err && err.message === APPLIED) {
+      callback(new Error('could not place bet for resell'));
+    }
+    else if (err) {
+      callback(err);
+    }
+    else {
+      callback(null);
+    }
+  };
   UpdateBet.placeResell(
     info.betId,
     info.expirationTimeMinutes,
     info.isOverBetter,
     info.resellPrice,
     user.username,
-    callback);
+    placeResellCallback);
 }
 
 //info has fields
@@ -256,7 +267,60 @@ function takeResell(info, user, callback) {
   ], callback);
 }
 
+//info has fields betId, isOverBetter, price, username
+function recallResell(info, user, callback) {
+  var recallResellCallback = function(err) {
+    if (err && err.message === APPLIED) {
+      callback(new Error('could not recall resell'));
+    }
+    else if (err) {
+      callback(err);
+    }
+    else {
+      callback(null);
+    }
+  };
+  UpdateBet.recallResell(
+    info.betId,
+    info.isOverBetter,
+    info.price,
+    user.username,
+    recallResellCallback);
+}
+
+//info has fields betId, isOverBetter, wager
+function cancelPending(info, user, callback) {
+  var cancelPendingCallback = function(err) {
+    if (err && err.message === APPLIED) {
+      callback(new Error('could not cancel pending'));
+    }
+    else if (err) {
+      callback(err);
+    }
+    else {
+      callback(null);
+    }
+  };
+
+  async.waterfall(
+  [
+    function(callback) {
+      UpdateBet.deletePending(
+        info.betId,
+        info.isOverBetter,
+        user.username,
+        info.wager,
+        cancelPendingCallback);
+    },
+    function(callback) {
+      User.addMoney(user.money, info.wager, user.user_id, callback);
+    }
+  ], callback);
+}
+
 exports.insertPending = insertPending;
 exports.takePending = takePending;
 exports.placeResell = placeResell;
 exports.takeResell = takeResell;
+exports.recallResell = recallResell;
+exports.cancelPending = cancelPending;
