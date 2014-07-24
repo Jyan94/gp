@@ -1,7 +1,7 @@
 'use strict';
 require('rootpath')();
 
-var TimeseriesBets = require('libs/cassandra/timeseriesBets');
+var TimeseriesBets = require('libs/cassandra/contestA/timeseries');
 var DEFAULTID = '00000000-0000-0000-0000-000000000000';
 
 //query between lastUpdate and now and send to client

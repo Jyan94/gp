@@ -54,7 +54,7 @@ app.route('/signup')
 
 //verify
 var verify = require('routes/registry/verify');
-app.get('/verify/:email/:ver_code', verify.verify);
+app.get('/verify/:email/:verCode', verify.verify);
 
 //logout
 var logout = require('routes/registry/logout');
@@ -68,12 +68,12 @@ var autocomplete = require('routes/autocomplete');
 app.get('/autocomp', autocomplete.autocomp);
 
 //market
-var market = require('routes/market');
+//var market = require('routes/market');
 
-app.get('/market/:athleteId', market.renderAthletePage);
+//app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
-app.post('/addBets/:athleteId', market.takeBet);
-app.get('/markethome', market.getDailyScores);
+//app.post('/addBets/:athleteId', market.takeBet);
+//app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');

@@ -1,6 +1,6 @@
 'use strict';
 require('rootpath')();
-var configs = require('config/index');
+/*var configs = require('config/index');
 
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
@@ -66,7 +66,7 @@ var renderAthletePage = function (req, res, next) {
         next(new Error('invalid athlete id'));
       }
     });
-}
+}*/
 /*
 //post to '/submitForm/:playerId'
 var submitBet = function (req, res, next) {
@@ -116,6 +116,7 @@ var submitBet = function (req, res, next) {
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
+/*
 var takeBet = function(req, res, next, callback) {
   updateBet.takePending(
     req.body,
@@ -125,5 +126,5 @@ var takeBet = function(req, res, next, callback) {
 
 //exports above functions
 exports.renderAthletePage = renderAthletePage;
-exports.takeBet = takeBet;
-exports.getDailyScores = getDailyScores;
+exports.takeBet = takeBet;*/
+//exports.getDailyScores = getDailyScores;

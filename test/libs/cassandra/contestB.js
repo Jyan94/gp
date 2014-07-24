@@ -10,44 +10,40 @@
 var cql = require('config/index').cassandra.cql;
 var testUserParams0 =
 [
-  '00000000-0000-0000-0000-000000000000',
-  'test0@test.com',
-  true,
-  new Date(),
-  null,
-  't0',
-  'world',
-  'first name',
-  'last name',
   20,
-  'address',
-  'paymentinfo',
-  {value: 2000, hint: 'double'},
-  {value: 2000, hint: 'double'},
+  'test0@test.com',
   'fbid',
-  0,
-  'image'
+  'first name',
+  'image',
+  'last name',
+  2000,
+  'password',
+  'payment_info',
+  10, //privilege level
+  '00000000-0000-0000-0000-000000000000',
+  't0',
+  null,
+  true,
+  new Date()
 ];
 
 var testUserParams1 = 
 [
-  '00000000-0000-0000-0000-000000000001',
-  'test1@test.com',
-  true,
-  new Date(),
-  null,
-  't1',
-  'world',
-  'first name',
-  'last name',
   20,
-  'address',
-  'paymentinfo',
-  {value: 1000, hint: 'double'},
-  {value: 1000, hint: 'double'},
+  'test1@test.com',
   'fbid',
-  0,
-  'image'
+  'first name',
+  'image',
+  'last name',
+  1000,
+  'password',
+  'payment_info',
+  10, //privilege level
+  '00000000-0000-0000-0000-000000000001',
+  't1',
+  null,
+  true,
+  new Date()
 ];
 
 /*
@@ -182,7 +178,7 @@ var testInstance2 = {
   predictions: [10, 20, 30, 40, 40],
   joinTime: new Date()
 };
-var USER_ID_INDEX = 0;
+var USER_ID_INDEX = 10;
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
 var RemoveContestant = require('libs/cassandra/contestB/removeContestant');
@@ -277,6 +273,17 @@ var selectById = function(callback) {
 var testStates = function(callback) {
   async.waterfall(
   [
+    function(callback) {
+      UpdateContest.delete(CONTESTID, function(err) {
+        callback(err);
+      });
+    },
+    function(callback) {
+      User.remove(testUserParams0[USER_ID_INDEX], callback);
+    },
+    function(callback) {
+      User.remove(testUserParams1[USER_ID_INDEX], callback);
+    },
     function(callback) {
       User.insert(testUserParams0, callback);
     },
@@ -437,7 +444,6 @@ function testContestant(callback) {
     function(callback) {
       ++numInstances0;
       ++numContestants;
-      //console.log(numInstances0);
       AddContestant.addContestant(
         user0, 
         contest.contest_id, 
@@ -705,8 +711,9 @@ function testContestant(callback) {
     if (err) {
       console.log(err);
     }
-    (err === null).should.be.true;
-    callback(null);
+    else {
+      callback(null);      
+    }
   });
 }
 
@@ -717,7 +724,6 @@ function tests(callback) {
       console.log(err.stack);
       console.trace();
     }
-    (err === null).should.be.true;
     async.waterfall([
       function(callback) {
         UpdateContest.delete(CONTESTID, function(err) {
@@ -728,6 +734,23 @@ function tests(callback) {
         async.each(athleteIds, function(athleteId, callback){
           TimeseriesValues.removeValues(athleteId, callback);
         }, callback);
+      },
+      function(callback) {
+        User.remove(testUserParams0[USER_ID_INDEX], callback);
+      },
+      function(callback) {
+        User.remove(testUserParams1[USER_ID_INDEX], callback);
+      },
+      function(callback) {
+        if (err) {
+          console.log(err);
+          console.trace();
+          callback(err);
+          (err === null).should.be.true;
+        }
+        else {
+          callback(null);
+        }
       }
     ], callback);
   };

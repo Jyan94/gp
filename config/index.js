@@ -3,7 +3,7 @@
 
 var constants = require('config/constants');
 var globals = require('config/globals');
-var handlebarsHelpers = require('views/handlebarHelpers/helpers');
+var handlebarsHelpers = require('views/handlebarsHelpers/helpers');
 
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
@@ -49,7 +49,7 @@ var config = {
         hbs.registerHelper(key, handlebarsHelpers[key]);
       }
     }
-
+    hbs.registerPartials(path.join(__dirname, '../views/handlebarsPartials'));
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);

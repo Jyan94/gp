@@ -1,3 +1,8 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 require('rootpath')();
 
@@ -9,29 +14,27 @@ var one = cql.types.consistencies.one;
 
 var INSERT_PRICE_CQL = multiline(function() {/*
   INSERT INTO timeseries_contest_a_bets (
-    athlete_id, time, price
+    athlete_id, fantasy_value, price, time
   ) VALUES 
-    (?, ?, ?);
+    (?, ?, ?, ?);
 */});
 
 /**
  * inserts prices into timeseries 
- * need to take out '-' in athlete_id in order to place it as key in database
- */
-/**
- * inserts prices into timeseries 
  * @param  {uuid}   athleteId
+ * @param  {double} fantasyValue
  * @param  {double}   price
  * @param  {Function} callback
  * args: err
  */
-exports.insert = function (athleteId, price, callback) {
+exports.insert = function (athleteId, fantasyValue, price, callback) {
   cassandra.query(
     INSERT_PRICE_CQL, 
     [
     athleteId,
-    cql.types.timeuuid(), 
-    {value: price, hint: 'double'}
+    {value: fantasyValue, hint: 'double'},
+    {value: price, hint: 'double'},
+    cql.types.timeuuid()
     ], 
     one,
     callback);
@@ -56,7 +59,7 @@ exports.deletePrices = function (athleteId, callback) {
 
 var SELECT_TIMERANGE_CQL = multiline(function () {/*
   SELECT  
-    price, dateOf(time) 
+    fantasy_value, dateOf(time) 
   FROM 
     timeseries_bets
   WHERE
@@ -90,7 +93,7 @@ exports.selectTimeRange = function (athleteId, start, end, callback) {
 
 var UNTIL_NOW_CQL = multiline(function () {/*
   SELECT  
-    price, dateOf(time) 
+    fantasy_value, dateOf(time) 
   FROM 
     timeseries_bets
   WHERE

@@ -1,3 +1,8 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 (require('rootpath')());
 
@@ -24,6 +29,7 @@ var INSERT_BET_HISTORY_CQL = multiline(function() {/*
     athlete_name,
     athlete_team,
     bet_id,
+    fantasy_value,
     opponent,
     over_not_under,
     payoff,
@@ -55,6 +61,7 @@ function insertHistory(
   athleteName,
   athleteTeam,
   betId,
+  fantasyValue,
   opponent,
   overNotUnder,
   payoff,
@@ -66,9 +73,10 @@ function insertHistory(
   insert(
   [
     athleteId, 
-    athleteName, 
+    athleteName,
     athleteTeam, 
-    betId, 
+    betId,
+    fantasyValue, 
     opponent, 
     overNotUnder, 
     price, 
@@ -105,3 +113,7 @@ function deleteHistoryUsingBetId(betId, callback) {
     one,
     callback);
 }
+
+exports.insertHistory = insertHistory;
+exports.deleteHistoryUsingUsername = deleteHistoryUsingUsername;
+exports.deleteHistoryUsingBetId = deleteHistoryUsingBetId;

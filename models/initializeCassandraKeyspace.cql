@@ -4,23 +4,21 @@ CREATE KEYSPACE IF NOT EXISTS "goprophet"
 USE goprophet;
 
 CREATE TABLE IF NOT EXISTS users(
-    user_id uuid PRIMARY KEY,
-    email text,
-    verified boolean,
-    verified_time timestamp,
-    ver_code timeuuid,
-    username text,
-    password text,
-    first_name text,
-    last_name text,
     age int,
-    address text,
-    payment_info text,
+    email text,
+    facebook_id text,
+    first_name text,
+    image text,
+    last_name text,
     money double,
-    spending_power double,
-    fbid text,
-    vip_status int,
-    image text
+    password text,
+    payment_info text,
+    privilege_level int,
+    user_id uuid PRIMARY KEY,
+    username text,
+    verification_code timeuuid,
+    verified boolean,
+    verified_time timestamp
 );
 CREATE INDEX IF NOT EXISTS ON users (username);
 CREATE INDEX IF NOT EXISTS ON users (email);
@@ -46,6 +44,7 @@ CREATE INDEX IF NOT EXISTS ON contest_a_bets(bet_state);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(bettor_usernames);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(game_id);
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(is_selling_position);
+
 /*
 is_selling_position - boolean for sells position,
 CAREFUL FOR PENDING
@@ -158,8 +157,9 @@ CREATE TABLE IF NOT EXISTS player_images (
 );
 
 CREATE TABLE IF NOT EXISTS timeseries_bets (
-    athlete_id text,
-    time timeuuid,
+    athlete_id uuid,
+    fantasy_value double,
     price double,
+    time timeuuid,
     PRIMARY KEY (athlete_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);

@@ -21,7 +21,7 @@ var verify = function(req, res, next) {
   };
 
   var notVerified = function(result) {
-    if (result.ver_code === req.params.ver_code) {
+    if (result.ver_code === req.params.verCode) {
       var userId = result.user_id;
       User.update(userId, ['verified'], [true], updateVerifiedCallback);
     }

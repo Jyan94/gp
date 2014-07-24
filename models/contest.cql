@@ -84,23 +84,21 @@ CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
  */
 
 CREATE TABLE IF NOT EXISTS baseball_player (
+  age int,
   athlete_id uuid PRIMARY KEY,
   current_value double,
-  full_name text,
   first_name text,
-  last_name text,
-  short_team_name text,
-  long_team_name text,
-  team_id uuid,
-  status text,
-  position text,
-  profile_url text,
-  uniform_number int,
+  full_name text,
   height int,
-  weight int,
-  age int,
-  image text,
-  statistics map<text, text>
+  image_url text,
+  last_name text,
+  long_team_name text,
+  position text,
+  short_team_name text,
+  statistics map<text, text>,
+  status text,
+  uniform_number int,
+  weight int
 );
 CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 CREATE INDEX IF NOT EXISTS ON baseball_player(long_team_name);
@@ -112,6 +110,7 @@ statistics: map of date (formatted as year/mm/dd) to stringified statistics obje
 {
   sport text,
   game_date (time in milliseconds since epoch),
+  game_id,
   season_year int,
   season_type text,
   position_in_game text,
@@ -127,6 +126,7 @@ statistics: map of date (formatted as year/mm/dd) to stringified statistics obje
   earned_runs_allowed int,
   strikeouts int,
   walks_and_hits_allowed int,
-  fantasy_points double
+  fantasy_points double,
+  processed boolean
 }
  */

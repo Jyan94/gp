@@ -58,7 +58,8 @@ var INSERT_CONTEST_QUERY = multiline(function() {/*
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?
-  );
+  )
+  IF NOT EXISTS;
 */});
 
 var ATHLETE_NAMES_INDEX = 0;
@@ -150,6 +151,7 @@ var UPDATE_STATE_QUERY = multiline(function() {/*
  * args: (err)
  */
 function updateContestState(nextState, contestId, callback) {
+  //need to do function(err) {callback(err)} for callback
   cassandra.query(
     UPDATE_STATE_QUERY, 
     [nextState, contestId], 
