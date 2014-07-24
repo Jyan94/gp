@@ -100,13 +100,14 @@ function addUserInstanceToContest(user, contest, callback) {
           callback(null);
         }
       };
+      
       Contestant.addContestant(
         user.username, 
         contestant, 
         contest.current_entries, 
         contest.contest_id,
         addContestantCallback);
-    }
+    };
 
     var waterfallArray =
     [

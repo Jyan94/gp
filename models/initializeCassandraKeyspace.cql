@@ -29,14 +29,14 @@ CREATE TABLE IF NOT EXISTS contest_a_bets (
     athlete_team text,
     bet_id timeuuid PRIMARY KEY,
     bet_state int,  //
-    bettor_usernames list<text>,    //
-    expirations list<timestamp>,   //    
+    bettor_usernames map<text, text>,    //
+    expirations map<text, timestamp>,   //    
     fantasy_value double,
     game_id uuid,
-    is_selling_position list<boolean>,  //
-    old_prices list<double>,
+    is_selling_position map<text, boolean>,  //
+    old_prices map<text, double>,
     payoff double,
-    prices list<double>,
+    prices map<text, double>,
     sport text
 );
 CREATE INDEX IF NOT EXISTS ON contest_a_bets(athlete_name);
@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS contest_a_bets_history (
     athlete_name text,
     athlete_team text,
     bet_id timeuuid,
+    fantasy_value double,
     opponent text,
     over_not_under boolean,
     payoff double,
@@ -156,7 +157,7 @@ CREATE TABLE IF NOT EXISTS player_images (
     image_url text
 );
 
-CREATE TABLE IF NOT EXISTS timeseries_bets (
+CREATE TABLE IF NOT EXISTS timeseries_contest_a_bets (
     athlete_id uuid,
     fantasy_value double,
     price double,

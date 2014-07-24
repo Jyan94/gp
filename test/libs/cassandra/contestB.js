@@ -7,24 +7,23 @@
 'use strict';
 (require('rootpath')());
 
-var cql = require('config/index').cassandra.cql;
 var testUserParams0 =
 [
-  20,
-  'test0@test.com',
-  'fbid',
-  'first name',
-  'image',
-  'last name',
-  2000,
-  'password',
-  'payment_info',
+  20, //age
+  'test0@test.com', //email
+  'fbid', //facebook_id
+  'first name', //first_name
+  'image', //image
+  'last name',  //last_name
+  2000, //money
+  'password', //password
+  'payment_info', //payment_info
   10, //privilege level
-  '00000000-0000-0000-0000-000000000000',
-  't0',
-  null,
-  true,
-  new Date()
+  '00000000-0000-0000-0000-000000000000', //user_id
+  'T0', //t0
+  null, //verification_code
+  true, //verified
+  new Date()  //verified_time
 ];
 
 var testUserParams1 = 
@@ -40,7 +39,7 @@ var testUserParams1 =
   'payment_info',
   10, //privilege level
   '00000000-0000-0000-0000-000000000001',
-  't1',
+  'T1',
   null,
   true,
   new Date()
@@ -191,7 +190,6 @@ var AddAndUpdateContestant =
   require('libs/cassandra/contestB/addAndUpdateContestant');
 
 var configs = require('config/index');
-var cql = configs.cassandra.cql;
 var states = configs.constants.contestB.STATES;
 
 var OPEN = states.OPEN;
@@ -244,17 +242,6 @@ function verifyContestEssentials(queryResult) {
     'starting_virtual_money',
     'total_prize_pool');
 }
-
-/**
- * functionality to test:
- * select by id, username
- * select by state, set state
- * add contestant
- * select by username
- * insert test instances for contestant and not existing username
- * remove instances
- * test lock
- */
 
 var selectById = function(callback) {
   SelectContest.selectById(
@@ -709,7 +696,7 @@ function testContestant(callback) {
     }
   ], function(err) {
     if (err) {
-      console.log(err);
+      callback(err);
     }
     else {
       callback(null);      
@@ -743,9 +730,6 @@ function tests(callback) {
       },
       function(callback) {
         if (err) {
-          console.log(err);
-          console.trace();
-          callback(err);
           (err === null).should.be.true;
         }
         else {
