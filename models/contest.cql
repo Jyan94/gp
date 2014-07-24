@@ -126,6 +126,7 @@ statistics: map of date (formatted as year/mm/dd) to stringified statistics obje
   earned_runs_allowed int,
   strikeouts int,
   walks_and_hits_allowed int,
-  fantasy_points double
+  fantasy_points double,
+  processed boolean
 }
  */

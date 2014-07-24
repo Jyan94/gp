@@ -11,7 +11,6 @@ var configs = require('config/index.js');
 var ContestB = require('libs/cassandra/contestB/exports');
 var VALID_SPORTS = configs.constants.validSports;
 var BaseballPlayer = require('libs/cassandra/BaseballPlayer');
-var Game;
 
 function selectGames(sport, gameIds, callback) {
 

@@ -3,23 +3,6 @@
  * @type {Object}
  */
 /*
-generic bet:
-{
-  athleteId uuid, --
-  athleteName text, --
-  athleteTeam text, --
-  betId timeuuid, --
-  bettorUsernames list<text> ??,
-  expirations list<timestamp>,  ??
-  fantasyValue double, --
-  gameId uuid, --
-  isSellingPosition list<boolean>, ??
-  oldPrices,
-  payoff double, --
-  prices list<double>, ??
-  sport text --
-}
-
 pending bet format:
 {
   athleteId uuid, --
@@ -123,7 +106,7 @@ exports.athletes = {
 
 exports.games = {
   Baseball: {
-    //gameId: object
+    //gameId: object containing game date
   }
 }
 
