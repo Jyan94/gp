@@ -34,7 +34,7 @@ function calculateFantasyPointsForContest (contest, callback) {
           else {
             Player.select(athleteParsed.athleteId, function (err, result) {
               if (err) {
-                callback(err);
+                callback(null, 0);
               }
               else {
                 statistics = result.statistics;
@@ -54,9 +54,11 @@ function calculatePointsInstance(username, fantasyArray) {
     var totalPoints = 0.0;
     var predictions = instance.predictions;
     var wagers = instance.wagers;
+    var weightedPrediction = 0.0;
 
     for (var i = 0; i < predictions.length; i++) {
-      totalPoints += (wagers[i] + wagers[i]/(Math.abs(predictions[i] - fantasyArray[i]) + 1));
+      weightedPrediction = (20 * predictions[i]) / fantasyArray[i];
+      totalPoints += (wagers[i] + wagers[i]/(Math.abs(weightedPrediction - 20) + 1));
     }
 
     callback(null, { username: username, totalPoints: totalPoints });

@@ -11,9 +11,11 @@ var Game = require('libs/cassandra/baseball/game');
 var modes = require('libs/contestB/modes.js');
 var calculate = require('libs/contestB/baseballCalculations.js');
 var cql = configs.cassandra.cql;
+var childProcess = require('child_process');
 
 var messages = configs.constants.contestStrings;
 var contestBSizesNormal = configs.constants.contestBSizesNormal;
+var scriptNames = configs.constants.scriptNames;
 
 /*
  * ====================================================================
@@ -144,17 +146,27 @@ var sendContestTable = function (req, res, next) {
  */
 
 var findEligibleGames = function (req, res, next, callback) {
+  var currentTime = (new Date()).getTime()
+
   Game.selectTodaysGames(function (err, games) {
     if (err) {
       next(err);
     }
     else {
-      callback(null, req, res, next, games);
+      async.filter(games,
+        function (game, callback) {
+          callback((currentTime < game.start_time - 600000) ? true : false);
+        },
+        function (games) {
+          callback(null, req, res, next, games);
+        })
     }
   });
 }
 
-var filterEligibleGamesHelperMain = function (player, callback) {
+/* Uses the roster from the daily event info page of Sportsdata */
+
+/*var filterEligibleGamesHelperMain = function (player, callback) {
   BaseballPlayer.select(JSON.parse(player).athleteId,
     function (err, result) {
       if (err) {
@@ -200,6 +212,61 @@ var filterEligibleGamesHelper = function (game, callback) {
                 shortHomeName: game.short_home_name,
                 startTime: game.start_time
               });
+          });
+      }
+  });
+}*/
+
+/* Uses the short_team_name field of the baseball_player table */
+
+var filterEligibleGamesHelperMain = function (shortTeamName) {
+  return function (callback) {
+    BaseballPlayer.selectUsingShortTeamName(shortTeamName,
+      function (err, players) {
+        if (err) {
+          callback(err);
+        }
+        else {
+          async.map(players,
+            function (player, callback) {
+              callback(
+                null, 
+                {
+                  athleteId: player.athlete_id,
+                  fullName: player.full_name,
+                  shortTeamName: player.short_team_name,
+                  position: player.position
+                });
+            },
+            function (err, players) {
+              callback(err, players);
+            });
+        }
+      });
+  };
+}
+
+var filterEligibleGamesHelper = function (game, callback) {
+  async.parallel([
+    filterEligibleGamesHelperMain(game.short_away_name),
+    filterEligibleGamesHelperMain(game.short_home_name)
+    ],
+    function (err, result) {
+      if (err) {
+        callback(err);
+      }
+      else {
+        callback(
+          null,
+          {
+            athletes: result[0].concat(result[1]),
+            gameId: game.game_id,
+            gameDate: game.game_date,
+            longAwayName: game.long_away_name,
+            longHomeName: game.long_home_name,
+            shortAwayName: game.short_away_name,
+            shortHomeName: game.short_home_name,
+            startTime: game.start_time
           });
       }
   });
@@ -485,6 +552,8 @@ var contestCreationProcess = function (req, res, next) {
  */
 
 var findContestByContestIdCheckEntry = function (req, res, next, callback) {
+  var currentTime = (new Date()).getTime();
+
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -492,7 +561,7 @@ var findContestByContestIdCheckEntry = function (req, res, next, callback) {
     else if (result.maximum_entries === result.current_entries) {
       res.send(400, 'Contest is at maximum capacity.');
     }
-    else if ((new Date()).getTime() > result.contest_deadline_time.getTime()) {
+    else if (currentTime > result.contest_deadline_time.getTime()) {
       res.send(400, 'Contest is past deadline time.');
     }
     else {
@@ -817,7 +886,37 @@ var contestEditProcess = function (req, res, next) {
 
 /*
  * ====================================================================
- * CONTEST BACKGROUND FUNCTIONS (OPEN AND FILLED)
+ * CONTEST BACKGROUND FUNCTIONS (PYTHON SCRIPTS)
+ * ====================================================================
+ */
+
+var runBackgroundScript = function (fileName) {
+  return function (callback) {
+    var python = childProcess.spawn('python', [fileName]);
+    var output = '';
+
+    python.stdout.on('data', function (data){
+      output += data;
+    });
+
+    python.stderr.setEncoding('utf8');
+    python.stderr.on('data', function (data) {
+      console.log(data);
+    });
+
+    python.on('close', function(code) {
+      console.log(output);
+      callback(null);
+    });
+  };
+}
+
+var runParsePlayers = runBackgroundScript(scriptNames.parsePlayers);
+var runParseAndUpdateGames = runBackgroundScript(scriptNames.parseAndUpdateGames);
+
+/*
+ * ====================================================================
+ * CONTEST BACKGROUND FUNCTIONS (OPEN AND FILLED CONTESTS)
  * ====================================================================
  */
 
@@ -868,7 +967,7 @@ var examineContestsOpenAndFilled = function (callback) {
 
 /*
  * ====================================================================
- * CONTEST BACKGROUND FUNCTIONS (TO PROCESS)
+ * CONTEST BACKGROUND FUNCTIONS (TO PROCESS CONTESTS)
  * ====================================================================
  */
 
@@ -939,12 +1038,29 @@ function setRepeat (func, interval) {
   }, interval);
 }
 
-setRepeat(examineContestsOpenAndFilled, 1000);
-setRepeat(examineContestsToProcess, 1000);
+/*setRepeat(runParsePlayers, 86400000);
+setRepeat(runParseAndUpdateGames, 7200000);
+setRepeat(examineContestsOpenAndFilled, 60000);
+setRepeat(examineContestsToProcess, 60000);*/
 
-examineContestsToProcess(function (err) {
-  console.log(err);
-})
+function runAndSetRepeat (func, interval) {
+  var callback = function (err) {
+    if (err) {
+      console.log(err);
+    }
+
+    setTimeout(function () {
+      runAndSetRepeat(func, interval)
+    }, interval);
+  };
+
+  func(callback);
+}
+
+runAndSetRepeat(runParsePlayers, 86400000);
+runAndSetRepeat(runParseAndUpdateGames, 7200000);
+runAndSetRepeat(examineContestsOpenAndFilled, 60000);
+runAndSetRepeat(examineContestsToProcess, 60000);
 
 /*
  * ====================================================================

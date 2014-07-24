@@ -17,7 +17,7 @@ day = ('0' + str(today.day) if today.day < 10 else str(today.day))
 date = year + '/' + month + '/' + day
 key = 'grnayxvqv4zxsamxhsc59agu'
 gamesUrl = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/daily/event/' + date + '.xml?api_key=' + key
-print gamesUrl
+timesRequested = 0
 
 def getPlayers(event, side):
   players = []
@@ -182,6 +182,7 @@ def getStatistics(statistics, side, gameId, awayInfo, homeInfo):
   return (athleteIdList, statisticsList)
 
 fGames = requests.get(gamesUrl).text;
+timesRequested += 1
 xmlDocGames = minidom.parseString(fGames);
 
 eventList = xmlDocGames.getElementsByTagName('events')[0].getElementsByTagName('event')
@@ -191,12 +192,11 @@ for event in eventList:
 
   eventAttributes = event.attributes
   gameId = eventAttributes['id'].value
-  print gameId
   status = eventAttributes['status'].value
 
   gameRows = session.execute('SELECT * FROM baseball_game WHERE game_id = %s;', (uuid.UUID('{' + gameId + '}'),))
 
-  if (len(gameRows) == 0) or (gameRows[0].status != status):
+  if (len(gameRows) == 0) or (gameRows[0].status != status) or (status in ['scheduled', 'inprogress']):
     startTime = event.getElementsByTagName('scheduled_start_time')[0].firstChild.nodeValue
 
     awayInfo = getPlayers(event, 'visitor')
@@ -214,6 +214,7 @@ for event in eventList:
       statisticsUrl = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/statistics/' + gameId + '.xml?api_key=' + key
 
       fStatistics = requests.get(statisticsUrl).text
+      timesRequested += 1
       xmlDocStatistics = minidom.parseString(fStatistics)
 
       statistics = xmlDocStatistics.getElementsByTagName('statistics')[0]
@@ -232,3 +233,5 @@ for event in eventList:
 
     session.execute(query + ';', args)
     time.sleep(1)
+
+print('For parse and update games, ' + str(timesRequested) + ' request(s) was(were) made.')

@@ -7,7 +7,7 @@ cluster = Cluster(['localhost'])
 session = cluster.connect('goprophet')
 
 
-json_data=open('headshotImagesMlb.json')
+json_data=open('headshotImages.json')
 
 data = json.load(json_data)
 
