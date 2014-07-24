@@ -155,7 +155,7 @@ var findEligibleGames = function (req, res, next, callback) {
     else {
       async.filter(games,
         function (game, callback) {
-          callback((currentTime < game.start_time - 600000) ? true : false);
+          callback((currentTime < game.start_time - 900000) ? true : false);
         },
         function (games) {
           callback(null, req, res, next, games);
@@ -490,7 +490,7 @@ var getDeadlineTimeForContestCreation = function (req, res, next, params,
     },
     function (err, deadlineTime) {
       callback(err, req, res, next, params, games, players,
-               new Date(deadlineTime - 600000));
+               new Date(deadlineTime - 900000));
     });
 }
 
@@ -926,13 +926,15 @@ var getContestsOpenAndFilled = function (callback) {
   });
 }
 
+/* Refund money when cancelling contests */
+/* Make sure there is a deadline time at least 15 minutes before contest starts for contestant removal */
 var updateStateContestsOpenAndFilledHelper = function (currentTime) {
   return function (contest, callback) {
     var finalCallback = function (err) {
       callback(err);
     }
 
-    if (contest.contest_deadline_time <= currentTime) {
+    if (contest.contest_deadline_time + 900000 <= currentTime) {
       if (contest.current_entries >= contest.minimum_entries) {
         ContestB.setToProcess(contest.contest_id, finalCallback);
       }
