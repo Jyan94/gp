@@ -125,9 +125,10 @@ var testInfoTakePending = {
   betId: TEST_BET_ID,
   fantasyValue: TEST_FANTASY_VALUE,
   gameId: TEST_GAME_ID,
-  isOverBetter: !IS_OVER_BETTER,
+  overNotUnder: !IS_OVER_BETTER,
   opponent: testUserParams0[USERNAME_INDEX],
   sport: 'TEST_SPORT',
+  payoff: 2 * WAGER,
   wager: WAGER
 }
 
@@ -181,9 +182,18 @@ function removeAll(callback) {
     },
     function(callback) {
       Timeseries.deletePrices(TEST_ATHLETE_ID, callback);
+    },
+    function(callback) {
+      BetHistory.deleteUsingUsername(testUserParams0[USERNAME_INDEX], callback);
+    },
+    function(callback) {
+      BetHistory.deleteUsingUsername(testUserParams1[USERNAME_INDEX], callback);
+    },
+    function(callback) {
+      BetHistory.deleteUsingUsername(testUserParams2[USERNAME_INDEX], callback);
     }
-  ], function(err, result) {
-    callback(null);
+  ], function(err) {
+    callback(err);
   });
 }
 
@@ -241,7 +251,7 @@ function testBets(callback) {
     },
     function(callback) {
       SelectBet.selectByBetId(TEST_BET_ID, function(err, result) {
-        console.log(result.bettor_usernames);
+        verifyBetEssentials(result);
         callback(null);
       });
     }
@@ -264,9 +274,9 @@ function tests(callback) {
       console.trace();
     }
     async.waterfall([
-      function(callback) {
+      /*function(callback) {
         removeAll(callback);
-      },
+      },*/
       function(callback) {
         if (err) {
           console.trace();

@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS contest_a_bets_history (
     athlete_name text,
     athlete_team text,
     bet_id timeuuid,
+    fantasy_value double,
     opponent text,
     over_not_under boolean,
     payoff double,

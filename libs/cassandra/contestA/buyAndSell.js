@@ -96,7 +96,8 @@ function insertPending(info, user, callback) {
  * @param  {Function} callback
  * args: (err)
  */
-function takePending(info, user, callback) {
+
+function waterfallTakePending(info, user, callback) {
   var takePendingCallback = function(err) {
     if (err && err.message === APPLIED) {
       User.addMoney(
@@ -119,6 +120,20 @@ function takePending(info, user, callback) {
       callback(null);
     }
   };
+  UpdateBet.takePending(
+    info.athleteId,
+    info.athleteName,
+    info.athleteTeam,
+    info.betId,
+    info.fantasyValue,
+    info.opponent,        
+    info.overNotUnder,
+    user.username,
+    info.wager,
+    takePendingCallback);
+}
+
+function takePending(info, user, callback) {
 
   async.waterfall(
   [
@@ -126,24 +141,14 @@ function takePending(info, user, callback) {
       User.subtractMoney(user.money, info.wager, user.user_id, callback);
     },
     function(callback) {
-      UpdateBet.takePending(
-        info.athleteId,
-        info.athleteName,
-        info.athleteTeam,
-        info.betId,
-        info.fantasyValue,
-        info.opponent,        
-        info.overNotUnder,
-        user.username,
-        info.wager,
-        takePendingCallback);
+      waterfallTakePending(info, user, callback);
     },
     function(callback) {
       async.parallel(
       [
         //for user
         function(callback) {
-          BetHistory.insert(
+          BetHistory.insertHistory(
             info.athleteId,
             info.athleteName,
             info.athleteTeam,
@@ -154,11 +159,12 @@ function takePending(info, user, callback) {
             info.payoff,
             info.wager,
             false,
-            user.username);
+            user.username,
+            callback);
         },
         //for opponent
         function(callback) {
-          BetHistory.insert(
+          BetHistory.insertHistory(
             info.athleteId,
             info.athleteName,
             info.athleteTeam,
@@ -169,7 +175,8 @@ function takePending(info, user, callback) {
             info.payoff,
             info.wager,
             true,
-            info.opponent);
+            info.opponent,
+            callback);
         },
         //for timeseries
         function(callback) {
@@ -179,7 +186,9 @@ function takePending(info, user, callback) {
             info.wager,
             callback);
         }
-      ], callback);
+      ], function(err) {
+        callback(err);
+      });
     }
   ], callback);
 }

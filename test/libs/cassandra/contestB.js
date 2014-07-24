@@ -20,7 +20,7 @@ var testUserParams0 =
   'payment_info', //payment_info
   10, //privilege level
   '00000000-0000-0000-0000-000000000000', //user_id
-  't0', //t0
+  'T0', //t0
   null, //verification_code
   true, //verified
   new Date()  //verified_time
@@ -39,7 +39,7 @@ var testUserParams1 =
   'payment_info',
   10, //privilege level
   '00000000-0000-0000-0000-000000000001',
-  't1',
+  'T1',
   null,
   true,
   new Date()
