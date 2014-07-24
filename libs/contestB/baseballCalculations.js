@@ -20,91 +20,46 @@ sportsdataMlb.init('t', 4, 'grnayxvqv4zxsamxhsc59agu', 2014, 'REG');
 
 /* if the game is over, calculate all the fantasy points for the athletes in
 a specific contest */
-function calculateFantasyPointsForContest (contestId, callback) {
-  DailyProphet.selectById(contestId, function(err, result) {
-    var athletes = result.athletes;
-    var playerObjectArr = [];
-    for (var i = 0; i < athletes.length; i++) {
-      var homeAbbr;
-      var awayAbbr;
-      var homeName;
-      var awayName;
-      if (athletes[i].isOnHomeTeam) {
-        homeAbbr = athletes[i].shortTeamName;
-        awayAbbr = athletes[i].shortVersusTeamName;
-        homeName = athletes[i].longTeamName;
-        awayName = athletes[i].longVersusTeamName;
-      }
-      else {
-        homeAbbr = athletes[i].shortVersusTeamName;
-        awayAbbr = athletes[i].shortTeamName;
-        homeName = athletes[i].longVersusTeamName;
-        awayName = athletes[i].longTeamName;
-      }
-      playerObjectArr.push({
-        name: athletes[i].athleteName,
-        athleteId: athletes[i].athleteId,
-        isOnHomeTeam: athletes[i].isOnHomeTeam,
-        prefixSchedule: {
-          '$': {
-            id: athletes[i].gameId,
-          },
-          home: [
-            {$: {
-                abbr: homeAbbr,
-                name: homeName
-              }
-            }
-          ],
-          visitor: [
-            {$: {
-                abbr: awayAbbr,
-                name: awayName
-              }
-            }
-          ]
-        }
-      });
-    }
-    async.map(playerObjectArr, calculate.calculateMlbFantasyPoints, function(err, result) {
-      if (err) {
-        callback(err);
-      }
-      else {
-        callback(null, contestId, result);
-      }
+function calculateFantasyPointsForContest (contest, callback) {
+  async.map(contest.athletes,
+    function (athlete, callback) {
+      var athleteParsed = JSON.parse(athlete);
+
+      calculate.calculateMlbFantasyPoints(athleteParsed.athleteId,
+                                          athleteParsed.gameId,
+                                          callback);
+    },
+    function(err, fantasyArray) {
+      callback(err, contest, fantasyArray);
     });
-  });
 }
 
 /* calculate the points in the tournament for all the contestants */
-function calculatePoints (contestId, FantasyArray, callback) {
+function calculatePoints (contest, fantasyArray, callback) {
   var contestantPoints = [];
 
-  DailyProphet.selectById(contestId, function(err, result) {
-    var contestants = result.contestants;
+  var contestants = result.contestants;
 
-    for (var contestant in contestants) {
-      var contestantParsed = JSON.parse(contestants[contestant]).instances;
+  for (var contestant in contestants) {
+    var contestantParsed = JSON.parse(contestants[contestant]).instances;
 
-      for (var i = 0; i < contestantParsed.length; i++) {
-        var wagers = contestantParsed[i].wagers;
-        var predictions = contestantParsed[i].predictions;
-        var contestantId = contestantParsed[i].userId;
-        var totalPoints = 0.0;
+    for (var i = 0; i < contestantParsed.length; i++) {
+      var wagers = contestantParsed[i].wagers;
+      var predictions = contestantParsed[i].predictions;
+      var contestantId = contestantParsed[i].userId;
+      var totalPoints = 0.0;
 
-        for (var j = 0; j < wagers.length; j++) {
-          totalPoints = totalPoints + wagers[j] + wagers[j]/(Math.abs(predictions[j] - FantasyArray[j]) + 1);
-          /*console.log(totalPoints);*/
-        }
-        contestantPoints.push({contestantId: contestantId, totalPoints: totalPoints});
+      for (var j = 0; j < wagers.length; j++) {
+        totalPoints = totalPoints + wagers[j] + wagers[j]/(Math.abs(predictions[j] - FantasyArray[j]) + 1);
+        /*console.log(totalPoints);*/
       }
+      contestantPoints.push({contestantId: contestantId, totalPoints: totalPoints});
     }
-    contestantPoints.sort(function(contestant1, contestant2) {
-      return contestant1.totalPoints - contestant2.totalPoints;
-    });
-    callback(null, contestId, contestantPoints);
+  }
+  contestantPoints.sort(function(contestant1, contestant2) {
+    return contestant1.totalPoints - contestant2.totalPoints;
   });
+  callback(null, contestId, contestantPoints);
 }
 
 /* calculate the actual dollar winnings for contestants depending on the prize
@@ -136,10 +91,10 @@ function calculateWinningsForContestant(contestId, contestantPoints, callback) {
 }
 
 /* use the waterfall to update all the winnings for a particular contest*/
-function calculateWinningsForContest (contests, callback) {
+function calculateWinningsForContest (contest, callback) {
   async.waterfall([
     function(callback) {
-      callback(null, contests);
+      callback(null, contest);
     },
     calculateFantasyPointsForContest,
     calculatePoints,

@@ -9,7 +9,7 @@ var ContestB = require('libs/cassandra/contestB/exports');
 var BaseballPlayer = require('libs/cassandra/baseball/player');
 var Game = require('libs/cassandra/baseball/game');
 var modes = require('libs/contestB/modes.js');
-var calculate = require('libs/contestB/baseballCalculations.js');
+var calculate = require('libs/contestB/calculations.js');
 var cql = configs.cassandra.cql;
 
 var messages = configs.constants.contestStrings;

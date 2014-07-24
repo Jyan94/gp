@@ -104,9 +104,9 @@ CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 CREATE INDEX IF NOT EXISTS ON baseball_player(long_team_name);
 CREATE INDEX IF NOT EXISTS ON baseball_player(short_team_name);
 
-//statistics is map of date baseball_player_game_statistics
+//statistics is map of game_id baseball_player_game_statistics
 /*
-statistics: map of date (formatted as year/mm/dd) to stringified statistics objects
+statistics: map of game_id to stringified statistics objects
 {
   sport text,
   game_date (time in milliseconds since epoch),
