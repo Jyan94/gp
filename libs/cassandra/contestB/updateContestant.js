@@ -204,7 +204,7 @@ function updateInstance(
         Contestant.updateContestant(
           user.username, 
           JSON.stringify(contestant), 
-          contest.contest_id, 
+          contest.contest_id,
           callback);
       }
     };

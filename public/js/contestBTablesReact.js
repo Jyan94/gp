@@ -1,6 +1,16 @@
 /** @jsx React.DOM */
 /* jshint ignore:start */
 
+var formatTime = function (oldTime) {
+  var time = new Date(oldTime);
+  var timeHalf = (time.getHours() > 11 ? ' PM' : ' AM');
+  var timeString = (((time.getHours() + 11) % 12) + 1
+                    + time.toTimeString().substring(2, 8)
+                    + timeHalf);
+
+  return timeString;
+}
+
 /*
  * ====================================================================
  * CONTEST TABLES
@@ -87,7 +97,7 @@ var ContestRow = React.createClass({
         <td>{contest.sport}</td>
         <td>{contest.type}</td>
         <td>{contest.type}</td>
-        <td>{contest.contestStartTime}</td>
+        <td>{formatTime(contest.contestDeadlineTime)}</td>
         <td>{contest.currentEntries + " / " + contest.maximumEntries}</td>
         <td>{contest.entryFee}</td>
         <td>{contest.totalPrizePool}</td>
@@ -156,6 +166,11 @@ var ContestDialogBox = React.createClass({
           </div>
           <ContestDialogBoxTabs data={contest} /> 
         </div>
+        <div className='contest-dialog-box-footer'>
+          <a className='enterbtn contest-dialog-box-button' href={'/contestBEntry/' + contest.contestId}>
+            Enter
+          </a>
+        </div>
       </div>
     );
   }
@@ -172,10 +187,9 @@ var ContestDialogBoxGames = React.createClass({
       );
     });
     var gameTimeNodes = games.map(function(game) {
-      var gameDate = (new Date(game.gameDate)).toString();
       return (
         <td>
-          {gameDate}
+          {formatTime(game.gameDate)}
         </td>
       );
     });
@@ -325,7 +339,7 @@ var ContestDialogBoxTab3 = React.createClass({
         <p> List of Payouts:  </p>
         <table id='payouts' style={{width: 700}}>
           <tr>
-            <th>Placing</th>
+            <th>Rank</th>
             <th>Payout</th>
           </tr>
           {payoutNodes}

@@ -6,7 +6,7 @@ sportsdataMlb.init('t', 4, 'grnayxvqv4zxsamxhsc59agu', 2014, 'REG');
 var BaseballPlayerStatistics = require('libs/cassandra/baseball/player.js')
 
 /* calculates the fantasy points for a specific player*/
-exports.calculateMlbFantasyPoints = function(playerObject, callback) {
+exports.calculateMlbFantasyPoints = function(athlete, callback) {
   var athleteId = playerObject.athleteId; //player is id not name
   var isOnHomeTeam = playerObject.isOnHomeTeam;
   var gameId = playerObject.prefixSchedule.$.id;
@@ -14,6 +14,7 @@ exports.calculateMlbFantasyPoints = function(playerObject, callback) {
   var longHomeTeam = playerObject.prefixSchedule.home[0].$.name;
   var shortVisitorTeam = playerObject.prefixSchedule.visitor[0].$.abbr;
   var longVisitorTeam = playerObject.prefixSchedule.visitor[0].$.name;
+  
 
   var count = 0.0;
 

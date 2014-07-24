@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS baseball_player (
   short_team_name text,
   statistics map<text, text>,
   status text,
+  team_id uuid,
   uniform_number int,
   weight int
 );
@@ -104,29 +105,30 @@ CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
 CREATE INDEX IF NOT EXISTS ON baseball_player(long_team_name);
 CREATE INDEX IF NOT EXISTS ON baseball_player(short_team_name);
 
-//statistics is map of date baseball_player_game_statistics
+//statistics is map of game_date to baseball_player_game_statistics
+//please change this to have key of game_id
 /*
-statistics: map of date (formatted as year/mm/dd) to stringified statistics objects
+statistics: map of game_id to stringified statistics objects
 {
   sport text,
-  game_date (time in milliseconds since epoch),
-  game_id,
-  season_year int,
-  season_type text,
-  position_in_game text,
+  gameDate (time in milliseconds since epoch),
+  gameId,
+  seasonYear int,
+  seasonType text,
+  positionInGame text,
   singles int,
   doubles int,
   triples int,
-  home_runs int,
+  homeRuns int,
   runs int,
   rbis int, //runs batted in
-  stolen_bases int,
-  caught_stealing_bases int,
+  stolenBases int,
+  caughtStealingBases int,
   walks int,
-  earned_runs_allowed int,
+  earnedRunsAllowed int,
   strikeouts int,
-  walks_and_hits_allowed int,
-  fantasy_points double,
+  walksAndHitsAllowed int,
+  fantasyPoints double,
   processed boolean
 }
  */

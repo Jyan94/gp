@@ -7,14 +7,14 @@
 
 exports.contestBCreationHelperAway = function (context, options) {
   var shortAwayName = context.shortAwayName;
-  var players = context.players;
+  var athletes = context.athletes;
   var ret = "";
 
-  for (var i = 0; i < players.length; i++) {
-    if (players[i].shortTeamName === shortAwayName) {
+  for (var i = 0; i < athletes.length; i++) {
+    if (athletes[i].shortTeamName === shortAwayName) {
       ret += options.fn({
                           gameId: context.gameId,
-                          player: players[i]
+                          athlete: athletes[i]
                         });
     }
   }
@@ -24,14 +24,14 @@ exports.contestBCreationHelperAway = function (context, options) {
 
 exports.contestBCreationHelperHome = function (context, options) {
   var shortHomeName = context.shortHomeName;
-  var players = context.players;
+  var athletes = context.athletes;
   var ret = "";
 
-  for (var i = 0; i < players.length; i++) {
-    if (players[i].shortTeamName === shortHomeName) {
+  for (var i = 0; i < athletes.length; i++) {
+    if (athletes[i].shortTeamName === shortHomeName) {
       ret += options.fn({
                           gameId: context.gameId,
-                          player: players[i]
+                          athlete: athletes[i]
                         });
     }
   }

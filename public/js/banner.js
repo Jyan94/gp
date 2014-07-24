@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	var dropDownMenuActive = false;
 
-	$('.fui-gear').click(function (e) {
+	$('.fui-list').click(function (e) {
 		if (dropDownMenuActive) {
 			dropDownMenuActive = false;
       $('.dropdown-menu').removeClass('active');
