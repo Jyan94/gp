@@ -1,3 +1,5 @@
+var path = require('path');
+
 exports.defaultPlayerImage = 'http://2.bp.blogspot.com/' +
 '-6QyJDHjB5XE/Uscgo2DVBdI/AAAAAAAACS0/DFSFGLBK_fY/s1600/' +
 'facebook-default-no-profile-pic.jpg';
@@ -230,3 +232,13 @@ exports.globals = {
  */
 exports.contestBSizesNormal = 
   [2, 3, 5, 10, 12, 14, 23, 56, 112, 167, 230, 1150];
+
+/*
+ * ====================================================================
+ * Background Scripts
+ * ====================================================================
+ */
+exports.scriptNames = {
+  parsePlayers: path.join(__dirname, '../scripts/baseball/parsePlayers.py'),
+  parseAndUpdateGames: path.join(__dirname, '../scripts/baseball/parseAndUpdateGames.py')
+}
