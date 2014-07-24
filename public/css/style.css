@@ -1079,6 +1079,40 @@ input {
 /* MarketHome                                                                 */
 /*----------------------------------------------------------------------------*/
 
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+/* ---- input ---- */
+
+input[type="text"] {
+  font-size: 20px;
+}
+
+/* ---- isotope ---- */
+
+.isotope {
+  border: 1px solid #333;
+  display: block;
+  margin-left: 120px;
+  margin-right: auto;
+  padding-top: 55px;
+  max-width: 980px;
+}
+
+/* clear fix */
+.isotope:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
 .athleteAndPortfolio {
   margin-top: 20px;
   height: 400px;
@@ -1235,19 +1269,46 @@ input {
 .playercard1-info {
   height: 60px;
   width: 250px;
-  background-color: #cecece;
-  opacity: 0.9;
+  background-color: black;
+  opacity: 0.6;
   position: absolute;
   bottom: 0;
   border-radius: 0px;
 }
 
-.playercard1-name {
-  margin-top: 10px;
+.playercard1-info .name {
+  margin-top: -10px;
   height: 20px;
   width: 250px;
+  font-family: "Brush Script MT";
+  font-size: 32px;
+  top: 10px;
+  color: #fff;
+  z-index: 3000;
 }
 
+.playercard1-info .name p {
+  margin-top: 7px;
+  font-family: "Helvetica";
+  color: white;
+  font-size: 22px;
+  font-weight: 1000;
+  z-index: 30;
+
+}
+
+.playercard1-info .pos {
+  margin-top: -1opx;
+  height: 20px;
+  width: 250px;
+  position: absolute;
+}
+
+.playercard1-info .pos p {
+  margin-top: -10px;
+  font-family: "Helvetica";
+  font-size: 18px;
+}
 .playercard1-pos {
   margin-top: 2px;
   height: 20px;
@@ -1255,7 +1316,6 @@ input {
 }
 
 .playercard1-bottom {
-  margin-top: 10px;
   position: absolute;
   float: bottom;
   height: 70px;
@@ -1263,6 +1323,30 @@ input {
   border-radius: 0px 0px 0px 0px;
 }
 
+.playercard1-bottom .wager {
+  height: 20px;
+  width: 250px;
+  float: top;
+}
+
+.playercard1-bottom .wager p {
+  margin-top: -3px;
+  position: absolute;
+  font-family: "Helvetica";
+  font-size: 18px;
+  color: white;
+  margin-left: 75px;
+  margin-right: 75px;
+}
+
+.playercard1-bottom .submit {
+  position: absolute;
+  height: 30px;
+  width: 250px;
+  float: bottom;
+  margin-top: 23px;
+
+}
 
 /*----------------------------------------------------------------------------*/
 /* Main Content for Standard Page                                             */
