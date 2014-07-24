@@ -60,6 +60,19 @@ p.betTitle {
   font-family: "Verdana";
   font-size: 24px;
 }
+p.playercard1-name {
+  font-family: "Brush Script MT";
+  font-size: 32px;
+}
+p.playercard1-pos {
+  font-family: "Helvetica";
+  font-size: 18px;
+}
+
+p.playercard-currfantasy {
+  font-family: "Helvetica";
+  font-size: 28px;
+}
 a {
   text-decoration: none;
   color: black;
@@ -108,16 +121,16 @@ input {
   width: 100%;
 }
 .rounded {
-  border-radius: 5px;
+  border-radius: 4px;
 }
 .button-primary {
-  color: white;
+  color: black;
   border-radius: 4px;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  background-color: #083f75;
+  background-color: white;
 }
 .button-primary:hover {
-  background-color: ##083f75;
+  background-color: white;
 }
 .button-disabled {
   color: white;
@@ -230,9 +243,8 @@ input {
   background-position: center;
   vertical-align: bottom;
 }
-.masthead-brand {
-  height: 120px;
-  width: 200px;
+.banner-brand {
+  width: 180px;
   float: left;
   margin-top: 5px;
   margin-left: -200px;
@@ -306,6 +318,7 @@ input {
   overflow: hidden;
   z-index: 9999999;
   position: fixed;
+  margin-left: 90px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-transition: all 0.2s ease-in-out, border 0s linear 0.2s;
@@ -315,7 +328,8 @@ input {
   z-index: 9999999;
   position: fixed;
   border: 1px solid #ddc;
-  height: 151px;
+  height: 131px;
+  width: 110px;
   padding: 5px 0px;
   -webkit-transition: all 0.2s ease-in-out, border-top-width 0s;
   -moz-transition: all 0.2s ease-in-out, border-top-width 0s;
@@ -341,10 +355,10 @@ input {
 /*----------------------------------------------------------------------------*/
 .content {
   display: block;
-  margin-left: auto;
+  margin-left: 120px;
   margin-right: auto;
   padding-top: 55px;
-  max-width: 1080px;
+  max-width: 980px;
 }
 /*----------------------------------------------------------------------------*/
 /* Newsfeed                                                                   */
@@ -1060,25 +1074,196 @@ input {
   margin-right: 10px;
   margin-left: 10px;
 }
+
 /*----------------------------------------------------------------------------*/
-/* Bookmarklet                                                                */
+/* MarketHome                                                                 */
 /*----------------------------------------------------------------------------*/
-.bookmarkletCenter {
-  color: #cc0704;
-  margin-left: 30px;
+
+.athleteAndPortfolio {
+  margin-top: 20px;
+  height: 400px;
+  width: 1080px;
 }
-.bookmarkletCenter form {
-  float: none;
+
+.athleteSelection {
+  height: 400px;
+  width: 700px;
+  float: left;
+  background-color: white;
 }
-.bookmarkletRight {
+
+.shortenedPortfolio {
   float: right;
+  height: 380px;
+  width: 340px;
+  margin-left: 20px;
+  background-color: white;
+  padding-top: 20px;
+  padding-left: 10px;
 }
-.bookmarkletInline {
+
+.makeBets {
+  margin-top: 10%;
+  position: fixed;
+  margin-left: 1100px;
+  height: 370px;
+  width: 275px;
+  background-color: white;
+  border-color: green;
+  border-style: solid;
+  border-width: 3px;
+}
+
+.takeBets {
+  margin-top: 20px;
+  margin-left: 20px;
+  float: left;
+  height: 50px;
+  width: 300px;
+  background-color: white;
+}
+
+
+.playercard {
+  margin-left: 20px;
+  height: 110px;
+  width: 190px;
+}
+
+
+.playercard-leftpic {
+  height: 79px;
+  float: left;
+  width: 79px;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px 0px 0px 1px;
+  background-color: white;
+  border-radius: 0px;
+}
+
+.playercard-rightmarket-up {
+  height: 107px;
+  float: right;
+  width: 109px;
+  background-color: #3ab54b;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px 1px 1px 0px;
+  border-radius: 0px 0px 0px 0px;
+  opacity: 0.9;
+}
+
+.playercard-rightmarket-down {
+  height: 107px;
+  float: right;
+  width: 109px;
+  background-color: #FF0000;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px 1px 1px 0px;
+  border-radius: 0px 0px 0px 0px;
+  opacity: 0.9;
+}
+
+.playercard-currfantasy {
+  margin-top:30px;
+  height: 70px;
+  width: 109px;
+}
+
+.playercard-change {
+  margin-top: -35px;
+  height: 20px;
+  width: 109px;
+}
+
+.playercard-volume {
+  margin-top: -20px;
+  height: 10px;
+  width: 109px;
+}
+.playercard-bottominfo {
+  height: 28px;
+  width: 79px;
+  float: left;
+  background-color: #cecece;
+  border-style: solid;
+  border-color: black;
+  border-width: 0px 0px 1px 1px;
+  border-radius: 0px 0px 0px 0px;
+}
+
+.playercard-name {
+  margin-top: -10px;
+  height: 10px;
+  width: 80px;
+}
+
+.playercard-pos {
+  margin-top: -10px;
+  height: 10px;
+  width: 100px;
+}
+
+
+.playercard1 {
+  height: 320px;
+  width: 250px;
+  background-color: #083f75;
+  border-radius: 0px;
+  position: relative;
+  float: left;
+  margin: 10px 10px 10px 10px;
+  border-radius: 2px 2px 2px 2px;
+}
+
+.playercard1-playerpic {
+  height: 250px;
+  width: 250px;
+  border-radius: 0px;
+  background-color: white;
+  position: absolute;
+  float: top;
+}
+
+.playercard1-playerpic img {
+  height: 100%;
+  width: 100%;
+}
+
+.playercard1-info {
+  height: 60px;
+  width: 250px;
+  background-color: #cecece;
+  opacity: 0.9;
+  position: absolute;
+  bottom: 0;
+  border-radius: 0px;
+}
+
+.playercard1-name {
   margin-top: 10px;
+  height: 20px;
+  width: 250px;
 }
-.bookmarkletInline div {
-  display: inline-block;
+
+.playercard1-pos {
+  margin-top: 2px;
+  height: 20px;
+  width: 250px;
 }
+
+.playercard1-bottom {
+  margin-top: 10px;
+  position: absolute;
+  float: bottom;
+  height: 70px;
+  width: 250px;
+  border-radius: 0px 0px 0px 0px;
+}
+
+
 /*----------------------------------------------------------------------------*/
 /* Main Content for Standard Page                                             */
 /*----------------------------------------------------------------------------*/
@@ -1203,11 +1388,12 @@ input {
   height: 200px;
   opacity: 0.7;
   border-radius: 4px 4px 0px 0px;
+  margin-left: -50px;
 }
 
 .profilebottom {
   height: 75px;
-  width: 34.98%;
+  width: 34.95%;
   float: left;
   background-color: white;
   opacity: 0.7;
@@ -1223,7 +1409,6 @@ input {
 }
 
 #betTable {
-  text-align: center;
   border: 1px solid black;
   overflow: scroll;
   border-style: solid;
@@ -1232,13 +1417,12 @@ input {
 }
 
 #tableBetth {
-  border: 1px;
+  border: 0px;
 }
 
 #tableBettd {
   width: 980px;
-  padding: 15px;
-  border: 0px;
+  padding: 2px;
 }
 .linkcontainer {
   width: 980px;
@@ -1272,34 +1456,6 @@ input {
   border-radius: 2px;
 }
 /*----------------------------------------------------------------------------*/
-/* Formatting Comments                                                        */
-/*----------------------------------------------------------------------------*/
-.commentAuthor {
-  color: #cc0704;
-}
-.scrollingPadding {
-  padding: 20px 5px 20px 5px;
-}
-.scrollingComments {
-  width: 368px;
-  height: 250px;
-  overflow: scroll;
-  border: 1px solid;
-  border-color: #cccccc;
-  padding: 5px 5px 5px 5px;
-}
-.newCommentPadding {
-  padding-top: 20px;
-}
-.comment {
-  padding: 0;
-  margin: 0;
-}
-.comment p {
-  padding: 0;
-  margin: 0;
-}
-/*----------------------------------------------------------------------------*/
 /* Glyphs                                                                     */
 /*----------------------------------------------------------------------------*/
 @font-face {
@@ -1313,6 +1469,7 @@ input {
 .fui-list,
 .fui-new,
 .fui-photo,
+.fui-plus,
 .fui-search {
   font-family: 'Flat-UI-Icons';
   cursor: pointer;
@@ -1325,6 +1482,18 @@ input {
 }
 .fui-photo:before {
   content: '\e00f';
+}
+.fui-plus {
+  font-family: "Flat-UI-Icons";
+  cursor: pointer;
+}
+.fui-plus {
+  margin: 0 !important;
+  line-height: normal !important;
+  vertical-align: normal !important;
+}
+.fui-plus:before {
+  content: '\e009';
 }
 .fui-search {
   margin: 0 !important;
