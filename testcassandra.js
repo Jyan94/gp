@@ -291,3 +291,6 @@ cassandra.query(query, [0, 2.1, 1], cql.types.consistencies.one, function(err) {
     console.log(err);
   }
 })*/
+
+var jade = require('jade');
+jade.compileFile('./views/marketHome.jade', 'pretty');
