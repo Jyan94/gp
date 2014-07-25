@@ -8,6 +8,8 @@ html(lang="en")
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js")
     script(src="js/jquery/jquery.flexslider.js")
     script(type="text/javascript" src="js/flexsliderscoreboard.js")
+    script(type='text/javascript' src= '/js/isotope.pkgd.js')
+    script(type="text/javascript" src="js/homeIsotope.js")
 
   body
     include banner
@@ -19,36 +21,39 @@ html(lang="en")
         div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
           div.playercard1-info
-            div.playercard1-name
+            .playercard1-info.name
               center
-                p.playercard1-name Lebron James
-            div.playercard1-pos
+                p Carmelo Anthony
+            .playercard1-info.pos
               center
-                p.playercard1-pos SF | Cavaliers
-            div.playercard1-bottom
+                p SF | Cavaliers
+          div.playercard1-bottom
+            div.playercard1-bottom.wager
+              p over 30 FP
+            div.playercard1-bottom.submit
               center
-                h3 over 30 FP
-                center
-                  div.pure-button.button-primary
-                    | Create
+                div.pure-button.button-primary
+                  | Create
 
-    div.content
+    div.isotope
       div.playercard1
         div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
           div.playercard1-info
-            div.playercard1-name
+            .playercard1-info.name
               center
-                p.playercard1-name Lebron James
-            div.playercard1-pos
+                p Carmelo Anthony
+            .playercard1-info.pos
               center
-                p.playercard1-pos SF | Cavaliers
-            div.playercard1-bottom
+                p SF | Cavaliers
+          div.playercard1-bottom
+            div.playercard1-bottom.wager
+              p over 30 FP
+            div.playercard1-bottom.submit
               center
-                h3 $5 over 30 FP
-                center
-                  div.pure-button.button-primary
-                    | Take
+                div.pure-button.button-primary
+                  | Create
+
       div.playercard1
         div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')

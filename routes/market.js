@@ -9,9 +9,9 @@ var async = require('async');
 
 var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
-var mlbData = require('libs/mlbData.js');
+var mlbData = require('libs/mlbData.js');*/
 var BaseballStatistics = require('libs/cassandra/baseballStatistics');
-
+/*
 var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;
 var marketGlobals = configs.globals;
@@ -19,7 +19,7 @@ var pendingBets = marketGlobals.contestA.pendingBets;
 var baseballAthletes = marketGlobals.athletes.Baseball;
 var updateBet = require('libs/cassandra/contestA/updateBet.js')
 var FilteredBets = require('libs/contestA/formatBets.js');
-
+*/
 
 var getDailyScores = function(req, res, next) {
   var date = new Date();
@@ -43,6 +43,7 @@ var getDailyScores = function(req, res, next) {
   });
 }
 
+/*
 var renderAthletePage = function (req, res, next) {
   console.log(req.params.athleteId);
   FilteredBets.getMarketPendingByAthleteId(
@@ -66,8 +67,8 @@ var renderAthletePage = function (req, res, next) {
         next(new Error('invalid athlete id'));
       }
     });
-}*/
-/*
+}
+
 //post to '/submitForm/:playerId'
 var submitBet = function (req, res, next) {
   var betId = cql.types.timeuuid();
@@ -127,4 +128,4 @@ var takeBet = function(req, res, next, callback) {
 //exports above functions
 exports.renderAthletePage = renderAthletePage;
 exports.takeBet = takeBet;*/
-//exports.getDailyScores = getDailyScores;
+exports.getDailyScores = getDailyScores;

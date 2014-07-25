@@ -26,17 +26,18 @@ div.pure-g-r.banner
       a(href='/markethome')
         img(src='/img/GoProphetLogo6.jpg')
     div.search
-      h2.pure-hidden-phone
+      input(id='quicksearch' type="text" name='search' placeholder='Search for Players')
+    //h2.pure-hidden-phone
         a(href='/')= title
       h2.pure-hidden-desktop.pure-hidden-tablet
       form#searchform.pure-form.pure-hidden-mini(method='get')
         input#autocomplete.input.pure-input-1-4(type='text' name='search' placeholder='Looking for a player?')
         button#searchbutton.pure-button.button-primary.input(type='submit')
           span.fui-search
-    div.dropdown
 
 
-
+    script(type='text/javascript' src= '/js/isotope.pkgd.js')
+    script(src="js/homeIsotope.js")
     script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
     script(src='/js/search.js')
     script(src='/js/banner.js')
