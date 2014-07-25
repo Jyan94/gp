@@ -7,45 +7,42 @@
 'use strict';
 (require('rootpath')());
 
-var cql = require('config/index').cassandra.cql;
 var testUserParams0 =
 [
-  '00000000-0000-0000-0000-000000000000',
-  'test0@test.com',
-  true,
-  new Date(),
-  null,
-  't0',
-  'world',
-  'first name',
-  'last name',
-  20,
-  'address',
-  'paymentinfo',
-  {value: 2000, hint: 'double'},
-  'fbid',
-  0,
-  'image'
+  20, //age
+  'test0@test.com', //email
+  'fbid', //facebook_id
+  'first name', //first_name
+  'image', //image
+  'last name',  //last_name
+  2000, //money
+  'password', //password
+  'payment_info', //payment_info
+  10, //privilege level
+  '00000000-0000-0000-0000-000000000000', //user_id
+  'T0', //t0
+  null, //verification_code
+  true, //verified
+  new Date()  //verified_time
 ];
 
 var testUserParams1 = 
 [
-  '00000000-0000-0000-0000-000000000001',
-  'test1@test.com',
-  true,
-  new Date(),
-  null,
-  't1',
-  'world',
-  'first name',
-  'last name',
   20,
-  'address',
-  'paymentinfo',
-  {value: 1000, hint: 'double'},
+  'test1@test.com',
   'fbid',
-  0,
-  'image'
+  'first name',
+  'image',
+  'last name',
+  1000,
+  'password',
+  'payment_info',
+  10, //privilege level
+  '00000000-0000-0000-0000-000000000001',
+  'T1',
+  null,
+  true,
+  new Date()
 ];
 
 /*
@@ -180,7 +177,7 @@ var testInstance2 = {
   predictions: [10, 20, 30, 40, 40],
   joinTime: new Date()
 };
-var USER_ID_INDEX = 0;
+var USER_ID_INDEX = 10;
 
 var AddContestant = require('libs/cassandra/contestB/addContestant');
 var RemoveContestant = require('libs/cassandra/contestB/removeContestant');
@@ -193,7 +190,6 @@ var AddAndUpdateContestant =
   require('libs/cassandra/contestB/addAndUpdateContestant');
 
 var configs = require('config/index');
-var cql = configs.cassandra.cql;
 var states = configs.constants.contestB.STATES;
 
 var OPEN = states.OPEN;
@@ -247,17 +243,6 @@ function verifyContestEssentials(queryResult) {
     'total_prize_pool');
 }
 
-/**
- * functionality to test:
- * select by id, username
- * select by state, set state
- * add contestant
- * select by username
- * insert test instances for contestant and not existing username
- * remove instances
- * test lock
- */
-
 var selectById = function(callback) {
   SelectContest.selectById(
     CONTESTID, 
@@ -275,6 +260,17 @@ var selectById = function(callback) {
 var testStates = function(callback) {
   async.waterfall(
   [
+    function(callback) {
+      UpdateContest.delete(CONTESTID, function(err) {
+        callback(err);
+      });
+    },
+    function(callback) {
+      User.remove(testUserParams0[USER_ID_INDEX], callback);
+    },
+    function(callback) {
+      User.remove(testUserParams1[USER_ID_INDEX], callback);
+    },
     function(callback) {
       User.insert(testUserParams0, callback);
     },
@@ -700,10 +696,11 @@ function testContestant(callback) {
     }
   ], function(err) {
     if (err) {
-      console.log(err);
+      callback(err);
     }
-    (err === null).should.be.true;
-    callback(null);
+    else {
+      callback(null);      
+    }
   });
 }
 
@@ -714,7 +711,6 @@ function tests(callback) {
       console.log(err.stack);
       console.trace();
     }
-    (err === null).should.be.true;
     async.waterfall([
       function(callback) {
         UpdateContest.delete(CONTESTID, function(err) {
@@ -725,6 +721,20 @@ function tests(callback) {
         async.each(athleteIds, function(athleteId, callback){
           TimeseriesValues.removeValues(athleteId, callback);
         }, callback);
+      },
+      function(callback) {
+        User.remove(testUserParams0[USER_ID_INDEX], callback);
+      },
+      function(callback) {
+        User.remove(testUserParams1[USER_ID_INDEX], callback);
+      },
+      function(callback) {
+        if (err) {
+          (err === null).should.be.true;
+        }
+        else {
+          callback(null);
+        }
       }
     ], callback);
   };

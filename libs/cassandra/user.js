@@ -11,45 +11,61 @@ var APPLIED = configs.constants.cassandra.APPLIED;
 
 var INSERT_USER_CQL = multiline(function() {/*
   INSERT INTO users (
-    user_id, 
+    age,
     email,
-    verified, 
-    verified_time, 
-    ver_code,
-    username, 
-    password, 
-    first_name,
-    last_name, 
-    age, 
-    address, 
-    payment_info, 
-    money, 
-    fbid,
-    vip_status, 
-    image
+    facebook_id,
+    first_name, 
+    image,
+    last_name,
+    money,
+    password,
+    payment_info,
+    privilege_level,
+    user_id,
+    username,
+    verification_code,
+    verified,
+    verified_time
   ) VALUES
     (?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
-     ?, ?, ?, ?, ?,
-     ?)
+     ?, ?, ?, ?, ?)
   IF NOT EXISTS;
 */});
-exports.insert = function (params, callback) {
-  //parse values
-  cassandra.query(INSERT_USER_CQL, params, one,
-    function (err) {
-      callback(err);
+
+var MONEY_INDEX = 6;
+var USER_ID_INDEX = 10;
+function insertUser(params, callback) {
+  cassandra.queryOneRow(INSERT_USER_CQL, params, one,
+    function (err, result) {
+      if (err) {
+        callback(err);
+      }
+      else if (result[APPLIED]) {
+        callback(null);
+      }
+      else {
+        params[USER_ID_INDEX] = cql.types.uuid();
+        insertUser(params, callback);
+      }
     });
+}
+
+exports.insert = function (params, callback) {
+  params[MONEY_INDEX] = {
+    value: params[MONEY_INDEX],
+    hint: 'double'
+  };
+  insertUser(params, callback);
 };
 
 var DELETE_USER_CQL = multiline(function() {/*
   DELETE FROM users WHERE user_id = ?;
 */});
-exports.delete = function (userId, callback) {
-  cassandra.query(DELETE_USER_CQL, [userId], one,
-    function (err) {
-      callback(err);
-    });
+exports.remove = function (userId, callback) {
+  cassandra.query(DELETE_USER_CQL, [userId], one, function(err) {
+    callback(err);
+  });
 };
 
 var UPDATE_USER_CQL_1 = multiline(function() {/*
@@ -76,11 +92,11 @@ exports.update = function (userId, fields, params, callback) {
     }
   }
 
-  cassandra.query(UPDATE_USER_CQL_1 + ' ' + updates + ' ' + UPDATE_USER_CQL_2,
-    params.concat([userId]), cql.types.consistencies.one,
-    function (err) {
-      callback(err);
-    });
+  cassandra.query(
+    UPDATE_USER_CQL_1 + ' ' + updates + ' ' + UPDATE_USER_CQL_2,
+    params.concat([userId]), 
+    one,
+    callback);
 };
 
 var SELECT_USER_CQL = multiline(function () {/*
@@ -94,11 +110,11 @@ function select(field, value, callback) {
     callback(new Error(field + ' is not a searchable field.'));
   }
   else {
-    cassandra.queryOneRow(SELECT_USER_CQL + ' ' + field + ' = ?;',
-      [value], one,
-      function(err, result) {
-        callback(err, result);
-    });
+    cassandra.queryOneRow(
+      SELECT_USER_CQL + ' ' + field + ' = ?;',
+      [value], 
+      one,
+      callback);
   }
 }
 
@@ -219,6 +235,17 @@ function addMoneyToUser(difference, userId, callback) {
   });
 }
 
+function addMoneyToUserUsingUsername(difference, username, callback) {
+  selectByUsername(username, function(err, result) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      updateMoney(result.money, difference, result.user_id, true, callback);
+    }
+  });
+}
+
 function subtractMoneyFromUser(difference, userId, callback) {
   selectById(userId, function(err, result) {
     if (err) {
@@ -233,4 +260,5 @@ function subtractMoneyFromUser(difference, userId, callback) {
 exports.addMoney = addMoney;
 exports.subtractMoney = subtractMoney;
 exports.addMoneyWithoutCurrent = addMoneyToUser;
+exports.addMoneyToUserUsingUsername = addMoneyToUserUsingUsername;
 exports.subtractMoneyWithoutCurrent = subtractMoneyFromUser;

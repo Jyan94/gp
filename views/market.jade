@@ -5,16 +5,6 @@ html(lang="en")
   body
     include banner
     div.content
-      div.feed
-        center
-          form#betForm.pure-form(action='/submitForm/' + athleteId method='post')
-            input(type='number' name='wagerAmount' placeholder='Wager Amount' autofocus=true required=true style='width:200px' min="0" step="0.01")
-            input(type='number' name='fantasyValue' placeholder='Fantasy Value' required=true style='width: 200px' min="1" step="1")
-            input(id = 'radioFormA' type='radio' name='longOrShort' value='Over' checked='checked')
-            | Over
-            input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
-            | Under
-            input#betFormButton.pure-button.button-primary(type='submit')
       div.profilecontainer
         div.profileleft
           div.profilebox
@@ -27,34 +17,50 @@ html(lang="en")
             h4=athleteTeam
             h4=athletePosition
 
-      div.betcontainer
+      div.feed
         center
-          table#betTable(border="5")
-            thead
-              tr
-                th='Fantasy Value'
-                th='Wager Amount'
-                th='Take Bets'
-            tbody
-              each item in bets
-                if (item.overNotUnder===false)
-                  tr
-                    td
-                      h2=item.price
-                    td
-                      h2=item.betValue
-                    td
-                      a(href=athleteId class = 'bet' id='bet'+item.betId style='cursor: pointer')
-                        img(src='../assets/uparrow.png' width='50' height='40')
-                else
-                  tr
-                    td
-                      h2=item.price
-                    td
-                      h2=item.betValue
-                    td
-                      a(href=athleteId class = 'bet' id='bet'+item.betId style='cursor: pointer')
-                        img(src='../assets/downarrow.png' width='50' height='40')
+          form#betForm.pure-form(action='/submitForm/' + athleteId method='post')
+            | I wager $
+            input(type='number' name='wagerAmount' placeholder='Dollars' required=true style='width:100px; height: 40px' min="0" step="0.01")
+            | will score
+            input(id = 'radioFormA' type='radio' name='longOrShort' value='Over' checked='checked')
+            | Over
+            input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
+            | Under
+            input(type='number' name='fantasyValue' placeholder='Value' required=true style='width: 100px' min="1" step="1")
+            | Fantasy Points
+            input#betFormButton.pure-button.button-primary(type='submit')
+
+      div.betcontainer
+        table#betTable
+          thead
+            tr
+              th='Athlete Name'
+              th='Wager Amount'
+              th='Over/Under'
+              th='Fantasy Value'
+              th='Time'
+              th=''
+          tbody
+            each item in bets
+              if (item.overNotUnder===false)
+                tr
+                  td
+                    p $#{item.price}
+                  td
+                    a(href=athleteId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                      | Over
+                    p=item.betValue
+                  td
+
+              else
+                tr
+                  td
+                    p $#{item.price}
+                  td
+                    a(href=athleteId class = 'bet' id='bet'+item.betId style='cursor: pointer')
+                      | Under
+                    p=item.betValue
       div.flash-error.flash-error-fade#flash-error-market-3
         div.padded-less
           div

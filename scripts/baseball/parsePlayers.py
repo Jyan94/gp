@@ -10,6 +10,7 @@ version = '4'
 year = '2014'
 key = 'grnayxvqv4zxsamxhsc59agu'
 url = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/rosters/' + year + '.xml?api_key=' + key
+timesRequested = 0
 
 def parseNumber(number):
 	if (number == ''):
@@ -18,13 +19,11 @@ def parseNumber(number):
 		return int(number);
 
 f = requests.get(url).text;
+timesRequested += 1
 xmlDoc = minidom.parseString(f);
-
-print xmlDoc
 
 teamList = xmlDoc.getElementsByTagName('team')
 for team in teamList:
-  print 'in for loop'
   teamAttributes = team.attributes
   shortTeamName = teamAttributes['abbr'].value
   longTeamName = teamAttributes['market'].value + ' ' + teamAttributes['name'].value
@@ -40,7 +39,6 @@ for team in teamList:
 		uniformNumber = parseNumber(playerAttributes['jersey'].value)
 		height = parseNumber(playerAttributes['height'].value)
 		weight = parseNumber(playerAttributes['weight'].value)
-		print(fullName, shortTeamName)
 		session.execute(
         """
         INSERT INTO baseball_player (athlete_id, full_name, first_name, last_name, short_team_name, long_team_name, team_id, position, uniform_number, height, weight)
@@ -48,3 +46,5 @@ for team in teamList:
         """
         , (uuid.UUID('{' + athleteId + '}'), fullName, firstName, lastName, shortTeamName, longTeamName, uuid.UUID('{' + teamId + '}'), position, uniformNumber, height, weight)
       )
+
+print('For parse players, ' + str(timesRequested) + ' request(s) were(was) made.')

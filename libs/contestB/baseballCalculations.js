@@ -7,230 +7,189 @@ var configs = require('config/index');
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 var async = require('async');
-var Player = require('libs/cassandra/baseballPlayer.js');
+var Player = require('libs/cassandra/baseball/player.js');
 var User = require('libs/cassandra/user.js');
+var Game = require('libs/cassandra/baseball/game.js');
 var calculate = require('libs/applicationServer/calculateMlbFantasyPoints.js');
-var mlbData = require('libs/mlbData.js');
 var DailyProphet = require('libs/cassandra/contestB/exports.js');
-
-var sportsdataMlb = require('sportsdata').MLB;
-
-sportsdataMlb.init('t', 4, 'grnayxvqv4zxsamxhsc59agu', 2014, 'REG');
-
-/* get all the games going on in a specific contest*/
-function getGameIds(contestId, callback) {
-  var gameArr = [];
-
-  DailyProphet.selectById(contestId, function(err, result) {
-    var games = result.games;
-    for (var i = 0; i < games.length; i++) {
-      gameArr.push(games[i]);
-    }
-    callback(null, gameArr);
-  });
-}
-
-/*getGameIds('bcf4d500-fe44-11e3-89b7-c361d0a10fc1', function(err, result){
-  console.log(result);
-})*/
-
-/* check all the games going on in the contest and determine if the
-contest is over (if all the games are done) */
-function checkIfContestIsDone(gameArr, callback) {
-  var bool = false;
-  var check = function(gameId) {
-    mlbData.getEventInfoAndLineups(gameId, function(err, result) {
-      if (result.$.status !== 'closed') {
-        bool = true;
-      }
-    });
-  };
-  async.each(gameArr, check, function(err) {
-    if (err) {
-      callback(err);
-    }
-    else if (bool === true) {
-      //skip to the end of the function and skips all the steps in the
-      //waterfall function (callback.final also does the trick)
-      callback(true);
-    }
-    else {
-      callback(null, gameArr);
-    }
-  });
-}
 
 /* if the game is over, calculate all the fantasy points for the athletes in
 a specific contest */
-function calculateFantasyPointsForContest (contestId, callback) {
-  DailyProphet.selectById(contestId, function(err, result) {
-    var athletes = result.athletes;
-    var playerObjectArr = [];
-    for (var i = 0; i < athletes.length; i++) {
-      var homeAbbr;
-      var awayAbbr;
-      var homeName;
-      var awayName;
-      if (athletes[i].isOnHomeTeam) {
-        homeAbbr = athletes[i].shortTeamName;
-        awayAbbr = athletes[i].shortVersusTeamName;
-        homeName = athletes[i].longTeamName;
-        awayName = athletes[i].longVersusTeamName;
-      }
-      else {
-        homeAbbr = athletes[i].shortVersusTeamName;
-        awayAbbr = athletes[i].shortTeamName;
-        homeName = athletes[i].longVersusTeamName;
-        awayName = athletes[i].longTeamName;
-      }
-      playerObjectArr.push({
-        name: athletes[i].athleteName,
-        athleteId: athletes[i].athleteId,
-        isOnHomeTeam: athletes[i].isOnHomeTeam,
-        prefixSchedule: {
-          '$': {
-            id: athletes[i].gameId,
-          },
-          home: [
-            {$: {
-                abbr: homeAbbr,
-                name: homeName
-              }
-            }
-          ],
-          visitor: [
-            {$: {
-                abbr: awayAbbr,
-                name: awayName
-              }
-            }
-          ]
-        }
-      });
-    }
-    async.map(playerObjectArr, calculate.calculateMlbFantasyPoints, function(err, result) {
-      if (err) {
-        callback(err);
-      }
-      else {
-        callback(null, contestId, result);
-      }
-    });
-  });
-}
+function calculateFantasyPointsForContest (contest, callback) {
+  async.map(contest.athletes,
+    function (athlete, callback) {
+      var athleteParsed = JSON.parse(athlete);
+      var statistics = null;
 
-
-
-/* calculate the points in the tournament for all the contestants */
-function calculatePoints (contestId, FantasyArray, callback) {
-  var contestantPoints = [];
-  DailyProphet.selectById(contestId, function(err, result) {
-    var contestants = result.contestants;
-    for (var contestant in contestants) {
-      var contestantParsed = JSON.parse(contestants[contestant]).instances;
-      for (var i = 0; i < contestantParsed.length; i++) {
-        var wagers = contestantParsed[i].wagers;
-        var predictions = contestantParsed[i].predictions;
-        var contestantId = contestantParsed[i].userId;
-        console.log(wagers);
-        console.log(predictions);
-        console.log(FantasyArray);
-        var totalPoints = 0.0;
-        for (var j = 0; j < wagers.length; j++) {
-          totalPoints = totalPoints + wagers[j] + wagers[j]/(Math.abs(predictions[j] - FantasyArray[j]) + 1);
-          console.log(totalPoints);
-        }
-        contestantPoints.push({contestantId: contestantId, totalPoints: totalPoints});
-      }
-    }
-    contestantPoints.sort(function(contestant1, contestant2) {
-      return contestant1.totalPoints - contestant2.totalPoints;
-    });
-    callback(null, contestId, contestantPoints);
-  });
-}
-
-/* test calculatePoints */
-/*calculatePoints('bcf4d500-fe44-11e3-89b7-c361d0a10fc1', [10, 5, 5, 20, 0], function(err, result) {
-  console.log(result);
-})*/
-
-/* calculate the actual dollar winnings for contestants depending on the prize
-payouts in the contest*/
-function calculateWinningsForContestant(contestId, contestantPoints, callback) {
-  DailyProphet.selectById(contestId, function(err, result) {
-    var payouts = result.pay_outs;
-    function calculateWinningsForContestantHelper(integer, callback) {
-      console.log(contestantPoints[integer].contestantId);
-      console.log('Payouts: ' + payouts.pop());
-      console.log('totalPoints: ' + contestantPoints[integer].totalPoints);
-      User.addMoneyToUser(payouts.pop(), contestantPoints[integer].contestantId, callback)
-    }
-    var contestArr = [];
-    for (var i = contestantPoints.length - 1; i >= 0; i--) {
-      contestArr.push(i);
-    }
-    async.each(contestArr, calculateWinningsForContestantHelper, function(err) {
-      if (err) {
-        callback(err);
-      }
-      else {
-        //change state of contest to processed
-        DailyProphet.setToProcess(contestId, function(err) {
+      Game.select(athleteParsed.gameId,
+        function (err, game) {
           if (err) {
             callback(err);
           }
-        })
-      }
-    })
-  })
+          else {
+            Player.select(athleteParsed.athleteId, function (err, result) {
+              if (err) {
+                callback(null, 0);
+              }
+              else {
+                statistics = result.statistics;
+                callback(null, (statistics ? JSON.parse(statistics[game.game_date]).fantasyPoints : 0));
+              }
+            });
+          }
+      })
+    },
+    function(err, fantasyArray) {
+      callback(err, contest, fantasyArray);
+    });
 }
 
+function calculatePointsInstance(username, fantasyArray) {
+  return function (instance, callback) {
+    var totalPoints = 0.0;
+    var predictions = instance.predictions;
+    var wagers = instance.wagers;
+    var weightedPrediction = 0.0;
 
-calculateWinningsForContestant('bcf4d500-fe44-11e3-89b7-c361d0a10fc1', [{contestantId: '26266992-f363-4b3e-a6e6-2389bbd47bc2', totalPoints: 10}, {contestantId: '26266992-f363-4b3e-a6e6-2389bbd47bc2', totalPoints: 20}], function(err) {
-  if (err) {
-    console.log(err);
+    for (var i = 0; i < predictions.length; i++) {
+      weightedPrediction = (20 * predictions[i]) / fantasyArray[i];
+      totalPoints += (wagers[i] + wagers[i]/(Math.abs(weightedPrediction - 20) + 1));
+    }
+
+    callback(null, { username: username, totalPoints: totalPoints });
   }
-})
+}
 
-/* use the waterfall to update all the winnings for a particular contest*/
-function calculateWinningsForContest (contestId, callback) {
-  async.waterfall([
-
-    function(callback) {
-      callback(null, contestId);
+function combineArray (array, callback) {
+  async.reduce(array, [],
+    function (memo, item, callback) {
+      callback(null, memo.concat(item));
     },
+    function (err, result) {
+      callback(err, result);
+    });
+}
 
-    getGameIds,
+/* calculate the points in the tournament for all the contestants */
+function calculatePoints (contest, fantasyArray, callback) {
+  var contestants = contest.contestants;
 
-    checkIfContestIsDone,
+  async.map(Object.keys(contestants),
+    function (username, callback) {
+      async.map(JSON.parse(contestants[username]).instances,
+        calculatePointsInstance(username, fantasyArray),
+        function (err, instances) {
+          callback(err, instances);
+        });
+    },
+    function (err, result) {
+      combineArray(result, function (err, contestantPoints) {
+        callback(err, contest, contestantPoints);
+      });
+    });
+}
 
-    calculateFantasyPointsForContest,
+function breakTies (contestantPoints, payouts) {
+  var firstRepeat = -1;
+  var firstRepeatIndex = -1;
+  var newPayout = 0;
 
-    calculatePoints,
+  if (payouts.length > 0) {
+    firstRepeat = contestantPoints[0].totalPoints;
+    firstRepeatIndex = 0;
 
-    calculateWinningsForContestant
-    ], function(err) {
+    for (var i = 1; i < payouts.length; i++) {
+      if (contestantPoints[i].totalPoints !== firstRepeat) {
+        newPayout = 0;
+
+        for (var j = firstRepeatIndex; j < i; j++) {
+          newPayout += payouts[j];
+        }
+
+        newPayout = newPayout / (i - firstRepeatIndex);
+
+        for (var j = firstRepeatIndex; j < i; j++) {
+          payouts[j] = newPayout;
+        }
+
+        firstRepeat = contestantPoints[i].totalPoints;
+        firstRepeatIndex = i;
+      }
+    }
+
+    while ((i < contestantPoints.length)
+           && (contestantPoints[i].totalPoints === firstRepeat)) {
+      i += 1;
+    }
+
+    newPayout = 0;
+
+    for (var j = firstRepeatIndex; j < payouts.length; j++) {
+      newPayout += payouts[j];
+    }
+
+    newPayout = newPayout / (i - firstRepeatIndex);
+
+    for (var j = firstRepeatIndex; j < i; j++) {
+      payouts[j] = newPayout;
+    }
+  }
+
+  return payouts;
+}
+
+function calculateWinningsForContestantHelper(contestantPoints, payouts) {
+  return function (contestantPoint, callback) {
+    var index = contestantPoints.indexOf(contestantPoint);
+
+    User.addMoneyToUserUsingUsername(payouts[index] ? payouts[index] : 0,
+      contestantPoints[index].username,
+      function (err) {
+        callback(err);
+      });
+  };
+}
+
+/* calculate the actual dollar winnings for contestants depending on the prize
+payouts in the contest*/
+function calculateWinningsForContestant(contest, contestantPoints, callback) {
+  var payouts = contest.payouts;
+  var newPayout = 0;
+  var firstRepeat = -1;
+  var firstRepeatIndex = -1;
+
+  contestantPoints.sort(function (a, b) { return b.totalPoints - a.totalPoints; });
+
+  payouts = breakTies(contestantPoints, payouts);
+
+  async.each(contestantPoints,
+    calculateWinningsForContestantHelper(contestantPoints, payouts),
+    function (err) {
       if (err) {
         callback(err);
+      }
+      else {
+        DailyProphet.setProcessed(contest.contest_id,
+          function(err) {
+            callback(err);
+          });
       }
     });
 }
 
-/* get all the contests to process */
-function getAllContests (callback) {
-  var contestIdArr = [];
-  var gameIds = [];
-  DailyProphet.selectContestsToProcess(function(err, result) {
-    for (var i = 0; i < result.length; i++) {
-      contestIdArr.push(result[i].contest_id);
-    }
-    callback(null, contestIdArr);
-  });
+/* use the waterfall to update all the winnings for a particular contest*/
+function calculateWinningsForContest (contest, callback) {
+  async.waterfall([
+    function(callback) {
+      callback(null, contest);
+    },
+    calculateFantasyPointsForContest,
+    calculatePoints,
+    calculateWinningsForContestant
+    ],
+    function(err) {
+      callback(err);
+    });
 }
 
-function calculateAll(callback) {
-  getAllContests(function(err, result) {
-      async.map(result, calculateWinningsForContest, callback)
-  })
-}
+exports.calculateWinningsForContest = calculateWinningsForContest;

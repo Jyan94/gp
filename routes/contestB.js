@@ -9,10 +9,14 @@ var ContestB = require('libs/cassandra/contestB/exports');
 var BaseballPlayer = require('libs/cassandra/baseball/player');
 var Game = require('libs/cassandra/baseball/game');
 var modes = require('libs/contestB/modes.js');
+var calculate = require('libs/contestB/baseballCalculations.js');
 var cql = configs.cassandra.cql;
+var childProcess = require('child_process');
+var cancel = require('libs/contestB/cancel.js');
 
 var messages = configs.constants.contestStrings;
 var contestBSizesNormal = configs.constants.contestBSizesNormal;
+var scriptNames = configs.constants.scriptNames;
 
 /*
  * ====================================================================
@@ -31,7 +35,7 @@ var renderContestPage = function (req, res, next) {
  */
 
 var findContests = function (req, res, next, callback) {
-  ContestB.selectOpen('baseball', function (err, result) {
+  ContestB.selectOpen('Baseball', function (err, result) {
     if (err) {
       res.send(500, 'Database error.');
     }
@@ -76,7 +80,7 @@ var filterContestFieldsTablesHelperMain = function(userContestantInstances, cont
       athletes: contest.athletes,
       contestants: contestants,
       contestId: contest.contest_id,
-      contestStartTime: contest.contest_start_time,
+      contestDeadlineTime: contest.contest_deadline_time,
       currentEntries: contest.current_entries,
       entriesAllowedPerContestant: contest.entries_allowed_per_contestant,
       entryFee: contest.entry_fee,
@@ -138,22 +142,42 @@ var sendContestTable = function (req, res, next) {
 
 /*
  * ====================================================================
+ * CONTEST INFO
+ * ====================================================================
+ */
+
+var renderContestInfoPage = function (req, res, next) {
+  res.render('contestBInfo.hbs');
+}
+
+/*
+ * ====================================================================
  * CONTEST CREATION
  * ====================================================================
  */
 
 var findEligibleGames = function (req, res, next, callback) {
+  var currentTime = (new Date()).getTime()
+
   Game.selectTodaysGames(function (err, games) {
     if (err) {
       next(err);
     }
     else {
-      callback(null, req, res, next, games);
+      async.filter(games,
+        function (game, callback) {
+          callback((currentTime < game.start_time - 900000) ? true : false);
+        },
+        function (games) {
+          callback(null, req, res, next, games);
+        })
     }
   });
 }
 
-var filterEligibleGamesHelperMain = function (player, callback) {
+/* Uses the roster from the daily event info page of Sportsdata */
+
+/*var filterEligibleGamesHelperMain = function (player, callback) {
   BaseballPlayer.select(JSON.parse(player).athleteId,
     function (err, result) {
       if (err) {
@@ -178,7 +202,7 @@ var filterEligibleGamesHelperMain = function (player, callback) {
 }
 
 var filterEligibleGamesHelper = function (game, callback) {
-  async.map(game.players ? game.players : [], filterEligibleGamesHelperMain,
+  async.map(game.athletes ? game.athletes : [], filterEligibleGamesHelperMain,
     function (err, result) {
       if (err) {
         callback(err);
@@ -190,15 +214,70 @@ var filterEligibleGamesHelper = function (game, callback) {
             callback(
               null,
               {
+                athletes: result,
                 gameId: game.game_id,
                 gameDate: game.game_date,
                 longAwayName: game.long_away_name,
                 longHomeName: game.long_home_name,
-                players: result,
                 shortAwayName: game.short_away_name,
                 shortHomeName: game.short_home_name,
                 startTime: game.start_time
               });
+          });
+      }
+  });
+}*/
+
+/* Uses the short_team_name field of the baseball_player table */
+
+var filterEligibleGamesHelperMain = function (shortTeamName) {
+  return function (callback) {
+    BaseballPlayer.selectUsingShortTeamName(shortTeamName,
+      function (err, players) {
+        if (err) {
+          callback(err);
+        }
+        else {
+          async.map(players,
+            function (player, callback) {
+              callback(
+                null, 
+                {
+                  athleteId: player.athlete_id,
+                  fullName: player.full_name,
+                  shortTeamName: player.short_team_name,
+                  position: player.position
+                });
+            },
+            function (err, players) {
+              callback(err, players);
+            });
+        }
+      });
+  };
+}
+
+var filterEligibleGamesHelper = function (game, callback) {
+  async.parallel([
+    filterEligibleGamesHelperMain(game.short_away_name),
+    filterEligibleGamesHelperMain(game.short_home_name)
+    ],
+    function (err, result) {
+      if (err) {
+        callback(err);
+      }
+      else {
+        callback(
+          null,
+          {
+            athletes: result[0].concat(result[1]),
+            gameId: game.game_id,
+            gameDate: game.game_date,
+            longAwayName: game.long_away_name,
+            longHomeName: game.long_home_name,
+            shortAwayName: game.short_away_name,
+            shortHomeName: game.short_home_name,
+            startTime: game.start_time
           });
       }
   });
@@ -422,7 +501,7 @@ var getDeadlineTimeForContestCreation = function (req, res, next, params,
     },
     function (err, deadlineTime) {
       callback(err, req, res, next, params, games, players,
-               new Date(deadlineTime + 720000000));
+               new Date(deadlineTime - 900000));
     });
 }
 
@@ -443,7 +522,7 @@ var submitContest = function (req, res, next, params, games, players,
                                            params.entryFee,
                                            params.isFiftyFifty,
                                            params.maximumEntries,
-                                           'baseball',
+                                           'Baseball',
                                            params.startingVirtualMoney);
 
         ContestB.insert(settings, function (err, result) {
@@ -484,6 +563,8 @@ var contestCreationProcess = function (req, res, next) {
  */
 
 var findContestByContestIdCheckEntry = function (req, res, next, callback) {
+  var currentTime = (new Date()).getTime();
+
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -491,7 +572,7 @@ var findContestByContestIdCheckEntry = function (req, res, next, callback) {
     else if (result.maximum_entries === result.current_entries) {
       res.send(400, 'Contest is at maximum capacity.');
     }
-    else if ((new Date()).getTime() > result.contest_deadline_time.getTime()) {
+    else if (currentTime > result.contest_deadline_time.getTime()) {
       res.send(400, 'Contest is past deadline time.');
     }
     else {
@@ -658,21 +739,23 @@ var contestEntryProcess = function (req, res, next) {
  */
 
 var findContestByContestIdCheckEdit = function (req, res, next, callback) {
+  var currentTime = (new Date()).getTime();
+
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
     }
-    else if ((new Date()).getTime() > result.contest_deadline_time.getTime()) {
+    else if (currentTime > result.contest_deadline_time.getTime()) {
       res.send(400, 'Contest is past deadline time.');
     }
     else {
-      callback(null, req, res, next, result);
+      callback(null, req, res, next, result, currentTime);
     }
   });
 }
 
 // Need names, not numbers, as keys of athletes
-var filterContestFieldsEdit = function (req, res, next, contest, callback) {
+var filterContestFieldsEdit = function (req, res, next, contest, currentTime, callback) {
   var contestantInstanceIndex = req.params.contestantInstanceIndex;
   var contestant = contest.contestants[req.user.username];
   var contestantInstance = {};
@@ -691,7 +774,10 @@ var filterContestFieldsEdit = function (req, res, next, contest, callback) {
     if (typeof(contestantInstance) === 'undefined') {
       res.send(404, 'Contestant Instance not found.');
     }
-    else{
+    else if ((currentTime - contestantInstance.lastModified) / 60000 < contest.cooldown_minutes) {
+      res.send(400, Math.ceil(contest.cooldown_minutes - (currentTime - contestantInstance.lastModified) / 60000) + ' minutes of cooldown time left.');
+    }
+    else {
       async.map(contest.athletes, parseAthlete, function(err, result) {
         if (err) {
           res.send(500, 'Server error.');
@@ -811,12 +897,198 @@ var contestEditProcess = function (req, res, next) {
 
 /*
  * ====================================================================
+ * CONTEST BACKGROUND FUNCTIONS (PYTHON SCRIPTS)
+ * ====================================================================
+ */
+
+var runBackgroundScript = function (fileName) {
+  return function (callback) {
+    var python = childProcess.spawn('python', [fileName]);
+    var output = '';
+
+    python.stdout.on('data', function (data){
+      output += data;
+    });
+
+    python.stderr.setEncoding('utf8');
+    python.stderr.on('data', function (data) {
+      console.log(data);
+    });
+
+    python.on('close', function(code) {
+      console.log(output);
+      callback(null);
+    });
+  };
+}
+
+var runParsePlayers = runBackgroundScript(scriptNames.parsePlayers);
+var runParseAndUpdateGames = runBackgroundScript(scriptNames.parseAndUpdateGames);
+
+/*
+ * ====================================================================
+ * CONTEST BACKGROUND FUNCTIONS (OPEN AND FILLED CONTESTS)
+ * ====================================================================
+ */
+
+var getContestsOpenAndFilled = function (callback) {
+  ContestB.selectOpenToFilled('Baseball', function (err, contests) {
+    callback(err, contests);
+  });
+}
+
+var updateStateContestsOpenAndFilledHelper = function (currentTime) {
+  return function (contest, callback) {
+    var finalCallback = function (err) {
+      callback(err);
+    }
+    
+    if (contest.contest_deadline_time.getTime() + 900000 <= currentTime.getTime()) {
+      if (contest.current_entries >= contest.minimum_entries) {
+        ContestB.setToProcess(contest.contest_id, finalCallback);
+      }
+      else {
+        ContestB.setCancelled(contest.contest_id, function (err) {
+          if (err) {
+            callback(err);
+          }
+          else {
+            cancel.refundCancelledContestUsers(contest, finalCallback);
+          }
+        });
+      }
+    }
+    else {
+      callback(null);
+    }
+  };
+}
+
+var updateStateContestsOpenAndFilled = function (contests, callback) {
+  var currentTime = new Date();
+
+  async.map(contests, updateStateContestsOpenAndFilledHelper(currentTime),
+    function (err) {
+      callback(err);
+    });
+}
+
+var examineContestsOpenAndFilled = function (callback) {
+  async.waterfall([
+    getContestsOpenAndFilled,
+    updateStateContestsOpenAndFilled,
+    ],
+    function (err) {
+      callback(err);
+    });
+}
+
+/*
+ * ====================================================================
+ * CONTEST BACKGROUND FUNCTIONS (TO PROCESS CONTESTS)
+ * ====================================================================
+ */
+
+var checkContestEnd = function (contest, callback) {
+  async.reduce(contest.games, true,
+    function (memo, game, callback) {
+      Game.select(JSON.parse(game).gameId, function (err, game) {
+        if (err) {
+          callback(err, false);
+        }
+        else {
+          callback(null, game.status === 'closed' ? memo : false);
+        }
+      });
+    },
+    function (err, result) {
+      callback(err ? false : result);
+    });
+}
+
+var getContestsToProcess = function (callback) {
+  ContestB.selectContestsToProcess('Baseball', function (err, contests) {
+    if (err) {
+      callback(err);
+    }
+    else {
+      async.filter(contests, checkContestEnd,
+        function (contests) {
+          callback(null, contests);
+        });
+    }
+  });
+}
+
+var updateStateContestsToProcess = function (contests, callback) {
+  async.map(contests, calculate.calculateWinningsForContest,
+    function (err) {
+      callback(err);
+    });
+}
+
+var examineContestsToProcess = function (callback) {
+  async.waterfall([
+    getContestsToProcess,
+    updateStateContestsToProcess,
+    ],
+    function (err) {
+      callback(err);
+    });
+}
+
+/*
+ * ====================================================================
+ * CONTEST BACKGROUND FUNCTION INITIALIZATION
+ * ====================================================================
+ */
+
+function setRepeat (func, interval) {
+  var callback = function (err) {
+    if (err) {
+      console.log(err);
+    }
+    setRepeat(func, interval);
+  };
+
+  setTimeout(function () {
+    func(callback);
+  }, interval);
+}
+
+/*setRepeat(runParsePlayers, 86400000);
+setRepeat(runParseAndUpdateGames, 7200000);
+setRepeat(examineContestsOpenAndFilled, 60000);
+setRepeat(examineContestsToProcess, 60000);*/
+
+function runAndSetRepeat (func, interval) {
+  var callback = function (err) {
+    if (err) {
+      console.log(err);
+    }
+
+    setTimeout(function () {
+      runAndSetRepeat(func, interval)
+    }, interval);
+  };
+
+  func(callback);
+}
+
+runAndSetRepeat(runParsePlayers, 86400000);
+runAndSetRepeat(runParseAndUpdateGames, 7200000);
+runAndSetRepeat(examineContestsOpenAndFilled, 60000);
+runAndSetRepeat(examineContestsToProcess, 60000);
+
+/*
+ * ====================================================================
  * EXPORTS
  * ====================================================================
  */
 
 exports.renderContestPage = renderContestPage;
 exports.sendContestTable = sendContestTable;
+exports.renderContestInfoPage = renderContestInfoPage;
 exports.renderContestCreationPage = renderContestCreationPage;
 exports.contestCreationProcess = contestCreationProcess;
 exports.renderContestEntryPage = renderContestEntryPage;

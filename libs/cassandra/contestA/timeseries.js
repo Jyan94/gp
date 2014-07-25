@@ -1,3 +1,8 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 require('rootpath')();
 
@@ -49,7 +54,9 @@ exports.deletePrices = function (athleteId, callback) {
     DELETE_PRICE_CQL,
     [athleteId],
     one,
-    callback);
+    function(err) {
+      callback(err);
+    });
 }
 
 var SELECT_TIMERANGE_CQL = multiline(function () {/*

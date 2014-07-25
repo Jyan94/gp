@@ -11,7 +11,6 @@ var configs = require('config/index.js');
 var ContestB = require('libs/cassandra/contestB/exports');
 var VALID_SPORTS = configs.constants.validSports;
 var BaseballPlayer = require('libs/cassandra/BaseballPlayer');
-var Game;
 
 function selectGames(sport, gameIds, callback) {
 
@@ -24,7 +23,7 @@ function selectAndFilterAthletes(sport, athleteIds, callback) {
   }
   var Athlete = null;
   switch(sport) {
-    case 'baseball': Athlete = BaseballPlayer; break;
+    case 'Baseball': Athlete = BaseballPlayer; break;
   }
   var mapFunc = function(athleteId, callback) {
     Athlete.select(athleteId, function(err, result) {

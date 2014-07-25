@@ -1,3 +1,8 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 (require('rootpath')());
 
@@ -6,9 +11,9 @@ var cql = configs.cassandra.cql;
 var async = require('async');
 var User = require('libs/cassandra/user');
 var UpdateBet = require('libs/cassandra/contestA/update');
-var Timeseries = require('./timeseries');
-var BetHistory = require('./betHistory');
-
+var Timeseries = require('libs/casandra/contestA/timeseries');
+var BetHistory = require('libs/cassandra/contestA/betHistory');
+ 
 var constants = configs.constants;
 var APPLIED = constants.cassandra.APPLIED;
 
@@ -27,7 +32,7 @@ function verifyGameIdAndAthlete(
 /**
   info fields:
 
-  athleteId,
+  athleteId, 
   athleteName,
   athleteTeam,
   expirationTimeMinutes,
@@ -44,7 +49,6 @@ function verifyGameIdAndAthlete(
  * args: err
  */
 function insertPending(info, user, callback) {
-
   async.waterfall(
   [
     function(callback) {
@@ -76,11 +80,18 @@ function insertPending(info, user, callback) {
     }
   ], callback);
 }
-//betId, fantasyValue, isOverNotUnder, wager,
+/*
+ info has fields
+        info.athleteId,
+        info.athleteName,
+        info.athleteTeam,
+        info.betId,
+        info.fantasyValue,
+        info.opponent,        
+        info.overNotUnder,
+        info.wager,
+ */
 /**
- * info has fields
- * athleteId, athleteName, athleteTeam, betId, 
- * fantasyValue, opponent, overNotUnder, payoff, wager, time, opponent
  * @param  {object}   info
  * @param  {Function} callback
  * args: (err)
@@ -117,8 +128,11 @@ function takePending(info, user, callback) {
     function(callback) {
       UpdateBet.takePending(
         info.athleteId,
+        info.athleteName,
+        info.athleteTeam,
         info.betId,
         info.fantasyValue,
+        info.opponent,        
         info.overNotUnder,
         user.username,
         info.wager,
@@ -170,5 +184,79 @@ function takePending(info, user, callback) {
   ], callback);
 }
 
+//info contains
+//
+function placeResell(info, user, callback) {
+  UpdateBet.placeResell(
+    info.betId,
+    info.expirationTimeMinutes,
+    info.isOverBetter,
+    info.resellPrice,
+    user.username,
+    callback);
+}
 
+//info has fields
+/*
+        info.athleteId,
+        info.athleteName,
+        info.athleteTeam,
+        info.betId,
+        info.fantasyValue,
+        info.opponent,
+        info.overNotUnder,
+        info.price,
+ */
+function takeResell(info, user, callback) {
 
+  var takeResellCallback = function(err) {
+    if (err && err.message === APPLIED) {
+      User.addMoney(
+        user.money - info.price,
+        info.price,
+        user.user_id,
+        function(err) {
+          if (err) {
+            callback(err);
+          }
+          else {
+            callback(new Error('could not buy resell'));
+          }
+        });
+    }
+    else if (err) {
+      callback(err);
+    }
+    else {
+      callback(null);
+    }
+  };
+
+  async.waterfall(
+  [
+    function(callback) {
+      User.subtractMoney(user.money, info.price, user.user_id, callback);
+    },
+    function(callback) {
+      UpdateBet.takeResell(
+        info.athleteId,
+        info.athleteName,
+        info.athleteTeam,
+        info.betId,
+        info.fantasyValue,
+        info.opponent,
+        info.overNotUnder,
+        info.price,
+        user.username,
+        takeResellCallback);
+    },
+    function(callback) {
+      User.addMoneyToUserUsingUsername(info.price, info.opponent, callback);
+    }
+  ], callback);
+}
+
+exports.insertPending = insertPending;
+exports.takePending = takePending;
+exports.placeResell = placeResell;
+exports.takeResell = takeResell;

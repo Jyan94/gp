@@ -54,7 +54,7 @@ app.route('/signup')
 
 //verify
 var verify = require('routes/registry/verify');
-app.get('/verify/:email/:ver_code', verify.verify);
+app.get('/verify/:email/:verCode', verify.verify);
 
 //logout
 var logout = require('routes/registry/logout');
@@ -62,10 +62,6 @@ app.get('/logout', logout.logout);
 
 //redirects to login if not logged in
 app.all('*', login.checkUser);
-
-//autocomplete
-var autocomplete = require('routes/autocomplete');
-app.get('/autocomp', autocomplete.autocomp);
 
 //market
 //var market = require('routes/market');
@@ -82,7 +78,7 @@ app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
-app.post('/deleteBets/:betId', profile.cancelPendingBet);
+//app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
 //paypal
 var paypal = require('routes/paypal');
@@ -98,6 +94,7 @@ var contestBTable = require('routes/contest/table');
 var contestB = require('routes/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);
+app.get('/contestBInfo', contestB.renderContestInfoPage);
 app.get('/contestBCreation', contestB.renderContestCreationPage);
 app.post('/contestBCreationProcess', contestB.contestCreationProcess);
 app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);

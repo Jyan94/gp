@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 (require('rootpath')());
 var configs = require('config/index');
 var Player = require('libs/cassandra/baseballPlayer');
@@ -24,4 +24,4 @@ var autocomp = function(req, res, next) {
   });
 };
 
-exports.autocomp = autocomp;
+exports.autocomp = autocomp;*/
