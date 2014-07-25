@@ -63,10 +63,6 @@ app.get('/logout', logout.logout);
 //redirects to login if not logged in
 app.all('*', login.checkUser);
 
-//autocomplete
-var autocomplete = require('routes/autocomplete');
-app.get('/autocomp', autocomplete.autocomp);
-
 //market
 var market = require('routes/market');
 
