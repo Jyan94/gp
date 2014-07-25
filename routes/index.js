@@ -91,7 +91,11 @@ var graph = require('routes/graph');
 app.get('/update', graph.update);
 app.get('/data', graph.get);
 
-//tournament
+//contest a
+var contestA = require('routes/contestA.js');
+app.get('/portfolio', contestA.renderPortfolio);
+
+//contest b
 var contestBTable = require('routes/contest/table');
 var contestB = require('routes/contestB');
 app.get('/contestB', contestB.renderContestPage);
