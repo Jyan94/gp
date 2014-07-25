@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS football_player (
     age int,
     image text
 );
-
 CREATE INDEX IF NOT EXISTS ON football_player (team);
 
 CREATE TABLE IF NOT EXISTS football_team (

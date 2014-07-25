@@ -20,7 +20,7 @@ var baseballAthletes = marketGlobals.athletes.Baseball;
 var updateBet = require('libs/cassandra/contestA/updateBet.js')
 var FilteredBets = require('libs/contestA/formatBets.js');
 */
-
+/*
 var getDailyScores = function(req, res, next) {
   var date = new Date();
   var year = date.getFullYear();
@@ -41,7 +41,7 @@ var getDailyScores = function(req, res, next) {
       res.render('marketHome', {result: result});
     }
   });
-}
+}*/
 
 /*
 var renderAthletePage = function (req, res, next) {

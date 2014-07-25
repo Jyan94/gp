@@ -36,6 +36,7 @@ app.route('/login')
   { successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true }));
+/*
 // Redirect the user to Facebook for authentication
 app.get('/auth/facebook',
   passport.authenticate('facebook'));
@@ -44,6 +45,7 @@ app.get('/auth/facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/user',
                                       failureRedirect: '/login' }));
+*/
 
 //signup
 var signup = require('routes/registry/signup');
@@ -64,12 +66,12 @@ app.get('/logout', logout.logout);
 app.all('*', login.checkUser);
 
 //market
-var market = require('routes/market');
+//var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
 //app.post('/addBets/:athleteId', market.takeBet);
-app.get('/markethome', market.getDailyScores);
+//app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');
@@ -78,7 +80,7 @@ app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
-app.post('/deleteBets/:betId', profile.cancelPendingBet);
+//app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
 //paypal
 var paypal = require('routes/paypal');
