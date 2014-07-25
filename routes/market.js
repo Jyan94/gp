@@ -10,7 +10,7 @@ var async = require('async');
 var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var mlbData = require('libs/mlbData.js');*/
-var BaseballStatistics = require('libs/cassandra/baseballStatistics');
+//var BaseballStatistics = require('libs/cassandra/baseballStatistics');
 /*
 var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;
@@ -20,7 +20,7 @@ var baseballAthletes = marketGlobals.athletes.Baseball;
 var updateBet = require('libs/cassandra/contestA/updateBet.js')
 var FilteredBets = require('libs/contestA/formatBets.js');
 */
-
+/*
 var getDailyScores = function(req, res, next) {
   var date = new Date();
   var year = date.getFullYear();
@@ -41,7 +41,7 @@ var getDailyScores = function(req, res, next) {
       res.render('marketHome', {result: result});
     }
   });
-}
+}*/
 
 /*
 var renderAthletePage = function (req, res, next) {

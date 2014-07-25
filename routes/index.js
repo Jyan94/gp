@@ -36,6 +36,7 @@ app.route('/login')
   { successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true }));
+/*
 // Redirect the user to Facebook for authentication
 app.get('/auth/facebook',
   passport.authenticate('facebook'));
@@ -44,6 +45,7 @@ app.get('/auth/facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/user',
                                       failureRedirect: '/login' }));
+*/
 
 //signup
 var signup = require('routes/registry/signup');
@@ -63,17 +65,13 @@ app.get('/logout', logout.logout);
 //redirects to login if not logged in
 app.all('*', login.checkUser);
 
-//autocomplete
-var autocomplete = require('routes/autocomplete');
-app.get('/autocomp', autocomplete.autocomp);
-
 //market
-var market = require('routes/market');
+//var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
 //app.post('/addBets/:athleteId', market.takeBet);
-app.get('/markethome', market.getDailyScores);
+//app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');
@@ -82,7 +80,7 @@ app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
-app.post('/deleteBets/:betId', profile.cancelPendingBet);
+//app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
 //paypal
 var paypal = require('routes/paypal');
@@ -98,6 +96,7 @@ var contestBTable = require('routes/contest/table');
 var contestB = require('routes/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);
+app.get('/contestBInfo', contestB.renderContestInfoPage);
 app.get('/contestBCreation', contestB.renderContestCreationPage);
 app.post('/contestBCreationProcess', contestB.contestCreationProcess);
 app.get('/contestBEntry/:contestId', contestB.renderContestEntryPage);

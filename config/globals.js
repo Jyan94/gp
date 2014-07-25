@@ -72,7 +72,7 @@ exports.contestA = {
       overNotUnder: false,
       price: 13
     },
-        {
+    {
       athleteId: '10154eef-8834-48e0-97e7-d7436367534c',
       athleteName: 'Adrian Gonzalez',
       athleteTeam: 'LA',
@@ -136,7 +136,6 @@ exports.contestA = {
       overNotUnder: false,
       price: 10
     }
-
     ],
   resellBets: [],
   takenBets: []
@@ -166,7 +165,8 @@ exports.athletes = {
       statistics: {'10/7/07': ''},
       status: 'active',
       uniform_number: 23,
-      weight: 200
+      weight: 200,
+      timeseries: []
     }
   },
   Football: {

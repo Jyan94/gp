@@ -47,4 +47,4 @@ for team in teamList:
         , (uuid.UUID('{' + athleteId + '}'), fullName, firstName, lastName, shortTeamName, longTeamName, uuid.UUID('{' + teamId + '}'), position, uniformNumber, height, weight)
       )
 
-print('For parse players, ' + str(timesRequested) + ' requests were made.')
+print('For parse players, ' + str(timesRequested) + ' request(s) were(was) made.')

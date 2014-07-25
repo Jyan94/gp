@@ -7,16 +7,11 @@ var configs = require('config/index');
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 var async = require('async');
-var Player = require('libs/cassandra/baseballPlayer.js');
+var Player = require('libs/cassandra/baseball/player.js');
 var User = require('libs/cassandra/user.js');
 var Game = require('libs/cassandra/baseball/game.js');
 var calculate = require('libs/applicationServer/calculateMlbFantasyPoints.js');
-var mlbData = require('libs/mlbData.js');
 var DailyProphet = require('libs/cassandra/contestB/exports.js');
-
-var sportsdataMlb = require('sportsdata').MLB;
-
-sportsdataMlb.init('t', 4, 'grnayxvqv4zxsamxhsc59agu', 2014, 'REG');
 
 /* if the game is over, calculate all the fantasy points for the athletes in
 a specific contest */
@@ -94,26 +89,78 @@ function calculatePoints (contest, fantasyArray, callback) {
     });
 }
 
+function breakTies (contestantPoints, payouts) {
+  var firstRepeat = -1;
+  var firstRepeatIndex = -1;
+  var newPayout = 0;
+
+  if (payouts.length > 0) {
+    firstRepeat = contestantPoints[0].totalPoints;
+    firstRepeatIndex = 0;
+
+    for (var i = 1; i < payouts.length; i++) {
+      if (contestantPoints[i].totalPoints !== firstRepeat) {
+        newPayout = 0;
+
+        for (var j = firstRepeatIndex; j < i; j++) {
+          newPayout += payouts[j];
+        }
+
+        newPayout = newPayout / (i - firstRepeatIndex);
+
+        for (var j = firstRepeatIndex; j < i; j++) {
+          payouts[j] = newPayout;
+        }
+
+        firstRepeat = contestantPoints[i].totalPoints;
+        firstRepeatIndex = i;
+      }
+    }
+
+    while ((i < contestantPoints.length)
+           && (contestantPoints[i].totalPoints === firstRepeat)) {
+      i += 1;
+    }
+
+    newPayout = 0;
+
+    for (var j = firstRepeatIndex; j < payouts.length; j++) {
+      newPayout += payouts[j];
+    }
+
+    newPayout = newPayout / (i - firstRepeatIndex);
+
+    for (var j = firstRepeatIndex; j < i; j++) {
+      payouts[j] = newPayout;
+    }
+  }
+
+  return payouts;
+}
+
 function calculateWinningsForContestantHelper(contestantPoints, payouts) {
   return function (contestantPoint, callback) {
     var index = contestantPoints.indexOf(contestantPoint);
 
-    User.addMoneyToUserUsingUsername(payouts[index],
+    User.addMoneyToUserUsingUsername(payouts[index] ? payouts[index] : 0,
       contestantPoints[index].username,
       function (err) {
         callback(err);
-      })
+      });
   };
 }
 
 /* calculate the actual dollar winnings for contestants depending on the prize
 payouts in the contest*/
-/* TODO: SOLVE TIES */
 function calculateWinningsForContestant(contest, contestantPoints, callback) {
   var payouts = contest.payouts;
-  var contestantPointsSorted = contestantPoints.sort(function (a, b) {
-    return b.totalPoints - a.totalPoints;
-  });
+  var newPayout = 0;
+  var firstRepeat = -1;
+  var firstRepeatIndex = -1;
+
+  contestantPoints.sort(function (a, b) { return b.totalPoints - a.totalPoints; });
+
+  payouts = breakTies(contestantPoints, payouts);
 
   async.each(contestantPoints,
     calculateWinningsForContestantHelper(contestantPoints, payouts),
