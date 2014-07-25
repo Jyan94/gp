@@ -10,7 +10,7 @@ accessLevel = 't'
 version = '4'
 today = datetime.date.today()
 year = str(today.year)
-key = 'grnayxvqv4zxsamxhsc59agu'
+key = '5ky6e4qfcf4yja97763z6pen'
 url = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/rosters/' + year + '.xml?api_key=' + key
 timesRequested = 0
 
