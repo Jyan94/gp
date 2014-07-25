@@ -1014,6 +1014,7 @@ var getContestsToProcess = function (callback) {
     else {
       async.filter(contests, checkContestEnd,
         function (contests) {
+          console.log(contests);
           callback(null, contests);
         });
     }
@@ -1028,6 +1029,7 @@ var updateStateContestsToProcess = function (contests, callback) {
 }
 
 var examineContestsToProcess = function (callback) {
+  console.log(checking);
   async.waterfall([
     getContestsToProcess,
     updateStateContestsToProcess,
