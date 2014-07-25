@@ -33,7 +33,7 @@ function calculateFantasyPointsForContest (contest, callback) {
               }
               else {
                 statistics = result.statistics;
-                callback(null, (statistics ? JSON.parse(statistics[game.game_date]).fantasyPoints : 0));
+                callback(null, (statistics ? statistics[game.game_date].fantasyPoints : 0));
               }
             });
           }
@@ -52,7 +52,7 @@ function calculatePointsInstance(username, fantasyArray) {
     var weightedPrediction = 0.0;
 
     for (var i = 0; i < predictions.length; i++) {
-      weightedPrediction = (20 * predictions[i]) / fantasyArray[i];
+      weightedPrediction = (20 * (predictions[i] + 10)) / (fantasyArray[i] + 10);
       totalPoints += (wagers[i] + wagers[i]/(Math.abs(weightedPrediction - 20) + 1));
     }
 
@@ -93,6 +93,10 @@ function breakTies (contestantPoints, payouts) {
   var firstRepeat = -1;
   var firstRepeatIndex = -1;
   var newPayout = 0;
+
+  if (payouts.length > contestantPoints.length) {
+    payouts.length = contestantPoints.length
+  }
 
   if (payouts.length > 0) {
     firstRepeat = contestantPoints[0].totalPoints;
