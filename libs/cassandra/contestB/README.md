@@ -6,6 +6,7 @@ Date: 6/2014
 The low level queries and functionality for contest B. <br>
 Require the exports.js file to have access to necessary functionality.
 
+TODO: possibly implement ranks
 daily_prophet serialized objects
 ===================================================
     athlete_names: list of athlete names (index is athleteContestId)

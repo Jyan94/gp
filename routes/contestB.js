@@ -25,7 +25,7 @@ var scriptNames = configs.constants.scriptNames;
  */
 
 var renderContestPage = function (req, res, next) {
-  res.render('contestB.hbs');
+  res.render('contestB/contests.hbs');
 }
 
 /*
@@ -45,26 +45,38 @@ var findContests = function (req, res, next, callback) {
   });
 }
 
-var filterContestFieldsTablesHelperContestants = function(username, contest, callback) {
+var filterContestFieldsTablesHelperContestants = function(
+  username, 
+  contest, 
+  callback) {
+
   var contestants = contest.contestants;
-  var contestantList = []
+  var contestantList = [];
 
   if (contestants) {
     contestantList = Object.keys(contestants);
 
-    async.map(contestantList,
+    async.map(
+      contestantList,
       function(key, callback) {
-        var contestant = { username: key,
-                           instanceCount: JSON.parse(contestants[key]).instances.length,
-                         }
 
+        var contestant = { 
+          username: key,
+          instanceCount: JSON.parse(contestants[key]).instances.length
+        };
         callback(null, contestant);
-      }, function (err, result) {
+
+      }, 
+      function (err, result) {
         if (contestantList.indexOf(username) < 0) {
           callback(err, [], contest, result);
         }
         else {
-          callback(err, JSON.parse(contestants[username]).instances, contest, result);
+          callback(
+            err, 
+            JSON.parse(contestants[username]).instances, 
+            contest, 
+            result);
         }
       });
   }
@@ -73,7 +85,12 @@ var filterContestFieldsTablesHelperContestants = function(username, contest, cal
   }
 }
 
-var filterContestFieldsTablesHelperMain = function(userContestantInstances, contest, contestants, callback) {
+var filterContestFieldsTablesHelperMain = function(
+  userContestantInstances, 
+  contest, 
+  contestants, 
+  callback) {
+
   callback(
     null, 
     {
@@ -118,9 +135,6 @@ var filterContestFieldsTables = function (req, res, next, contests, callback) {
       }
       else {
         res.send(JSON.stringify(result));
-        /*res.render('tournamentTables.hbs', { link: 'login',
-                                             display: 'Login',
-                                             tournaments: result });*/
       }
   });
 }
@@ -147,7 +161,7 @@ var sendContestTable = function (req, res, next) {
  */
 
 var renderContestInfoPage = function (req, res, next) {
-  res.render('contestBInfo.hbs');
+  res.render('contestB/info.hbs');
 }
 
 /*
@@ -157,7 +171,7 @@ var renderContestInfoPage = function (req, res, next) {
  */
 
 var findEligibleGames = function (req, res, next, callback) {
-  var currentTime = (new Date()).getTime()
+  var currentTime = (new Date()).getTime();
 
   Game.selectTodaysGames(function (err, games) {
     if (err) {
@@ -290,9 +304,13 @@ var filterEligibleGames = function (req, res, next, games, callback) {
         next(err);
       }
       else {
-        res.render('contestBCreation.hbs', { link: 'logout',
-                                             display: 'Logout',
-                                             games: result });
+        res.render(
+          'contestB/creation.hbs', 
+          { 
+            link: 'logout',
+            display: 'Logout',
+            games: result 
+          });
       }
   });
 }
@@ -348,16 +366,19 @@ var parseParamsContestCreation = function (req, res, next, callback) {
              || (entryFee > 1000) || (entryFee % 5 !== 0)) {
       res.send(400, 'Need a valid value for entry fee.');
     }
-    else if ((isNaN(maximumEntries))
-             || ((isFiftyFifty === 'true') && ((maximumEntries < 3)
-                                               || (maximumEntries > 2001)
-                                               || (maximumEntries % 2 !== 1)))
-             || ((isFiftyFifty === 'false') && (contestBSizesNormal.indexOf(maximumEntries) < 0))) {
+    else if ((isNaN(maximumEntries)) || 
+            ((isFiftyFifty === 'true') && 
+              ((maximumEntries < 3) || 
+              (maximumEntries > 2001) || 
+              (maximumEntries % 2 !== 1))) || 
+            ((isFiftyFifty === 'false') && 
+              (contestBSizesNormal.indexOf(maximumEntries) < 0))) {
       res.send(400, 'Need a valid value for maximum entries.');
     }
-    else if ((isNaN(startingVirtualMoney)) || (startingVirtualMoney < 1000)
-             || (startingVirtualMoney > 1000000)
-             || (startingVirtualMoney % 1000 !== 0)) {
+    else if ((isNaN(startingVirtualMoney)) || 
+              (startingVirtualMoney < 1000) || 
+              (startingVirtualMoney > 1000000) || 
+              (startingVirtualMoney % 1000 !== 0)) {
       res.send(400, 'Need a valid value for starting virtual money.');
     }
     else {
@@ -366,10 +387,13 @@ var parseParamsContestCreation = function (req, res, next, callback) {
       params.maximumEntries = Number(body['maximum-entries']);
       params.startingVirtualMoney = Number(body['starting-virtual-money']);
 
-      async.filter(keys,
+      async.filter(
+        keys,
         function (key, callback) {
-          callback((key.length === 85) && (key.substring(0, 7) === 'player-')
-                   && (key.substring(43, 49) === '-game-'));
+          callback(
+            (key.length === 85) && 
+            (key.substring(0, 7) === 'player-') && 
+            (key.substring(43, 49) === '-game-'));
         },
         function (result) {
           callback(null, req, res, next, params, result);
@@ -398,7 +422,8 @@ var removeDuplicatesContestCreation = function (req, res, next, params,
 
           async.filter(keys,
             function (elem, callback) {
-              callback(keys.indexOf(elem) === idArray.indexOf(elem.substring(49)));
+              callback(
+                keys.indexOf(elem) === idArray.indexOf(elem.substring(49)));
             },
             function (result) {
               async.map(result,
@@ -473,10 +498,12 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
                 gameId: game.gameId,
                 isOnHomeTeam: isOnHomeTeam,
                 longTeamName: player.long_team_name,
-                longVersusTeamName: (isOnHomeTeam ? game.longAwayTeam : game.longHomeTeam),
+                longVersusTeamName: 
+                  (isOnHomeTeam ? game.longAwayTeam : game.longHomeTeam),
                 position: player.position,
                 shortTeamName: player.short_team_name,
-                shortVersusTeamName: (isOnHomeTeam ? game.shortAwayTeam : game.shortHomeTeam),
+                shortVersusTeamName: 
+                  (isOnHomeTeam ? game.shortAwayTeam : game.shortHomeTeam),
                 teamId: player.team_id
               });
           }
@@ -485,17 +512,36 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
   }
 }
 
-var getAthletesForContestCreation = function (req, res, next, params, keys,
-                                              gameIdList, games, callback) {
-  async.map(keys, filterContestCreationAthletes(gameIdList, games, keys),
+var getAthletesForContestCreation = function (
+  req, 
+  res, 
+  next, 
+  params, 
+  keys,
+  gameIdList, 
+  games, 
+  callback) {
+
+  async.map(
+    keys, 
+    filterContestCreationAthletes(gameIdList, games, keys),
     function (err, players) {
       callback(err, req, res, next, params, games, players);
     });
 }
 
-var getDeadlineTimeForContestCreation = function (req, res, next, params,
-                                                  games, players, callback) {
-  async.reduce(games, games[0].gameDate,
+var getDeadlineTimeForContestCreation = function (
+  req, 
+  res, 
+  next, 
+  params,
+  games, 
+  players, 
+  callback) {
+
+  async.reduce(
+    games, 
+    games[0].gameDate,
     function (memo, game, callback) {
       callback(null, game.gameDate < memo ? game.gameDate : memo);
     },
@@ -506,8 +552,16 @@ var getDeadlineTimeForContestCreation = function (req, res, next, params,
 }
 
 
-var submitContest = function (req, res, next, params, games, players,
-                              deadlineTime, callback) {
+var submitContest = function (
+  req, 
+  res, 
+  next, 
+  params, 
+  games, 
+  players,
+  deadlineTime, 
+  callback) {
+
   var filterFunction = function (elem, callback) {
     callback(null, JSON.stringify(elem));
   }
@@ -518,12 +572,15 @@ var submitContest = function (req, res, next, params, games, players,
         next(err);
       }
       else {        
-        var settings = modes.createTypeOne(players, games, deadlineTime,
-                                           params.entryFee,
-                                           params.isFiftyFifty,
-                                           params.maximumEntries,
-                                           'Baseball',
-                                           params.startingVirtualMoney);
+        var settings = modes.createTypeOne(
+          players, 
+          games, 
+          deadlineTime,
+          params.entryFee,
+          params.isFiftyFifty,
+          params.maximumEntries,
+          'Baseball',
+          params.startingVirtualMoney);
 
         ContestB.insert(settings, function (err, result) {
           if (err) {
@@ -594,15 +651,20 @@ var filterContestFieldsEntry = function (req, res, next, contest, callback) {
       res.send(500, 'Server error.');
     }
     else {
-      contestInfo = { contestId: contest.contest_id,
-                      athletes: result,
-                      maxWager: contest.max_wager,
-                      startingVirtualMoney: contest.starting_virtual_money
-                    };
+      contestInfo = { 
+        contestId: contest.contest_id,
+        athletes: result,
+        maxWager: contest.max_wager,
+        startingVirtualMoney: contest.starting_virtual_money
+      };
 
-      res.render('contestBEntry.hbs', { link: 'logout',
-                                        display: 'Logout',
-                                        contestInfo: contestInfo });
+      res.render(
+        'contestB/entry.hbs', 
+        { 
+          link: 'logout',
+          display: 'Logout',
+          contestInfo: contestInfo 
+        });
     }
   });
 }
@@ -755,7 +817,14 @@ var findContestByContestIdCheckEdit = function (req, res, next, callback) {
 }
 
 // Need names, not numbers, as keys of athletes
-var filterContestFieldsEdit = function (req, res, next, contest, currentTime, callback) {
+var filterContestFieldsEdit = function (
+  req, 
+  res, 
+  next, 
+  contest, 
+  currentTime, 
+  callback) {
+
   var contestantInstanceIndex = req.params.contestantInstanceIndex;
   var contestant = contest.contestants[req.user.username];
   var contestantInstance = {};
@@ -769,13 +838,21 @@ var filterContestFieldsEdit = function (req, res, next, contest, currentTime, ca
     res.send(404, 'Contestant not found.');
   }
   else {
-    contestantInstance = JSON.parse(contestant).instances[contestantInstanceIndex];
+    contestantInstance = 
+      JSON.parse(contestant).instances[contestantInstanceIndex];
 
     if (typeof(contestantInstance) === 'undefined') {
       res.send(404, 'Contestant Instance not found.');
     }
-    else if ((currentTime - contestantInstance.lastModified) / 60000 < contest.cooldown_minutes) {
-      res.send(400, Math.ceil(contest.cooldown_minutes - (currentTime - contestantInstance.lastModified) / 60000) + ' minutes of cooldown time left.');
+    else if (
+      (currentTime - contestantInstance.lastModified) / 60000 < 
+      contest.cooldown_minutes) {
+      res.send(
+        400, 
+        Math.ceil(
+          contest.cooldown_minutes - 
+          (currentTime - contestantInstance.lastModified) / 60000) + 
+          ' minutes of cooldown time left.');
     }
     else {
       async.map(contest.athletes, parseAthlete, function(err, result) {
@@ -783,17 +860,22 @@ var filterContestFieldsEdit = function (req, res, next, contest, currentTime, ca
           res.send(500, 'Server error.');
         }
         else {
-          contestInfo = { contestId: contest.contest_id,
-                          contestantInstanceIndex: contestantInstanceIndex,
-                          contestantInstance: contestantInstance,
-                          athletes: result,
-                          maxWager: contest.max_wager,
-                          startingVirtualMoney: contest.starting_virtual_money
-                        };
+          contestInfo = { 
+            contestId: contest.contest_id,
+            contestantInstanceIndex: contestantInstanceIndex,
+            contestantInstance: contestantInstance,
+            athletes: result,
+            maxWager: contest.max_wager,
+            startingVirtualMoney: contest.starting_virtual_money
+          };
 
-          res.render('contestBEdit.hbs', { link: 'logout',
-                                           display: 'Logout',
-                                           contestInfo: contestInfo });
+          res.render(
+            'contestB/edit.hbs', 
+            { 
+              link: 'logout',
+              display: 'Logout',
+              contestInfo: contestInfo 
+            });
         }
       });
     }

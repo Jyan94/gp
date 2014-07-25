@@ -46,7 +46,6 @@ app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/user',
                                       failureRedirect: '/login' }));
 */
-
 //signup
 var signup = require('routes/registry/signup');
 app.route('/signup')
