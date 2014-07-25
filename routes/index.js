@@ -64,12 +64,12 @@ app.get('/logout', logout.logout);
 app.all('*', login.checkUser);
 
 //market
-var market = require('routes/market');
+//var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
 //app.post('/addBets/:athleteId', market.takeBet);
-app.get('/markethome', market.getDailyScores);
+//app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');
@@ -78,7 +78,7 @@ app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
 app.get('/images/:file', profile.pictureNotFound);
-app.post('/deleteBets/:betId', profile.cancelPendingBet);
+//app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
 //paypal
 var paypal = require('routes/paypal');
