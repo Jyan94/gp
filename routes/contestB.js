@@ -12,6 +12,7 @@ var modes = require('libs/contestB/modes.js');
 var calculate = require('libs/contestB/baseballCalculations.js');
 var cql = configs.cassandra.cql;
 var childProcess = require('child_process');
+var cancel = require('libs/contestB/cancel.js');
 
 var messages = configs.constants.contestStrings;
 var contestBSizesNormal = configs.constants.contestBSizesNormal;
@@ -137,6 +138,16 @@ var sendContestTable = function (req, res, next) {
       next(err);
     }
   });
+}
+
+/*
+ * ====================================================================
+ * CONTEST INFO
+ * ====================================================================
+ */
+
+var renderContestInfoPage = function (req, res, next) {
+  res.render('contestBInfo.hbs');
 }
 
 /*
@@ -926,8 +937,6 @@ var getContestsOpenAndFilled = function (callback) {
   });
 }
 
-/* Refund money when cancelling contests */
-/* Make sure there is a deadline time at least 15 minutes before contest starts for contestant removal */
 var updateStateContestsOpenAndFilledHelper = function (currentTime) {
   return function (contest, callback) {
     var finalCallback = function (err) {
@@ -939,7 +948,14 @@ var updateStateContestsOpenAndFilledHelper = function (currentTime) {
         ContestB.setToProcess(contest.contest_id, finalCallback);
       }
       else {
-        ContestB.setCancelled(contest.contest_id, finalCallback);
+        ContestB.setCancelled(contest.contest_id, function (err) {
+          if (err) {
+            callback(err);
+          }
+          else {
+            cancel.refundCancelledContestUsers(contest, finalCallback);
+          }
+        });
       }
     }
     else {
@@ -1072,6 +1088,7 @@ runAndSetRepeat(examineContestsToProcess, 60000);
 
 exports.renderContestPage = renderContestPage;
 exports.sendContestTable = sendContestTable;
+exports.renderContestInfoPage = renderContestInfoPage;
 exports.renderContestCreationPage = renderContestCreationPage;
 exports.contestCreationProcess = contestCreationProcess;
 exports.renderContestEntryPage = renderContestEntryPage;
