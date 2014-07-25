@@ -1,30 +1,35 @@
-function debounce(fn, threshold) {
+// debounce so filtering doesn't happen every millisecond
+function debounce( fn, threshold ) {
   var timeout;
   return function debounced() {
-    if (timeout) {
-      clearTimeout(timeout);
+    if ( timeout ) {
+      clearTimeout( timeout );
     }
     function delayed() {
       fn();
       timeout = null;
     }
-    timeout = setTimeout(delayed, threshold || 100);
+    timeout = setTimeout( delayed, threshold || 100 );
   }
 }
 
-$(function() {
-
+$( function() {
+  // quick search regex
   var qsRegex;
-  var $container = $('isotope').isotope({
-    itemSelector: 'playercard1.playercard1-playerpic.playercard1-info',
+
+  // init Isotope
+  var $container = $('.isotope').isotope({
+    itemSelector: '.playercard1',
     layoutMode: 'fitRows',
     filter: function() {
-      return qsRegex ? $(this).text().match(qsRegex) : true;
+      return qsRegex ? $(this).text().match( qsRegex ) : true;
     }
   });
 
-  var $quicksearch = $('#quicksearch').keyup(debounce(function() {
-    qsRegex = new RegExp( $quicksearch.val(), 'gi');
+  // use value of search field to filter
+  var $quicksearch = $('#quicksearch').keyup( debounce( function() {
+    qsRegex = new RegExp( $quicksearch.val(), 'gi' );
     $container.isotope();
-  }, 200));
+  }, 200 ) );
+
 });

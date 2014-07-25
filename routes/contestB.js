@@ -942,7 +942,7 @@ var updateStateContestsOpenAndFilledHelper = function (currentTime) {
     var finalCallback = function (err) {
       callback(err);
     }
-    
+
     if (contest.contest_deadline_time.getTime() + 900000 <= currentTime.getTime()) {
       if (contest.current_entries >= contest.minimum_entries) {
         ContestB.setToProcess(contest.contest_id, finalCallback);

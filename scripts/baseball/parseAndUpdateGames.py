@@ -1,4 +1,5 @@
 import datetime
+import time
 import requests
 from xml.dom import minidom
 import time
@@ -10,13 +11,11 @@ import uuid
 
 accessLevel = 't'
 version = '4'
-today = datetime.date.today()
-year = str(today.year)
-month = ('0' + str(today.month) if today.month < 10 else str(today.month))
-day = ('0' + str(today.day) if today.day < 10 else str(today.day))
-date = year + '/' + month + '/' + day
+
+timeNow = time.time()
+timePast = timeNow - 86400
+
 key = 'grnayxvqv4zxsamxhsc59agu'
-gamesUrl = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/daily/event/' + date + '.xml?api_key=' + key
 timesRequested = 0
 
 def getPlayers(event, side):
@@ -48,7 +47,7 @@ def getPlayers(event, side):
 
       return (teamId, shortTeamName, longTeamName, players)
 
-def getStatistics(statistics, side, gameId, awayInfo, homeInfo):
+def getStatistics(statistics, side, gameId, awayInfo, homeInfo, date, year):
   athleteIdList = []
   statisticsList = []
 
@@ -181,57 +180,71 @@ def getStatistics(statistics, side, gameId, awayInfo, homeInfo):
 
   return (athleteIdList, statisticsList)
 
-fGames = requests.get(gamesUrl).text;
-timesRequested += 1
-xmlDocGames = minidom.parseString(fGames);
+def parseAndUpdateGames(timeParam):
+  global timesRequested
 
-eventList = xmlDocGames.getElementsByTagName('events')[0].getElementsByTagName('event')
-for event in eventList:
-  query = ""
-  args = ()
+  theDay = datetime.date.fromtimestamp(timeParam)
+  year = str(theDay.year)
+  month = ('0' + str(theDay.month))[-2 :]
+  day = ('0' + str(theDay.day))[-2 :]
+  date = year + '/' + month + '/' + day
 
-  eventAttributes = event.attributes
-  gameId = eventAttributes['id'].value
-  status = eventAttributes['status'].value
+  gamesUrl = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/daily/event/' + date + '.xml?api_key=' + key
 
-  gameRows = session.execute('SELECT * FROM baseball_game WHERE game_id = %s;', (uuid.UUID('{' + gameId + '}'),))
+  fGames = requests.get(gamesUrl).text;
+  timesRequested += 1
+  xmlDocGames = minidom.parseString(fGames);
 
-  if (len(gameRows) == 0) or (gameRows[0].status != status) or (status in ['scheduled', 'inprogress']):
-    startTime = event.getElementsByTagName('scheduled_start_time')[0].firstChild.nodeValue
+  eventList = xmlDocGames.getElementsByTagName('events')[0].getElementsByTagName('event')
+  for event in eventList:
+    query = ""
+    args = ()
 
-    awayInfo = getPlayers(event, 'visitor')
-    homeInfo = getPlayers(event, 'home')
+    eventAttributes = event.attributes
+    gameId = eventAttributes['id'].value
+    status = eventAttributes['status'].value
 
-    query += ("""
-              INSERT INTO baseball_game (away_id, game_id, game_date, home_id, long_away_name, long_home_name, athletes, short_away_name, short_home_name, start_time, status)
-              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-              """)
-    args += (uuid.UUID('{' + awayInfo[0] + '}'), uuid.UUID('{' + gameId + '}'), date, uuid.UUID('{' + homeInfo[0] + '}'), awayInfo[2], homeInfo[2], awayInfo[3] + homeInfo[3], awayInfo[1], homeInfo[1], startTime, status)
+    gameRows = session.execute('SELECT * FROM baseball_game WHERE game_id = %s;', (uuid.UUID('{' + gameId + '}'),))
 
-    if (status == 'closed'):
-      query = query[:-1] + ' '
+    if (len(gameRows) == 0) or (gameRows[0].status != status) or (status in ['scheduled', 'inprogress']):
+      startTime = event.getElementsByTagName('scheduled_start_time')[0].firstChild.nodeValue
 
-      statisticsUrl = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/statistics/' + gameId + '.xml?api_key=' + key
+      awayInfo = getPlayers(event, 'visitor')
+      homeInfo = getPlayers(event, 'home')
 
-      fStatistics = requests.get(statisticsUrl).text
-      timesRequested += 1
-      xmlDocStatistics = minidom.parseString(fStatistics)
+      query += ("""
+                INSERT INTO baseball_game (away_id, game_id, game_date, home_id, long_away_name, long_home_name, athletes, short_away_name, short_home_name, start_time, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """)
+      args += (uuid.UUID('{' + awayInfo[0] + '}'), uuid.UUID('{' + gameId + '}'), date, uuid.UUID('{' + homeInfo[0] + '}'), awayInfo[2], homeInfo[2], awayInfo[3] + homeInfo[3], awayInfo[1], homeInfo[1], startTime, status)
 
-      statistics = xmlDocStatistics.getElementsByTagName('statistics')[0]
-      
-      awayStatisticsInfo = getStatistics(statistics, 'visitor', gameId, awayInfo, homeInfo)
-      homeStatisticsInfo = getStatistics(statistics, 'home', gameId, awayInfo, homeInfo)
+      if (status == 'closed'):
+        query = query[:-1] + ' '
 
-      awayStatisticsInfo[0].extend(homeStatisticsInfo[0])
-      awayStatisticsInfo[1].extend(homeStatisticsInfo[1])
+        statisticsUrl = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/statistics/' + gameId + '.xml?api_key=' + key
 
-      for i in range(len(awayStatisticsInfo[0])):
-        query += ("UPDATE baseball_player SET statistics[%s] = %s WHERE athlete_id = %s ")
-        args += (date, awayStatisticsInfo[1][i], uuid.UUID('{' + awayStatisticsInfo[0][i] + '}'))
+        fStatistics = requests.get(statisticsUrl).text
+        timesRequested += 1
+        xmlDocStatistics = minidom.parseString(fStatistics)
 
-      query = "BEGIN BATCH " + query + "APPLY BATCH"
+        statistics = xmlDocStatistics.getElementsByTagName('statistics')[0]
+        
+        awayStatisticsInfo = getStatistics(statistics, 'visitor', gameId, awayInfo, homeInfo, date, year)
+        homeStatisticsInfo = getStatistics(statistics, 'home', gameId, awayInfo, homeInfo, date, year)
 
-    session.execute(query + ';', args)
-    time.sleep(1)
+        awayStatisticsInfo[0].extend(homeStatisticsInfo[0])
+        awayStatisticsInfo[1].extend(homeStatisticsInfo[1])
+
+        for i in range(len(awayStatisticsInfo[0])):
+          query += ("UPDATE baseball_player SET statistics[%s] = %s WHERE athlete_id = %s ")
+          args += (date, awayStatisticsInfo[1][i], uuid.UUID('{' + awayStatisticsInfo[0][i] + '}'))
+
+        query = "BEGIN BATCH " + query + "APPLY BATCH"
+
+      session.execute(query + ';', args)
+      time.sleep(1)
+
+parseAndUpdateGames(timeNow)
+parseAndUpdateGames(timePast)
 
 print('For parse and update games, ' + str(timesRequested) + ' request(s) was(were) made.')

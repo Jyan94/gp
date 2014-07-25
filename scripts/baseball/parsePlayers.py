@@ -1,4 +1,5 @@
 import requests
+import datetime
 from xml.dom import minidom
 from cassandra.cluster import Cluster
 cluster = Cluster(['localhost'])
@@ -7,8 +8,9 @@ import uuid
 
 accessLevel = 't'
 version = '4'
-year = '2014'
-key = 'grnayxvqv4zxsamxhsc59agu'
+today = datetime.date.today()
+year = str(today.year)
+key = '5ky6e4qfcf4yja97763z6pen'
 url = 'http://api.sportsdatallc.org/mlb-' + accessLevel + version + '/rosters/' + year + '.xml?api_key=' + key
 timesRequested = 0
 
@@ -47,4 +49,4 @@ for team in teamList:
         , (uuid.UUID('{' + athleteId + '}'), fullName, firstName, lastName, shortTeamName, longTeamName, uuid.UUID('{' + teamId + '}'), position, uniformNumber, height, weight)
       )
 
-print('For parse players, ' + str(timesRequested) + ' request(s) were(was) made.')
+print('For parse players, ' + str(timesRequested) + ' request(s) was(were) made.')
