@@ -8,7 +8,7 @@
     <meta name="author" content="">
 
     <!-- Custom styles for this template -->
-    <link href="../../css/contestBEntry.css" rel="stylesheet">
+    <link href="/css/contestB/entry.css" rel="stylesheet">
 
   </head>
 
@@ -23,7 +23,7 @@
       <div class="entry">
 
         <div class="entry-header">
-          <h1> Contest Edit </h1>
+          <h1> Contest Entry </h1>
         </div>
 
         <div class="entry-full-form">
@@ -41,22 +41,22 @@
               </thead>
 
               <tbody>
-                <form id="entry-form-1" action="/contestBEditProcess/{{contestInfo.contestId}}/{{contestInfo.contestantInstanceIndex}}" method="post">
-                  {{#contestBEditHelper contestInfo}}
+                <form id="entry-form-1" action="/contestBEntryProcess/{{contestInfo.contestId}}" method="post">
+                  {{#contestBEntryHelper contestInfo}}
                     <tr>
                       <td> {{this.athlete.athleteName}} </td>
                         <td>
-                          <input class="entry-form-input prediction" type="number" name="prediction-{{this.index}}" placeholder="Your prediction" required=true min="0" step="0.01" value={{this.prediction}}></input>
+                          <input class="entry-form-input prediction" type="number" name="prediction-{{this.index}}" placeholder="Your prediction" required=true min="0" step="0.01"></input>
                         </td>
                         <td>
-                          <input class="entry-form-input wager" type="number" name="wager-{{this.index}}" placeholder="Your wager" required=true min="0" max={{this.maxWager}} step="1" value ={{this.wager}}></input>
+                          <input class="entry-form-input wager" type="number" name="wager-{{this.index}}" placeholder="Your wager" required=true min="0" max={{this.maxWager}} step="1"></input>
                         </td>
                       </fieldset>
                       <td>
                         <button type="button" class="entry-form-button"> 5 for 5 </button>
                       </td>
                     </tr>
-                  {{/contestBEditHelper}}
+                  {{/contestBEntryHelper}}
                 </form>
               </tbody>
 
@@ -65,7 +65,7 @@
 
           <div class="entry-form-info">
             <div class="entry-form-money" id="entry-form-money-{{contestInfo.startingVirtualMoney}}">
-              <p> Money Remaining: {{contestInfo.contestantInstance.virtualMoneyRemaining}} </p>
+              <p> Money Remaining: {{contestInfo.startingVirtualMoney}} </p>
             </div>
           </div>
 
@@ -73,11 +73,10 @@
 
         <div class="entry-footer">
           <div class="entry-submission">
-            <button class="entry-footer-button" form="entry-form-1" type="submit" value="Submit"> Edit </button>
+            <button class="entry-footer-button" form="entry-form-1" type="submit" value="Submit"> Submit </button>
           </div>
         </div>
         
-        </div>
       </div>
     </div>
 
@@ -85,7 +84,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../js/jquery/jquery-ui-1.10.4.custom.js"></script>
-    <script src="../../js/contestBEntry.js"></script>
+    <script src="/js/jquery/jquery-ui-1.10.4.custom.js"></script>
+    <script src="/js/contestB/entry.js"></script>
   </body>
 </html>
