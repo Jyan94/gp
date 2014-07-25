@@ -12,6 +12,7 @@ var modes = require('libs/contestB/modes.js');
 var calculate = require('libs/contestB/baseballCalculations.js');
 var cql = configs.cassandra.cql;
 var childProcess = require('child_process');
+var cancel = require('libs/contestB/cancel.js');
 
 var messages = configs.constants.contestStrings;
 var contestBSizesNormal = configs.constants.contestBSizesNormal;
@@ -141,6 +142,16 @@ var sendContestTable = function (req, res, next) {
 
 /*
  * ====================================================================
+ * CONTEST INFO
+ * ====================================================================
+ */
+
+var renderContestInfoPage = function (req, res, next) {
+  res.render('contestBInfo.hbs');
+}
+
+/*
+ * ====================================================================
  * CONTEST CREATION
  * ====================================================================
  */
@@ -155,7 +166,7 @@ var findEligibleGames = function (req, res, next, callback) {
     else {
       async.filter(games,
         function (game, callback) {
-          callback((currentTime < game.start_time - 600000) ? true : false);
+          callback((currentTime < game.start_time - 900000) ? true : false);
         },
         function (games) {
           callback(null, req, res, next, games);
@@ -490,7 +501,7 @@ var getDeadlineTimeForContestCreation = function (req, res, next, params,
     },
     function (err, deadlineTime) {
       callback(err, req, res, next, params, games, players,
-               new Date(deadlineTime - 600000));
+               new Date(deadlineTime - 900000));
     });
 }
 
@@ -932,12 +943,19 @@ var updateStateContestsOpenAndFilledHelper = function (currentTime) {
       callback(err);
     }
 
-    if (contest.contest_deadline_time <= currentTime) {
+    if (contest.contest_deadline_time + 900000 <= currentTime) {
       if (contest.current_entries >= contest.minimum_entries) {
         ContestB.setToProcess(contest.contest_id, finalCallback);
       }
       else {
-        ContestB.setCancelled(contest.contest_id, finalCallback);
+        ContestB.setCancelled(contest.contest_id, function (err) {
+          if (err) {
+            callback(err);
+          }
+          else {
+            cancel.refundCancelledContestUsers(contest, finalCallback);
+          }
+        });
       }
     }
     else {
@@ -1070,6 +1088,7 @@ runAndSetRepeat(examineContestsToProcess, 60000);
 
 exports.renderContestPage = renderContestPage;
 exports.sendContestTable = sendContestTable;
+exports.renderContestInfoPage = renderContestInfoPage;
 exports.renderContestCreationPage = renderContestCreationPage;
 exports.contestCreationProcess = contestCreationProcess;
 exports.renderContestEntryPage = renderContestEntryPage;

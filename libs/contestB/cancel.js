@@ -18,16 +18,13 @@ var User = require('libs/cassandra/user');
  * args: (err)
  */
 function refundCancelledContestUsers(contest, callback) {
-  async.each(Object.keys(contest.contestants), function(key, callback) {
-    if (contest.contestants.hasOwnProperty(key)) {
+  async.each(Object.keys(contest.contestants),
+    function(key, callback) {
       var numEntries = JSON.parse(contest.contestants[key]).instances.length;
       var refund = numEntries * contest.entry_fee;
       User.addMoneyToUserUsingUsername(refund, key, callback);
-    }
-    else {
-      callback(null);
-    }
-  }, callback);
+    },
+    callback);
 }
 
 exports.refundCancelledContestUsers = refundCancelledContestUsers;
