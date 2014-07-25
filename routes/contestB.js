@@ -993,7 +993,6 @@ var checkContestEnd = function (contest, callback) {
   async.reduce(contest.games, true,
     function (memo, game, callback) {
       Game.select(JSON.parse(game).gameId, function (err, game) {
-        console.log(game, 'game');
         if (err) {
           callback(err, false);
         }
@@ -1013,10 +1012,8 @@ var getContestsToProcess = function (callback) {
       callback(err);
     }
     else {
-      console.log(contests);
       async.filter(contests, checkContestEnd,
         function (contests) {
-          console.log(contests);
           callback(null, contests);
         });
     }

@@ -74,7 +74,7 @@ function combineArray (array, callback) {
 function calculatePoints (contest, fantasyArray, callback) {
   var contestants = contest.contestants;
 
-  async.map(Object.keys(contestants),
+  async.map((contestants ? Object.keys(contestants) : []),
     function (username, callback) {
       async.map(JSON.parse(contestants[username]).instances,
         calculatePointsInstance(username, fantasyArray),
