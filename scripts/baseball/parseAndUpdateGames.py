@@ -15,7 +15,7 @@ version = '4'
 timeNow = time.time()
 timePast = timeNow - 86400
 
-key = 'grnayxvqv4zxsamxhsc59agu'
+key = '5ky6e4qfcf4yja97763z6pen'
 timesRequested = 0
 
 def getPlayers(event, side):
