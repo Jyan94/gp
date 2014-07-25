@@ -36,6 +36,7 @@ app.route('/login')
   { successRedirect: '/user',
     failureRedirect: '/login',
     failureFlash: true }));
+/*
 // Redirect the user to Facebook for authentication
 app.get('/auth/facebook',
   passport.authenticate('facebook'));
@@ -44,6 +45,7 @@ app.get('/auth/facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/user',
                                       failureRedirect: '/login' }));
+*/
 
 //signup
 var signup = require('routes/registry/signup');
