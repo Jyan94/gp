@@ -42,8 +42,7 @@ function insertUser(uuid, body, res, next) {
         body.username, //username
         verificationCode, //verification_code
         verified, //verified
-        null, //verication_time
-        10000.0 //virtual_money
+        null //verication_time
       ];
       var sendMailCallback = function(err, response) {
         if (err) {
