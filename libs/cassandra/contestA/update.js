@@ -324,7 +324,6 @@ function placeResell(
   resellPrice,
   username,
   callback) {
-
   var position;
   if (isOverBetter) {
     position = OVER;

@@ -86,7 +86,6 @@ CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 CREATE TABLE IF NOT EXISTS baseball_player (
   age int,
   athlete_id uuid PRIMARY KEY,
-  current_value double,
   first_name text,
   full_name text,
   height int,
