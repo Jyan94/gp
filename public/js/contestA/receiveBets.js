@@ -1,4 +1,5 @@
 //Shorthand for $( document ).ready()
-$(function() {
-  
+$(document).ready(function() {
+  var bets = [];
+  var betIdToIndex = {};
 });

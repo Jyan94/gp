@@ -14,8 +14,7 @@ var cql = configs.cassandra.cql;
 var childProcess = require('child_process');
 var cancel = require('libs/contestB/cancel.js');
 
-var messages = configs.constants.contestStrings;
-var contestBSizesNormal = configs.constants.contestBSizesNormal;
+var contestBSizesNormal = configs.constants.contestB.SIZES_NORMAL;
 var scriptNames = configs.constants.scriptNames;
 
 /*
@@ -403,13 +402,21 @@ var parseParamsContestCreation = function (req, res, next, callback) {
 }
 
 //keys is an array with only the athlete checkbox values
-var removeDuplicatesContestCreation = function (req, res, next, params,
-                                                keys, callback) {
+//elem.substring(49) - gets element id from divs
+var removeDuplicatesContestCreation = function (
+  req, 
+  res, 
+  next, 
+  params,
+  keys, 
+  callback) {
+
   if (keys.length < 2) {
     res.send(400, 'Need at least two athletes for contest creation.');
   }
   else {
-    async.map(keys,
+    async.map(
+      keys,
       function (elem, callback) {
         callback(null, elem.substring(49));
       },
@@ -463,8 +470,15 @@ var filterContestCreationGames = function (gameId, callback) {
   })
 }
 
-var getGamesForContestCreation = function (req, res, next, params, keys,
-                                           gameIdList, callback) {
+var getGamesForContestCreation = function (
+  req, 
+  res, 
+  next, 
+  params, 
+  keys,
+  gameIdList, 
+  callback) {
+
   async.map(gameIdList, filterContestCreationGames,
     function (err, games) {
       callback(err, req, res, next, params, keys, gameIdList, games);
@@ -546,8 +560,15 @@ var getDeadlineTimeForContestCreation = function (
       callback(null, game.gameDate < memo ? game.gameDate : memo);
     },
     function (err, deadlineTime) {
-      callback(err, req, res, next, params, games, players,
-               new Date(deadlineTime - 900000));
+      callback(
+        err, 
+        req, 
+        res, 
+        next, 
+        params, 
+        games, 
+        players,
+        new Date(deadlineTime - 900000));
     });
 }
 
@@ -761,7 +782,10 @@ var createInstance = function (params, contest) {
 var submitEntry = function(req, res, next, contest, callback) {
   var instance = createInstance(req.body, contest);
 
-  ContestB.addAndUpdateContestant(req.user, contest.contest_id, instance,
+  ContestB.addAndUpdateContestant(
+    req.user, 
+    contest.contest_id, 
+    instance,
     function (err) {
       if (err) {
         next(err);
@@ -932,7 +956,8 @@ var submitEdit = function(req, res, next, contest, callback) {
     res.send(404, 'Contestant not found.');
   }
   else {
-    contestantInstance = JSON.parse(contestant).instances[contestantInstanceIndex];
+    contestantInstance = 
+      JSON.parse(contestant).instances[contestantInstanceIndex];
 
     if (typeof(contestantInstance) === 'undefined') {
       res.send(404, 'Contestant Instance not found.');
@@ -940,8 +965,11 @@ var submitEdit = function(req, res, next, contest, callback) {
     else {
       instance = createInstance(req.body, contest);
 
-      ContestB.updateContestantInstance(user, contestantInstanceIndex,
-                                        instance, contest.contest_id,
+      ContestB.updateContestantInstance(
+        user, 
+        contestantInstanceIndex,
+        instance, 
+        contest.contest_id,
         function (err) {
           if (err) {
             next(err);
@@ -1005,7 +1033,8 @@ var runBackgroundScript = function (fileName) {
 }
 
 var runParsePlayers = runBackgroundScript(scriptNames.parsePlayers);
-var runParseAndUpdateGames = runBackgroundScript(scriptNames.parseAndUpdateGames);
+var runParseAndUpdateGames = 
+  runBackgroundScript(scriptNames.parseAndUpdateGames);
 
 /*
  * ====================================================================
@@ -1025,7 +1054,8 @@ var updateStateContestsOpenAndFilledHelper = function (currentTime) {
       callback(err);
     }
 
-    if (contest.contest_deadline_time.getTime() + 900000 <= currentTime.getTime()) {
+    if (contest.contest_deadline_time.getTime() + 900000 <= 
+        currentTime.getTime()) {
       if (contest.current_entries >= contest.minimum_entries) {
         ContestB.setToProcess(contest.contest_id, finalCallback);
       }
@@ -1157,6 +1187,7 @@ function runAndSetRepeat (func, interval) {
   func(callback);
 }
 
+//times in milliseconds
 runAndSetRepeat(runParsePlayers, 86400000);
 runAndSetRepeat(runParseAndUpdateGames, 7200000);
 runAndSetRepeat(examineContestsOpenAndFilled, 60000);
