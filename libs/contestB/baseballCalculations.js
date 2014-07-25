@@ -7,16 +7,11 @@ var configs = require('config/index');
 var cql = configs.cassandra.cql;
 var client = configs.cassandra.client;
 var async = require('async');
-var Player = require('libs/cassandra/baseballPlayer.js');
+var Player = require('libs/cassandra/baseball/player.js');
 var User = require('libs/cassandra/user.js');
 var Game = require('libs/cassandra/baseball/game.js');
 var calculate = require('libs/applicationServer/calculateMlbFantasyPoints.js');
-var mlbData = require('libs/mlbData.js');
 var DailyProphet = require('libs/cassandra/contestB/exports.js');
-
-var sportsdataMlb = require('sportsdata').MLB;
-
-sportsdataMlb.init('t', 4, 'grnayxvqv4zxsamxhsc59agu', 2014, 'REG');
 
 /* if the game is over, calculate all the fantasy points for the athletes in
 a specific contest */

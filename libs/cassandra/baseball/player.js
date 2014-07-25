@@ -6,35 +6,32 @@ var cql = require('config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var one = cql.types.consistencies.one;
 
-var CURRENT_VALUE_INDEX = 1;
-var STATISTICS_INDEX = 15;
+var STATISTICS_INDEX = 10;
 var CURRENT_VALUE_KEY = 'current_value';
 var STATISTICS_KEY = 'statistics';
 
 //16 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
-    athlete_id,
-    current_value,
-    full_name,
-    first_name,
-    last_name,
-    short_team_name,
-    long_team_name,
-    status,
-    position,
-    profile_url,
-    uniform_number,
-    height,
-    weight,
     age,
-    image,
-    statistics
+    athlete_id,
+    first_name,
+    full_name,
+    height,
+    image_url,
+    last_name,
+    long_team_name,
+    position,
+    short_team_name,
+    statistics,
+    status,
+    team_id,
+    uniform_number,
+    weight
   ) VALUES
     (?, ?, ?, ?, ?,
      ?, ?, ?, ?, ?,
-     ?, ?, ?, ?, ?,
-     ?);
+     ?, ?, ?, ?, ?);
 */});
 
 /**
@@ -43,10 +40,6 @@ var INSERT_PLAYER_CQL = multiline(function() {/*
  * args: (err)
  */
 exports.insert = function (fields, callback) {
-  fields[CURRENT_VALUE_INDEX] = {
-    value: fields[CURRENT_VALUE_INDEX],
-    hint: 'double'
-  };
   fields[STATISTICS_INDEX] = {
     value: fields[STATISTICS_INDEX],
     hint: 'map'
