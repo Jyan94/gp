@@ -32,12 +32,7 @@ var COOLDOWN_MSG = configs.constants.contestB.COOLDOWN_MSG;
  * args: (err, contest)
  */
 function verifyInstance(user, instanceIndex, instance, contest, callback) {
-  if (!(typeof instanceIndex === "number" && 
-        isFinite(instanceIndex) && 
-        instanceIndex%1===0)) {
-    callback(new Error('index not a number'))
-  }
-  else if (!(contest.contestants.hasOwnProperty(user.username))) {
+  if (!(contest.contestants.hasOwnProperty(user.username))) {
     callback(new Error('username does not exist in contest'));
   }
   else if (!(instance && 
