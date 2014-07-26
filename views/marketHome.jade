@@ -15,21 +15,40 @@ html(lang="en")
   body
     include banner
     div.makeBets
-      center
-        h1(style='color: #06203b')
-          $500
+      .makeBetForm
+        form#betForm.pure-form(action='/submitForm/'+playerId method='post')
+          input(type="text" name='search' required=true style='width:160px; height: 30px font-size: 2px' placeholder='Search Players')
+          br
+          br
+          | Wager:
+          input(type='number' name='wagerAmount' placeholder='Dollars' required=true style='width:100px' min="0" step="0.01")
+          br
+          | Value :
+          input(type='number' name='fantasyValue' placeholder='Value' required=true style='width: 100px' min="1" step="1")
+          br
+          br
+          input(id = 'radioFormA' type='radio' name='longOrShort' value='Over' checked='checked')
+          | Over
+          input(id = 'radioFormB' type='radio' name='longOrShort' value='Under')
+          | Under
+          br
+          br
+          center
+            input#betFormButton.pure-button.button-primary(type='submit' style='background-color: #083f75; color: white; float: left' value="Create")
+
       div.playercard1
         div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
           div.playercard1-info
             .playercard1-info.name
               center
-                p Carmelo Anthony
+                p Lebron James
             .playercard1-info.pos
               center
                 p SF | Cavaliers
           div.playercard1-bottom
-
+            div.playercard1-bottom.wager
+              p $5 over 30 FP
             div.playercard1-bottom.submit
               center
                 div.pure-button.button-primary
@@ -51,8 +70,9 @@ html(lang="en")
               p $5 over 30 FP
             div.playercard1-bottom.submit
               center
-                div.pure-button.button-primary
-                  | Take
+                form(action='localhost:3000/takeBet')
+                  input.pure-button.button-primary(type='submit' Value='Take')
+
       div.playercard1
         div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')

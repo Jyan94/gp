@@ -59,10 +59,13 @@ taken bet format:
 client: ajax request for bets
 server: sends pending bets array and map of betIds to array indices
 client: iterates through bets currently displayed and checks against new array
+
+server sends: {
+}
  */
 exports.contestA = {
   pendingBets: [
-    {
+    /*{
       athleteId: '10154eef-8834-48e0-97e7-d7436367534c',
       athleteName: 'Adrian Gonzalez',
       athleteTeam: 'LA',
@@ -141,12 +144,15 @@ exports.contestA = {
       better: 'hello world',
       overNotUnder: false,
       price: 10
-    }
+    }*/
     ],
   resellBets: [],
   takenBets: [],
   pendingBetIdToArrayIndex: {},
-  resellBetIdToArrayIndex: {}
+  overResellBetIdToArrayIndex: {},
+  underResellBetIdToArrayIndex: {},
+  overTakenBetIdToArrayIndex: {},
+  underTakenBetIdToArrayIndex: {}
 }
 
 /**

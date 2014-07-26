@@ -38,7 +38,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-
+  background-color: #e9e9e9;
   background-size: 100%;
   font-family: 'Helvetica', 'Arial', 'sans-serif';
 }
@@ -143,7 +143,8 @@ input {
   border-style: solid;
   border-width: 0.5px;
   border-color: #000;
-  background-color: #cecece;
+  background-color: white;
+  position: fixed;
 
   box-shadow: 0px 1px 4px #888;
   z-index: 2;
@@ -236,10 +237,10 @@ input {
 }
 .banner-brand {
   width: 180px;
-  float: left;
-  margin-top: 5px;
-  margin-left: -200px;
+  margin-top: -31px;
+  margin-left: 40%;
 }
+
 #settings {
   display: none;
   position: relative;
@@ -1079,13 +1080,20 @@ input {
 /* ---- input ---- */
 
 input[type="text"] {
-  font-size: 20px;
+  margin-top:5px;
+  margin-left: 0%;
+  font-size: 14px;
+}
+
+#betForm {
+  width: 100%;
+  height: 100%;
 }
 
 /* ---- isotope ---- */
 
 .isotope {
-  border: 1px solid #333;
+  border: 0px;
   display: block;
   margin-left: 120px;
   margin-right: auto;
@@ -1124,109 +1132,30 @@ input[type="text"] {
 }
 
 .makeBets {
-  margin-top: 1%;
+  margin-top: 5%;
   position: fixed;
-  margin-left: 1100px;
-  height: 390px;
+  margin-left: 1120px;
+  background-color: white;
+  height: 610px;
   width: 275px;
+  border-style: solid;
+  border-width: 1.5px;
+  box-shadow: 0px 4px 4px #888;
+}
+
+.makeBetForm {
+  display: inline-block;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 5%;
+  height: 40%;
+  width: 70%;
   background-color: white;
-  border-color: green;
-  border-style: solid;
-  border-width: 3px;
-}
-
-.takeBets {
-  margin-top: 20px;
-  margin-left: 20px;
-  float: left;
-  height: 50px;
-  width: 300px;
-  background-color: white;
-}
-
-
-.playercard {
-  margin-left: 20px;
-  height: 110px;
-  width: 190px;
-}
-
-
-.playercard-leftpic {
-  height: 79px;
-  float: left;
-  width: 79px;
   border-style: solid;
   border-color: black;
-  border-width: 1px 0px 0px 1px;
-  background-color: white;
-  border-radius: 0px;
+  border-width: 1px;
+  padding: 5% 5% 5% 5%;
 }
-
-.playercard-rightmarket-up {
-  height: 107px;
-  float: right;
-  width: 109px;
-  background-color: #3ab54b;
-  border-style: solid;
-  border-color: black;
-  border-width: 1px 1px 1px 0px;
-  border-radius: 0px 0px 0px 0px;
-  opacity: 0.9;
-}
-
-.playercard-rightmarket-down {
-  height: 107px;
-  float: right;
-  width: 109px;
-  background-color: #FF0000;
-  border-style: solid;
-  border-color: black;
-  border-width: 1px 1px 1px 0px;
-  border-radius: 0px 0px 0px 0px;
-  opacity: 0.9;
-}
-
-.playercard-currfantasy {
-  margin-top:30px;
-  height: 70px;
-  width: 109px;
-}
-
-.playercard-change {
-  margin-top: -35px;
-  height: 20px;
-  width: 109px;
-}
-
-.playercard-volume {
-  margin-top: -20px;
-  height: 10px;
-  width: 109px;
-}
-.playercard-bottominfo {
-  height: 28px;
-  width: 79px;
-  float: left;
-  background-color: #cecece;
-  border-style: solid;
-  border-color: black;
-  border-width: 0px 0px 1px 1px;
-  border-radius: 0px 0px 0px 0px;
-}
-
-.playercard-name {
-  margin-top: -10px;
-  height: 10px;
-  width: 80px;
-}
-
-.playercard-pos {
-  margin-top: -10px;
-  height: 10px;
-  width: 100px;
-}
-
 
 .playercard1 {
   height: 320px;
@@ -1533,6 +1462,7 @@ input[type="text"] {
 .fui-new,
 .fui-photo,
 .fui-plus,
+.fui-carat,
 .fui-search {
   font-family: 'Flat-UI-Icons';
   cursor: pointer;
@@ -1557,6 +1487,11 @@ input[type="text"] {
 }
 .fui-plus:before {
   content: '\e009';
+}
+.fui-carat {
+  margin: 0 !important;
+  line-height: normal !important;
+  vertical-align: normal !important;
 }
 .fui-search {
   margin: 0 !important;

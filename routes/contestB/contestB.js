@@ -4,17 +4,16 @@
 var configs = require('config/index.js');
 
 var async = require('async');
-var User = require('libs/cassandra/user');
 var ContestB = require('libs/cassandra/contestB/exports');
 var BaseballPlayer = require('libs/cassandra/baseball/player');
 var Game = require('libs/cassandra/baseball/game');
 var modes = require('libs/contestB/modes.js');
 var calculate = require('libs/contestB/baseballCalculations.js');
-var cql = configs.cassandra.cql;
 var childProcess = require('child_process');
 var cancel = require('libs/contestB/cancel.js');
 
 var contestBSizesNormal = configs.constants.contestB.SIZES_NORMAL;
+var customSetInterval = configs.constants.globals.customSetInterval;
 var scriptNames = configs.constants.scriptNames;
 
 /*
@@ -1155,7 +1154,7 @@ var examineContestsToProcess = function (callback) {
  * ====================================================================
  */
 
-function setRepeat (func, interval) {
+function setRepeat(func, interval) {
   var callback = function (err) {
     if (err) {
       console.log(err);
@@ -1173,25 +1172,13 @@ setRepeat(runParseAndUpdateGames, 7200000);
 setRepeat(examineContestsOpenAndFilled, 60000);
 setRepeat(examineContestsToProcess, 60000);*/
 
-function runAndSetRepeat (func, interval) {
-  var callback = function (err) {
-    if (err) {
-      console.log(err);
-    }
-
-    setTimeout(function () {
-      runAndSetRepeat(func, interval)
-    }, interval);
-  };
-
-  func(callback);
-}
 
 //times in milliseconds
-//runAndSetRepeat(runParsePlayers, 86400000);
-//runAndSetRepeat(runParseAndUpdateGames, 7200000);
-runAndSetRepeat(examineContestsOpenAndFilled, 60000);
-runAndSetRepeat(examineContestsToProcess, 60000);
+
+customSetInterval(runParsePlayers, 86400000);
+customSetInterval(runParseAndUpdateGames, 7200000);
+customSetInterval(examineContestsOpenAndFilled, 60000);
+customSetInterval(examineContestsToProcess, 60000);
 
 /*
  * ====================================================================
