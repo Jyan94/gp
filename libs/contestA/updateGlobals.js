@@ -13,9 +13,7 @@ var positions = configs.constants.contestAbets.POSITIONS;
 var async = require('async');
 
 var contestAGlobals = configs.globals.contestA;
-var pendingBets = contestAGlobals.pendingBets;
-var resellBets = contestAGlobals.resellBets;
-var takenBets = contestAGlobals.takenBets;
+
 var OVER = positions.OVER;
 var UNDER = positions.UNDER;
 
@@ -47,6 +45,23 @@ function formatPendingBets(bets, callback) {
     retVal.price = bet.prices[sellingPosition];
     callback(null, retVal);
   }, callback);
+}
+
+function hashPendingBetIds(bets, callback) {
+  async.reduce(
+    bets, 
+    {
+      betIdMap: {},
+      count: 0
+    }, 
+    function(memo, bet, callback) {
+      memo.betIdMap[bet.bet_id] = memo.count;
+      ++memo.count;
+      callback(null, memo);
+    }, 
+    function(err, result) {
+      callback(err, result.betIdMap);
+    });
 }
 
 function formatTakenBet(bet, overNotUnder) {
@@ -107,21 +122,42 @@ function formatResellBet(bet, overNotUnder) {
 
 //will be applied on active bets
 function formatResellAndTakenBets(bets, callback) {
-  async.reduce(bets, {taken: [], resell: []}, function(memo, bet, callback) {
-    if (bet.is_selling_position[OVER]) {
-      memo.resell.push(formatTakenBet(bet, true));
-    }
-    else {
-      memo.taken.push(formatResellBet(bet, true));
-    }
-    if (bet.is_selling_position[UNDER]) {
-      memo.resell.push(formatTakenBet(bet, false));
-    }    
-    else {
-      memo.taken.push(formatResellBet(bet, false));
-    }
-    callback(null, memo);
-  }, callback);
+  async.reduce(
+    bets, 
+    {
+      taken: [], 
+      resell: [], 
+      overTakenIdToIndex: {}, 
+      underTakenIdToIndex: {},
+      overResellIdToIndex: {}, 
+      underResellIdToIndex: {}, 
+      takenCount: 0,
+      resellCount: 0
+    }, 
+    function(memo, bet, callback) {
+      if (bet.is_selling_position[OVER]) {
+        memo.resell.push(formatResellBet(bet, true));
+        memo.overResellIdToIndex[bet.bet_id] = memo.resellCount;
+        ++memo.resellCount;
+      }
+      else {
+        memo.taken.push(formatTakenBet(bet, true));
+        memo.overTakenIdToIndex[bet.bet_id] = memo.takenCount;
+        ++memo.takenCount;
+      }
+      if (bet.is_selling_position[UNDER]) {
+        memo.resell.push(formatResellBet(bet, false));
+        memo.overResellIdToIndex[bet.bet_id] = memo.resellCount;
+        ++memo.resellCount;
+      }    
+      else {
+        memo.taken.push(formatTakenBet(bet, false));
+        memo.underTakenIdToIndex[bet.bet_id] = memo.takenCount;
+        ++memo.takenCount;
+      }
+      callback(null, memo);
+    }, 
+    callback);
 }
 
 function loadPendingBets(callback) {
@@ -131,15 +167,28 @@ function loadPendingBets(callback) {
       SelectBets.selectPendingBets(callback);
     },
     function(bets, callback) {
-      formatPendingBets(bets, callback);
+      bets = bets || [];
+      async.parallel(
+      [
+        function(callback) {
+          formatPendingBets(bets, callback);
+        },
+        function(callback) {
+          hashPendingBetIds(bets, callback);
+        }
+      ],
+      function(err, results) {
+        callback(err, results[0], results[1]);
+      });
     }
   ],
-  function(err, results) {
+  function(err, formattedPendingBets, pendingBetIdMap) {
     if (err) {
       callback(err);
     }
     else {
-      pendingBets = results;
+      contestAGlobals.pendingBets = formattedPendingBets;
+      contestAGlobals.pendingBetIdToArrayIndex = pendingBetIdMap;
       callback(null);
     }
   });
@@ -152,6 +201,7 @@ function loadResellAndTakenBets(callback) {
       SelectBets.selectActiveBets(callback);
     },
     function(bets, callback) {
+      bets = bets || [];
       formatResellAndTakenBets(bets, callback);
     }
   ],
@@ -160,8 +210,16 @@ function loadResellAndTakenBets(callback) {
       callback(err);
     }
     else {
-      takenBets = results.taken;
-      resellBets = results.resell;
+      contestAGlobals.takenBets = results.taken;
+      contestAGlobals.resellBets = results.resell;
+      contestAGlobals.overResellBetIdToArrayIndex = 
+        results.overResellIdToIndex;
+      contestAGlobals.underResellBetIdToArrayIndex = 
+        results.underResellIdToIndex;
+      contestAGlobals.overTakenBetIdToArrayIndex = 
+        results.overTakenIdToIndex;
+      contestAGlobals.underTakenBetIdToArrayIndex = 
+        results.underTakenIdToIndex;
       callback(null);
     }
   });

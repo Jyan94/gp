@@ -8,15 +8,12 @@ require('rootpath')();
 
 var configs = require('config/index');
 var contestAbets = require('libs/contestA/updateGlobals');
+var customSetInterval = configs.constants.globals.customSetInterval;
 var POLL_INTERVAL = configs.constants.pollInterval;
 
 function startPollingContestABets() {
-  setInterval(function() {
-    contestAbets.loadAllBets(function(err) {
-      if (err) {
-        console.log(err);
-      } 
-    });
+  customSetInterval(function(callback) {
+    contestAbets.loadAllBets(callback);
   }, POLL_INTERVAL);
 }
 exports.startPollingContestABets = startPollingContestABets;

@@ -46,7 +46,6 @@ app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/user',
                                       failureRedirect: '/login' }));
 */
-
 //signup
 var signup = require('routes/registry/signup');
 app.route('/signup')
@@ -92,8 +91,7 @@ app.get('/update', graph.update);
 app.get('/data', graph.get);
 
 //tournament
-var contestBTable = require('routes/contest/table');
-var contestB = require('routes/contestB');
+var contestB = require('routes/contestB/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);
 app.get('/contestBInfo', contestB.renderContestInfoPage);

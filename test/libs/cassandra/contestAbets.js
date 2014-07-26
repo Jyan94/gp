@@ -4,6 +4,8 @@
  * ====================================================================
  * Note: inserting into the daily_prophet table modifies the testContestSettings
  */
+/*global describe*/
+/*global it*/
 'use strict';
 (require('rootpath')());
 
