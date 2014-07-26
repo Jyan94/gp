@@ -223,7 +223,28 @@ exports.globals = {
   DEFAULT_USERNAMES:
   [
     exports.contestAbets.DEFAULT_USERNAME
-  ]
+  ],
+  /**
+   * custom set interval
+   * @param  {Function} func
+   * must have args: callback taking an argument of err 
+   * and the callback must be callbed
+   * @param  {int} interval
+   * time in milliseconds
+   */
+  customSetInterval: function(func, interval) {
+    var callback = function (err) {
+      if (err) {
+        console.log(err);
+      }
+
+      setTimeout(function () {
+        exports.globals.customSetInterval(func, interval);
+      }, interval);
+    };
+
+    func(callback);
+  }
 }
 
 
