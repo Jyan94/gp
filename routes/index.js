@@ -95,7 +95,7 @@ var contestA = require('routes/contestA.js');
 app.get('/portfolio', contestA.renderPortfolio);
 
 //contest b
-var contestBTable = require('routes/contestB/table');
+//var contestBTable = require('routes/contestB/table');
 var contestB = require('routes/contestB/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);

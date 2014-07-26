@@ -1126,7 +1126,6 @@ var getContestsToProcess = function (callback) {
     else {
       async.filter(contests, checkContestEnd,
         function (contests) {
-          console.log(1);
           callback(null, contests);
         });
     }
@@ -1134,7 +1133,6 @@ var getContestsToProcess = function (callback) {
 }
 
 var updateStateContestsToProcess = function (contests, callback) {
-  console.log(contests);
   async.map(contests, calculate.calculateWinningsForContest,
     function (err) {
       callback(err);
@@ -1192,7 +1190,7 @@ function runAndSetRepeat (func, interval) {
 //times in milliseconds
 //runAndSetRepeat(runParsePlayers, 86400000);
 //runAndSetRepeat(runParseAndUpdateGames, 7200000);
-//runAndSetRepeat(examineContestsOpenAndFilled, 60000);
+runAndSetRepeat(examineContestsOpenAndFilled, 60000);
 runAndSetRepeat(examineContestsToProcess, 60000);
 
 /*
