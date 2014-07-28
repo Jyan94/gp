@@ -54,6 +54,7 @@ var config = {
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
     app.engine('hbs', hbs.__express);
+    app.engine('html', hbs.__express);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
     app.use(bodyParser());

@@ -1,7 +1,7 @@
 doctype html
 html(lang="en")
   head
-    include common/base_head
+    include ../common/base_head
     script(src='/js/jquery/jquery-ui-1.10.4.custom.js')
     //link(rel="stylesheet" href="css/flexslider.css" type="text/css")
     //link(rel="stylesheet" href="css/demo.css" type="text/css" media="screen")
@@ -13,7 +13,7 @@ html(lang="en")
     script(type="text/javascript" src="js/homeIsotope.js")
 
   body
-    include banner
+    include ../banner
     div.makeBets
       .makeBetForm
         form#betForm.pure-form(action='/submitForm/'+playerId method='post')
@@ -178,61 +178,3 @@ html(lang="en")
               center
                 div.pure-button.button-primary
                   | Take
-
-
-
-      //div.flexslider
-        ul.slides
-          each item in result
-            li
-              div.score
-                if (item.start_time)
-                  h5=item.short_home_name
-                  h5=item.short_away_name
-                  h5=item.start_time
-                else
-                  h5=item.short_home_name + "  " + item.home_score
-                  h5=item.short_away_name + "  " + item.away_score
-      //div.athleteAndPortfolio
-        div.athleteSelection
-          div.playercard
-            div.playercard-leftpic
-              div.playercard-pic
-                img(width='79' height='79' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
-            div.playercard-rightmarket-down
-              div.playercard-currfantasy
-                p.playercard-currfantasy 17.5 FP
-              div.playercard-change
-                p Change: -2.78
-              div.playercard-volume
-                p Volume 76m
-            div.playercard-bottominfo
-              div.playercard-name
-                p.playercard-info Lebron James
-              div.playercard-pos
-                p.playercard-info SF | Cavaliers
-        div.shortenedPortfolio
-          div.MakeBets
-            span.fui-plus.pure-button.button-primary.input
-              |  Make Bet
-          div.TakeBets
-            span.fui-plus.pure-button.button-primary.input
-              |  Take Bet
-          h1 My Portfolio
-
-          div.playercard
-            div.playercard-leftpic
-              div.playercard-pic
-                img(width='79' height='79' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
-            div.playercard-rightmarket-up
-              div.playercard-currfantasy
-                p.playercard-currfantasy 22.5 FP
-              div.playercard-change
-                p Change: +2.78
-              div.playercard-volume
-                p Volume 76m
-            div.playercard-bottominfo
-              div.playercard-name
-                p.playercard-info Lebron James
-              div.playercard-pos
-                p.playercard-info SF | Cavaliers

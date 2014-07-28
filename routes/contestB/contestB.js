@@ -1186,8 +1186,8 @@ setRepeat(examineContestsToProcess, 60000);*/
 
 //times in milliseconds
 
-customSetInterval(runParsePlayers, 86400000);
-customSetInterval(runParseAndUpdateGames, 7200000);
+//customSetInterval(runParsePlayers, 86400000);
+//customSetInterval(runParseAndUpdateGames, 7200000);
 customSetInterval(examineContestsOpenAndFilled, 60000);
 customSetInterval(examineContestsToProcess, 60000);
 
