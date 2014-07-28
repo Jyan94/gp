@@ -28,7 +28,8 @@ function formatPendingBets(bets, callback) {
       fantasyValue: bet.fantasy_value,
       gameId: bet.game_id,
       overNotUnder: bet.is_selling_position[OVER],
-      payoff: bet.payoff
+      payoff: bet.payoff,
+      sport: bet.sport
     };
     var sellingPosition;
     var takenPosition;
@@ -88,7 +89,8 @@ function formatTakenBet(bet, overNotUnder) {
     opponent: bet.bettor_usernames[otherPosition],
     overNotUnder: overNotUnder,
     owner: bet.bettor_usernames[position],
-    price: bet.old_prices[position]
+    price: bet.old_prices[position],
+    sport: bet.sport
   }
 }
 
@@ -116,7 +118,8 @@ function formatResellBet(bet, overNotUnder) {
     expiration: bet.expirations[position],
     overNotUnder: overNotUnder,
     price: bet.prices[position],
-    seller: bet.bettor_usernames[position] 
+    seller: bet.bettor_usernames[position],
+    sport: bet.sport
   }
 }
 

@@ -243,6 +243,19 @@ function testBets(callback) {
         callback);
     },
     function(callback) {
+      SelectBet.selectByBetId(TEST_BET_ID, function(err, result) {
+        if (err) {
+          callback(err);
+        }
+        else if (!result) {
+          callback(null);
+        }
+        else {
+          callback(new Error('result should be null'));
+        }
+      });
+    },
+    function(callback) {
       insertTestPending(callback);
     },
     function(callback) {

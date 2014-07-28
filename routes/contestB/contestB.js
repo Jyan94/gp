@@ -22,7 +22,7 @@ var scriptNames = configs.constants.scriptNames;
  * ====================================================================
  */
 
-var renderContestPage = function (req, res, next) {
+function renderContestPage(req, res, next) {
   res.render('contestB/contests.hbs');
 }
 
@@ -32,7 +32,7 @@ var renderContestPage = function (req, res, next) {
  * ====================================================================
  */
 
-var findContests = function (req, res, next, callback) {
+function findContests(req, res, next, callback) {
   ContestB.selectOpen('Baseball', function (err, result) {
     if (err) {
       res.send(500, 'Database error.');
@@ -43,7 +43,7 @@ var findContests = function (req, res, next, callback) {
   });
 }
 
-var filterContestFieldsTablesHelperContestants = function(
+function filterContestFieldsTablesHelperContestants(
   username, 
   contest, 
   callback) {
@@ -83,7 +83,7 @@ var filterContestFieldsTablesHelperContestants = function(
   }
 }
 
-var filterContestFieldsTablesHelperMain = function(
+function filterContestFieldsTablesHelperMain(
   userContestantInstances, 
   contest, 
   contestants, 
@@ -111,9 +111,10 @@ var filterContestFieldsTablesHelperMain = function(
     });
 }
 
-var filterContestFieldsTablesHelper = function (username) {
+function filterContestFieldsTablesHelper(username) {
   return function (contest, callback) {
-    async.waterfall([
+    async.waterfall(
+    [
       function (callback) {
         callback(null, username, contest);
       },
@@ -125,7 +126,7 @@ var filterContestFieldsTablesHelper = function (username) {
   };
 }
 
-var filterContestFieldsTables = function (req, res, next, contests, callback) {
+function filterContestFieldsTables(req, res, next, contests, callback) {
   async.map(contests, filterContestFieldsTablesHelper(req.user.username),
     function (err, result) {
       if (err) {
@@ -137,7 +138,7 @@ var filterContestFieldsTables = function (req, res, next, contests, callback) {
   });
 }
 
-var sendContestTable = function (req, res, next) {
+function sendContestTable(req, res, next) {
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -158,7 +159,7 @@ var sendContestTable = function (req, res, next) {
  * ====================================================================
  */
 
-var renderContestInfoPage = function (req, res, next) {
+function renderContestInfoPage(req, res, next) {
   res.render('contestB/info.hbs');
 }
 
@@ -168,7 +169,7 @@ var renderContestInfoPage = function (req, res, next) {
  * ====================================================================
  */
 
-var findEligibleGames = function (req, res, next, callback) {
+function findEligibleGames(req, res, next, callback) {
   var currentTime = (new Date()).getTime();
 
   Game.selectTodaysGames(function (err, games) {
@@ -176,7 +177,8 @@ var findEligibleGames = function (req, res, next, callback) {
       next(err);
     }
     else {
-      async.filter(games,
+      async.filter(
+        games,
         function (game, callback) {
           callback((currentTime < game.start_time - 900000) ? true : false);
         },
@@ -242,7 +244,7 @@ var filterEligibleGamesHelper = function (game, callback) {
 
 /* Uses the short_team_name field of the baseball_player table */
 
-var filterEligibleGamesHelperMain = function (shortTeamName) {
+function filterEligibleGamesHelperMain(shortTeamName) {
   return function (callback) {
     BaseballPlayer.selectUsingShortTeamName(shortTeamName,
       function (err, players) {
@@ -250,7 +252,8 @@ var filterEligibleGamesHelperMain = function (shortTeamName) {
           callback(err);
         }
         else {
-          async.map(players,
+          async.map(
+            players,
             function (player, callback) {
               callback(
                 null, 
@@ -269,7 +272,7 @@ var filterEligibleGamesHelperMain = function (shortTeamName) {
   };
 }
 
-var filterEligibleGamesHelper = function (game, callback) {
+function filterEligibleGamesHelper(game, callback) {
   async.parallel([
     filterEligibleGamesHelperMain(game.short_away_name),
     filterEligibleGamesHelperMain(game.short_home_name)
@@ -295,7 +298,7 @@ var filterEligibleGamesHelper = function (game, callback) {
   });
 }
 
-var filterEligibleGames = function (req, res, next, games, callback) {
+function filterEligibleGames(req, res, next, games, callback) {
   async.map(games, filterEligibleGamesHelper,
     function (err, result) {
       if (err) {
@@ -313,19 +316,20 @@ var filterEligibleGames = function (req, res, next, games, callback) {
   });
 }
 
-var renderContestCreationPage = function (req, res, next) {
-  async.waterfall([
+function renderContestCreationPage(req, res, next) {
+  async.waterfall(
+  [
     function (callback) {
       callback(null, req, res, next);
     },
     findEligibleGames,
     filterEligibleGames
-    ],
-    function (err, result) {
-      if (err) {
-        next(err);
-      }
-    });
+  ],
+  function (err, result) {
+    if (err) {
+      next(err);
+    }
+  });
 }
 
 /*
@@ -334,7 +338,7 @@ var renderContestCreationPage = function (req, res, next) {
  * ====================================================================
  */
 
-var parseParamsContestCreation = function (req, res, next, callback) {
+function parseParamsContestCreation(req, res, next, callback) {
   var body = req.body;
   var keys = Object.keys(body);
   var params = {};
@@ -402,7 +406,7 @@ var parseParamsContestCreation = function (req, res, next, callback) {
 
 //keys is an array with only the athlete checkbox values
 //elem.substring(49) - gets element id from divs
-var removeDuplicatesContestCreation = function (
+function removeDuplicatesContestCreation(
   req, 
   res, 
   next, 
@@ -445,7 +449,7 @@ var removeDuplicatesContestCreation = function (
   }
 }
 
-var filterContestCreationGames = function (gameId, callback) {
+function filterContestCreationGames(gameId, callback) {
   Game.select(gameId, function (err, game) {
     if (err) {
       callback(err);
@@ -469,7 +473,7 @@ var filterContestCreationGames = function (gameId, callback) {
   })
 }
 
-var getGamesForContestCreation = function (
+function getGamesForContestCreation(
   req, 
   res, 
   next, 
@@ -484,7 +488,7 @@ var getGamesForContestCreation = function (
     })
 }
 
-var filterContestCreationAthletes = function (gameIdList, games, keys) {
+function filterContestCreationAthletes(gameIdList, games, keys) {
   return function (elem, callback) {
     var gameId = elem.substring(49);
     var gameContestId = gameIdList.indexOf(gameId);
@@ -525,7 +529,7 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
   }
 }
 
-var getAthletesForContestCreation = function (
+function getAthletesForContestCreation(
   req, 
   res, 
   next, 
@@ -543,7 +547,7 @@ var getAthletesForContestCreation = function (
     });
 }
 
-var getDeadlineTimeForContestCreation = function (
+function getDeadlineTimeForContestCreation(
   req, 
   res, 
   next, 
@@ -572,7 +576,7 @@ var getDeadlineTimeForContestCreation = function (
 }
 
 
-var submitContest = function (
+function submitContest(
   req, 
   res, 
   next, 
@@ -614,7 +618,7 @@ var submitContest = function (
     });
 }
 
-var contestCreationProcess = function (req, res, next) {
+function contestCreationProcess(req, res, next) {
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -639,7 +643,7 @@ var contestCreationProcess = function (req, res, next) {
  * ====================================================================
  */
 
-var findContestByContestIdCheckEntry = function (req, res, next, callback) {
+function findContestByContestIdCheckEntry(req, res, next, callback) {
   var currentTime = (new Date()).getTime();
 
   ContestB.selectById(req.params.contestId, function (err, result) {
@@ -689,7 +693,7 @@ var filterContestFieldsEntry = function (req, res, next, contest, callback) {
   });
 }
 
-var renderContestEntryPage = function (req, res, next) {
+function renderContestEntryPage(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Contest not found.');
   }
@@ -735,7 +739,7 @@ var renderContestEntryPage = function (req, res, next) {
   }
 }*/
 
-var findContestByContestIdEntry = function (req, res, next, callback) {
+function findContestByContestIdEntry(req, res, next, callback) {
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -746,7 +750,7 @@ var findContestByContestIdEntry = function (req, res, next, callback) {
   });
 }
 
-var createInstance = function (params, contest) {
+function createInstance(params, contest) {
   var virtualMoneyRemaining = contest.starting_virtual_money;
   var wagers = [];
   var predictions = [];
@@ -778,7 +782,7 @@ var createInstance = function (params, contest) {
 
 }
 
-var submitEntry = function(req, res, next, contest, callback) {
+function submitEntry(req, res, next, contest, callback) {
   var instance = createInstance(req.body, contest);
 
   ContestB.addAndUpdateContestant(
@@ -795,7 +799,7 @@ var submitEntry = function(req, res, next, contest, callback) {
     });
 }
 
-var contestEntryProcess = function (req, res, next) {
+function contestEntryProcess(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Not a valid contest ID.');
   }
@@ -823,7 +827,7 @@ var contestEntryProcess = function (req, res, next) {
  * ====================================================================
  */
 
-var findContestByContestIdCheckEdit = function (req, res, next, callback) {
+function findContestByContestIdCheckEdit(req, res, next, callback) {
   var currentTime = (new Date()).getTime();
 
   ContestB.selectById(req.params.contestId, function (err, result) {
@@ -840,7 +844,7 @@ var findContestByContestIdCheckEdit = function (req, res, next, callback) {
 }
 
 // Need names, not numbers, as keys of athletes
-var filterContestFieldsEdit = function (
+function filterContestFieldsEdit(
   req, 
   res, 
   next, 
@@ -905,7 +909,7 @@ var filterContestFieldsEdit = function (
   }
 }
 
-var renderContestEditPage = function (req, res, next) {
+function renderContestEditPage(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Not a valid contest ID.');
   }
@@ -933,7 +937,7 @@ var renderContestEditPage = function (req, res, next) {
  * CONTEST EDIT PROCESS
  * ====================================================================
  */
-var findContestByContestIdEdit = function (req, res, next, callback) {
+function findContestByContestIdEdit(req, res, next, callback) {
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -944,7 +948,7 @@ var findContestByContestIdEdit = function (req, res, next, callback) {
   });
 }
 
-var submitEdit = function(req, res, next, contest, callback) {
+function submitEdit(req, res, next, contest, callback) {
   var user = req.user;
   var contestantInstanceIndex = req.params.contestantInstanceIndex;
   var contestant = contest.contestants[user.username];
@@ -981,7 +985,7 @@ var submitEdit = function(req, res, next, contest, callback) {
   }
 }
 
-var contestEditProcess = function (req, res, next) {
+function contestEditProcess(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Not a valid contest ID.');
   }
@@ -1010,7 +1014,7 @@ var contestEditProcess = function (req, res, next) {
  * ====================================================================
  */
 
-var runBackgroundScript = function (fileName) {
+function runBackgroundScript(fileName) {
   return function (callback) {
     var python = childProcess.spawn('python', [fileName]);
     var output = '';
@@ -1041,13 +1045,13 @@ var runParseAndUpdateGames =
  * ====================================================================
  */
 
-var getContestsOpenAndFilled = function (callback) {
+function getContestsOpenAndFilled(callback) {
   ContestB.selectOpenToFilled('Baseball', function (err, contests) {
     callback(err, contests);
   });
 }
 
-var updateStateContestsOpenAndFilledHelper = function (currentTime) {
+function updateStateContestsOpenAndFilledHelper(currentTime) {
   return function (contest, callback) {
     var finalCallback = function (err) {
       callback(err);
@@ -1075,23 +1079,26 @@ var updateStateContestsOpenAndFilledHelper = function (currentTime) {
   };
 }
 
-var updateStateContestsOpenAndFilled = function (contests, callback) {
+function updateStateContestsOpenAndFilled(contests, callback) {
   var currentTime = new Date();
 
-  async.map(contests, updateStateContestsOpenAndFilledHelper(currentTime),
+  async.map(
+    contests,
+    updateStateContestsOpenAndFilledHelper(currentTime),
     function (err) {
       callback(err);
     });
 }
 
-var examineContestsOpenAndFilled = function (callback) {
-  async.waterfall([
+function examineContestsOpenAndFilled(callback) {
+  async.waterfall(
+  [
     getContestsOpenAndFilled,
     updateStateContestsOpenAndFilled,
-    ],
-    function (err) {
-      callback(err);
-    });
+  ],
+  function (err) {
+    callback(err);
+  });
 }
 
 /*
@@ -1100,8 +1107,10 @@ var examineContestsOpenAndFilled = function (callback) {
  * ====================================================================
  */
 
-var checkContestEnd = function (contest, callback) {
-  async.reduce(contest.games, true,
+function checkContestEnd(contest, callback) {
+  async.reduce(
+    contest.games, 
+    true,
     function (memo, game, callback) {
       Game.select(JSON.parse(game).gameId, function (err, game) {
         if (err) {
@@ -1117,35 +1126,37 @@ var checkContestEnd = function (contest, callback) {
     });
 }
 
-var getContestsToProcess = function (callback) {
+function getContestsToProcess(callback) {
   ContestB.selectContestsToProcess('Baseball', function (err, contests) {
     if (err) {
       callback(err);
     }
     else {
-      async.filter(contests, checkContestEnd,
-        function (contests) {
-          callback(null, contests);
-        });
+      async.filter(contests, checkContestEnd, function (contests) {
+        callback(null, contests);
+      });
     }
   });
 }
 
-var updateStateContestsToProcess = function (contests, callback) {
-  async.map(contests, calculate.calculateWinningsForContest,
+function updateStateContestsToProcess(contests, callback) {
+  async.map(
+    contests, 
+    calculate.calculateWinningsForContest,
     function (err) {
       callback(err);
     });
 }
 
-var examineContestsToProcess = function (callback) {
-  async.waterfall([
+function examineContestsToProcess(callback) {
+  async.waterfall(
+  [
     getContestsToProcess,
     updateStateContestsToProcess,
-    ],
-    function (err) {
-      callback(err);
-    });
+  ],
+  function (err) {
+    callback(err);
+  });
 }
 
 /*
