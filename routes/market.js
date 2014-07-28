@@ -20,9 +20,9 @@ var baseballAthletes = marketGlobals.athletes.Baseball;
 var updateBet = require('libs/cassandra/contestA/updateBet.js')
 var FilteredBets = require('libs/contestA/formatBets.js');
 */
-/*
+
 var getDailyScores = function(req, res, next) {
-  var date = new Date();
+  /*var date = new Date();
   var year = date.getFullYear();
   var month = date.getMonth() + 1;
   month = (month < 10 ? '0' : '') + month;
@@ -37,11 +37,11 @@ var getDailyScores = function(req, res, next) {
     if (err) {
       next(err);
     }
-    else {
-      res.render('marketHome', {result: result});
-    }
-  });
-}*/
+    else {*/
+      res.render('marketHome', {result: []});
+    //}
+  //});
+}
 
 /*
 var renderAthletePage = function (req, res, next) {
