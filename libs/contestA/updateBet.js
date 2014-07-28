@@ -11,7 +11,7 @@ var cql = configs.cassandra.cql;
 var async = require('async');
 var User = require('libs/cassandra/user');
 var UpdateBet = require('libs/cassandra/contestA/update');
-var Timeseries = require('libs/casandra/contestA/timeseries');
+var Timeseries = require('libs/cassandra/contestA/timeseries');
 var BetHistory = require('libs/cassandra/contestA/betHistory');
  
 var constants = configs.constants;
