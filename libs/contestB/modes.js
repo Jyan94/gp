@@ -135,6 +135,7 @@ function createType1SettingsDeprecated(athletes, games, deadlineTime, sport) {
 }
 
 function createType1Settings () {
+  var i;
   var payoutsListNormal = {};
   payoutsListNormal[2] = [1.8];
   payoutsListNormal[3] = [2.7];
@@ -144,11 +145,11 @@ function createType1Settings () {
   payoutsListNormal[14] = [6, 3.5, 2.5];
   payoutsListNormal[23] = [8, 5, 4, 3];
   payoutsListNormal[56] = [17, 10, 6, 4, 3];
-  for (var i = 5; i < 10; i++) {
+  for (i = 5; i < 10; i++) {
     payoutsListNormal[56][i] = 2;
   }
   payoutsListNormal[112] = [25, 16, 12, 7, 5];
-  for (var i = 5; i < 20; i++) {
+  for (i = 5; i < 20; i++) {
     if (i < 10) {
       payoutsListNormal[112][i] = 3;
     }
@@ -157,7 +158,7 @@ function createType1Settings () {
     }
   }
   payoutsListNormal[167] = [30, 15, 12, 10];
-  for (var i = 4; i < 25; i++) {
+  for (i = 4; i < 25; i++) {
     if (i < 6) {
       payoutsListNormal[167][i] = 7.5;
     }
@@ -172,7 +173,7 @@ function createType1Settings () {
     }
   }
   payoutsListNormal[230] = [40, 27, 18, 12, 8];
-  for (var i = 5; i < 40; i++) {
+  for (i = 5; i < 40; i++) {
     if (i < 10) {
       payoutsListNormal[230][i] = 4;
     }
@@ -187,7 +188,7 @@ function createType1Settings () {
     }
   }
   payoutsListNormal[1150] = [100, 65, 40, 30, 25, 20, 16, 14, 13, 11];
-  for (var i = 10; i < 225; i++) {
+  for (i = 10; i < 225; i++) {
     if (i < 15) {
       payoutsListNormal[1150][i] = 10;
     }
@@ -214,23 +215,32 @@ function createType1Settings () {
     }
   }
 
-  var totalPrizePoolList = {
-                         2: 1.8,
-                         3: 2.7,
-                         5: 4.5,
-                         10: 9,
-                         12: 10,
-                         14: 12,
-                         23: 20,
-                         56: 50,
-                         112: 100,
-                         167: 150,
-                         230: 200,
-                         1150: 1014
-                       }
+  var totalPrizePoolList = 
+  {
+    2: 1.8,
+    3: 2.7,
+    5: 4.5,
+    10: 9,
+    12: 10,
+    14: 12,
+    23: 20,
+    56: 50,
+    112: 100,
+    167: 150,
+    230: 200,
+    1150: 1014
+  }
 
-  return function (athletes, games, deadlineTime, entryFee, isFiftyFifty,
-                   maximumEntries, sport, startingVirtualMoney) {
+  return function (
+    athletes, 
+    games, 
+    deadlineTime, 
+    entryFee, 
+    isFiftyFifty,
+    maximumEntries, 
+    sport, 
+    startingVirtualMoney) {
+    
     var athletesObj = [];
     var athleteNames = [];
     for (var i = 0; i !== athletes.length; ++i) {

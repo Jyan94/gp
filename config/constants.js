@@ -154,8 +154,8 @@ exports.contestAbets = {
     EXPIRED: 3
   },
   POSITIONS: {
-    OVER: 1,
-    UNDER: 0
+    OVER: '1',
+    UNDER: '0'
   },
   DEFAULT_USERNAME: '-',
   BET_TYPES: {

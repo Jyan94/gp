@@ -91,7 +91,7 @@ app.get('/update', graph.update);
 app.get('/data', graph.get);
 
 //contest a
-var contestA = require('routes/contestA.js');
+var contestA = require('routes/contestA/contestA.js');
 app.get('/portfolio', contestA.renderPortfolio);
 
 //contest b
