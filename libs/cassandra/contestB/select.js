@@ -116,7 +116,6 @@ var SELECT_BY_STATE_QUERY = multiline(function() {/*
  * args: (err, results)
  */
 function selectByState(state, sport, callback) {
-
   cassandra.query(SELECT_BY_STATE_QUERY, [state], one, function(err, contests) {
     if (err) {
       callback(err);

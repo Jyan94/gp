@@ -69,6 +69,7 @@ exports.contestB = {
   //time in milliseconds (2 hours)
 
   MAX_TIME_BEFORE_DEADLINE_TO_CANCEL: 120 * 60000,
+  SIZES_NORMAL: [2, 3, 5, 10, 12, 14, 23, 56, 112, 167, 230, 1150]
 };
 /*
  * ====================================================================
@@ -153,8 +154,8 @@ exports.contestAbets = {
     EXPIRED: 3
   },
   POSITIONS: {
-    OVER: 1,
-    UNDER: 0
+    OVER: '1',
+    UNDER: '0'
   },
   DEFAULT_USERNAME: '-',
   BET_TYPES: {
@@ -222,16 +223,30 @@ exports.globals = {
   DEFAULT_USERNAMES:
   [
     exports.contestAbets.DEFAULT_USERNAME
-  ]
+  ],
+  /**
+   * custom set interval
+   * @param  {Function} func
+   * must have args: callback taking an argument of err 
+   * and the callback must be callbed
+   * @param  {int} interval
+   * time in milliseconds
+   */
+  customSetInterval: function(func, interval) {
+    var callback = function (err) {
+      if (err) {
+        console.log(err);
+      }
+
+      setTimeout(function () {
+        exports.globals.customSetInterval(func, interval);
+      }, interval);
+    };
+
+    func(callback);
+  }
 }
 
-/*
- * ====================================================================
- * contest B Sizes
- * ====================================================================
- */
-exports.contestBSizesNormal = 
-  [2, 3, 5, 10, 12, 14, 23, 56, 112, 167, 230, 1150];
 
 /*
  * ====================================================================

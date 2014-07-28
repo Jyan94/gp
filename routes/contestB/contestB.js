@@ -4,18 +4,16 @@
 var configs = require('config/index.js');
 
 var async = require('async');
-var User = require('libs/cassandra/user');
 var ContestB = require('libs/cassandra/contestB/exports');
 var BaseballPlayer = require('libs/cassandra/baseball/player');
 var Game = require('libs/cassandra/baseball/game');
 var modes = require('libs/contestB/modes.js');
 var calculate = require('libs/contestB/baseballCalculations.js');
-var cql = configs.cassandra.cql;
 var childProcess = require('child_process');
 var cancel = require('libs/contestB/cancel.js');
 
-var messages = configs.constants.contestStrings;
-var contestBSizesNormal = configs.constants.contestBSizesNormal;
+var contestBSizesNormal = configs.constants.contestB.SIZES_NORMAL;
+var customSetInterval = configs.constants.globals.customSetInterval;
 var scriptNames = configs.constants.scriptNames;
 
 /*
@@ -24,8 +22,8 @@ var scriptNames = configs.constants.scriptNames;
  * ====================================================================
  */
 
-var renderContestPage = function (req, res, next) {
-  res.render('contestB.hbs');
+function renderContestPage(req, res, next) {
+  res.render('contestB/contests.hbs');
 }
 
 /*
@@ -34,7 +32,7 @@ var renderContestPage = function (req, res, next) {
  * ====================================================================
  */
 
-var findContests = function (req, res, next, callback) {
+function findContests(req, res, next, callback) {
   ContestB.selectOpen('Baseball', function (err, result) {
     if (err) {
       res.send(500, 'Database error.');
@@ -45,26 +43,38 @@ var findContests = function (req, res, next, callback) {
   });
 }
 
-var filterContestFieldsTablesHelperContestants = function(username, contest, callback) {
+function filterContestFieldsTablesHelperContestants(
+  username, 
+  contest, 
+  callback) {
+
   var contestants = contest.contestants;
-  var contestantList = []
+  var contestantList = [];
 
   if (contestants) {
     contestantList = Object.keys(contestants);
 
-    async.map(contestantList,
+    async.map(
+      contestantList,
       function(key, callback) {
-        var contestant = { username: key,
-                           instanceCount: JSON.parse(contestants[key]).instances.length,
-                         }
 
+        var contestant = { 
+          username: key,
+          instanceCount: JSON.parse(contestants[key]).instances.length
+        };
         callback(null, contestant);
-      }, function (err, result) {
+
+      }, 
+      function (err, result) {
         if (contestantList.indexOf(username) < 0) {
           callback(err, [], contest, result);
         }
         else {
-          callback(err, JSON.parse(contestants[username]).instances, contest, result);
+          callback(
+            err, 
+            JSON.parse(contestants[username]).instances, 
+            contest, 
+            result);
         }
       });
   }
@@ -73,7 +83,12 @@ var filterContestFieldsTablesHelperContestants = function(username, contest, cal
   }
 }
 
-var filterContestFieldsTablesHelperMain = function(userContestantInstances, contest, contestants, callback) {
+function filterContestFieldsTablesHelperMain(
+  userContestantInstances, 
+  contest, 
+  contestants, 
+  callback) {
+
   callback(
     null, 
     {
@@ -96,9 +111,10 @@ var filterContestFieldsTablesHelperMain = function(userContestantInstances, cont
     });
 }
 
-var filterContestFieldsTablesHelper = function (username) {
+function filterContestFieldsTablesHelper(username) {
   return function (contest, callback) {
-    async.waterfall([
+    async.waterfall(
+    [
       function (callback) {
         callback(null, username, contest);
       },
@@ -110,7 +126,7 @@ var filterContestFieldsTablesHelper = function (username) {
   };
 }
 
-var filterContestFieldsTables = function (req, res, next, contests, callback) {
+function filterContestFieldsTables(req, res, next, contests, callback) {
   async.map(contests, filterContestFieldsTablesHelper(req.user.username),
     function (err, result) {
       if (err) {
@@ -118,14 +134,11 @@ var filterContestFieldsTables = function (req, res, next, contests, callback) {
       }
       else {
         res.send(JSON.stringify(result));
-        /*res.render('tournamentTables.hbs', { link: 'login',
-                                             display: 'Login',
-                                             tournaments: result });*/
       }
   });
 }
 
-var sendContestTable = function (req, res, next) {
+function sendContestTable(req, res, next) {
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -146,8 +159,8 @@ var sendContestTable = function (req, res, next) {
  * ====================================================================
  */
 
-var renderContestInfoPage = function (req, res, next) {
-  res.render('contestBInfo.hbs');
+function renderContestInfoPage(req, res, next) {
+  res.render('contestB/info.hbs');
 }
 
 /*
@@ -156,15 +169,16 @@ var renderContestInfoPage = function (req, res, next) {
  * ====================================================================
  */
 
-var findEligibleGames = function (req, res, next, callback) {
-  var currentTime = (new Date()).getTime()
+function findEligibleGames(req, res, next, callback) {
+  var currentTime = (new Date()).getTime();
 
   Game.selectTodaysGames(function (err, games) {
     if (err) {
       next(err);
     }
     else {
-      async.filter(games,
+      async.filter(
+        games,
         function (game, callback) {
           callback((currentTime < game.start_time - 900000) ? true : false);
         },
@@ -230,7 +244,7 @@ var filterEligibleGamesHelper = function (game, callback) {
 
 /* Uses the short_team_name field of the baseball_player table */
 
-var filterEligibleGamesHelperMain = function (shortTeamName) {
+function filterEligibleGamesHelperMain(shortTeamName) {
   return function (callback) {
     BaseballPlayer.selectUsingShortTeamName(shortTeamName,
       function (err, players) {
@@ -238,7 +252,8 @@ var filterEligibleGamesHelperMain = function (shortTeamName) {
           callback(err);
         }
         else {
-          async.map(players,
+          async.map(
+            players,
             function (player, callback) {
               callback(
                 null, 
@@ -257,7 +272,7 @@ var filterEligibleGamesHelperMain = function (shortTeamName) {
   };
 }
 
-var filterEligibleGamesHelper = function (game, callback) {
+function filterEligibleGamesHelper(game, callback) {
   async.parallel([
     filterEligibleGamesHelperMain(game.short_away_name),
     filterEligibleGamesHelperMain(game.short_home_name)
@@ -283,33 +298,38 @@ var filterEligibleGamesHelper = function (game, callback) {
   });
 }
 
-var filterEligibleGames = function (req, res, next, games, callback) {
+function filterEligibleGames(req, res, next, games, callback) {
   async.map(games, filterEligibleGamesHelper,
     function (err, result) {
       if (err) {
         next(err);
       }
       else {
-        res.render('contestBCreation.hbs', { link: 'logout',
-                                             display: 'Logout',
-                                             games: result });
+        res.render(
+          'contestB/creation.hbs', 
+          { 
+            link: 'logout',
+            display: 'Logout',
+            games: result 
+          });
       }
   });
 }
 
-var renderContestCreationPage = function (req, res, next) {
-  async.waterfall([
+function renderContestCreationPage(req, res, next) {
+  async.waterfall(
+  [
     function (callback) {
       callback(null, req, res, next);
     },
     findEligibleGames,
     filterEligibleGames
-    ],
-    function (err, result) {
-      if (err) {
-        next(err);
-      }
-    });
+  ],
+  function (err, result) {
+    if (err) {
+      next(err);
+    }
+  });
 }
 
 /*
@@ -318,7 +338,7 @@ var renderContestCreationPage = function (req, res, next) {
  * ====================================================================
  */
 
-var parseParamsContestCreation = function (req, res, next, callback) {
+function parseParamsContestCreation(req, res, next, callback) {
   var body = req.body;
   var keys = Object.keys(body);
   var params = {};
@@ -348,16 +368,19 @@ var parseParamsContestCreation = function (req, res, next, callback) {
              || (entryFee > 1000) || (entryFee % 5 !== 0)) {
       res.send(400, 'Need a valid value for entry fee.');
     }
-    else if ((isNaN(maximumEntries))
-             || ((isFiftyFifty === 'true') && ((maximumEntries < 3)
-                                               || (maximumEntries > 2001)
-                                               || (maximumEntries % 2 !== 1)))
-             || ((isFiftyFifty === 'false') && (contestBSizesNormal.indexOf(maximumEntries) < 0))) {
+    else if ((isNaN(maximumEntries)) || 
+            ((isFiftyFifty === 'true') && 
+              ((maximumEntries < 3) || 
+              (maximumEntries > 2001) || 
+              (maximumEntries % 2 !== 1))) || 
+            ((isFiftyFifty === 'false') && 
+              (contestBSizesNormal.indexOf(maximumEntries) < 0))) {
       res.send(400, 'Need a valid value for maximum entries.');
     }
-    else if ((isNaN(startingVirtualMoney)) || (startingVirtualMoney < 1000)
-             || (startingVirtualMoney > 1000000)
-             || (startingVirtualMoney % 1000 !== 0)) {
+    else if ((isNaN(startingVirtualMoney)) || 
+              (startingVirtualMoney < 1000) || 
+              (startingVirtualMoney > 1000000) || 
+              (startingVirtualMoney % 1000 !== 0)) {
       res.send(400, 'Need a valid value for starting virtual money.');
     }
     else {
@@ -366,10 +389,13 @@ var parseParamsContestCreation = function (req, res, next, callback) {
       params.maximumEntries = Number(body['maximum-entries']);
       params.startingVirtualMoney = Number(body['starting-virtual-money']);
 
-      async.filter(keys,
+      async.filter(
+        keys,
         function (key, callback) {
-          callback((key.length === 85) && (key.substring(0, 7) === 'player-')
-                   && (key.substring(43, 49) === '-game-'));
+          callback(
+            (key.length === 85) && 
+            (key.substring(0, 7) === 'player-') && 
+            (key.substring(43, 49) === '-game-'));
         },
         function (result) {
           callback(null, req, res, next, params, result);
@@ -379,13 +405,21 @@ var parseParamsContestCreation = function (req, res, next, callback) {
 }
 
 //keys is an array with only the athlete checkbox values
-var removeDuplicatesContestCreation = function (req, res, next, params,
-                                                keys, callback) {
+//elem.substring(49) - gets element id from divs
+function removeDuplicatesContestCreation(
+  req, 
+  res, 
+  next, 
+  params,
+  keys, 
+  callback) {
+
   if (keys.length < 2) {
     res.send(400, 'Need at least two athletes for contest creation.');
   }
   else {
-    async.map(keys,
+    async.map(
+      keys,
       function (elem, callback) {
         callback(null, elem.substring(49));
       },
@@ -398,7 +432,8 @@ var removeDuplicatesContestCreation = function (req, res, next, params,
 
           async.filter(keys,
             function (elem, callback) {
-              callback(keys.indexOf(elem) === idArray.indexOf(elem.substring(49)));
+              callback(
+                keys.indexOf(elem) === idArray.indexOf(elem.substring(49)));
             },
             function (result) {
               async.map(result,
@@ -414,7 +449,7 @@ var removeDuplicatesContestCreation = function (req, res, next, params,
   }
 }
 
-var filterContestCreationGames = function (gameId, callback) {
+function filterContestCreationGames(gameId, callback) {
   Game.select(gameId, function (err, game) {
     if (err) {
       callback(err);
@@ -438,15 +473,22 @@ var filterContestCreationGames = function (gameId, callback) {
   })
 }
 
-var getGamesForContestCreation = function (req, res, next, params, keys,
-                                           gameIdList, callback) {
+function getGamesForContestCreation(
+  req, 
+  res, 
+  next, 
+  params, 
+  keys,
+  gameIdList, 
+  callback) {
+
   async.map(gameIdList, filterContestCreationGames,
     function (err, games) {
       callback(err, req, res, next, params, keys, gameIdList, games);
     })
 }
 
-var filterContestCreationAthletes = function (gameIdList, games, keys) {
+function filterContestCreationAthletes(gameIdList, games, keys) {
   return function (elem, callback) {
     var gameId = elem.substring(49);
     var gameContestId = gameIdList.indexOf(gameId);
@@ -473,10 +515,12 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
                 gameId: game.gameId,
                 isOnHomeTeam: isOnHomeTeam,
                 longTeamName: player.long_team_name,
-                longVersusTeamName: (isOnHomeTeam ? game.longAwayTeam : game.longHomeTeam),
+                longVersusTeamName: 
+                  (isOnHomeTeam ? game.longAwayTeam : game.longHomeTeam),
                 position: player.position,
                 shortTeamName: player.short_team_name,
-                shortVersusTeamName: (isOnHomeTeam ? game.shortAwayTeam : game.shortHomeTeam),
+                shortVersusTeamName: 
+                  (isOnHomeTeam ? game.shortAwayTeam : game.shortHomeTeam),
                 teamId: player.team_id
               });
           }
@@ -485,29 +529,63 @@ var filterContestCreationAthletes = function (gameIdList, games, keys) {
   }
 }
 
-var getAthletesForContestCreation = function (req, res, next, params, keys,
-                                              gameIdList, games, callback) {
-  async.map(keys, filterContestCreationAthletes(gameIdList, games, keys),
+function getAthletesForContestCreation(
+  req, 
+  res, 
+  next, 
+  params, 
+  keys,
+  gameIdList, 
+  games, 
+  callback) {
+
+  async.map(
+    keys, 
+    filterContestCreationAthletes(gameIdList, games, keys),
     function (err, players) {
       callback(err, req, res, next, params, games, players);
     });
 }
 
-var getDeadlineTimeForContestCreation = function (req, res, next, params,
-                                                  games, players, callback) {
-  async.reduce(games, games[0].gameDate,
+function getDeadlineTimeForContestCreation(
+  req, 
+  res, 
+  next, 
+  params,
+  games, 
+  players, 
+  callback) {
+
+  async.reduce(
+    games, 
+    games[0].gameDate,
     function (memo, game, callback) {
       callback(null, game.gameDate < memo ? game.gameDate : memo);
     },
     function (err, deadlineTime) {
-      callback(err, req, res, next, params, games, players,
-               new Date(deadlineTime - 900000));
+      callback(
+        err, 
+        req, 
+        res, 
+        next, 
+        params, 
+        games, 
+        players,
+        new Date(deadlineTime - 900000));
     });
 }
 
 
-var submitContest = function (req, res, next, params, games, players,
-                              deadlineTime, callback) {
+function submitContest(
+  req, 
+  res, 
+  next, 
+  params, 
+  games, 
+  players,
+  deadlineTime, 
+  callback) {
+
   var filterFunction = function (elem, callback) {
     callback(null, JSON.stringify(elem));
   }
@@ -518,12 +596,15 @@ var submitContest = function (req, res, next, params, games, players,
         next(err);
       }
       else {        
-        var settings = modes.createTypeOne(players, games, deadlineTime,
-                                           params.entryFee,
-                                           params.isFiftyFifty,
-                                           params.maximumEntries,
-                                           'Baseball',
-                                           params.startingVirtualMoney);
+        var settings = modes.createTypeOne(
+          players, 
+          games, 
+          deadlineTime,
+          params.entryFee,
+          params.isFiftyFifty,
+          params.maximumEntries,
+          'Baseball',
+          params.startingVirtualMoney);
 
         ContestB.insert(settings, function (err, result) {
           if (err) {
@@ -537,7 +618,7 @@ var submitContest = function (req, res, next, params, games, players,
     });
 }
 
-var contestCreationProcess = function (req, res, next) {
+function contestCreationProcess(req, res, next) {
   async.waterfall([
     function (callback) {
       callback(null, req, res, next);
@@ -562,7 +643,7 @@ var contestCreationProcess = function (req, res, next) {
  * ====================================================================
  */
 
-var findContestByContestIdCheckEntry = function (req, res, next, callback) {
+function findContestByContestIdCheckEntry(req, res, next, callback) {
   var currentTime = (new Date()).getTime();
 
   ContestB.selectById(req.params.contestId, function (err, result) {
@@ -594,20 +675,25 @@ var filterContestFieldsEntry = function (req, res, next, contest, callback) {
       res.send(500, 'Server error.');
     }
     else {
-      contestInfo = { contestId: contest.contest_id,
-                      athletes: result,
-                      maxWager: contest.max_wager,
-                      startingVirtualMoney: contest.starting_virtual_money
-                    };
+      contestInfo = { 
+        contestId: contest.contest_id,
+        athletes: result,
+        maxWager: contest.max_wager,
+        startingVirtualMoney: contest.starting_virtual_money
+      };
 
-      res.render('contestBEntry.hbs', { link: 'logout',
-                                        display: 'Logout',
-                                        contestInfo: contestInfo });
+      res.render(
+        'contestB/entry.hbs', 
+        { 
+          link: 'logout',
+          display: 'Logout',
+          contestInfo: contestInfo 
+        });
     }
   });
 }
 
-var renderContestEntryPage = function (req, res, next) {
+function renderContestEntryPage(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Contest not found.');
   }
@@ -653,7 +739,7 @@ var renderContestEntryPage = function (req, res, next) {
   }
 }*/
 
-var findContestByContestIdEntry = function (req, res, next, callback) {
+function findContestByContestIdEntry(req, res, next, callback) {
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -664,7 +750,7 @@ var findContestByContestIdEntry = function (req, res, next, callback) {
   });
 }
 
-var createInstance = function (params, contest) {
+function createInstance(params, contest) {
   var virtualMoneyRemaining = contest.starting_virtual_money;
   var wagers = [];
   var predictions = [];
@@ -696,10 +782,13 @@ var createInstance = function (params, contest) {
 
 }
 
-var submitEntry = function(req, res, next, contest, callback) {
+function submitEntry(req, res, next, contest, callback) {
   var instance = createInstance(req.body, contest);
 
-  ContestB.addAndUpdateContestant(req.user, contest.contest_id, instance,
+  ContestB.addAndUpdateContestant(
+    req.user, 
+    contest.contest_id, 
+    instance,
     function (err) {
       if (err) {
         next(err);
@@ -710,7 +799,7 @@ var submitEntry = function(req, res, next, contest, callback) {
     });
 }
 
-var contestEntryProcess = function (req, res, next) {
+function contestEntryProcess(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Not a valid contest ID.');
   }
@@ -738,7 +827,7 @@ var contestEntryProcess = function (req, res, next) {
  * ====================================================================
  */
 
-var findContestByContestIdCheckEdit = function (req, res, next, callback) {
+function findContestByContestIdCheckEdit(req, res, next, callback) {
   var currentTime = (new Date()).getTime();
 
   ContestB.selectById(req.params.contestId, function (err, result) {
@@ -755,7 +844,14 @@ var findContestByContestIdCheckEdit = function (req, res, next, callback) {
 }
 
 // Need names, not numbers, as keys of athletes
-var filterContestFieldsEdit = function (req, res, next, contest, currentTime, callback) {
+function filterContestFieldsEdit(
+  req, 
+  res, 
+  next, 
+  contest, 
+  currentTime, 
+  callback) {
+
   var contestantInstanceIndex = req.params.contestantInstanceIndex;
   var contestant = contest.contestants[req.user.username];
   var contestantInstance = {};
@@ -769,13 +865,21 @@ var filterContestFieldsEdit = function (req, res, next, contest, currentTime, ca
     res.send(404, 'Contestant not found.');
   }
   else {
-    contestantInstance = JSON.parse(contestant).instances[contestantInstanceIndex];
+    contestantInstance = 
+      JSON.parse(contestant).instances[contestantInstanceIndex];
 
     if (typeof(contestantInstance) === 'undefined') {
       res.send(404, 'Contestant Instance not found.');
     }
-    else if ((currentTime - contestantInstance.lastModified) / 60000 < contest.cooldown_minutes) {
-      res.send(400, Math.ceil(contest.cooldown_minutes - (currentTime - contestantInstance.lastModified) / 60000) + ' minutes of cooldown time left.');
+    else if (
+      (currentTime - contestantInstance.lastModified) / 60000 < 
+      contest.cooldown_minutes) {
+      res.send(
+        400, 
+        Math.ceil(
+          contest.cooldown_minutes - 
+          (currentTime - contestantInstance.lastModified) / 60000) + 
+          ' minutes of cooldown time left.');
     }
     else {
       async.map(contest.athletes, parseAthlete, function(err, result) {
@@ -783,24 +887,29 @@ var filterContestFieldsEdit = function (req, res, next, contest, currentTime, ca
           res.send(500, 'Server error.');
         }
         else {
-          contestInfo = { contestId: contest.contest_id,
-                          contestantInstanceIndex: contestantInstanceIndex,
-                          contestantInstance: contestantInstance,
-                          athletes: result,
-                          maxWager: contest.max_wager,
-                          startingVirtualMoney: contest.starting_virtual_money
-                        };
+          contestInfo = { 
+            contestId: contest.contest_id,
+            contestantInstanceIndex: contestantInstanceIndex,
+            contestantInstance: contestantInstance,
+            athletes: result,
+            maxWager: contest.max_wager,
+            startingVirtualMoney: contest.starting_virtual_money
+          };
 
-          res.render('contestBEdit.hbs', { link: 'logout',
-                                           display: 'Logout',
-                                           contestInfo: contestInfo });
+          res.render(
+            'contestB/edit.hbs', 
+            { 
+              link: 'logout',
+              display: 'Logout',
+              contestInfo: contestInfo 
+            });
         }
       });
     }
   }
 }
 
-var renderContestEditPage = function (req, res, next) {
+function renderContestEditPage(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Not a valid contest ID.');
   }
@@ -828,7 +937,7 @@ var renderContestEditPage = function (req, res, next) {
  * CONTEST EDIT PROCESS
  * ====================================================================
  */
-var findContestByContestIdEdit = function (req, res, next, callback) {
+function findContestByContestIdEdit(req, res, next, callback) {
   ContestB.selectById(req.params.contestId, function (err, result) {
     if (err) {
       res.send(404, 'Contest not found.');
@@ -839,7 +948,7 @@ var findContestByContestIdEdit = function (req, res, next, callback) {
   });
 }
 
-var submitEdit = function(req, res, next, contest, callback) {
+function submitEdit(req, res, next, contest, callback) {
   var user = req.user;
   var contestantInstanceIndex = req.params.contestantInstanceIndex;
   var contestant = contest.contestants[user.username];
@@ -850,7 +959,8 @@ var submitEdit = function(req, res, next, contest, callback) {
     res.send(404, 'Contestant not found.');
   }
   else {
-    contestantInstance = JSON.parse(contestant).instances[contestantInstanceIndex];
+    contestantInstance = 
+      JSON.parse(contestant).instances[contestantInstanceIndex];
 
     if (typeof(contestantInstance) === 'undefined') {
       res.send(404, 'Contestant Instance not found.');
@@ -858,8 +968,11 @@ var submitEdit = function(req, res, next, contest, callback) {
     else {
       instance = createInstance(req.body, contest);
 
-      ContestB.updateContestantInstance(user, contestantInstanceIndex,
-                                        instance, contest.contest_id,
+      ContestB.updateContestantInstance(
+        user, 
+        contestantInstanceIndex,
+        instance, 
+        contest.contest_id,
         function (err) {
           if (err) {
             next(err);
@@ -872,7 +985,7 @@ var submitEdit = function(req, res, next, contest, callback) {
   }
 }
 
-var contestEditProcess = function (req, res, next) {
+function contestEditProcess(req, res, next) {
   if (typeof(req.params.contestId) === 'undefined') {
     res.send(404, 'Not a valid contest ID.');
   }
@@ -901,7 +1014,7 @@ var contestEditProcess = function (req, res, next) {
  * ====================================================================
  */
 
-var runBackgroundScript = function (fileName) {
+function runBackgroundScript(fileName) {
   return function (callback) {
     var python = childProcess.spawn('python', [fileName]);
     var output = '';
@@ -923,7 +1036,8 @@ var runBackgroundScript = function (fileName) {
 }
 
 var runParsePlayers = runBackgroundScript(scriptNames.parsePlayers);
-var runParseAndUpdateGames = runBackgroundScript(scriptNames.parseAndUpdateGames);
+var runParseAndUpdateGames = 
+  runBackgroundScript(scriptNames.parseAndUpdateGames);
 
 /*
  * ====================================================================
@@ -931,19 +1045,20 @@ var runParseAndUpdateGames = runBackgroundScript(scriptNames.parseAndUpdateGames
  * ====================================================================
  */
 
-var getContestsOpenAndFilled = function (callback) {
+function getContestsOpenAndFilled(callback) {
   ContestB.selectOpenToFilled('Baseball', function (err, contests) {
     callback(err, contests);
   });
 }
 
-var updateStateContestsOpenAndFilledHelper = function (currentTime) {
+function updateStateContestsOpenAndFilledHelper(currentTime) {
   return function (contest, callback) {
     var finalCallback = function (err) {
       callback(err);
     }
 
-    if (contest.contest_deadline_time.getTime() + 900000 <= currentTime.getTime()) {
+    if (contest.contest_deadline_time.getTime() + 900000 <= 
+        currentTime.getTime()) {
       if (contest.current_entries >= contest.minimum_entries) {
         ContestB.setToProcess(contest.contest_id, finalCallback);
       }
@@ -964,23 +1079,26 @@ var updateStateContestsOpenAndFilledHelper = function (currentTime) {
   };
 }
 
-var updateStateContestsOpenAndFilled = function (contests, callback) {
+function updateStateContestsOpenAndFilled(contests, callback) {
   var currentTime = new Date();
 
-  async.map(contests, updateStateContestsOpenAndFilledHelper(currentTime),
+  async.map(
+    contests,
+    updateStateContestsOpenAndFilledHelper(currentTime),
     function (err) {
       callback(err);
     });
 }
 
-var examineContestsOpenAndFilled = function (callback) {
-  async.waterfall([
+function examineContestsOpenAndFilled(callback) {
+  async.waterfall(
+  [
     getContestsOpenAndFilled,
     updateStateContestsOpenAndFilled,
-    ],
-    function (err) {
-      callback(err);
-    });
+  ],
+  function (err) {
+    callback(err);
+  });
 }
 
 /*
@@ -989,8 +1107,10 @@ var examineContestsOpenAndFilled = function (callback) {
  * ====================================================================
  */
 
-var checkContestEnd = function (contest, callback) {
-  async.reduce(contest.games, true,
+function checkContestEnd(contest, callback) {
+  async.reduce(
+    contest.games, 
+    true,
     function (memo, game, callback) {
       Game.select(JSON.parse(game).gameId, function (err, game) {
         if (err) {
@@ -1006,35 +1126,37 @@ var checkContestEnd = function (contest, callback) {
     });
 }
 
-var getContestsToProcess = function (callback) {
+function getContestsToProcess(callback) {
   ContestB.selectContestsToProcess('Baseball', function (err, contests) {
     if (err) {
       callback(err);
     }
     else {
-      async.filter(contests, checkContestEnd,
-        function (contests) {
-          callback(null, contests);
-        });
+      async.filter(contests, checkContestEnd, function (contests) {
+        callback(null, contests);
+      });
     }
   });
 }
 
-var updateStateContestsToProcess = function (contests, callback) {
-  async.map(contests, calculate.calculateWinningsForContest,
+function updateStateContestsToProcess(contests, callback) {
+  async.map(
+    contests, 
+    calculate.calculateWinningsForContest,
     function (err) {
       callback(err);
     });
 }
 
-var examineContestsToProcess = function (callback) {
-  async.waterfall([
+function examineContestsToProcess(callback) {
+  async.waterfall(
+  [
     getContestsToProcess,
     updateStateContestsToProcess,
-    ],
-    function (err) {
-      callback(err);
-    });
+  ],
+  function (err) {
+    callback(err);
+  });
 }
 
 /*
@@ -1043,7 +1165,7 @@ var examineContestsToProcess = function (callback) {
  * ====================================================================
  */
 
-function setRepeat (func, interval) {
+function setRepeat(func, interval) {
   var callback = function (err) {
     if (err) {
       console.log(err);
@@ -1061,24 +1183,13 @@ setRepeat(runParseAndUpdateGames, 7200000);
 setRepeat(examineContestsOpenAndFilled, 60000);
 setRepeat(examineContestsToProcess, 60000);*/
 
-function runAndSetRepeat (func, interval) {
-  var callback = function (err) {
-    if (err) {
-      console.log(err);
-    }
 
-    setTimeout(function () {
-      runAndSetRepeat(func, interval)
-    }, interval);
-  };
+//times in milliseconds
 
-  func(callback);
-}
-
-runAndSetRepeat(runParsePlayers, 86400000);
-runAndSetRepeat(runParseAndUpdateGames, 7200000);
-runAndSetRepeat(examineContestsOpenAndFilled, 60000);
-runAndSetRepeat(examineContestsToProcess, 60000);
+customSetInterval(runParsePlayers, 86400000);
+customSetInterval(runParseAndUpdateGames, 7200000);
+customSetInterval(examineContestsOpenAndFilled, 60000);
+customSetInterval(examineContestsToProcess, 60000);
 
 /*
  * ====================================================================

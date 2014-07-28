@@ -4,6 +4,8 @@
  * ====================================================================
  * Note: inserting into the daily_prophet table modifies the testContestSettings
  */
+/*global describe*/
+/*global it*/
 'use strict';
 (require('rootpath')());
 
@@ -239,6 +241,19 @@ function testBets(callback) {
         testInfoCancelPending, 
         getTestUser(testUserParams0),
         callback);
+    },
+    function(callback) {
+      SelectBet.selectByBetId(TEST_BET_ID, function(err, result) {
+        if (err) {
+          callback(err);
+        }
+        else if (!result) {
+          callback(null);
+        }
+        else {
+          callback(new Error('result should be null'));
+        }
+      });
     },
     function(callback) {
       insertTestPending(callback);

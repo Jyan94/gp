@@ -10,7 +10,7 @@ var async = require('async');
 var Player = require('libs/cassandra/baseballPlayer.js');
 var TimeseriesBets = require('libs/cassandra/timeseriesBets');
 var mlbData = require('libs/mlbData.js');*/
-//var BaseballStatistics = require('libs/cassandra/baseballStatistics');
+var BaseballStatistics = require('libs/cassandra/baseball/game');
 /*
 var messages = configs.constants.marketStrings;
 var defaultImage = configs.constants.defaultPlayerImage;

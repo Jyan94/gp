@@ -8,6 +8,8 @@ configs.configure(app);
 
 //mount on on other modules
 //keep this file clean
+require('libs/backgroundProcesses/backgroundProcesses').start();
+
 app.use('/', require('routes/index'));
 
 app.listen(3000);

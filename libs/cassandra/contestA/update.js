@@ -256,34 +256,27 @@ function takePending(
     position = UNDER;
     otherPosition = OVER;
   }
-  var query =
-    'UPDATE contest_A_bets ' +
-    'SET bet_state = ?, ' +
-    'bettor_usernames[\'' + position + '\'] = \'' + username + '\', ' +
-    'expirations[\'' + position + '\'] = 0, ' +
-    'is_selling_position[\'' + position + '\'] = false, ' +
-    'old_prices[\'' + position + '\'] = ?, ' +
-    'prices[\'' + position + '\'] = 0 ' +
-    'WHERE bet_id = ? ' +
-    'IF bet_state = ? AND ' +
-    'prices[\'' + position + '\'] = ? AND ' +
-    'is_selling_position[\'' + position + '\'] = true AND ' +
-    'athlete_id = ? AND ' +
-    'athlete_name = ? AND ' +
-    'athlete_team = ? AND ' +
-    'bettor_usernames[\'' + otherPosition + '\'] = \'' + opponent + '\' AND ' +
-    'fantasy_value = ?;';
   cassandra.queryOneRow(
-    query,
+    TAKE_PENDING_BET_CQL,
     [
       ACTIVE,
+      position,
+      username,
+      position,
+      position,
+      position,
       {value: wager, hint: 'double'},
+      position,
       betId,
       PENDING,
+      position,
       {value: wager, hint: 'double'},
+      position,
       athleteId,
       athleteName,
       athleteTeam,
+      otherPosition,
+      opponent,
       {value: fantasyValue, hint: 'double'}
     ],
     one,
@@ -331,15 +324,6 @@ function placeResell(
   else {
     position = UNDER;
   }
-  var query =
-    'UPDATE contest_a_bets ' +
-    'SET is_selling_position[\'' + position +'\'] = true, ' +
-    'expirations[\'' + position +'\'] = ?, ' +
-    'prices[\'' + position +'\'] = ? ' +
-    'WHERE bet_id = ? ' +
-    'IF bet_state = ? AND ' +
-    'bettor_usernames[\'' + position +'\'] = '  + username + ' AND ' +
-    'is_selling_position[\'' + position +'\'] = false;';
   cassandra.queryOneRow(
     RESELL_BETTER_CQL,
     [
@@ -486,17 +470,18 @@ function deletePending(betId, isOverBetter, username, wager, callback) {
     position1 = UNDER;
     position2 = OVER;
   }
-  var query =     
-    'DELETE FROM contest_a_bets ' +
-    'WHERE bet_id = ?' +
-    ' IF bet_state = ? AND ' +
-    ' bettor_usernames[\'' +  position1 + '\'] = \'' + username + '\' AND' +
-    ' bettor_usernames[\'' +  position2 + '\'] = \'' + DEFAULT_USERNAME + 
-    '\' AND' +
-    ' prices[\'' +  position2 + '\'] = ' + wager + ';'
   cassandra.queryOneRow(
-    query,
-    [betId, PENDING],
+    DELETE_PENDING_BET_CQL,
+    [
+      betId,
+      PENDING,
+      position1, 
+      username,
+      position2,
+      DEFAULT_USERNAME,
+      position2, 
+      {value: wager, hint: 'double'}
+    ],
     one,
     function(err, result) {
       if (err) {
