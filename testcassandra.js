@@ -300,5 +300,4 @@ customSetInterval(function(callback) {
   callback(null);
 }, 200);*/
 
-console.log(new Array(100));
 

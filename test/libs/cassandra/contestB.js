@@ -699,8 +699,7 @@ function testContestant(callback) {
   ], function(err) {
     if (err) {
       callback(err);
-    }
-    else {
+    } else {
       callback(null);      
     }
   });

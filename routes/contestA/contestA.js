@@ -15,8 +15,18 @@ var UpdateBet = ContestA.UpdateBet;
  * ====================================================================
  */
 
+function renderMarketHome(req, res) {
+  res.render('contestA/marketHome.html');
+}
+
+/*
+ * ====================================================================
+ * PORTFOLIO
+ * ====================================================================
+ */
+
 function renderPortfolio(req, res) {
-  res.render('portfolio.hbs');
+  res.render('contestA/portfolio.hbs');
 }
 
 /*
@@ -24,6 +34,11 @@ function renderPortfolio(req, res) {
  * Bets
  * ====================================================================
  */
+function getMarket(req, res) {
+  res.render('testMarket.hbs');
+}
+exports.getMarket = getMarket;
+
 //no chance of errors
 function getMarketBets(req, res) {
   var username = req.user.username;
@@ -79,5 +94,6 @@ function getUserBets(req, res) {
  * ====================================================================
  */
 
+exports.renderMarketHome = renderMarketHome;
 exports.getMarketBets = getMarketBets;
 exports.renderPortfolio = renderPortfolio;

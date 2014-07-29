@@ -18,6 +18,7 @@ pending bet format:
   fantasyValue double, --
   gameId uuid, --
   payoff double --
+  sport
 }
 
 resell bet format:
@@ -35,6 +36,7 @@ resell bet format:
   fantasyValue double, --
   gameId uuid, --
   payoff double --
+  sport
 }
 
 taken bet format:
@@ -52,6 +54,7 @@ taken bet format:
   fantasyValue double, --
   gameId uuid, --
   payoff double --
+  sport
 }
  */
 
