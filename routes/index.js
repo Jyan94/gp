@@ -65,12 +65,12 @@ app.get('/logout', logout.logout);
 app.all('*', login.checkUser);
 
 //market
-var market = require('routes/market');
+//var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
 //app.post('/addBets/:athleteId', market.takeBet);
-app.get('/markethome', market.getDailyScores);
+//app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');
@@ -92,10 +92,12 @@ app.get('/data', graph.get);
 
 //contest a
 var contestA = require('routes/contestA/contestA.js');
+app.get('/getbets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 
 //contest b
-//var contestBTable = require('routes/contestB/table');
+//commented out for now since not demoing it
+/*
 var contestB = require('routes/contestB/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);
@@ -109,6 +111,7 @@ app.get('/contestBEdit/:contestId/:contestantInstanceIndex',
   contestB.renderContestEditPage);
 app.post('/contestBEditProcess/:contestId/:contestantInstanceIndex',
   contestB.contestEditProcess);
+*/
 
 //error handling middleware logs errors and sends 500
 var errorHandler = require('routes/error/error');

@@ -19,6 +19,7 @@ replace the bet with null
 FOR front-end: access object's keys and check if it's null
  */
 //filter by sport on frontend
+//filter by athlete on frontend
 function getUserPending(username, callback) {
   async.map(contestAGlobals.pendingBets, function(bet, callback) {
     bet.bettor === username ? callback(null, bet) : callback(null, null);
