@@ -15,8 +15,18 @@ var UpdateBet = ContestA.UpdateBet;
  * ====================================================================
  */
 
+function renderMarketHome(req, res) {
+  res.render('contestA/marketHome.html');
+}
+
+/*
+ * ====================================================================
+ * PORTFOLIO
+ * ====================================================================
+ */
+
 function renderPortfolio(req, res) {
-  res.render('portfolio.hbs');
+  res.render('contestA/portfolio.hbs');
 }
 
 /*
@@ -36,7 +46,7 @@ function getMarketBets(req, res) {
       FormatBets.getSecondaryMarket(username, callback);
     }
   ],
-  function(result) {
+  function(err, result) {
     res.send({
       pending: result[0],
       pendingHash: FormatBets.getPendingBetsHash(),
@@ -46,7 +56,7 @@ function getMarketBets(req, res) {
   });
 }
 
-//support for looking at other user's stuff?
+//support for looking at other user's bets?
 function getUserBets(req, res) {
   var username = req.user.username;
   async.parallel(
@@ -61,7 +71,7 @@ function getUserBets(req, res) {
       FormatBets.getUserTaken(username, callback);
     }
   ],
-  function(results) {
+  function(err, results) {
     res.send({
       pending: results[0],
       pendingHash: FormatBets.getPendingBetsHash(),
@@ -73,25 +83,12 @@ function getUserBets(req, res) {
   });
 }
 
-function getAthleteBets(req, res) {
-  async.parallel(
-  [
-    function(callback) {
-
-    },
-    function(callback) {
-
-    }
-  ],
-  function(results) {
-
-  });
-}
-
 /*
  * ====================================================================
  * EXPORTS
  * ====================================================================
  */
 
+exports.renderMarketHome = renderMarketHome;
+exports.getMarketBets = getMarketBets;
 exports.renderPortfolio = renderPortfolio;

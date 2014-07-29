@@ -1,19 +1,14 @@
 doctype html
 html(lang="en")
   head
-    include common/base_head
+    include ../common/base_head
     script(src='/js/jquery/jquery-ui-1.10.4.custom.js')
-    //link(rel="stylesheet" href="css/flexslider.css" type="text/css")
-    //link(rel="stylesheet" href="css/demo.css" type="text/css" media="screen")
-    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js")
     script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
-    //script(src="js/jquery/jquery.flexslider.js")
-    //script(type="text/javascript" src="js/flexsliderscoreboard.js")
     script(src='http://isotope.metafizzy.co/beta/isotope.pkgd.js')
     script(type="text/javascript" src="js/homeIsotope.js")
 
   body
-    include banner
+    include ../banner
     div.makeBets
       .makeBetForm
         form#betForm.pure-form(action='/submitForm/'+playerId method='post')
@@ -55,7 +50,7 @@ html(lang="en")
                   | Create
 
     div.isotope
-      div.playercard1
+      div.playercard1.Basketball
         div.playercard1-playerpic
           img(width='250' height='250' src='http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg')
           div.playercard1-info
@@ -67,12 +62,65 @@ html(lang="en")
                 p PF | New York Knicks
           div.playercard1-bottom
             div.playercard1-bottom.wager
-              p $5 over 30 FP
+              p $5 under 30 FP
             div.playercard1-bottom.submit
               center
                 form(action='localhost:3000/takeBet')
                   input.pure-button.button-primary(type='submit' Value='Take')
 
+      div.playercard1.Baseball
+        div.playercard1-playerpic
+          img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
+          div.playercard1-info
+            .playercard1-info.name
+              center
+                p Lebron James
+            .playercard1-info.pos
+              center
+                p SF | Cleveland Cavaliers
+          div.playercard1-bottom
+            div.playercard1-bottom.wager
+              p $5 under 30 FP
+            div.playercard1-bottom.submit
+              center
+                div.pure-button.button-primary
+                  | Take
+
+      div.playercard1.Baseball
+        div.playercard1-playerpic
+          img(width='250' height='250' src='http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg')
+          div.playercard1-info
+            .playercard1-info.name
+              center
+                p Carmelo Anthony
+            .playercard1-info.pos
+              center
+                p PF | New York Knicks
+          div.playercard1-bottom
+            div.playercard1-bottom.wager
+              p $5 over 30 FP
+            div.playercard1-bottom.submit
+              center
+                div.pure-button.button-primary
+                  | Take
+
+      div.playercard1.Baseball
+        div.playercard1-playerpic
+          img(width='250' height='250' src='http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg')
+          div.playercard1-info
+            .playercard1-info.name
+              center
+                p Carmelo Anthony
+            .playercard1-info.pos
+              center
+                p PF | New York Knicks
+          div.playercard1-bottom
+            div.playercard1-bottom.wager
+              p $5 over 30 FP
+            div.playercard1-bottom.submit
+              center
+                div.pure-button.button-primary
+                  | Take
       div.playercard1
         div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
@@ -85,12 +133,11 @@ html(lang="en")
                 p SF | Cleveland Cavaliers
           div.playercard1-bottom
             div.playercard1-bottom.wager
-              p $5 over 30 FP
+              p $5 under 30 FP
             div.playercard1-bottom.submit
               center
                 div.pure-button.button-primary
                   | Take
-
       div.playercard1
         div.playercard1-playerpic
           img(width='250' height='250' src='http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg')
@@ -111,23 +158,6 @@ html(lang="en")
 
       div.playercard1
         div.playercard1-playerpic
-          img(width='250' height='250' src='http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg')
-          div.playercard1-info
-            .playercard1-info.name
-              center
-                p Carmelo Anthony
-            .playercard1-info.pos
-              center
-                p PF | New York Knicks
-          div.playercard1-bottom
-            div.playercard1-bottom.wager
-              p $5 over 30 FP
-            div.playercard1-bottom.submit
-              center
-                div.pure-button.button-primary
-                  | Take
-      div.playercard1
-        div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
           div.playercard1-info
             .playercard1-info.name
@@ -143,96 +173,3 @@ html(lang="en")
               center
                 div.pure-button.button-primary
                   | Take
-      div.playercard1
-        div.playercard1-playerpic
-          img(width='250' height='250' src='http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg')
-          div.playercard1-info
-            .playercard1-info.name
-              center
-                p Carmelo Anthony
-            .playercard1-info.pos
-              center
-                p PF | New York Knicks
-          div.playercard1-bottom
-            div.playercard1-bottom.wager
-              p $5 over 30 FP
-            div.playercard1-bottom.submit
-              center
-                div.pure-button.button-primary
-                  | Take
-
-      div.playercard1
-        div.playercard1-playerpic
-          img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
-          div.playercard1-info
-            .playercard1-info.name
-              center
-                p Lebron James
-            .playercard1-info.pos
-              center
-                p SF | Cleveland Cavaliers
-          div.playercard1-bottom
-            div.playercard1-bottom.wager
-              p $5 over 30 FP
-            div.playercard1-bottom.submit
-              center
-                div.pure-button.button-primary
-                  | Take
-
-
-
-      //div.flexslider
-        ul.slides
-          each item in result
-            li
-              div.score
-                if (item.start_time)
-                  h5=item.short_home_name
-                  h5=item.short_away_name
-                  h5=item.start_time
-                else
-                  h5=item.short_home_name + "  " + item.home_score
-                  h5=item.short_away_name + "  " + item.away_score
-      //div.athleteAndPortfolio
-        div.athleteSelection
-          div.playercard
-            div.playercard-leftpic
-              div.playercard-pic
-                img(width='79' height='79' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
-            div.playercard-rightmarket-down
-              div.playercard-currfantasy
-                p.playercard-currfantasy 17.5 FP
-              div.playercard-change
-                p Change: -2.78
-              div.playercard-volume
-                p Volume 76m
-            div.playercard-bottominfo
-              div.playercard-name
-                p.playercard-info Lebron James
-              div.playercard-pos
-                p.playercard-info SF | Cavaliers
-        div.shortenedPortfolio
-          div.MakeBets
-            span.fui-plus.pure-button.button-primary.input
-              |  Make Bet
-          div.TakeBets
-            span.fui-plus.pure-button.button-primary.input
-              |  Take Bet
-          h1 My Portfolio
-
-          div.playercard
-            div.playercard-leftpic
-              div.playercard-pic
-                img(width='79' height='79' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
-            div.playercard-rightmarket-up
-              div.playercard-currfantasy
-                p.playercard-currfantasy 22.5 FP
-              div.playercard-change
-                p Change: +2.78
-              div.playercard-volume
-                p Volume 76m
-            div.playercard-bottominfo
-              div.playercard-name
-                p.playercard-info Lebron James
-              div.playercard-pos
-                p.playercard-info SF | Cavaliers
