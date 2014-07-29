@@ -59,7 +59,7 @@ function getMarketPendingByAthleteId(username, athleteId, callback) {
 
 function getMarketResellByAthleteId(username, athleteId, callback) {
   async.map(contestAGlobals.resellBets, function(bet, callback) {
-      bet.athleteId === athleteId && bet.bettor !== username ? 
+      bet.athleteId === athleteId && bet.seller !== username ? 
         callback(null, bet) : callback(null, null);
   });
 }
@@ -90,5 +90,5 @@ exports.getSecondaryMarket = getSecondaryMarket;
 exports.getMarketPendingByAthleteId = getMarketPendingByAthleteId;
 
 exports.getPendingBetsHash = getPendingBetsHash;
-exports.getResellBetsHashes = getPendingBetsHash;
+exports.getResellBetsHashes = getResellBetsHashes;
 exports.getTakenBetsHashes = getTakenBetsHashes;
