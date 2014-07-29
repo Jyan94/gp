@@ -27,7 +27,7 @@ $( function() {
       var searchResult = qsRegex ? $this.text().match( qsRegex ) : true;
       var buttonResult = buttonFilter ? $this.is(buttonFilter) : true;
       var overUnderResult = overUnderFilter ? $this.is(overUnderFilter) : true;
-      return searchResult && buttonResult;
+      return searchResult && buttonResult && overUnderResult;
     }
     /*getSortData: {
       nfl: '.Football',
@@ -38,7 +38,7 @@ $( function() {
 
 
     // filter functions
-  /*var filterFns = {
+  var filterFns = {
     wager: function(wageBottom, wageTop) {
       var wager = $(this).find('.playercard1-bottom.wager').text().split(" ")[0];
       //parseFlaot vs parseDouble??
@@ -47,10 +47,14 @@ $( function() {
     },
     over: function() {
       var overOrUnder = $(this).find('.playercard1-bottom.wager').text().split(" ")[1];
+      console.log(overOrUnder);
+      console.log(overOrUnder.match(/over/));
       return overOrUnder.match(/over/);
     },
     under: function() {
       var overOrUnder = $(this).find('.playercard1-bottom.wager').text().split(" ")[1];
+      console.log(overOrUnder);
+      console.log(overOrUnder.match(/under/));
       return overOrUnder.match(/under/);
     },
     fantasyValue: function(fantasyValueBottom, fantasyValueTop) {
@@ -59,18 +63,23 @@ $( function() {
               && parseFloat(fantasyValue) < fantasyValueTop);
     }
   };
-*/
+
   // bind filter button click
   $('#filters').on( 'click', 'button', function() {
     var $this = $(this);
     buttonFilter = $this.attr('data-filter');
+    //buttonFilter = filterFns[buttonFilter] || buttonFilter
     // use filterFn if matches value
-    var $buttonGroup = $this.parents('.button-group');
+    //var $buttonGroup = $this.parents('.button-group');
     //var overUnderValue = $buttonGroup.attr('data-filter-group');
-    /*var overUnderValue = $this.attr('data-filter');
-    overUnderFilter = filterFns[ overUnderValue ] || overUnderValue;*/
     $container.isotope();
   });
+
+  $('#filters1').on('click', 'button', function() {
+    overUnderFilter = $(this).attr('data-filter');
+    overUnderFilter = filterFns[ overUnderFilter ] || overUnderFilter;
+    $container.isotope();
+  })
 
   // use value of search field to filter
   var $quicksearch = $('#quicksearch').keyup( debounce( function() {
