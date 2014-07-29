@@ -65,7 +65,7 @@ app.get('/logout', logout.logout);
 app.all('*', login.checkUser);
 
 //market
-//var market = require('routes/market');
+//var market = require('routes/needsCleanup/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
@@ -94,6 +94,8 @@ app.get('/data', graph.get);
 var contestA = require('routes/contestA/contestA.js');
 app.get('/market', contestA.getMarket);
 app.get('/getbets', contestA.getMarketBets);
+app.get('/marketHome', contestA.renderMarketHome);
+app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 
 //contest b

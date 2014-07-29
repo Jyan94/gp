@@ -15,8 +15,18 @@ var UpdateBet = ContestA.UpdateBet;
  * ====================================================================
  */
 
+function renderMarketHome(req, res) {
+  res.render('contestA/marketHome.html');
+}
+
+/*
+ * ====================================================================
+ * PORTFOLIO
+ * ====================================================================
+ */
+
 function renderPortfolio(req, res) {
-  res.render('portfolio.hbs');
+  res.render('contestA/portfolio.hbs');
 }
 
 /*
@@ -84,5 +94,6 @@ function getUserBets(req, res) {
  * ====================================================================
  */
 
+exports.renderMarketHome = renderMarketHome;
 exports.getMarketBets = getMarketBets;
 exports.renderPortfolio = renderPortfolio;
