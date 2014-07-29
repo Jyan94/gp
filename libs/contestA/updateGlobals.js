@@ -36,7 +36,7 @@ function formatPendingBets(bets, callback) {
     if (retVal.overNotUnder) {
       sellingPosition = OVER;
       takenPosition = UNDER;
-    }
+    } 
     else {
       sellingPosition = UNDER;
       takenPosition = OVER;
