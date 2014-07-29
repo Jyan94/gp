@@ -24,35 +24,12 @@ div.pure-g-r.banner
           a.fui-list(href='/')
     div.pure-form
       input(id='quicksearch' type="text" name='search' placeholder='Search for Players')
-    .button
-      i.fa.fa-th.fa-2x
-    .app-launcher
-      .apps
-        ul.first-set
-          li
-            a(href='#')
-              i.fa.fa-google-plus-square.fa-4x
-          li
-            a(href='#')
-              i.fa.fa-facebook-square.fa-4x
-          li
-            a(href='#')
-              i.fa.fa-youtube-square.fa-4x
-          li
-            a(href='#')
-              i.fa.fa-skype.fa-4x
-          li
-            a(href='#')
-              i.fa.fa-windows.fa-4x
-          li
-            a(href='#')
-              i.fa.fa-linkedin.fa-4x
-          li
-            a(href='#')
-              i.fa.fa-apple.fa-4x
-          li
-            a(href='#')
-              i.fa.fa-android.fa-4x
+
+    div#filters.button-group
+      button.button.is-checked(data-filter='*') show all
+      button.button(data-filter='.Football') nfl
+      button.button(data-filter='.Basketball') nba
+      button.button(data-filter='.Baseball') mlb
 
     div.banner-brand
       a(href='/markethome')
