@@ -24,6 +24,11 @@ function renderPortfolio(req, res) {
  * Bets
  * ====================================================================
  */
+function getMarket(req, res) {
+  res.render('testMarket.hbs');
+}
+exports.getMarket = getMarket;
+
 //no chance of errors
 function getMarketBets(req, res) {
   var username = req.user.username;

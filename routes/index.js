@@ -92,6 +92,7 @@ app.get('/data', graph.get);
 
 //contest a
 var contestA = require('routes/contestA/contestA.js');
+app.get('/market', contestA.getMarket);
 app.get('/getbets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 
