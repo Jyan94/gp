@@ -93,10 +93,12 @@ app.get('/data', graph.get);
 //contest a
 var contestA = require('routes/contestA/contestA.js');
 app.get('/marketHome', contestA.renderMarketHome);
+app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 
 //contest b
-//var contestBTable = require('routes/contestB/table');
+//commented out for now since not demoing it
+/*
 var contestB = require('routes/contestB/contestB');
 app.get('/contestB', contestB.renderContestPage);
 app.get('/populateContestBTable', contestB.sendContestTable);
@@ -110,6 +112,7 @@ app.get('/contestBEdit/:contestId/:contestantInstanceIndex',
   contestB.renderContestEditPage);
 app.post('/contestBEditProcess/:contestId/:contestantInstanceIndex',
   contestB.contestEditProcess);
+*/
 
 //error handling middleware logs errors and sends 500
 var errorHandler = require('routes/error/error');

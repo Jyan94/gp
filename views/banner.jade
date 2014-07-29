@@ -24,10 +24,18 @@ div.pure-g-r.banner
           a.fui-list(href='/')
     div.pure-form
       input(id='quicksearch' type="text" name='search' placeholder='Search for Players')
+
+    div#filters.button-group
+      button.button.is-checked(data-filter='*') show all
+      button.button(data-filter='.Football') nfl
+      button.button(data-filter='.Basketball') nba
+      button.button(data-filter='.Baseball') mlb
+
     div.banner-brand
       a(href='/markethome')
         img(src='/img/GoProphetLogo8.jpg')
 
+    link(href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet")
     script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
     script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
     script(src='/js/search.js')
