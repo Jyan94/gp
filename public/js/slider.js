@@ -1,3 +1,4 @@
+$(window).load(function(){
 $(document).ready(function() {
   $(function() {
     $( "#slider-range" ).slider({
@@ -31,4 +32,5 @@ $(document).ready(function() {
     $("#slider-range").toggle();
     $("#slider-range2").toggle();
   });
+});
 });
