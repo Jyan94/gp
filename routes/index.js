@@ -98,6 +98,10 @@ app.get('/marketHome', contestA.renderMarketHome);
 app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 
+//autocomplete
+//var autocomplete = require('routes/autocomplete');
+//app.get('/autocomp', autocomplete.autocomp);
+
 //contest b
 //commented out for now since not demoing it
 /*

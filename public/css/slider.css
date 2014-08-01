@@ -1,7 +1,13 @@
 #slider-range, #slider-range2 {
-  width:500px;
+  width:400px;
   margin-top:10px;
 }
-body {
-  margin: 15px;
+
+#filterdiv {
+  background-color: white;
+  opacity: 0.9;
+  height: 300px;
+  width: 500px;
+  margin-left: 700px;
+  padding-left: 20px;
 }

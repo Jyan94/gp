@@ -1,12 +1,16 @@
 $(window).load(function(){
 $(document).ready(function() {
+
+  $("#filters").hide();
+  $("#filters1").hide();
+  $("#filterdiv").hide();
   $(function() {
     $( "#slider-range" ).slider({
       range: true,
-      min: 0,
-      max: 10000,
-      values: [ 50, 300 ],
-      step: 50,
+      min: 1,
+      max: 100,
+      values: [ 1, 100 ],
+      step: 1,
       slide: function( event, ui ) {
         $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
       }
@@ -17,7 +21,7 @@ $(document).ready(function() {
       range: true,
       min: 0,
       max: 50,
-      values: [ 0, 20 ],
+      values: [ 0, 50 ],
       step: 0.1,
       slide: function( event, ui ) {
         $( "#amount2" ).val( + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
@@ -26,11 +30,12 @@ $(document).ready(function() {
     $( "#amount2" ).val( + $( "#slider-range2" ).slider( "values", 0 ) +
       " - " + $( "#slider-range2" ).slider( "values", 1 ) );
   });
+
+
     $(".btn1").click(function(){
-    $("#filter").toggle();
-    $("#filter2").toggle();
-    $("#slider-range").toggle();
-    $("#slider-range2").toggle();
+    $("#filters").toggle();
+    $("#filters1").toggle();
+    $("#filterdiv").toggle();
   });
 });
 });
