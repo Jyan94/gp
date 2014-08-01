@@ -88,11 +88,11 @@ var EXPIRED = states.EXPIRED;
 var async = require('async');
 var TEST_ATHLETE_ID = '00000000-0000-0000-0000-000000000000';
 var TEST_GAME_ID = '00000000-0000-0000-0000-000000000000';
-var TEST_BET_ID= '3c79b8c0-12dd-11e4-9c9d-895213966459';
+var TEST_BET_ID= require('config/index').cassandra.cql.types.timeuuid();//'3c79b8c0-12dd-11e4-9c9d-895213962759';
 var TEST_EXPIRATION_TIME_MINUTES = 30;
 var TEST_FANTASY_VALUE = 10;
 var IS_OVER_BETTER = true;
-var WAGER = 1000;
+var WAGER = Math.random() * 1000;
 
 function getTestUser(testUserParams) {
   return {
@@ -104,7 +104,9 @@ function getTestUser(testUserParams) {
 
 var testInfoInsertPending = {
   athleteId: TEST_ATHLETE_ID,
+  athleteImage: 'TEST_IMAGE_URL',
   athleteName: 'TEST_NAME',
+  athletePosition: 'TEST_POSITION',
   athleteTeam: 'TEST_TEAM',
   expirationTimeMinutes: TEST_EXPIRATION_TIME_MINUTES,
   fantasyValue: TEST_FANTASY_VALUE,
@@ -152,7 +154,9 @@ function verifyBetEssentials(queryResult) {
   queryResult.should.have.keys(
     'columns',
     'athlete_id',
+    'athlete_image',
     'athlete_name',
+    'athlete_position',
     'athlete_team',
     'bet_id',
     'bet_state',
@@ -217,7 +221,9 @@ function setUp(callback) {
 function insertTestPending(callback) {
   UpdateBet.insertPending(
     testInfoInsertPending.athleteId,
+    testInfoInsertPending.athleteImage,
     testInfoInsertPending.athleteName,
+    testInfoInsertPending.athletePosition,
     testInfoInsertPending.athleteTeam,
     TEST_BET_ID,
     testInfoInsertPending.expirationTimeMinutes,
@@ -259,6 +265,7 @@ function testBets(callback) {
       insertTestPending(callback);
     },
     function(callback) {
+      return 1;
       BuyAndSellBet.takePending(
         testInfoTakePending,
         getTestUser(testUserParams1),

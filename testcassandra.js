@@ -277,27 +277,3 @@ BaseballGame.selectTodaysGames(function(err, result) {
 });
 
 */
-
-/*var q1 = 'insert into test(num, people, numbers, booleans) values (1, [\'hi\'], [7], [true]);';
-cassandra.query(q1, [], cql.types.consistencies.one, function (err) {
-  if(err) {
-    console.log(err);
-  }
-})*/
-/*
-var query = 'update test set testdouble[?] = ? where num = ?;'
-cassandra.query(query, [0, 2.1, 1], cql.types.consistencies.one, function(err) {
-  if (err) {
-    console.log(err);
-  }
-})*//*
-var configs = require('config/index');
-require('libs/backgroundProcesses/backgroundProcesses').start();
-var customSetInterval = configs.constants.globals.customSetInterval;
-var globals = configs.globals.contestA;
-customSetInterval(function(callback) {
-  console.log(globals);
-  callback(null);
-}, 200);*/
-
-

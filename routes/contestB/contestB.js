@@ -773,12 +773,13 @@ function createInstance(params, contest) {
     virtualMoneyRemaining -= wagers[i];
   }
 
-  return { virtualMoneyRemaining: virtualMoneyRemaining,
-           wagers: wagers,
-           predictions: predictions,
-           lastModified: time,
-           joinTime: time
-         }
+  return { 
+    virtualMoneyRemaining: virtualMoneyRemaining,
+    wagers: wagers,
+    predictions: predictions,
+    lastModified: time,
+    joinTime: time
+  };
 
 }
 

@@ -25,7 +25,9 @@ CREATE INDEX IF NOT EXISTS ON users (email);
 
 CREATE TABLE IF NOT EXISTS contest_a_bets (
     athlete_id uuid,
+    athlete_image text,
     athlete_name text,
+    athlete_position text,
     athlete_team text,
     bet_id timeuuid PRIMARY KEY,
     bet_state int,  //

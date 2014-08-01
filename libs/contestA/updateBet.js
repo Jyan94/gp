@@ -20,7 +20,9 @@ var APPLIED = constants.cassandra.APPLIED;
 //need to verify gameId and athlete in game!!!
 function verifyGameIdAndAthlete(
   athleteId,
+  athleteImage,
   athleteName,
+  athletePosition,
   athleteTeam,
   gameId,
   sport,
@@ -32,8 +34,10 @@ function verifyGameIdAndAthlete(
 /**
   info fields:
 
-  athleteId, 
+  athleteId,
+  athleteImage,
   athleteName,
+  athletePosition,
   athleteTeam,
   expirationTimeMinutes,
   fantasyValue,
@@ -41,7 +45,6 @@ function verifyGameIdAndAthlete(
   isOverBetter,
   sport,
   wager
- * [insertPending description]
  * @param  {object}   info
  * @param  {object}   user
  * from req.user, must have username field
@@ -54,7 +57,9 @@ function insertPending(info, user, callback) {
     function(callback) {
       verifyGameIdAndAthlete(
         info.athleteId,
+        info.athleteImage,
         info.athleteName,
+        info.athletePosition,
         info.athleteTeam,
         info.gameId,
         info.sport,
@@ -66,7 +71,9 @@ function insertPending(info, user, callback) {
     function(callback) {
       UpdateBet.insertPending(
         info.athleteId,
+        info.athleteImage,
         info.athleteName,
+        info.athletePosition,
         info.athleteTeam,
         cql.types.timeuuid(),
         info.expirationTimeMinutes,

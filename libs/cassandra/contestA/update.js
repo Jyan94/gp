@@ -28,7 +28,9 @@ var EXPIRED = states.EXPIRED;
 var INSERT_BET_CQL = multiline(function() {/*
   INSERT INTO contest_a_bets (
     athlete_id,
+    athlete_image,
     athlete_name,
+    athlete_position,
     athlete_team,
     bet_id,
     bet_state,
@@ -44,16 +46,17 @@ var INSERT_BET_CQL = multiline(function() {/*
   ) VALUES (
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?, ?, ?, ?);
+    ?, ?, ?, ?, ?,
+    ?);
 */});
 
-var BETTOR_USERNAMES_INDEX = 5;
-var EXPIRATIONS_INDEX = 6;
-var FANTASY_VALUE_INDEX = 7;
-var IS_SELLING_POSITION_INDEX = 9;
-var OLD_PRICES_INDEX = 10;
-var PAYOFF_INDEX = 11;
-var PRICES_INDEX = 12;
+var BETTOR_USERNAMES_INDEX = 7;
+var EXPIRATIONS_INDEX = 8;
+var FANTASY_VALUE_INDEX = 9;
+var IS_SELLING_POSITION_INDEX = 11;
+var OLD_PRICES_INDEX = 12;
+var PAYOFF_INDEX = 13;
+var PRICES_INDEX = 14;
 
 /**
  * inserts a contestA bet into database
@@ -133,7 +136,9 @@ function insert(params, callback) {
  */
 function insertPending(
   athleteId,
+  athleteImage,
   athleteName,
+  athletePosition,
   athleteTeam,
   betId,
   expirationTimeMinutes,
@@ -183,7 +188,9 @@ function insertPending(
   insert(
   [
     athleteId,
+    athleteImage,
     athleteName,
+    athletePosition,
     athleteTeam,
     betId,
     PENDING,
@@ -202,8 +209,6 @@ function insertPending(
   });
 }
 
-//everything after is_selling_position is extra verification and bet history
-//doesn't work using this query, manually construct the query instead
 var TAKE_PENDING_BET_CQL = multiline(function() {/*
   UPDATE
     contest_a_bets
@@ -404,8 +409,6 @@ function takeResell(
     position = UNDER;
     otherPosition = OVER;
   }
-  var query =
-    'Update'
   cassandra.queryOneRow(
     TAKE_RESELL_CQL,
     [
