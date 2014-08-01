@@ -65,12 +65,12 @@ app.get('/logout', logout.logout);
 app.all('*', login.checkUser);
 
 //market
-//var market = require('routes/needsCleanup/market');
+var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
 //app.post('/addBets/:athleteId', market.takeBet);
-//app.get('/markethome', market.getDailyScores);
+app.get('/markethome', market.getDailyScores);
 
 //profile
 var profile = require('routes/profile');
@@ -97,6 +97,10 @@ app.get('/getbets', contestA.getMarketBets);
 app.get('/marketHome', contestA.renderMarketHome);
 app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
+
+//autocomplete
+//var autocomplete = require('routes/autocomplete');
+//app.get('/autocomp', autocomplete.autocomp);
 
 //contest b
 //commented out for now since not demoing it

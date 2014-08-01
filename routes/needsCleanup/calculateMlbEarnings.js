@@ -130,8 +130,16 @@ function getBets(playerObjects, fantasyPointsArray, callback) {
 /* calculates the winnings for a better*/
 function calculateBet(bet, fantasyPoints, callback) {
   var rows = bet;
-  var longWinnings = rows.multiplier * (fantasyPoints - rows.bet_value);
-  var shortWinnings = rows.multiplier * (rows.bet_value - fantasyPoints);
+  var longWinnings;
+  var shortWinnings;
+  if (fantasyPoints > rows.fantasy_value) {
+    longWinnings = rows.wager;
+    shortWinnings = -rows.wager;
+  }
+  else {
+    longWinnings = -rows.wager;
+    shortWinnings = rows.wager;
+  }
 
   console.log(longWinnings, rows);
   console.log(shortWinnings);

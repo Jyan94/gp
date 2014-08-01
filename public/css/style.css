@@ -310,7 +310,6 @@ input {
   overflow: hidden;
   z-index: 9999999;
   position: fixed;
-  margin-left: 90px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-transition: all 0.2s ease-in-out, border 0s linear 0.2s;
@@ -341,6 +340,12 @@ input {
   background-color: #ddc;
   height: 1px;
   margin: 4px 4px 4px;
+}
+
+.btn1 {
+  background-color: white;
+  border-radius: 10px;
+  margin-top: -100px;
 }
 /*----------------------------------------------------------------------------*/
 /* Body content                                                               */
@@ -588,6 +593,7 @@ input {
   border: 5px solid gray;
   margin: 10px;
 }
+
 
 /*----------------------------------------------------------------------------*/
 /* Signup form                                                                */
