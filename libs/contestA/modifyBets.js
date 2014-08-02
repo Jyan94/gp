@@ -13,6 +13,12 @@ var User = require('libs/cassandra/user');
 var UpdateBet = require('libs/cassandra/contestA/update');
 var Timeseries = require('libs/cassandra/contestA/timeseries');
 var BetHistory = require('libs/cassandra/contestA/betHistory');
+
+var sportNames = configs.constants.sportNames;
+var BASEBALL = sportNames.baseball;
+var BASKETBALL = sportNames.basketball;
+var FOOTBALL = sportNames.football;
+var athletes = configs.globals.athletes;
  
 var constants = configs.constants;
 var APPLIED = constants.cassandra.APPLIED;
@@ -27,8 +33,40 @@ function verifyGameIdAndAthlete(
   gameId,
   sport,
   callback) {
-
-  callback(null);
+  if (configs.isDev()) {
+    callback(null);
+  }
+  else {
+    var verify = function(idMap, list) {
+      var athleteObj = list[idMap[athleteId]];
+      return 
+        (athleteObj.image === athleteImage &&
+         athleteObj.fullName === athleteName &&
+         athleteObj.position === athletePosition &&
+         athleteObj.statistics[athleteObj.statistics.length - 1].gameId === 
+          gameId &&
+         athleteObj.sport === sport); 
+    }
+    var athleteMap;
+    var athleteList;
+    switch(sport) {
+      case FOOTBALL:
+        verify(athletes.footballIdMap, athletes.footballList) ?
+          callback(null) :
+          callback(new Error('create pending: athlete information mismatch'));
+        break;
+      case BASEBALL:
+        verify(athletes.baseballIdMap, athletes.baseballList) ?
+          callback(null) :
+          callback(new Error('create pending: athlete information mismatch'));
+        break;
+      case BASKETBALL:
+        verify(athletes.basketballIdMap, athletes.basketballList) ?
+          callback(null) :
+          callback(new Error('create pending: athlete information mismatch'));
+        break;
+    }
+  }
 }
 
 /**
@@ -87,6 +125,36 @@ function insertPending(info, user, callback) {
     }
   ], callback);
 }
+
+function deletePending(info, user, callback) {
+  async.waterfall(
+  [
+    function(callback) {
+      var deletePendingCallback = function(err) {
+        if (err && err.message === APPLIED) {
+          callback(new Error('could not delete bet'));
+        }
+        else if (err) {
+          callback(err);
+        }
+        else {
+          callback(null);
+        }
+      };
+      UpdateBet.deletePending(
+        info.betId,
+        info.isOverBetter,
+        user.username,
+        info.wager,
+        callback);
+    },
+    function(callback) {
+      User.addMoney(user.money, info.wager, user.user_id, callback);
+    }
+  ],
+  callback);
+}
+
 /*
  info has fields
         info.athleteId,
@@ -104,35 +172,34 @@ function insertPending(info, user, callback) {
  * args: (err)
  */
 function takePending(info, user, callback) {
-  var takePendingCallback = function(err) {
-    if (err && err.message === APPLIED) {
-      User.addMoney(
-        user.money - info.wager,
-        info.wager,
-        user.user_id,
-        function(err) {
-          if (err) {
-            callback(err);
-          }
-          else {
-            callback(new Error('bet has already been taken'));
-          }
-        });
-    }
-    else if (err) {
-      callback(err);
-    }
-    else {
-      callback(null);
-    }
-  };
-
   async.waterfall(
   [
     function(callback) {
       User.subtractMoney(user.money, info.wager, user.user_id, callback);
     },
     function(callback) {
+      var takePendingCallback = function(err) {
+        if (err && err.message === APPLIED) {
+          User.addMoney(
+            user.money - info.wager,
+            info.wager,
+            user.user_id,
+            function(err) {
+              if (err) {
+                callback(err);
+              }
+              else {
+                callback(new Error('bet has already been taken'));
+              }
+            });
+        }
+        else if (err) {
+          callback(err);
+        }
+        else {
+          callback(null);
+        }
+      };
       UpdateBet.takePending(
         info.athleteId,
         info.athleteName,
@@ -191,8 +258,7 @@ function takePending(info, user, callback) {
   ], callback);
 }
 
-//info contains
-//
+//info contains (see below)
 function placeResell(info, user, callback) {
   UpdateBet.placeResell(
     info.betId,
@@ -200,7 +266,17 @@ function placeResell(info, user, callback) {
     info.isOverBetter,
     info.resellPrice,
     user.username,
-    callback);
+    function(err) {
+      if (err && err.message === APPLIED) {
+        callback(new Error('could not place bet into resell!'));
+      }
+      else if (err) {
+        callback(err);
+      }
+      else {
+        callback(null);
+      }
+    });
 }
 
 //info has fields
@@ -215,36 +291,35 @@ function placeResell(info, user, callback) {
         info.price,
  */
 function takeResell(info, user, callback) {
-
-  var takeResellCallback = function(err) {
-    if (err && err.message === APPLIED) {
-      User.addMoney(
-        user.money - info.price,
-        info.price,
-        user.user_id,
-        function(err) {
-          if (err) {
-            callback(err);
-          }
-          else {
-            callback(new Error('could not buy resell'));
-          }
-        });
-    }
-    else if (err) {
-      callback(err);
-    }
-    else {
-      callback(null);
-    }
-  };
-
   async.waterfall(
   [
     function(callback) {
       User.subtractMoney(user.money, info.price, user.user_id, callback);
     },
     function(callback) {
+      var takeResellCallback = function(err) {
+        if (err && err.message === APPLIED) {
+          User.addMoney(
+            user.money - info.price,
+            info.price,
+            user.user_id,
+            function(err) {
+              if (err) {
+                callback(err);
+              }
+              else {
+                callback(new Error('could not buy resell'));
+              }
+            });
+        }
+        else if (err) {
+          callback(err);
+        }
+        else {
+          callback(null);
+        }
+      };
+
       UpdateBet.takeResell(
         info.athleteId,
         info.athleteName,
@@ -265,5 +340,6 @@ function takeResell(info, user, callback) {
 
 exports.insertPending = insertPending;
 exports.takePending = takePending;
+exports.deletePending = deletePending;
 exports.placeResell = placeResell;
 exports.takeResell = takeResell;

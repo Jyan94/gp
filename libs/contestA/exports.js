@@ -7,10 +7,10 @@
 require('rootpath')();
 
 var FormatBets = require('./formatBets');
-var UpdateBet = require('./updateBet');
+var ModifyBets = require('./modifyBets');
 var UpdateGlobals = require('./updateGlobals');
 
 //todo: documentation
 exports.FormatBets = FormatBets;
-exports.UpdateBet = UpdateBet;
+exports.ModifyBets = ModifyBets;
 exports.UpdateGlobals = UpdateGlobals;

@@ -88,7 +88,8 @@ var EXPIRED = states.EXPIRED;
 var async = require('async');
 var TEST_ATHLETE_ID = '00000000-0000-0000-0000-000000000000';
 var TEST_GAME_ID = '00000000-0000-0000-0000-000000000000';
-var TEST_BET_ID= require('config/index').cassandra.cql.types.timeuuid();//'3c79b8c0-12dd-11e4-9c9d-895213962759';
+var TEST_BET_ID= '3c79b8c0-12dd-11e4-9c9d-895213962759';
+//require('config/index').cassandra.cql.types.timeuuid();//
 var TEST_EXPIRATION_TIME_MINUTES = 30;
 var TEST_FANTASY_VALUE = 10;
 var IS_OVER_BETTER = true;
@@ -265,7 +266,6 @@ function testBets(callback) {
       insertTestPending(callback);
     },
     function(callback) {
-      return 1;
       BuyAndSellBet.takePending(
         testInfoTakePending,
         getTestUser(testUserParams1),

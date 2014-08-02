@@ -131,7 +131,10 @@ exports.verificationMessages = {
  * CONTEST UPDATE INTERVAL
  * ====================================================================
  */
-exports.pollInterval = 2000;
+exports.pollIntervals = {
+  contestA: 2000,
+  athleteUpdate: 6 * 60000 * 60 //every 6 hrs
+}
 /*
  * ====================================================================
  * Valid sports
@@ -247,7 +250,11 @@ exports.globals = {
   }
 }
 
-
+exports.sportNames = {
+  baseball: 'Baseball',
+  basketball: 'Basketball',
+  football: 'Football'
+}
 /*
  * ====================================================================
  * Background Scripts
@@ -255,5 +262,6 @@ exports.globals = {
  */
 exports.scriptNames = {
   parsePlayers: path.join(__dirname, '../scripts/baseball/parsePlayers.py'),
-  parseAndUpdateGames: path.join(__dirname, '../scripts/baseball/parseAndUpdateGames.py')
+  parseAndUpdateGames: path.join(
+    __dirname, '../scripts/baseball/parseAndUpdateGames.py')
 }

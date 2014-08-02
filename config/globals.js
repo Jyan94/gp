@@ -1,4 +1,10 @@
 /**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
+'use strict';
+/**
  * contains cached bets
  * @type {Object}
  */
@@ -6,6 +12,7 @@
 pending bet format:
 {
   athleteId uuid, --
+  athleteImage text, --
   athleteName text, --
   athleteTeam text, --
   betId timeuuid, --
@@ -24,6 +31,7 @@ pending bet format:
 resell bet format:
 {
   athleteId uuid, --
+  athleteImage text, --
   athleteName text, --
   athleteTeam text, --
   betId timeuuid, --
@@ -85,32 +93,35 @@ exports.contestB = {
   contests: []
 }
 
+//maps of athleteId to athlete id in array
+//list of player names too
+/*
+  fields for athlete objects (regardless of sport)
+
+    age: athlete.age,
+    id: athlete.athlete_id,
+    firstName: athlete.first_name,
+    fullName: athlete.full_name,
+    height: athlete.height,
+    image: athlete.image_url,
+    lastName: athlete.last_name,
+    longTeamName: athlete.long_team_name,
+    position: athlete.position,
+    shortTeamName: athlete.short_team_name,
+    sport: [SPORT] (not in database)
+    status: athlete.status,
+    teamId: athlete.teamId,
+    uniformNumber: athlete.uniform_number,
+    weight: athlete.weight 
+ */
 exports.athletes = {
-  Baseball: {
-    '10154eef-8834-48e0-97e7-d7436367534c': {
-      age: 100,
-      currentValue: 10,
-      firstName: 'Adrian',
-      fullName: 'Adrian Gonzalez',
-      height: 61,
-      image: 'google.com',
-      lastName: 'Gonzalez',
-      longTeamName: 'Los Angeles Dodgers',
-      position: 'first base',
-      short_team_name: 'LA',
-      statistics: {'10/7/07': ''},
-      status: 'active',
-      uniform_number: 23,
-      weight: 200,
-      timeseries: []
-    }
-  },
-  Football: {
-
-  },
-  Basketball: {
-
-  }
+  baseballList: [],
+  baseballIdMap: {},
+  footballList: [],
+  footballIdMap: {},
+  basketballList: [],
+  basketballIdMap: {},
+  allAthletesList: []
 }
 
 exports.games = {

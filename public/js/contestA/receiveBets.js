@@ -5,8 +5,22 @@
  * =============================================================================
  */
 /*global async*/
+/*global contestACreateAthleteCard*/
 'use strict';
-
+/*
+ * =============================================================================
+ * READ ME!!!!
+ * make sure athlete cards are sortable by id class
+ * each bet has an id corresponding to its index in displayedBets
+ * must include async and createAthleteCard before this file
+ * 
+ * $container.isotope({
+    getSortData: {
+      id: '.id'
+    }
+   });
+ * =============================================================================
+ */
 /*
  * =============================================================================
  * Globals for manipulating isotope div
@@ -14,103 +28,32 @@
  */
 //isotope div
 var $container;
+//request url
+var getBetUrl = 'getbets';
+
+//TODO: should make following lists not global
+//list of isotope elements
 var elementList = [];
+//lists for insertion and removal for isotope
 var insertList = [];
 var removeList = [];
 var nullList = [];
 
-function createAthleteCard(
-  arrayId,
-  fantasyValue,
-  fullName,  
-  fullTeamName,
-  overNotUnder,
-  pictureUrl,
-  athletePosition,
-  wager) {
-
-  var betPosition;
-  if (overNotUnder) {
-    betPosition = 'over';
-  }
-  else {
-    betPosition = 'under';
-  }
-  var retval = $(
-    '<div id=' + arrayId + ' class=\'playercard1\'>' +
-    '<div class="id" style="display:">' + arrayId + '</div>' +
-    '<div class=\'playercard1-playerpic\'>' + 
-    '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +
-
-    '<div class=\'playercard1-info\'>' +
-
-      '<div class=\'playercard1-info name\'>' +
-      '<center>' +
-      '<p>' + fullName + '</p>' +
-      '</center>' +
-      '</div>' +
-
-      '<div class=\'playercard1-info pos\'>' +
-      '<center>' +
-      '<p>' + athletePosition + '|' + fullName +'</p>' +
-      '</center>' +
-      '</div>' +
-
-    '</div>' +
-
-    '<div class=\'playercard1-bottom\'>' +
-
-      '<div class=\'playercard1-bottom wager\'>' +
-      '<p> $' + wager + " " + betPosition + " " + fantasyValue + "FP</p>" +
-      '</div>' +
-
-      '<div class=\'playercard1-bottom submit\'>' +
-        '<center>' +
-        '<div class=\'pure-button button-primary\'>Take</div>' +
-        '</center>' +
-      '</div>' +
-
-    '</div>' +
-
-    '</div>' +
-    '</div>');
-  return retval;
-}
-
-function createCardAndReplace(index, bet) {
-  var div = $('#' + index);
-  var card;
-  if (bet) {
-    card = createAthleteCard(
-      index,
-      bet.fantasyValue,
-      bet.athleteName,
-      bet.athleteTeam,
-      bet.overNotUnder,
-      'http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg',
-      bet.athletePosition,
-      bet.price);
-  }
-  else {
-    card = '<div id=' + index + ' style="display: none;">'
-  }
-  return card;
-}
-
-function createHiddenDiv(index) {
-  var newDiv = document.createElement('div');
-  newDiv.style.display = 'none';
-  newDiv.id = index;
-  return newDiv;
-}
-
-//end globals for isotope stuff
-
-//pending hash is map of id: array index of betid in pending array
-//resellHashes is broken up into over and under maps of id: array index
 /*
  * =============================================================================
- * Globals for updating bets
+ * Globals for displaying bets
+ *
+ * BetsWrapper: raw data retrieved from server 
+ * pending: array of bets
+ * pendingHash: map of id to array index
+ * resell: array of bets
+ * resellHash: map of id to array index
+ * 
+ * displayedBets: array of ordered bets currently displayed
+ * displayedBetsHash: maps of id to array index based on bet state
+ *
+ * POLL_INTERVAL: number of milliseconds between polls
+ * NUM_DISPLAYED: max number of bets displayed
  * =============================================================================
  */
 var BetsWrapper = {
@@ -130,10 +73,21 @@ var displayedBetsHashes = {
 };
 var POLL_INTERVAL = 10000;
 var NUM_DISPLAYED = 5;
+/*
+ * =============================================================================
+ */
 
-function radixElementList() {
+//pending hash is map of id: array index of betid in pending array
+//resellHashes is broken up into over and under maps of id: array index
+/*
+ * =============================================================================
+ * For updating bets
+ * =============================================================================
+ */
+//replace with linear time sort or async sort in future
+function sortElementList() {
   elementList.sort(function(a, b) {
-    return a.getAttribute('id') > b.getAttribute('id');
+    return parseInt(a.getAttribute('id')) > parseInt(b.getAttribute('id'));
   });
 }
 
@@ -187,42 +141,7 @@ function updateData(holes, newHashes, newDisplayedBets) {
       }
     }
   }
-  /*
-  for (; j !== holesArr.length && i !== totalLength; ++i, ++j) {
-    id = candidateDisplayedBets[i].betId;
-    if (
-      id &&
-      typeof(newHashes.pending[id]) === 'undefined' &&
-      typeof(newHashes.overResell[id]) === 'undefined' && 
-      typeof(newHashes.underResell[id]) === 'undefined') {
 
-      //add bet to display bet
-      index = parseInt([holesArr[j]]);
-      newDisplayedBets[index] = candidateDisplayedBets[i];
-      console.log('hi');
-      console.log(index);
-      //pending check
-      if (candidateDisplayedBets[i].bettor) {
-        newHashes.pending[id] = index;
-      }
-      else if (candidateDisplayedBets[i].seller && 
-               candidateDisplayedBets[i].overNotUnder) {
-        newHashes.overResell[id] = index;
-      }
-      else {
-        newHashes.underResell[id] = index;
-      }
-    }
-  }*/
-  //end fill in holes
-  /*
-  for (i = 0; i !== newDisplayedBets.length; ++i) {
-    console.log('**');
-    console.log('index: ' + i);
-    console.log(newDisplayedBets[i].betId);
-    console.log(newHashes.pending[newDisplayedBets[i].betId]);
-    console.log('**');
-  }*/
   //make sure already existing data stays the same
   for (i = 0; i !== displayedBets.length; ++i) {
     id = displayedBets[i].betId;
@@ -271,14 +190,6 @@ function updateData(holes, newHashes, newDisplayedBets) {
   newHashes.overResell = hashes.overResell;
   newHashes.underResell = hashes.underResell;
   //done reassigning
-  /*
-  for (i = 0; i !== newDisplayedBets.length; ++i) {
-    console.log('**');
-    console.log('index: ' + i);
-    console.log(newDisplayedBets[i].betId);
-    console.log(newHashes.pending[newDisplayedBets[i].betId]);
-    console.log('**');
-  }*/
 
   //edge case: bets sent < number to be displayed
   if (newDisplayedBets.length < NUM_DISPLAYED) {
@@ -333,46 +244,16 @@ function updateData(holes, newHashes, newDisplayedBets) {
       typeof(displayedBetsHashes.underResell[id]) === 'undefined')
 
       ) {
-      //console.log('//')
-      //console.log(id);
-      //console.log(newHashes.pending[id])
-      //console.log(displayedBetsHashes.pending[id]);
-      //console.log('\\\\');
+
       changed.push(i);
     }
   }
 
-  /*for (i = 0; i !== newDisplayedBets.length; ++i) {
-    if (i !== changed[0] && 
-      newHashes.pending[newDisplayedBets[i].betId] 
-      !== displayedBetsHashes.pending[newDisplayedBets[i].betId]) {
-      console.log(newDisplayedBets[i].betId);
-      console.log(newHashes.pending[newDisplayedBets[i].betId] );
-      console.log(displayedBetsHashes.pending[newDisplayedBets[i].betId]);
-      console.log('fuck!');
-    }
-  }*/
-  /*
-  console.log(newDisplayedBets.map(function(x) {
-    return x.betId;
-  }));
-  console.log(displayedBets.map(function(x) {
-    return x.betId;
-  }));
-  console.log(newHashes.pending);
-  console.log(displayedBetsHashes.pending);
-  */
   elementList = $container.data('isotope').getItemElements();
-  radixElementList();
+  sortElementList();
   insertList = [];
   removeList = [];
   //get extra changed
-  /*for (i = 0; i !== changed.length; ++i) {
-    createCardAndReplace(changed[i], newDisplayedBets[changed[i]]);
-  }
-  for (i = newDisplayedBets.length; i < currentLength; ++i) {
-    createCardAndReplace(i, null);
-  }*/
   for (i = 0; i !== changed.length; ++i) {
     removeList.push(changed[i]);
     insertList.push(changed[i]);
@@ -380,24 +261,20 @@ function updateData(holes, newHashes, newDisplayedBets) {
   for (i = newDisplayedBets.length; i < displayedBets.length; ++i) {
     removeList.push(i);
     nullList.push(i);
-  }/*
-  console.log(removeList);
-  console.log(insertList);
-  console.log(removeList);
-  console.log(elementList.map(function(x) {return x.getAttribute('id');}));*/
+  }
   for (i = 0; i !== removeList.length; ++i) {
     $container.data('isotope').remove(elementList[removeList[i]]);
   }
   for (i = 0; i !== insertList.length; ++i) {
     $container.data('isotope').insert(
-      createCardAndReplace(insertList[i], newDisplayedBets[insertList[i]]));
+      contestACreateAthleteCard.createCard(
+        insertList[i], newDisplayedBets[insertList[i]]));
   }
   for (i = 0; i !== nullList.length; ++i) {
     $container.data('isotope').insert(
-      createCardAndReplace(nullList[i], null));
+      contestACreateAthleteCard.createCard(nullList[i], null));
   }
   $container.isotope({ sortBy : 'id' });
-  //$container.data('isotope').layout();
   return {
     newDisplayedBetsHashes: newHashes,
     newDisplayedBets: newDisplayedBets
@@ -454,7 +331,7 @@ function updateBets(data, callback) {
             memo.holes[displayedBetsHashes.underResell[id]] = true;
           }
           else {
-             memo.newUnderResellHash[id] = displayedBetsHashes.underResell[id];
+            memo.newUnderResellHash[id] = displayedBetsHashes.underResell[id];
           }
           callback(null, memo);
         },
@@ -476,15 +353,17 @@ function updateBets(data, callback) {
     var retval = updateData(holes, newDisplayedBetsHashes, newDisplayedBets);
     displayedBetsHashes = retval.newDisplayedBetsHashes;
     displayedBets = retval.newDisplayedBets;
-    //console.log(displayedBets);
-    //console.log(displayedBetsHashes);
     callback();
   });
 }
 
+/**
+ * exported
+ * makes an ajax request to server for bets
+ */
 function requestGetAndUpdateBets() {
   $.ajax({
-    url: 'getbets',
+    url: getBetUrl,
     dataType: 'json',
     success: function(data) {
         updateBets(data, function() {
@@ -497,19 +376,32 @@ function requestGetAndUpdateBets() {
   });
 }
 
+/**
+ * exported
+ * gets a bet's information given the id, which is the index of the bet in array
+ * @param  {int} id
+ */
+function getBetByIndex(id) {
+  return displayedBets[id];
+}
+
+/*jshint ignore:start*/
+(function (exports) {
+    exports.requestGetAndUpdateBets = requestGetAndUpdateBets;
+    exports.getBetByIndex = getBetByIndex;
+}(typeof exports === 'undefined' ? this.contestARetrieveBets = {} : exports));
+/*jshint ignore:end*/
+
 /*
  * =============================================================================
  * End Update Bet Globals
  * =============================================================================
  */
-
+/*
+ MUST HAVE SOMETHING OF THE SORT IN FILE THAT INCLUDES THIS:
 $(document).ready(function() {
 
   $container = $('.isotope');
-  var sequenceArr = [];
-  for (var i = 0; i < NUM_DISPLAYED; ++i) {
-    $container[0].appendChild(createHiddenDiv(i));
-  }
   $container.isotope({
     itemSelector: '.playercard1',
     layoutMode: 'fitRows',
@@ -518,27 +410,5 @@ $(document).ready(function() {
     }
   });
   requestGetAndUpdateBets();
-
-  /**
-   * data
-   * @param  {object} data
-   * data from the server for bets and hashmap of betId to array index
-   */
-  //displayed bets: array
-  //displayedBetsHash: map of id to array index
-  //pending: array of bets
-  //pendingHash: map of id to array index
-  //resell: array of bets
-  //resellHash: map of id to array index
-  //
-  //see which betIds are removed 
-  //(iterate through array of displayed and check ids)
-  //get those array indexes that need replacing
-  //select distribution of random to fill in from pending and resell
-  //make sure that those don't already exist
-  //Obj.keys
-  //
-  //
-
-
 });
+*/

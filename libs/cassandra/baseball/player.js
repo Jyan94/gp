@@ -10,7 +10,7 @@ var STATISTICS_INDEX = 10;
 var CURRENT_VALUE_KEY = 'current_value';
 var STATISTICS_KEY = 'statistics';
 
-//16 fields
+//15 fields
 var INSERT_PLAYER_CQL = multiline(function() {/*
   INSERT INTO baseball_player (
     age,
@@ -188,7 +188,7 @@ var ADD_STATISTICS_QUERY = multiline(function() {/*
  * @param {Function} callback
  * args: (err)
  */
-exports.addStatistic = function (athleteId, formattedDate, statistic, callback) {
+exports.addStatistic = function(athleteId, formattedDate, statistic, callback) {
   cassandra.query(
     ADD_STATISTICS_QUERY,
     [formattedDate, statistic, athleteId],
@@ -205,10 +205,26 @@ var DELETE_SPECIFIC_STATISTICS_QUERY = multiline(function() {/*
  * @param  {Function} callback
  * args: (err)
  */
-exports.deleteStatistics = function (athleteId, formattedDate, callback) {
+exports.deleteStatistics = function(athleteId, formattedDate, callback) {
   cassandra.query(
     DELETE_SPECIFIC_STATISTICS_QUERY,
     [formattedDate, athleteId],
+    one,
+    callback);
+}
+
+var SELECT_ALL_PLAYERS_QUERY = multiline(function() {/*
+  SELECT * FROM baseball_player;
+*/});
+/**
+ * selects all players
+ * @param  {Function} callback
+ * args: (err, results)
+ */
+exports.selectAll = function(callback) {
+  cassandra.query(
+    SELECT_ALL_PLAYERS_QUERY,
+    [],
     one,
     callback);
 }

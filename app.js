@@ -8,13 +8,13 @@ configs.configure(app);
 
 //mount on on other modules
 //keep this file clean
-require('libs/backgroundProcesses/backgroundProcesses').start();
-var customSetInterval = configs.constants.globals.customSetInterval;
+require('libs/backgroundProcesses/updateGlobals').start();
+/*var customSetInterval = configs.constants.globals.customSetInterval;
 var globals = configs.globals.contestA;
 customSetInterval(function(callback) {
   console.log(globals);
   callback(null);
-}, 2000);
+}, 2000);*/
 
 app.use('/', require('routes/index'));
 

@@ -7,7 +7,8 @@ var async = require('async');
 var User = require('libs/cassandra/user');
 var ContestA = require('libs/contestA/exports');
 var FormatBets = ContestA.FormatBets;
-var UpdateBet = ContestA.UpdateBet;
+var ModifyBets = ContestA.ModifyBets;
+var Athletes = require('libs/athletes/exports');
 
 /*
  * ====================================================================
@@ -37,9 +38,7 @@ function renderPortfolio(req, res) {
 function getMarket(req, res) {
   res.render('testMarket.hbs');
 }
-exports.getMarket = getMarket;
 
-//no chance of errors
 function getMarketBets(req, res) {
   var username = req.user.username;
   async.parallel(
@@ -88,6 +87,60 @@ function getUserBets(req, res) {
   });
 }
 
+function placePendingBet(req, res, next) {
+  ModifyBets.insertPending(req.body, req.user, function(err) {
+    if (err) {
+      next(err);
+    }
+    else {
+      res.send('Bet successfully made!');
+    }
+  });
+}
+
+function removePendingBet(req, res, next) {
+  ModifyBets.deletePending(req.body, req.user, function(err) {
+    if (err) {
+      next(err);
+    }
+    else {
+      res.send('Bet successfully deleted!');
+    }
+  });
+}
+
+function takePendingBet(req, res, next) {
+  ModifyBets.takePending(req.body, req.user, function(err) {
+    if (err) {
+      next(err);
+    }
+    else {
+      res.send('Bet successfully taken!');
+    }
+  });
+}
+
+function placeResellBet(req, res, next) {
+  ModifyBets.placeResell(req.body, req.user, function(err) {
+    if (err) {
+      next(err);
+    }
+    else {
+      res.send('Bet successfully placed in resell!');
+    }
+  });
+}
+
+function takeResellBet(req, res, next) {
+  ModifyBets.takeResell(req.body, req.user, function(err) {
+    if (err) {
+      next(err);
+    }
+    else {
+      res.send('Bet successfully taken!');
+    }
+  });
+}
 /*
  * ====================================================================
  * EXPORTS
@@ -95,5 +148,6 @@ function getUserBets(req, res) {
  */
 
 exports.renderMarketHome = renderMarketHome;
+exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.renderPortfolio = renderPortfolio;
