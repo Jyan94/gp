@@ -1,9 +1,4 @@
-/*
-  file containing handlebars helpers
-  exports.[helper name] = function(context, options) {
-    //helper stuff here
-  }
- */
+'use strict';
 
 exports.contestBCreationHelperAway = function (context, options) {
   var shortAwayName = context.shortAwayName;
@@ -13,9 +8,9 @@ exports.contestBCreationHelperAway = function (context, options) {
   for (var i = 0; i < athletes.length; i++) {
     if (athletes[i].shortTeamName === shortAwayName) {
       ret += options.fn({
-                          gameId: context.gameId,
-                          athlete: athletes[i]
-                        });
+        gameId: context.gameId,
+        athlete: athletes[i]
+      });
     }
   }
 
@@ -30,9 +25,9 @@ exports.contestBCreationHelperHome = function (context, options) {
   for (var i = 0; i < athletes.length; i++) {
     if (athletes[i].shortTeamName === shortHomeName) {
       ret += options.fn({
-                          gameId: context.gameId,
-                          athlete: athletes[i]
-                        });
+        gameId: context.gameId,
+        athlete: athletes[i]
+      });
     }
   }
 
@@ -45,10 +40,10 @@ exports.contestBEntryHelper = function (context, options) {
 
   for (var i = 0; i < athletes.length; i++) {
     ret += options.fn({
-                        athlete: athletes[i],
-                        index: i,
-                        maxWager: context.maxWager
-                      });
+      athlete: athletes[i],
+      index: i,
+      maxWager: context.maxWager
+    });
   }
 
   return ret;
@@ -61,12 +56,12 @@ exports.contestBEditHelper = function (context, options) {
 
   for (var i = 0; i < athletes.length; i++) {
     ret += options.fn({
-                        athlete: athletes[i],
-                        index: i,
-                        prediction: contestantInstance.predictions[i],
-                        wager: contestantInstance.wagers[i],
-                        maxWager: context.maxWager
-                      });
+      athlete: athletes[i],
+      index: i,
+      prediction: contestantInstance.predictions[i],
+      wager: contestantInstance.wagers[i],
+      maxWager: context.maxWager
+    });
   }
 
   return ret;

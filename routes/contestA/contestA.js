@@ -87,6 +87,15 @@ function getUserBets(req, res) {
   });
 }
 
+/**
+ * places a pending bet
+ * @param  {object}   req
+ * req.body must have fields
+ * 
+ * @param  {object}   res
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
 function placePendingBet(req, res, next) {
   ModifyBets.insertPending(req.body, req.user, function(err) {
     if (err) {
