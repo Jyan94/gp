@@ -70,11 +70,12 @@ var USER_ID_INDEX = 10;
 var USERNAME_INDEX = 11;
 
 var ContestAbet = require('libs/cassandra/contestA/exports');
+var LibContestABet = require('libs/contestA/exports');
+var ModifyBets = LibContestABet.ModifyBets
 var UpdateBet = ContestAbet.UpdateBet;
 var BetHistory = ContestAbet.BetHistory;
 var Timeseries = ContestAbet.Timeseries;
 var SelectBet = ContestAbet.SelectBet;
-var BuyAndSellBet = ContestAbet.BuyAndSellBet;
 var User = require('libs/cassandra/user');
 
 var configs = require('config/index');
@@ -244,7 +245,7 @@ function testBets(callback) {
       insertTestPending(callback);
     },
     function(callback) {
-      BuyAndSellBet.cancelPending(
+      ModifyBets.cancelPending(
         testInfoCancelPending, 
         getTestUser(testUserParams0),
         callback);
@@ -266,7 +267,7 @@ function testBets(callback) {
       insertTestPending(callback);
     },
     function(callback) {
-      BuyAndSellBet.takePending(
+      ModifyBets.takePending(
         testInfoTakePending,
         getTestUser(testUserParams1),
         callback);

@@ -10,9 +10,10 @@ var configs = require('config/index.js');
 var cql = configs.cassandra.cql;
 var async = require('async');
 var User = require('libs/cassandra/user');
-var UpdateBet = require('libs/cassandra/contestA/update');
-var Timeseries = require('libs/cassandra/contestA/timeseries');
-var BetHistory = require('libs/cassandra/contestA/betHistory');
+var ContestA = require('libs/cassandra/contestA/exports');
+var UpdateBet = ContestA.UpdateBet;
+var Timeseries = ContestA.Timeseries;
+var BetHistory = ContestA.BetHistory;
 
 var sportNames = configs.constants.sportNames;
 var BASEBALL = sportNames.baseball;
