@@ -56,14 +56,7 @@ h6 {
 p {
   font-family: 'sans-serif';
 }
-p.betTitle {
-  font-family: "Verdana";
-  font-size: 24px;
-}
-p.playercard-currfantasy {
-  font-family: "Helvetica";
-  font-size: 28px;
-}
+
 a {
   text-decoration: none;
   color: black;
@@ -1321,16 +1314,15 @@ input[type="text"] {
   height: 20px;
   width: 250px;
   float: top;
+  text-align: center;
 }
 
 .playercard1-bottom .wager p {
   margin-top: -3px;
-  position: absolute;
   font-family: "Helvetica";
   font-size: 18px;
   color: white;
-  margin-left: 60px;
-  margin-right: 60px;
+  text-align: center;
 }
 
 .playercard1-bottom .submit {

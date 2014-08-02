@@ -10,7 +10,7 @@ $(document).ready(function() {
       min: 1,
       max: 100,
       values: [ 1, 100 ],
-      step: 1,
+      step: 0.50,
       slide: function( event, ui ) {
         $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
       }

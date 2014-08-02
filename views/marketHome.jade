@@ -2,12 +2,12 @@ doctype html
 html(lang="en")
   head
     include common/base_head
-    script(src='public/js/jquery/jquery-ui-1.10.4.custom.js')
     script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
-    script(src='http://isotope.metafizzy.co/beta/isotope.pkgd.js')
+    script(type = 'application/javascript' src='/js/libModules/isotope.pkgd.min.js')
     script(type="text/javascript" src="/js/homeIsotope.js")
     script(src='/js/search.js')
     script(type='application/javascript' src='/js/market.js')
+    script(src='/js/cardCreation.js')
 
   body
     include banner
@@ -18,10 +18,10 @@ html(lang="en")
           br
           br
           | Wager:
-          input(type='number' name='wagerAmount' placeholder='Dollars' required=true style='width:100px' min="0" step="0.01")
+          input(type='number' id='wagerAmount' name='wagerAmount' placeholder='Dollars' required=true style='width:100px' min="0" step="0.01")
           br
-          | Value :
-          input(type='number' name='fantasyValue' placeholder='Value' required=true style='width: 100px' min="1" step="1")
+          | Points:
+          input(type='number' id='fantasyValue' name='fantasyValue' placeholder='Value' required=true style='width: 100px' min="1" step="1")
           br
           br
           input(id = 'radioFormA' type='radio' name='longOrShort' value='Over' checked='checked')
@@ -33,7 +33,7 @@ html(lang="en")
           center
             input#betFormButton.pure-button.button-primary(type='submit' style='background-color: #083f75; color: white; float: left' value="Create")
 
-      div.playercard1
+      div.playercard1#create
         div.playercard1-playerpic
           img(width='250' height='250' src='http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1')
           div.playercard1-info
@@ -45,11 +45,11 @@ html(lang="en")
                 p SF | Cavaliers
           div.playercard1-bottom
             div.playercard1-bottom.wager
-              p $5 under 30 FP
+              p $? Under ? FP
             div.playercard1-bottom.submit
               center
                 div.pure-button.button-primary
-                  | Create
+                  | Take
 
     div.isotope
       div.playercard1.Basketball

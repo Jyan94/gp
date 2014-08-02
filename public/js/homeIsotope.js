@@ -33,11 +33,6 @@ $( function() {
       var fantasyResult = fantasyResultFilter ? $this.is(fantasyResultFilter) : true;
       return searchResult && buttonResult && overUnderResult && wageResult && fantasyResult;
     }
-    /*getSortData: {
-      nfl: '.Football',
-      nba: '.Basketball',
-      mlb: '.Baseball',
-    }*/
   });
 
 
@@ -75,10 +70,6 @@ $( function() {
   $('#filters').on( 'click', 'button', function() {
     var $this = $(this);
     buttonFilter = $this.attr('data-filter');
-    //buttonFilter = filterFns[buttonFilter] || buttonFilter
-    // use filterFn if matches value
-    //var $buttonGroup = $this.parents('.button-group');
-    //var overUnderValue = $buttonGroup.attr('data-filter-group');
     $container.isotope();
   });
 
@@ -106,22 +97,6 @@ $( function() {
     fantasyResultFilter = filterFns[fantasyResultFilter] || wageResultFilter;
     $container.isotope();
   })
-
-
-  /*
-  var $filterwager = $('#filter').keyup(function(wageBottom, wageTop) {
-    var $this = $(this);
-
-    var wager = $(this).find('.playercard1-bottom.wager').text().split(" ")[0];
-    //parseFlaot vs parseDouble??
-    return (parseFloat(wager) > wageBottom
-            && parseFloat(wager) < wageTop);
-    },
-  }));
-
-  var $filtervalue = $('#filter2').keyup(debounce(function() {
-    $container.isotope({filter: value});
-  })*/
 
     // change is-checked class on buttons
   $('.button-group').each( function( i, buttonGroup ) {

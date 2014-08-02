@@ -37,7 +37,7 @@ $(function() {
     }
   );
 
-  $('#searchform').submit(function(e) {
+  $('#betForm').submit(function(e) {
     e.preventDefault();
     if (typeof id === 'undefined') {
       for (var i = 0; i < searchCache.length; i++) {
