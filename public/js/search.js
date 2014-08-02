@@ -1,21 +1,24 @@
 $(function() {
   var searchCache = [];
+  var dataCache = [];
   var id;
   $.getJSON("/autocomp", function (data) {
-    for (var i = 0; i < data.length; i++) {
-      searchCache.push(data[i]);
-    }
+    console.log(data);
+    dataCache = data;
+    searchCache = data.map(function(athleteObj) {
+      return athleteObj.fullName;
+    });
   });
   $('#autocomplete').on('input', function () {
     id = undefined;
   });
 
   $('#autocomplete').autocomplete({
-    minLength : 3,
+    //minLength : 3,
     source: searchCache,
-    select: function(e, ui) {
-      id = ui.item.athleteId;
-    }
+    /*select: function(e, ui) {
+      id = ui.item.id;
+    }*/
   })
 
   /* .data('ui-autocomplete')._renderItem = function ( ul, item ) {

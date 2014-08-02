@@ -5,18 +5,18 @@ html(lang="en")
     script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
     script(type = 'application/javascript' src='/js/libModules/isotope.pkgd.min.js')
     script(type="text/javascript" src="/js/homeIsotope.js")
-    script(src='/js/search.js')
     script(type='application/javascript' src='/js/market.js')
+    script(src='/js/jquery/jquery-ui.js')
     script(src='/js/cardCreation.js')
+    script(src='/js/search.js')
 
   body
     include banner
     div.makeBets
       .makeBetForm
-        form#betForm.pure-form(action='/submitForm/'+playerId method='post')
-          input#autocomplete(type="text" name='search' required=true style='width:160px; height: 30px font-size: 2px' placeholder='Search Players')
-          br
-          br
+        form#betForm.pure-form(action='/submitForm/'+playerId)
+          #searchform(action='/autocomp' method='get')
+            input#autocomplete(type="text" name='search' required=true style='width:160px; height: 30px font-size: 2px' placeholder='Search Players')
           | Wager:
           input(type='number' id='wagerAmount' name='wagerAmount' placeholder='Dollars' required=true style='width:100px' min="0" step="0.01")
           br
