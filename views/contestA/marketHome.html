@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width">
     <link href="//fonts.googleapis.com/css?family=Roboto+Condensed:400,300" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="/css/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="/css/contestA/marketHome.css">
+    <link rel="stylesheet" type="text/css" href="/css/slider.css">
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+    <link rel="stylesheet" type="text/css" href="/js/jquery/jquery-ui.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
     <title>Contest A Home</title>
@@ -13,15 +18,10 @@
   <body>
     <div class="pure-g-r banner">
       <div class="pure-u-3-4 banner-inner">
-        <div class="banner-nav">
-          <h4><a href="/markethome">Home</a></h4>
-          <div id="divide">
-            <h4><a href="/portfolio">Portfolio</a></h4>
-          </div>
-          <div class="pure-hidden-phone"><span><a class="fui-list"></a></span></div>
+        <div class="banner-nav"><span><a class="fui-list"></a></span>
           <ul class="dropdown-menu">
             <li class="dropdown-entry"><a href="/user">Profile</a></li>
-            <li class="dropdown-entry"><a href="/contestB">Contests</a></li>
+            <li class="dropdown-entry"><a href="/portfolio">Portfolio</a></li>
             <li class="dropdown-entry"><a href="/forums">Forums</a></li>
             <li class="dropdown-divider"></li>
             <li class="dropdown-entry"><a href="/logout">Logout</a></li>
@@ -32,6 +32,36 @@
           <input id="quicksearch" type="text" name="search" placeholder="Search for Players">
         </div>
         <div class="banner-brand"><a href="/markethome"><img src="/img/GoProphetLogo8.jpg"></a></div>
+        <button style="margin-left: 800px;" class="btn1">Filter</button>
+        <div id="filterdiv">
+          <p id="filter">
+            <label for="amount">Price range:</label>
+            <input id="amount" type="text" style="border: 0; color: #299; font-weight: bold;">
+          </p>
+          <div id="slider-range" data-filter="wager"></div>
+          <p id="filter2"><br>
+            <label for="amount">Fantasy Value:</label>
+            <input id="amount2" type="text" style="border: 0; color: #299; font-weight: bold;">
+          </p>
+          <div id="slider-range2" data-filter="fantasyValue"></div>
+          <div id="filters">
+            <h3>Sport</h3>
+            <div data-filter-group="sport" class="button-group js-radio-button-group">
+              <button data-filter="" class="button is-checked">show all</button>
+              <button data-filter=".Football" class="button">nfl</button>
+              <button data-filter=".Basketball" class="button">nba</button>
+              <button data-filter=".Baseball" class="button">mlb</button>
+            </div>
+          </div>
+          <div id="filters1">
+            <h3>Over/Under</h3>
+            <div data-filter-group="overunder" class="button-group js-radio-button-group">
+              <button data-filter="" class="button is-checked">any</button>
+              <button data-filter="over" class="button">Over</button>
+              <button data-filter="under" class="button">Under</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -63,9 +93,7 @@
             </div>
           </div>
           <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
-            </div>
+            <div class="playercard1-bottom wager"><p>$5 over 30 FP</p></div>
             <div class="playercard1-bottom submit">
               <center>
                 <div class="pure-button button-primary">Create</div>
@@ -75,203 +103,78 @@
         </div>
       </div>
     </div>
+
     <div class="isotope">
-      <div class="playercard1">
-        <div class="playercard1-playerpic"><img width="250" height="250" src="http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg">
-          <div class="playercard1-info">
-            <div class="playercard1-info name">
-              <center>
-                <p>Carmelo Anthony</p>
-              </center>
+      <div class="playercard1" id="playercard1-1">
+        <div class="playercard1-front">
+          <div class="playercard1-playerpic"><img width="250" height="250" src="http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg">
+            <div class="playercard1-info">
+              <div class="playercard1-info name">
+                <center>
+                  <p>Carmelo Anthony</p>
+                </center>
+              </div>
+              <div class="playercard1-info pos">
+                <center>
+                  <p>PF | New York Knicks</p>
+                </center>
+              </div>
             </div>
-            <div class="playercard1-info pos">
-              <center>
-                <p>PF | New York Knicks</p>
-              </center>
+            <div class="playercard1-bottom">
+              <div class="playercard1-bottom wager"><p>$5 over 30 FP</p></div>
+              <div class="playercard1-bottom submit">
+                <center>
+                  <form action="localhost:3000/takeBet">
+                    <input type="submit" Value="Take" class="pure-button button-primary">
+                  </form>
+                </center>
+              </div>
             </div>
           </div>
-          <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
+        </div>
+        <div class="playercard1-back">
+          <div class="playercard1-back-info">
+          </div>
+          <div class="playercard1-back-tab-container">
+            <ul class="playercard1-back-tab-menu">
+              <li id='playercard1-1-tab-1' class='playercard1-back-tab active'>
+                Tab 1
+              </li>
+              <li id='playercard1-1-tab-2' class='playercard1-back-tab'>
+                Tab 2
+              </li>
+              <li id='playercard1-1-tab-3' class='playercard1-back-tab'>
+                Tab 3
+              </li>
+            </ul>
+            <div class='playercard1-back-tab-border'>
             </div>
-            <div class="playercard1-bottom submit">
-              <center>
-                <form action="localhost:3000/takeBet">
-                  <input type="submit" Value="Take" class="pure-button button-primary">
-                </form>
-              </center>
+            <div id='playercard1-1-tab-1-content' class='playercard1-back-tab-content active'>
+              <p>Stuff</p>
+              <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+              <p>Stuff</p>
+            </div>
+            <div id='playercard1-1-tab-2-content' class='playercard1-back-tab-content'>
+              Stuff
+            </div>
+            <div id='playercard1-1-tab-3-content' class='playercard1-back-tab-content'>
+              Stuff
             </div>
           </div>
         </div>
       </div>
-      <div class="playercard1">
-        <div class="playercard1-playerpic"><img width="250" height="250" src="http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1">
-          <div class="playercard1-info">
-            <div class="playercard1-info name">
-              <center>
-                <p>Lebron James</p>
-              </center>
-            </div>
-            <div class="playercard1-info pos">
-              <center>
-                <p>SF | Cleveland Cavaliers</p>
-              </center>
-            </div>
-          </div>
-          <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
-            </div>
-            <div class="playercard1-bottom submit">
-              <center>
-                <div class="pure-button button-primary">Take</div>
-              </center>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="playercard1">
-        <div class="playercard1-playerpic"><img width="250" height="250" src="http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg">
-          <div class="playercard1-info">
-            <div class="playercard1-info name">
-              <center>
-                <p>Carmelo Anthony</p>
-              </center>
-            </div>
-            <div class="playercard1-info pos">
-              <center>
-                <p>PF | New York Knicks</p>
-              </center>
-            </div>
-          </div>
-          <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
-            </div>
-            <div class="playercard1-bottom submit">
-              <center>
-                <div class="pure-button button-primary">Take</div>
-              </center>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="playercard1">
-        <div class="playercard1-playerpic"><img width="250" height="250" src="http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg">
-          <div class="playercard1-info">
-            <div class="playercard1-info name">
-              <center>
-                <p>Carmelo Anthony</p>
-              </center>
-            </div>
-            <div class="playercard1-info pos">
-              <center>
-                <p>PF | New York Knicks</p>
-              </center>
-            </div>
-          </div>
-          <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
-            </div>
-            <div class="playercard1-bottom submit">
-              <center>
-                <div class="pure-button button-primary">Take</div>
-              </center>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="playercard1">
-        <div class="playercard1-playerpic"><img width="250" height="250" src="http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1">
-          <div class="playercard1-info">
-            <div class="playercard1-info name">
-              <center>
-                <p>Lebron James</p>
-              </center>
-            </div>
-            <div class="playercard1-info pos">
-              <center>
-                <p>SF | Cleveland Cavaliers</p>
-              </center>
-            </div>
-          </div>
-          <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
-            </div>
-            <div class="playercard1-bottom submit">
-              <center>
-                <div class="pure-button button-primary">Take</div>
-              </center>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="playercard1">
-        <div class="playercard1-playerpic"><img width="250" height="250" src="http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg">
-          <div class="playercard1-info">
-            <div class="playercard1-info name">
-              <center>
-                <p>Carmelo Anthony</p>
-              </center>
-            </div>
-            <div class="playercard1-info pos">
-              <center>
-                <p>PF | New York Knicks</p>
-              </center>
-            </div>
-          </div>
-          <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
-            </div>
-            <div class="playercard1-bottom submit">
-              <center>
-                <div class="pure-button button-primary">Take</div>
-              </center>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="playercard1">
-        <div class="playercard1-playerpic"><img width="250" height="250" src="http://assets.bizjournals.com/phoenix/morning_call/James%20LeBron%20309*304.jpg?v=1">
-          <div class="playercard1-info">
-            <div class="playercard1-info name">
-              <center>
-                <p>Lebron James</p>
-              </center>
-            </div>
-            <div class="playercard1-info pos">
-              <center>
-                <p>SF | Cleveland Cavaliers</p>
-              </center>
-            </div>
-          </div>
-          <div class="playercard1-bottom">
-            <div class="playercard1-bottom wager">
-              <p>$5 over 30 FP</p>
-            </div>
-            <div class="playercard1-bottom submit">
-              <center>
-                <div class="pure-button button-primary">Take</div>
-              </center>
-            </div>
-          </div>
-        </div>
+      <div id="marketHome-backdrop" class="backdrop">
+
       </div>
     </div>
 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!--link(rel="stylesheet" href="css/flexslider.css" type="text/css")-->
-    <!--link(rel="stylesheet" href="css/demo.css" type="text/css" media="screen")-->
-    <!--script(src="js/jquery/jquery.flexslider.js")-->
-    <!--script(type="text/javascript" src="js/flexsliderscoreboard.js")-->
-
-    <script src="/js/jquery/jquery-ui-1.10.4.custom.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="/js/search.js"></script>
     <script src="/js/banner.js"></script>
+    <script src="/js/jquery/jquery-ui-1.10.4.custom.js"></script>
     <script src="http://isotope.metafizzy.co/beta/isotope.pkgd.js"></script>
     <script src="js/homeIsotope.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery-ui.min.js"></script>
+    <script src="/js/slider.js"></script>
   </body>
 </html>

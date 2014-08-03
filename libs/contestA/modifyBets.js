@@ -218,7 +218,7 @@ function takePending(info, user, callback) {
       [
         //for user
         function(callback) {
-          BetHistory.insert(
+          BetHistory.insertHistory(
             info.athleteId,
             info.athleteName,
             info.athleteTeam,
@@ -229,11 +229,12 @@ function takePending(info, user, callback) {
             info.payoff,
             info.wager,
             false,
-            user.username);
+            user.username,
+            callback);
         },
         //for opponent
         function(callback) {
-          BetHistory.insert(
+          BetHistory.insertHistory(
             info.athleteId,
             info.athleteName,
             info.athleteTeam,
@@ -244,7 +245,8 @@ function takePending(info, user, callback) {
             info.payoff,
             info.wager,
             true,
-            info.opponent);
+            info.opponent,
+            callback);
         },
         //for timeseries
         function(callback) {
@@ -256,7 +258,9 @@ function takePending(info, user, callback) {
         }
       ], callback);
     }
-  ], callback);
+  ], function(err) {
+    callback(err);
+  });
 }
 
 //info contains (see below)

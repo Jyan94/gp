@@ -108,3 +108,110 @@ $( function() {
   });
 
 });
+
+function getPlayercard1Scale (currentTarget) {
+  var windowWidthScale = ($(window).width() * 0.8) / 320;
+  var windowHeightScale = ($(window).height() * 0.8) / 250;
+
+  return (windowWidthScale > windowHeightScale ? windowHeightScale : windowHeightScale);
+}
+
+$(function () {
+  var flippedCard = -1;
+  var flippedCardOffset = {};
+  var activeTabIndex = -1;
+  var tabNames = ['tab-1', 'tab-2', 'tab-3'];
+
+  $('.isotope').on('click', '.playercard1', function (e) {
+    if ((e.target.className === 'pure-button button-primary')
+        || (flippedCard >= 0)) {
+      return true;
+    }
+
+    $('#marketHome-backdrop').addClass('active');
+
+    //console.log(e);
+    flippedCard = e.currentTarget.id.substring(12);
+    var currentTarget = $('#' + e.currentTarget.id);
+
+    flippedCardOffset = currentTarget.offset();
+    var fixedOffsetX = flippedCardOffset.left - $(window).scrollLeft() - 10;
+    var fixedOffsetY = flippedCardOffset.top - $(window).scrollTop() - 10;
+    var scale = getPlayercard1Scale(currentTarget);
+
+    currentTarget.addClass('noTransition');
+    currentTarget.css({'position': 'fixed',
+                       'top': fixedOffsetY + 'px',
+                       'left': fixedOffsetX + 'px'});
+    console.log(currentTarget.offset().left);
+    currentTarget.removeClass('noTransition');
+    currentTarget.css({'top': 'calc(50% - 170px)',
+                       'left': 'calc(50% - 135px)',
+                       '-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
+    currentTarget.addClass('flipped');
+
+    return false;
+  });
+
+  $('.backdrop').on('click', function (e) {
+    var prevFlippedCard = flippedCard;
+    flippedCard = -1;
+
+    $('#marketHome-backdrop').removeClass('active');
+
+    if (prevFlippedCard >= 0) {
+      var currentTarget = $('#playercard1-' + prevFlippedCard);
+      var scale = currentTarget.css('-webkit-transform').match(/(-?[0-9\.]+)/g)[2];
+
+      var currentTargetOffset = currentTarget.offset();
+      var absoluteOffsetX = currentTargetOffset.left + (160 * scale) - 255; //is originally 120px + 10px + 125px = 255px away needs to be 320 now
+      var absoluteOffsetY = currentTargetOffset.top + (125 * scale) - 170; //is originally 160px + 10px = 170px away needs to be 250 now
+
+      currentTarget.addClass('noTransition');
+      currentTarget.css({'position': 'absolute',
+                         'top': absoluteOffsetY + 'px',
+                         'left': absoluteOffsetX + 'px'});
+      console.log(currentTarget.offset().left);
+      currentTarget.removeClass('noTransition');
+      currentTarget.css({'top': flippedCardOffset.top - 10 + 'px',
+                         'left': flippedCardOffset.left - 130  + 'px',
+                         '-webkit-transform': ''});
+      currentTarget.removeClass('flipped');
+    }
+
+    return false;
+  });
+  
+  $(window).resize(function (e) {
+    if (flippedCard >= 0) {
+      var currentTarget = $('#'+ $('.flipped')[0].id);
+      var scale = getPlayercard1Scale(currentTarget);
+
+      currentTarget.css({'-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
+    }
+
+    return false;
+  });
+
+  $('.isotope').on('click', '.playercard1-back', function (e) {
+    if (e.target.className.slice(0, 20) === 'playercard1-back-tab') {
+      var currentTargetId = e.target.id;
+      var currentTargetCardPrefix = '#' + currentTargetId.slice(0, currentTargetId.length - 6) + '-';
+
+      for (var i = 0; i < tabNames.length; i++) {
+        if (currentTargetId.substring(currentTargetId.length - 5) === tabNames[i]) {
+          activeTabIndex = i;
+        }
+        else {
+          $(currentTargetCardPrefix + tabNames[i]).removeClass('active');
+          $(currentTargetCardPrefix + tabNames[i] + '-content').css('display', 'none');
+        }
+      }
+
+      $(currentTargetCardPrefix + tabNames[activeTabIndex] + '-content').fadeIn();
+      $(currentTargetCardPrefix + tabNames[activeTabIndex]).addClass('active');
+    }
+
+    return false;
+  });
+});

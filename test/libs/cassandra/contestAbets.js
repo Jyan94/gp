@@ -245,7 +245,7 @@ function testBets(callback) {
       insertTestPending(callback);
     },
     function(callback) {
-      ModifyBets.cancelPending(
+      ModifyBets.deletePending(
         testInfoCancelPending, 
         getTestUser(testUserParams0),
         callback);

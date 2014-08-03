@@ -8,7 +8,7 @@
 
 var constants = require('config/constants');
 var globals = require('config/globals');
-var handlebarsHelpers = require('views/handlebarsHelpers/helpers');
+var handlebarsHelpers = require('views/handlebarsHelpers/exports');
 
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
