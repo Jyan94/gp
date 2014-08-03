@@ -47,7 +47,7 @@ a:hover {
   color: #990604;
 }
 button {
-  background-color: #990604;
+  background-color: #cecece;
 }
 hr {
   height: 1px;
@@ -76,6 +76,8 @@ input {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+
+
 }
 
 /* ---- input ---- */
@@ -160,6 +162,7 @@ input[type="text"] {
   border-color: black;
   border-width: 1px;
   padding: 5% 5% 5% 5%;
+  z-index: -500;
 }
 
 .noTransition {
@@ -180,6 +183,7 @@ input[type="text"] {
   -webkit-transform-style: preserve-3d;
   -webkit-transition: all 0.75s ease-in-out, margin 0;
   box-shadow: 0px 4px 4px #888;
+  background-color: #083f75;
 }
 
 .playercard1.flipped {
@@ -279,16 +283,15 @@ input[type="text"] {
   height: 20px;
   width: 250px;
   float: top;
+  text-align: center;
 }
 
 .playercard1-bottom .wager p {
   margin-top: -3px;
-  position: absolute;
   font-family: "Helvetica";
   font-size: 18px;
   color: white;
-  margin-left: 60px;
-  margin-right: 60px;
+  text-align:center;
 }
 
 .playercard1-bottom .submit {
@@ -328,7 +331,7 @@ input[type="text"] {
   padding: 5px 10px 5px 10px;
   background-color: #eee;
   border-bottom: none;
-  border-width: 1px; 
+  border-width: 1px;
   color: #999;
   cursor: default;
   margin-bottom: 0px;
@@ -376,7 +379,7 @@ input[type="text"] {
   width: 100%;
 
   -webkit-transition: all 1s ease-in-out;
-  
+
   opacity: 0;
   pointer-events: none;
   z-index: 3;
@@ -387,6 +390,84 @@ input[type="text"] {
 
   opacity: 0.5;
 }
+
+/*----------------------------------------------------------------------------*/
+/* MarketHome Filters                                                         */
+/*----------------------------------------------------------------------------*/
+
+/* ---- button ---- */
+
+.button {
+  display: inline-block;
+  padding: 0.5em 1.0em;
+  background: #EEE;
+  border: none;
+  border-radius: 7px;
+  background-image: linear-gradient( to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0.2) );
+  color: #222;
+  font-family: sans-serif;
+  font-size: 16px;
+  text-shadow: 0 1px white;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #8CF;
+  text-shadow: 0 1px hsla(0, 0%, 100%, 0.5);
+  color: #222;
+}
+
+.button:active,
+.button.is-checked {
+  background-color: #28F;
+}
+
+.button.is-checked {
+  color: white;
+  text-shadow: 0 -1px hsla(0, 0%, 0%, 0.8);
+}
+
+.button:active {
+  box-shadow: inset 0 1px 10px hsla(0, 0%, 0%, 0.8);
+}
+
+/* ---- button-group ---- */
+
+.button-group:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.button-group .button {
+  float: left;
+  border-radius: 0;
+  margin-left: 0;
+  margin-right: 1px;
+}
+
+.button-group .button:first-child { border-radius: 0.5em 0 0 0.5em; }
+.button-group .button:last-child { border-radius: 0 0.5em 0.5em 0; }
+
+/* ui group */
+
+.ui-group {
+  display: inline-block;
+}
+
+.ui-group h3 {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 32px;
+  margin-right: 0.2em;
+  font-size: 16px;
+}
+
+.ui-group .button-group {
+  display: inline-block;
+  margin-right: 20px;
+}
+
 
 /*----------------------------------------------------------------------------*/
 /* Banner and Dropdown                                                               */

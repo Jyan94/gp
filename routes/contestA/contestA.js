@@ -17,7 +17,7 @@ var Athletes = require('libs/athletes/exports');
  */
 
 function renderMarketHome(req, res) {
-  res.render('contestA/marketHome.html');
+  res.render('contestA/marketHome2.html');
 }
 
 /*
@@ -91,7 +91,7 @@ function getUserBets(req, res) {
  * places a pending bet
  * @param  {object}   req
  * req.body must have fields
- * 
+ *
  * @param  {object}   res
  * @param  {Function} next [description]
  * @return {[type]}        [description]
