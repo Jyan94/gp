@@ -27,7 +27,7 @@ var INSERT_PRICE_CQL = multiline(function() {/*
  * @param  {Function} callback
  * args: err
  */
-exports.insert = function (athleteId, fantasyValue, price, callback) {
+exports.insert = function(athleteId, fantasyValue, price, callback) {
   cassandra.query(
     INSERT_PRICE_CQL, 
     [
@@ -49,7 +49,7 @@ var DELETE_PRICE_CQL = multiline(function() {/*
  * @param  {Function} callback
  * args: err
  */
-exports.deletePrices = function (athleteId, callback) {
+exports.deletePrices = function(athleteId, callback) {
   cassandra.query(
     DELETE_PRICE_CQL,
     [athleteId],
@@ -69,7 +69,7 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
   AND
     time > maxTimeuuid(?)
   AND
-    time < minTimeuuid(?)
+    time < minTimeuuid(?);
 */});
 
 /**
@@ -85,7 +85,7 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
  * callback
  * args: err, result
  */
-exports.selectTimeRange = function (athleteId, start, end, callback) {
+exports.selectTimeRange = function(athleteId, start, end, callback) {
   cassandra.query(
     SELECT_TIMERANGE_CQL,
     [athleteId, start, end], 
@@ -93,17 +93,17 @@ exports.selectTimeRange = function (athleteId, start, end, callback) {
     callback);
 };
 
-var UNTIL_NOW_CQL = multiline(function () {/*
+var UNTIL_NOW_CQL = multiline(function() {/*
   SELECT  
     fantasy_value, dateOf(time) 
   FROM 
-    timeseries_bets
+    timeseries_contest_a_bets
   WHERE
     athlete_id=?
   AND
     time > maxTimeuuid(?)
   AND
-    time < now()
+    time < now();
 */});
 
 /**
@@ -118,10 +118,30 @@ var UNTIL_NOW_CQL = multiline(function () {/*
  * callback  [callback function to pass results]
  * args: err, results
  */
-exports.selectSinceTime = function (athleteId, start, callback) {
+exports.selectSinceTime = function(athleteId, start, callback) {
   cassandra.query(
     UNTIL_NOW_CQL,
     [athleteId, start], 
     one,
     callback);
 };
+
+var LIMIT_UNTIL_NOW_CQL = multiline(function() {/*
+  SELECT  
+    fantasy_value, dateOf(time) 
+  FROM 
+    timeseries_contest_a_bets
+  WHERE
+    athlete_id=?
+  AND
+    time > maxTimeuuid(?)
+  LIMIT 1000;
+*/});
+//same as above but limits it to 1000 results
+exports.limitSelectSinceTime = function(athleteId, start, callback) {
+  cassandra.query(
+    LIMIT_UNTIL_NOW_CQL,
+    [athleteId, start], 
+    one,
+    callback);
+}

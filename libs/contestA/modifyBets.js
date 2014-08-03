@@ -127,6 +127,12 @@ function insertPending(info, user, callback) {
   ], callback);
 }
 
+/*
+   info has fields
+   betId
+   isOverBetter
+   wager
+ */
 function deletePending(info, user, callback) {
   async.waterfall(
   [
@@ -263,7 +269,13 @@ function takePending(info, user, callback) {
   });
 }
 
-//info contains (see below)
+/*
+ info has fields
+  betId,
+  expirationTimeMinutes,
+  isOVerBetter,
+  resellPrice
+ */
 function placeResell(info, user, callback) {
   UpdateBet.placeResell(
     info.betId,

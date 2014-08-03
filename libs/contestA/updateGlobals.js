@@ -7,15 +7,20 @@
 require('rootpath')();
 
 var configs = require('config/index');
-var SelectBets = require('libs/cassandra/contestA/select');
-var positions = configs.constants.contestAbets.POSITIONS;
+var ContestA = require('libs/cassandra/contestA/exports');
+var SelectBet = ContestA.SelectBet;
+var Timeseries = ContestA.Timeseries;
+var contestAConstants = configs.constants.contestAbets;
+var positions = contestAConstants.POSITIONS;
 
 var async = require('async');
 
+var athletesGlobals = configs.globals.athletes;
 var contestAGlobals = configs.globals.contestA;
 
 var OVER = positions.OVER;
 var UNDER = positions.UNDER;
+var TIMEFIELD = contestAConstants.TIMESERIES_TIMEFIELD;
 
 //formatted once loaded into array
 function formatPendingBets(bets, callback) {
@@ -167,7 +172,7 @@ function loadPendingBets(callback) {
   async.waterfall(
   [
     function(callback) {
-      SelectBets.selectPendingBets(callback);
+      SelectBet.selectPendingBets(callback);
     },
     function(bets, callback) {
       bets = bets || [];
@@ -201,7 +206,7 @@ function loadResellAndTakenBets(callback) {
   async.waterfall(
   [
     function(callback) {
-      SelectBets.selectActiveBets(callback);
+      SelectBet.selectActiveBets(callback);
     },
     function(bets, callback) {
       bets = bets || [];
@@ -228,6 +233,9 @@ function loadResellAndTakenBets(callback) {
   });
 }
 
+//exported function loads all bets
+//callback args
+//(err)
 function loadAllBets(callback) {
   async.parallel(
   [
@@ -236,4 +244,66 @@ function loadAllBets(callback) {
   ], callback);
 }
 
+/**
+ * gets and format timeseries for an array of ids
+ * @param  {array}   ids
+ * array of athleteIds
+ * @param  {Function} callback
+ * args: (err)
+ */
+function getAndFormatTimeseries(ids, callback) {
+  var startDate = contestAConstants.TIMESERIES_MILLISECONDS_AGO_DATE();
+  async.reduce(
+    ids, 
+    {},
+    function(memo, id, callback) {
+      Timeseries.limitSelectSinceTime(id, startDate, function(err, result) {
+        if (err) {
+          callback(err);
+        }
+        else {
+          async.map(
+            result, 
+            function(dataPoint, callback) {
+              callback(
+                null,
+                {
+                  fantasyValue: dataPoint.fantasy_value,
+                  time: dataPoint[TIMEFIELD]
+                });
+            },
+            function(err, formattedPoints) {
+              if (err) {
+                callback(err);
+              }
+              else {
+                memo[id] = formattedPoints;
+                callback(null, memo);
+              }
+            });
+        }
+      });
+    },
+    function(err, result) {
+      if (err) {
+        callback(err);
+      }
+      else {
+        contestAGlobals.timeseries = result;
+        callback(null);
+      }
+    });
+}
+
+/**
+ * @param  {Function} callback 
+ * args: (err)
+ */
+function loadAllTimeseries(callback) {
+  getAndFormatTimeseries(
+    Object.keys(athletesGlobals.allAthletesIdMap), 
+    callback);
+}
+
 exports.loadAllBets = loadAllBets;
+exports.loadAllTimeseries = loadAllTimeseries;

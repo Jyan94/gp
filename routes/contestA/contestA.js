@@ -8,6 +8,7 @@ var User = require('libs/cassandra/user');
 var ContestA = require('libs/contestA/exports');
 var FormatBets = ContestA.FormatBets;
 var ModifyBets = ContestA.ModifyBets;
+var GetTimeseries = ContestA.GetTimeseries;
 var Athletes = require('libs/athletes/exports');
 
 /*
@@ -17,7 +18,7 @@ var Athletes = require('libs/athletes/exports');
  */
 
 function renderMarketHome(req, res) {
-  res.render('contestA/marketHome.html');
+  res.render('contestA/marketHome.jade');
 }
 
 /*
@@ -87,11 +88,27 @@ function getUserBets(req, res) {
   });
 }
 
+/*
+ * ====================================================================
+ * Bet modification routes
+ * SEE libs/contestA/modifyBets for documentation on functions
+ * ====================================================================
+ */
 /**
  * places a pending bet
  * @param  {object}   req
  * req.body must have fields
- * 
+  athleteId,
+  athleteImage,
+  athleteName,
+  athletePosition,
+  athleteTeam,
+  expirationTimeMinutes,
+  fantasyValue,
+  gameId,
+  isOverBetter,
+  sport,
+  wager
  * @param  {object}   res
  * @param  {Function} next [description]
  * @return {[type]}        [description]
@@ -107,6 +124,17 @@ function placePendingBet(req, res, next) {
   });
 }
 
+/**
+ * places a pending bet
+ * @param  {object}   req
+ * req.body must have fields
+   betId
+   isOverBetter
+   wager
+ * @param  {object}   res
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
 function removePendingBet(req, res, next) {
   ModifyBets.deletePending(req.body, req.user, function(err) {
     if (err) {
@@ -118,6 +146,22 @@ function removePendingBet(req, res, next) {
   });
 }
 
+/**
+ * places a pending bet
+ * @param  {object}   req
+ * req.body must have fields
+    athleteId,
+    athleteName,
+    athleteTeam,
+    betId,
+    fantasyValue,
+    opponent,        
+    overNotUnder,
+    wager
+ * @param  {object}   res
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
 function takePendingBet(req, res, next) {
   ModifyBets.takePending(req.body, req.user, function(err) {
     if (err) {
@@ -149,6 +193,20 @@ function takeResellBet(req, res, next) {
       res.send('Bet successfully taken!');
     }
   });
+}
+
+function getTimeseries(req, res, next) {
+  GetTimeseries.getByAthleteId(
+    req.query.athleteId, 
+    req.query.timeUpdate,
+    function(err, result) {
+      if (err) {
+        next(err);
+      }
+      else {
+        res.send(result);
+      }
+    });
 }
 /*
  * ====================================================================

@@ -64,16 +64,15 @@ taken bet format:
   payoff double --
   sport
 }
- */
 
-/*
-client: ajax request for bets
-server: sends pending bets array and map of betIds to array indices
-client: iterates through bets currently displayed and checks against new array
-
-server sends: {
+timeseries is a map of athleteId to formatted array formatted as an object:
+{
+  fantasyValue: double
+  time: date object
 }
  */
+
+//timeseries limited to 1000 datapoints per player
 exports.contestA = {
   pendingBets: [],
   resellBets: [],
@@ -82,7 +81,8 @@ exports.contestA = {
   overResellBetIdToArrayIndex: {},
   underResellBetIdToArrayIndex: {},
   overTakenBetIdToArrayIndex: {},
-  underTakenBetIdToArrayIndex: {}
+  underTakenBetIdToArrayIndex: {},
+  timeseries: {}
 }
 
 /**
@@ -121,7 +121,8 @@ exports.athletes = {
   footballIdMap: {},
   basketballList: [],
   basketballIdMap: {},
-  allAthletesList: []
+  allAthletesList: [],
+  allAthletesIdMap: {}
 }
 
 exports.games = {
