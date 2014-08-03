@@ -2,6 +2,12 @@
  * =============================================================================
  * Author: Harrison Zhao
  * Date: 8/1/2014
+ * Documentation:
+ *
+ * exports contestACreateAthleteCard object
+ * has methods:
+ *   *createCard
+ *     -see documentation below above the method
  * =============================================================================
  */
 /*global async*/

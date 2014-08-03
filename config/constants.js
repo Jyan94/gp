@@ -133,7 +133,8 @@ exports.verificationMessages = {
  */
 exports.pollIntervals = {
   contestA: 2000,
-  athleteUpdate: 6 * 60000 * 60 //every 6 hrs
+  athleteUpdate: 6 * 60000 * 60, //every 6 hrs
+  contestAtimeseries: 2000
 }
 /*
  * ====================================================================
@@ -167,6 +168,11 @@ exports.contestAbets = {
     PROFILE_TAKEN: 2,
     MARKET_PENDING: 3,
     SECONDARY_MARKET: 4
+  },
+  TIMESERIES_TIMEFIELD: 'dateOf(time)',
+  TIMESERIES_MILLISECONDS_AGO_DATE: function() {
+    //1296 * 10^5 = 1.5 days in milliseconds
+    return new Date((new Date()).getTime() - 129600000);
   }
 };
 

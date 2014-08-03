@@ -11,7 +11,7 @@ var configs = require('config/index');
 var updateBaseballAthletes = require('libs/athletes/baseball');
 var athletesCache = configs.globals.athletes;
 
-//update other sports too
+//TODO: update other sports too
 function updateAthletes(callback) {
   async.parallel(
   [
@@ -29,7 +29,28 @@ function updateAthletes(callback) {
         athletesCache.footballList,
         athletesCache.baseballList,
         athletesCache.basketballList);
-      callback(null);
+
+      async.reduce(
+        athletesCache.allAthletesList,
+        {
+          index: 0,
+          retVal: {}
+        },
+        function(memo, athleteObj, callback) {
+          memo.retVal[athleteObj.id] = memo.index;
+          ++memo.index;
+          callback(null, memo);
+        },
+        function(err, result) {
+          if (err) {
+            callback(err);
+          }
+          else {
+            athletesCache.allAthletesIdMap = result.retVal;
+            callback(null);
+          }
+        });
+
     }
   });
 }
