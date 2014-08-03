@@ -3,8 +3,6 @@ $(function() {
   function displayVals () {
     var wager = $('#wagerAmount').val();
     var fantasyValue = $('#fantasyValue').val();
-    console.log(wager);
-    console.log(fantasyValue);
 
     var overUnder;
     if (document.getElementById('radioFormA').checked) {
