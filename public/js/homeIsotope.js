@@ -144,14 +144,18 @@ function getPlayercard1Scale (currentTarget) {
 $(function () {
   var flippedCard = -1;
   var flippedCardOffset = {};
+  var transitionDone = true;
+
   var activeTabIndex = -1;
   var tabNames = ['tab-1', 'tab-2', 'tab-3'];
 
   $('.isotope').on('click', '.playercard1', function (e) {
     if ((e.target.className === 'pure-button button-primary')
-        || (flippedCard >= 0)) {
+        || (flippedCard >= 0) || !(transitionDone)) {
       return true;
     }
+
+    transitionDone = false;
 
     $('#marketHome-backdrop').addClass('active');
 
@@ -164,27 +168,33 @@ $(function () {
     var fixedOffsetY = flippedCardOffset.top - $(window).scrollTop() - 10;
     var scale = getPlayercard1Scale(currentTarget);
 
-    currentTarget.addClass('noTransition');
     currentTarget.css({'position': 'fixed',
                        'top': fixedOffsetY + 'px',
-                       'left': fixedOffsetX + 'px'});
+                       'left': fixedOffsetX + 'px',
+                       'z-index': 5});
     console.log(currentTarget.offset().left);
-    currentTarget.removeClass('noTransition');
+    currentTarget.addClass('transition');
     currentTarget.css({'top': 'calc(50% - 170px)',
                        'left': 'calc(50% - 135px)',
                        '-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
     currentTarget.addClass('flipped');
+    currentTarget.bind("webkitTransitionEnd", function(e){ 
+      $(this).unbind(e);
+      transitionDone = true;
+    });
 
     return false;
   });
 
   $('.backdrop').on('click', function (e) {
-    var prevFlippedCard = flippedCard;
-    flippedCard = -1;
+    if ((flippedCard >= 0) && transitionDone) {
+      transitionDone = false;
 
-    $('#marketHome-backdrop').removeClass('active');
+      $('#marketHome-backdrop').removeClass('active');
 
-    if (prevFlippedCard >= 0) {
+      var prevFlippedCard = flippedCard;
+      flippedCard = -1;
+
       var currentTarget = $('#playercard1-' + prevFlippedCard);
       var scale = currentTarget.css('-webkit-transform').match(/(-?[0-9\.]+)/g)[2];
 
@@ -192,16 +202,22 @@ $(function () {
       var absoluteOffsetX = currentTargetOffset.left + (160 * scale) - 255; //is originally 120px + 10px + 125px = 255px away needs to be 320 now
       var absoluteOffsetY = currentTargetOffset.top + (125 * scale) - 170; //is originally 160px + 10px = 170px away needs to be 250 now
 
-      currentTarget.addClass('noTransition');
+      currentTarget.removeClass('transition');
       currentTarget.css({'position': 'absolute',
                          'top': absoluteOffsetY + 'px',
-                         'left': absoluteOffsetX + 'px'});
+                         'left': absoluteOffsetX + 'px',
+                         'z-index': ''});
       console.log(currentTarget.offset().left);
-      currentTarget.removeClass('noTransition');
+      currentTarget.addClass('transition');
       currentTarget.css({'top': flippedCardOffset.top - 10 + 'px',
                          'left': flippedCardOffset.left - 130  + 'px',
                          '-webkit-transform': ''});
       currentTarget.removeClass('flipped');
+      currentTarget.bind("webkitTransitionEnd", function(e){ 
+        $(this).unbind(e);
+        currentTarget.removeClass('transition');
+        transitionDone = true;
+      });
     }
 
     return false;

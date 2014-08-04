@@ -9,15 +9,53 @@ var ContestA = require('libs/contestA/exports');
 var FormatBets = ContestA.FormatBets;
 var ModifyBets = ContestA.ModifyBets;
 var Athletes = require('libs/athletes/exports');
+var Game = require('libs/cassandra/baseball/game.js')
 
 /*
  * ====================================================================
- * PORTFOLIO
+ * RENDER MARKET HOME
  * ====================================================================
  */
 
-function renderMarketHome(req, res) {
-  res.render('contestA/marketHome.html');
+function renderMarketHome(req, res, next) {
+  res.render('contestA/marketHome.hbs', { user: req.user });
+}
+
+/*
+ * ====================================================================
+ * SEND MARKET HOME GAMES
+ * ====================================================================
+ */
+
+function filterGames(game, callback) {
+  callback(null,
+    {
+      awayScore: game.away_score,
+      homeScore: game.home_score,
+      startTime: game.start_time,
+      shortAwayName: game.short_away_name,
+      shortHomeName: game.short_home_name,
+      status: game.status
+    });
+}
+
+function sendMarketHomeGames(req, res, next) {
+  Game.selectTodaysGames(function (err, games) {
+    if (err) {
+      res.send(500, 'Something went wrong with the database.');
+    }
+    else {
+      async.map(games, filterGames, function (err, games) {
+        if (err) {
+          res.send(500, 'WTF');
+        }
+        else {
+          console.log(games);
+          res.send(JSON.stringify(games));
+        }
+      });
+    }
+  });
 }
 
 /*
@@ -157,6 +195,7 @@ function takeResellBet(req, res, next) {
  */
 
 exports.renderMarketHome = renderMarketHome;
+exports.sendMarketHomeGames = sendMarketHomeGames;
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.renderPortfolio = renderPortfolio;

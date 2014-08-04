@@ -15,7 +15,7 @@ version = '4'
 timeNow = time.time()
 timePast = timeNow - 86400
 
-key = 'grnayxvqv4zxsamxhsc59agu'
+key = '5ky6e4qfcf4yja97763z6pen'
 timesRequested = 0
 
 def getPlayers(event, side):
@@ -193,7 +193,10 @@ def parseAndUpdateGames(timeParam):
 
   fGames = requests.get(gamesUrl).text;
   timesRequested += 1
+  print timesRequested
   xmlDocGames = minidom.parseString(fGames);
+
+  time.sleep(1);
 
   eventList = xmlDocGames.getElementsByTagName('events')[0].getElementsByTagName('event')
   for event in eventList:
@@ -213,10 +216,10 @@ def parseAndUpdateGames(timeParam):
       homeInfo = getPlayers(event, 'home')
 
       query += ("""
-                INSERT INTO baseball_game (away_id, game_id, game_date, home_id, long_away_name, long_home_name, athletes, short_away_name, short_home_name, start_time, status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO baseball_game (away_id, away_score, game_id, game_date, home_id, home_score, long_away_name, long_home_name, athletes, short_away_name, short_home_name, start_time, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """)
-      args += (uuid.UUID('{' + awayInfo[0] + '}'), uuid.UUID('{' + gameId + '}'), date, uuid.UUID('{' + homeInfo[0] + '}'), awayInfo[2], homeInfo[2], awayInfo[3] + homeInfo[3], awayInfo[1], homeInfo[1], startTime, status)
+      args += (uuid.UUID('{' + awayInfo[0] + '}'), 0, uuid.UUID('{' + gameId + '}'), date, uuid.UUID('{' + homeInfo[0] + '}'), 0, awayInfo[2], homeInfo[2], awayInfo[3] + homeInfo[3], awayInfo[1], homeInfo[1], startTime, status)
 
       if (status == 'closed'):
         query = query[:-1] + ' '
@@ -225,6 +228,7 @@ def parseAndUpdateGames(timeParam):
 
         fStatistics = requests.get(statisticsUrl).text
         timesRequested += 1
+        print timesRequested, statisticsUrl
         xmlDocStatistics = minidom.parseString(fStatistics)
 
         statistics = xmlDocStatistics.getElementsByTagName('statistics')[0]

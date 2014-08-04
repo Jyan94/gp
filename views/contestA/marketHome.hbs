@@ -18,8 +18,10 @@
   <body>
     <div class="pure-g-r banner">
       <div class="pure-u-3-4 banner-inner">
-        <div class="banner-nav"><span><a class="fui-list"></a></span>
+        <div class="banner-nav">
+          <span><a class="dropdown-icon">{{user.username}}</a></span>
           <ul class="dropdown-menu">
+            <li class="dropdown-top-divider"></li>
             <li class="dropdown-entry"><a href="/user">Profile</a></li>
             <li class="dropdown-entry"><a href="/portfolio">Portfolio</a></li>
             <li class="dropdown-entry"><a href="/forums">Forums</a></li>
@@ -39,7 +41,7 @@
             <input id="amount" type="text" style="border: 0; color: #299; font-weight: bold;">
           </p>
           <div id="slider-range" data-filter="wager"></div>
-          <p id="filter2"><br>
+          <p id="filter2">
             <label for="amount">Fantasy Value:</label>
             <input id="amount2" type="text" style="border: 0; color: #299; font-weight: bold;">
           </p>
@@ -62,6 +64,12 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="ticker-wrapper">
+      <div id="marketHome-ticker" class="ticker">
+       
       </div>
     </div>
 
@@ -121,7 +129,7 @@
               </div>
             </div>
             <div class="playercard1-bottom">
-              <div class="playercard1-bottom wager"><p>$5 over 30 FP</p></div>
+              <div class="playercard1-bottom wager"><p>$5 over 35 FP</p></div>
               <div class="playercard1-bottom submit">
                 <center>
                   <form action="localhost:3000/takeBet">
@@ -163,6 +171,64 @@
           </div>
         </div>
       </div>
+      <div class="playercard1" id="playercard1-2">
+        <div class="playercard1-front">
+          <div class="playercard1-playerpic"><img width="250" height="250" src="http://i.huffpost.com/gen/1582890/thumbs/o-CARMELO-ANTHONY-facebook.jpg">
+            <div class="playercard1-info">
+              <div class="playercard1-info name">
+                <center>
+                  <p>Carmelo Anthony</p>
+                </center>
+              </div>
+              <div class="playercard1-info pos">
+                <center>
+                  <p>PF | New York Knicks</p>
+                </center>
+              </div>
+            </div>
+            <div class="playercard1-bottom">
+              <div class="playercard1-bottom wager"><p>$5 over 30 FP</p></div>
+              <div class="playercard1-bottom submit">
+                <center>
+                  <form action="localhost:3000/takeBet">
+                    <input type="submit" Value="Take" class="pure-button button-primary">
+                  </form>
+                </center>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="playercard1-back">
+          <div class="playercard1-back-info">
+          </div>
+          <div class="playercard1-back-tab-container">
+            <ul class="playercard1-back-tab-menu">
+              <li id='playercard1-2-tab-1' class='playercard1-back-tab active'>
+                Tab 1
+              </li>
+              <li id='playercard1-2-tab-2' class='playercard1-back-tab'>
+                Tab 2
+              </li>
+              <li id='playercard1-2-tab-3' class='playercard1-back-tab'>
+                Tab 3
+              </li>
+            </ul>
+            <div class='playercard1-back-tab-border'>
+            </div>
+            <div id='playercard1-2-tab-1-content' class='playercard1-back-tab-content active'>
+              <p>Stuff</p>
+              <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+              <p>Stuff</p>
+            </div>
+            <div id='playercard1-2-tab-2-content' class='playercard1-back-tab-content'>
+              Stuff
+            </div>
+            <div id='playercard1-2-tab-3-content' class='playercard1-back-tab-content'>
+              Stuff
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="marketHome-backdrop" class="backdrop">
 
       </div>
@@ -176,5 +242,6 @@
     <script src="js/homeIsotope.js"></script>
     <script type="text/javascript" src="/js/jquery/jquery-ui.min.js"></script>
     <script src="/js/slider.js"></script>
+    <script src="/js/ticker.js"></script>
   </body>
 </html>

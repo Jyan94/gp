@@ -95,6 +95,7 @@ var contestA = require('routes/contestA/contestA.js');
 app.get('/market', contestA.getMarket);
 app.get('/getbets', contestA.getMarketBets);
 app.get('/marketHome', contestA.renderMarketHome);
+app.get('/marketHomeGames', contestA.sendMarketHomeGames);
 app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 
