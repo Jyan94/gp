@@ -51,13 +51,14 @@ daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more info
 
 CREATE TABLE IF NOT EXISTS baseball_game (
   athletes list<text>,
-  away_score int,
   away_id uuid,
+  away_score int,
+  current_inning text,
   end_time timestamp,
   game_id uuid PRIMARY KEY,
   game_date text,
-  home_score int,
   home_id uuid,
+  home_score int,
   long_away_name text,
   long_home_name text,  //full name for home team
   play_by_play list<text>,
