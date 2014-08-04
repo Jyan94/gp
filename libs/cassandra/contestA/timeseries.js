@@ -77,9 +77,9 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
  * between two times: start and end
  * @param  {uuid}
  * athleteId [player uniquely identified id]
- * @param  {Date object}   
+ * @param  {Date object}
  * start     [start date]
- * @param  {Date object}   
+ * @param  {Date object}    
  * end       [end date]
  * @param  {Function} 
  * callback
@@ -88,9 +88,19 @@ var SELECT_TIMERANGE_CQL = multiline(function () {/*
 exports.selectTimeRange = function(athleteId, start, end, callback) {
   cassandra.query(
     SELECT_TIMERANGE_CQL,
-    [athleteId, start, end], 
+    [athleteId, new Date(start), new Date(end)], 
     one,
-    callback);
+    function(err, results) {
+      if (err) {
+        callback(err);
+      }
+      else if (!results) {
+        callback(err, []);
+      }
+      else {
+        callback(null, results);
+      }
+    });
 };
 
 var UNTIL_NOW_CQL = multiline(function() {/*
@@ -110,7 +120,7 @@ var UNTIL_NOW_CQL = multiline(function() {/*
  * returns all rows for prices on a given player between start and now
  * @param  {uuid}
  * athleteId [player uniquely identified id]
- * @param  {Date object}   
+ * @param  {Date object} 
  * start     [start date]
  * @param  {Date object}   
  * end       [end date]
@@ -121,9 +131,19 @@ var UNTIL_NOW_CQL = multiline(function() {/*
 exports.selectSinceTime = function(athleteId, start, callback) {
   cassandra.query(
     UNTIL_NOW_CQL,
-    [athleteId, start], 
+    [athleteId, new Date(start)], 
     one,
-    callback);
+    function(err, results) {
+      if (err) {
+        callback(err);
+      }
+      else if (!results) {
+        callback(err, []);
+      }
+      else {
+        callback(null, results);
+      }
+    });
 };
 
 var LIMIT_UNTIL_NOW_CQL = multiline(function() {/*
@@ -132,16 +152,29 @@ var LIMIT_UNTIL_NOW_CQL = multiline(function() {/*
   FROM 
     timeseries_contest_a_bets
   WHERE
-    athlete_id=?
+    athlete_id = ?
   AND
     time > maxTimeuuid(?)
+  AND
+    time < now()
   LIMIT 1000;
 */});
 //same as above but limits it to 1000 results
 exports.limitSelectSinceTime = function(athleteId, start, callback) {
   cassandra.query(
     LIMIT_UNTIL_NOW_CQL,
-    [athleteId, start], 
+    [athleteId, new Date(start)], 
     one,
-    callback);
+    function(err, results) {
+      if (err) {
+        callback(err);
+      }
+      else if (!results) {
+        callback(err, []);
+      }
+      else {
+        console.log(results);
+        callback(null, results);
+      }
+    });
 }

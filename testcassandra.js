@@ -4,6 +4,8 @@ var cql = require('./config/index.js').cassandra.cql;
 var multiline = require('multiline');
 var extend = require('node.extend');
 var User = require('libs/cassandra/user');
+var Timeseries = require('libs/cassandra/contestA/exports').Timeseries;
+var GetTimeseries = require('libs/contestA/exports').GetTimeseries;
 
 /*
 User.insert([
@@ -277,23 +279,31 @@ BaseballGame.selectTodaysGames(function(err, result) {
 });
 
 */
-
-var nums = [0, 3, 2, 1, 5, 4];
- 
-// Figure out the number of binary digits we're dealing with
-var k = Math.max.apply(null, nums.map(function(i) {
-  return Math.ceil(Math.log(i)/Math.log(2));
-}));
- 
-for (var d = 0; d < k; ++d) {
-  for (var i = 0, p = 0, b = 1 << d, n = nums.length; i < n; ++i) {
-    var o = nums[i];
-    if ((o & b) == 0) {
-        // this number is a 0 for this digit
-        // move it to the front of the list
-        nums.splice(p++, 0, nums.splice(i, 1)[0]);
-    }
-  }
+GetTimeseries.getByAthleteId('00000000-0000-0000-0000-000000000000', 1407185402000, function(err, result) {
+  console.log(err);
+  console.log(result);
+})
+var hello = [];
+for (var i = 0; i !== 100; ++i) {
+  hello[i] = i;
 }
-
-console.log(nums);
+var async = require('async');
+async.reduce(
+  hello, 
+  {},
+  function(memo, index, callback) {
+    setTimeout(function() {
+      Timeseries.insert(
+        '00000000-0000-0000-0000-000000000000', 
+        Math.random()*20, 
+        index, 
+        function(err) {
+          callback(null, memo);
+        });
+    }, 1000);
+  },  
+  function(err) {
+    if (err) {
+      console.log(err);
+    }
+  })

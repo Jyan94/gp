@@ -85,11 +85,6 @@ app.get('/images/:file', profile.pictureNotFound);
 var paypal = require('routes/paypal');
 app.post('/submitPayment/:userId', paypal.submitPayment);
 
-//graph
-var graph = require('routes/graph');
-app.get('/update', graph.update);
-app.get('/data', graph.get);
-
 //contest a
 var contestA = require('routes/contestA/contestA.js');
 app.get('/market', contestA.getMarket);
@@ -97,6 +92,8 @@ app.get('/getbets', contestA.getMarketBets);
 app.get('/marketHome', contestA.renderMarketHome);
 app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
+app.get('/getAthleteTimeseries', contestA.getTimeseries);
+app.get('/graph', contestA.renderGraph);
 
 //autocomplete
 var autocomplete = require('routes/autocomplete');

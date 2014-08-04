@@ -23,28 +23,35 @@ var TIMEFIELD = contestAConstants.TIMESERIES_TIMEFIELD;
  * args: (err, result)
  */
 function getByAthleteId(athleteId, timeAgo, callback) {
-  var defaultTimeAgo = contestAConstants.TIMESERIES_MILLISECONDS_AGO_DATE();
+  var defaultTimeAgo = contestAConstants.TIMESERIES_MILLISECONDS_AGO();
   timeAgo = timeAgo || defaultTimeAgo;
-  if (timeAgo > defaultTimeAgo) {
+  if (timeAgo < defaultTimeAgo) {
     timeAgo = defaultTimeAgo;
+    console.log(timeAgo);
+    console.log(typeof(timeAgo));
   }
   async.waterfall(
   [
     function(callback) {
-      Timeseries.selectSinceTime(athleteId, timeAgo, callback);
+      Timeseries.limitSelectSinceTime(athleteId, timeAgo, callback);
     },
     function(dataPoints, callback) {
+      console.log(dataPoints);
       async.map(
         dataPoints, 
         function(dataPoint, callback) {
           callback(
             null,
             {
-              fantasyValue: dataPoint.fantasy_value,
-              time: dataPoint[TIMEFIELD]
+              fantasyVal: dataPoint.fantasy_value,
+              timeVal: dataPoint[TIMEFIELD].getTime()
             });
         },
         callback);
+    },
+    function(dataPoints, callback) {
+      dataPoints.reverse();
+      callback(null, dataPoints);
     }
   ],
   callback);

@@ -31,6 +31,9 @@ function renderPortfolio(req, res) {
   res.render('contestA/portfolio.hbs');
 }
 
+function renderGraph(req, res) {
+  res.render('handlebarsPartials/contestATimeseriesAthleteGraph.html');
+}
 /*
  * ====================================================================
  * Bets
@@ -196,6 +199,9 @@ function takeResellBet(req, res, next) {
 }
 
 function getTimeseries(req, res, next) {
+  if (req.query.timeUpdate) {
+    req.query.timeUpdate= parseInt(req.query.timeUpdate);
+  }
   GetTimeseries.getByAthleteId(
     req.query.athleteId,
     req.query.timeUpdate,
@@ -204,10 +210,12 @@ function getTimeseries(req, res, next) {
         next(err);
       }
       else {
+        //console.log(result);
         res.send(result);
       }
     });
 }
+
 /*
  * ====================================================================
  * EXPORTS
@@ -217,4 +225,6 @@ function getTimeseries(req, res, next) {
 exports.renderMarketHome = renderMarketHome;
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
+exports.getTimeseries = getTimeseries;
 exports.renderPortfolio = renderPortfolio;
+exports.renderGraph = renderGraph;

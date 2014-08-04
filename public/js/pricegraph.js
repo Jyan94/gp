@@ -1,7 +1,7 @@
 //real time updates query database every few seconds
 
 //get the player id from url (last element after split)
-var athleteId = document.URL.split('/')[document.URL.split('/').length - 1];
+var POLL_INTERVAL = 2000;
 
 //real time updates
 function getRealTimeData() {
@@ -13,11 +13,11 @@ function getRealTimeData() {
   //every 10 seconds query for updates
   setInterval(function() {
     $.ajax({
-      url: '/update',
+      url: '/getAthleteTimeseries',
       type: 'GET',
       data: {
-        'lastUpdate': lastUpdate,
-        'athleteId': athleteId
+        'athleteId': athleteId,
+        'timeUpdate': lastUpdate
       },
 
       //accepts an array with elements that have fields:
@@ -34,7 +34,7 @@ function getRealTimeData() {
 
     });
 
-  }, 1000);
+  }, POLL_INTERVAL);
 }
 
 //initialize series

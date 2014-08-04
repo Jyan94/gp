@@ -362,6 +362,7 @@ function updateBets(data, callback) {
  * makes an ajax request to server for bets
  */
 function requestGetAndUpdateBets() {
+  //add delay to this if card flipped over
   $.ajax({
     url: getBetUrl,
     dataType: 'json',
