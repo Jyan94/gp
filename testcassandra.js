@@ -279,10 +279,7 @@ BaseballGame.selectTodaysGames(function(err, result) {
 });
 
 */
-GetTimeseries.getByAthleteId('00000000-0000-0000-0000-000000000000', 1407185402000, function(err, result) {
-  console.log(err);
-  console.log(result);
-})
+/*
 var hello = [];
 for (var i = 0; i !== 100; ++i) {
   hello[i] = i;
@@ -307,3 +304,4 @@ async.reduce(
       console.log(err);
     }
   })
+*/

@@ -45,9 +45,10 @@ function getRealTimeData(that, bool) {
           y = parseFloat(data[i].fantasyVal);
           series.addPoint(
             [x, y],
-            true, 
+            false,
             true);
         }
+        that.redraw();
       },
       error: function(xhr, status, err) {
         console.error(xhr, status, err);
@@ -142,6 +143,7 @@ function createChart(initData) {
 }
 
 //create highcharts inside
+//can change this function to load only if card is flipped over
 $(function() {
 
   //high charts below
