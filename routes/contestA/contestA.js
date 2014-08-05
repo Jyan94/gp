@@ -18,7 +18,7 @@ var Athletes = require('libs/athletes/exports');
  */
 
 function renderMarketHome(req, res) {
-  res.render('contestA/marketHome2.html');
+  res.render('contestA/marketHome.html');
 }
 
 /*
@@ -234,3 +234,7 @@ exports.getTimeseries = getTimeseries;
 exports.getAllAthletes = getAllAthletes;
 exports.renderPortfolio = renderPortfolio;
 exports.renderGraph = renderGraph;
+
+exports.takePendingBet = takePendingBet;
+exports.placePendingBet = placePendingBet;
+exports.removePendingBet = removePendingBet;

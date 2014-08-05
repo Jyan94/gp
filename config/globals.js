@@ -103,7 +103,7 @@ exports.contestB = {
     firstName: athlete.first_name,
     fullName: athlete.full_name,
     height: athlete.height,
-    image: athlete.image_url,
+    image: athlete.image_url (currently not in database),
     lastName: athlete.last_name,
     longTeamName: athlete.long_team_name,
     position: athlete.position,
