@@ -210,7 +210,6 @@ function getTimeseries(req, res, next) {
         next(err);
       }
       else {
-        //console.log(result);
         res.send(result);
       }
     });
