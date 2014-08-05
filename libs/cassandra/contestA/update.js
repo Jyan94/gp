@@ -130,7 +130,7 @@ function insert(params, callback) {
  * amount it costs to initially buy the bet
  * @param  {string}   username
  * get from req.user
- * @param  {boolean}  isOverBetter
+ * @param  {boolean}  isOverBettor
  * @param  {Function} callback
  * args: err
  */
@@ -144,7 +144,7 @@ function insertPending(
   expirationTimeMinutes,
   fantasyValue,
   gameId,
-  isOverBetter,
+  isOverBettor,
   sport,
   username,
   wager,
@@ -172,7 +172,7 @@ function insertPending(
 
   var position;
   var otherPosition;
-  if (isOverBetter) {
+  if (isOverBettor) {
     position = OVER;
     otherPosition = UNDER;
   }
@@ -318,12 +318,12 @@ var RESELL_BETTER_CQL = multiline(function() {/*
 function placeResell(
   betId,
   expirationTime,
-  isOverBetter,
+  isOverBettor,
   resellPrice,
   username,
   callback) {
   var position;
-  if (isOverBetter) {
+  if (isOverBettor) {
     position = OVER;
   }
   else {
@@ -462,10 +462,10 @@ var DELETE_PENDING_BET_CQL = multiline(function() {/*
   AND
     prices[?] = ?;
 */});
-function deletePending(betId, isOverBetter, username, wager, callback) {
+function deletePending(betId, isOverBettor, username, wager, callback) {
   var position1;
   var position2;
-  if (isOverBetter) {
+  if (isOverBettor) {
     position1 = OVER;
     position2 = UNDER;
   }
@@ -528,9 +528,9 @@ var RECALL_RESELL_CQL = multiline(function() {/*
     prices[?] = ?;
 */});
 
-function recallResell(betId, isOverBetter, price, username, callback) {
+function recallResell(betId, isOverBettor, price, username, callback) {
   var position;
-  if (isOverBetter) {
+  if (isOverBettor) {
     position = OVER;
   }
   else {

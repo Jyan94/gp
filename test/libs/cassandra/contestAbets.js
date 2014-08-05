@@ -113,14 +113,14 @@ var testInfoInsertPending = {
   expirationTimeMinutes: TEST_EXPIRATION_TIME_MINUTES,
   fantasyValue: TEST_FANTASY_VALUE,
   gameId: TEST_GAME_ID,
-  isOverBetter: IS_OVER_BETTER,
+  isOverBettor: IS_OVER_BETTER,
   sport: 'TEST_SPORT',
   wager: WAGER
 };
 
 var testInfoCancelPending = {
   betId: TEST_BET_ID,
-  isOverBetter: IS_OVER_BETTER,
+  isOverBettor: IS_OVER_BETTER,
   wager: WAGER
 };
 
@@ -146,7 +146,7 @@ var testBetParams = [
   testInfoInsertPending.expirationTimeMinutes,
   testInfoInsertPending.fantasyValue,
   testInfoInsertPending.gameId,
-  testInfoInsertPending.isOverBetter,
+  testInfoInsertPending.isOverBettor,
   testInfoInsertPending.sport,
   testUserParams0[USERNAME_INDEX],
   testInfoInsertPending.wager
@@ -231,7 +231,7 @@ function insertTestPending(callback) {
     testInfoInsertPending.expirationTimeMinutes,
     testInfoInsertPending.fantasyValue,
     testInfoInsertPending.gameId,
-    testInfoInsertPending.isOverBetter,
+    testInfoInsertPending.isOverBettor,
     testInfoInsertPending.sport,
     testUserParams0[USERNAME_INDEX],
     testInfoInsertPending.wager,

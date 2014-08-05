@@ -1,13 +1,12 @@
 'use strict';
-
-/*global contestARetrieveBets*/
-var $container;
+/*global contestAGetBets*/
 
 $(document).ready(function() {
+  var $container;
   setTimeout(function() {
-    contestARetrieveBets.getBetByIndex(0);
+    contestAGetBets.getBetByIndex(0);
   }, 1000);
-  $container = $('.isotope');
+  $container = contestAGetBets.setIsotopeContainer($('.isotope'));
   $container.isotope({
     itemSelector: '.playercard1',
     layoutMode: 'fitRows',
@@ -15,5 +14,5 @@ $(document).ready(function() {
       id: '.id'
     }
   });
-  contestARetrieveBets.requestGetAndUpdateBets();
+  contestAGetBets.requestGetAndUpdateBets();
 });

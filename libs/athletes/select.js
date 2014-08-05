@@ -42,9 +42,18 @@ function getAthleteList(sport) {
 }
 
 function getAllAthletesList() {
-  return athletesCache.getAllAthletesList;
+  return athletesCache.allAthletesList;
+}
+
+function getAllAthletesIdMap() {
+  return athletesCache.allAthletesIdMap;
+}
+
+function getAllAthletesJSON() {
+  return configs.globals.allAthletesCacheJSON;
 }
 
 exports.getAthleteBySportAndById = getAthleteBySportAndById;
 exports.getAthleteList = getAthleteList;
 exports.getAllAthletesList = getAllAthletesList;
+exports.getAllAthletesJSON = getAllAthletesJSON;

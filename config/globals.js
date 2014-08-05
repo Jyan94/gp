@@ -109,7 +109,7 @@ exports.contestB = {
     position: athlete.position,
     shortTeamName: athlete.short_team_name,
     sport: [SPORT] (not in database),
-    statistics: map of gameId to statistics object,
+    statistics: array of 10 most recent statistics object,
     status: athlete.status,
     teamId: athlete.teamId,
     uniformNumber: athlete.uniform_number,
@@ -125,6 +125,15 @@ exports.athletes = {
   allAthletesList: [],
   allAthletesIdMap: {}
 }
+
+/*
+  JSON stringified object:
+  {
+    athletesList: array of athlete objects
+    athletesIdMap: map of athleteIds to indicies in athletesList
+  }
+ */
+exports.allAthletesCacheJSON = null;
 
 exports.games = {
   Baseball: {

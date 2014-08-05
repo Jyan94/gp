@@ -240,7 +240,7 @@ function getUserBets(req, res) {
   expirationTimeMinutes,
   fantasyValue,
   gameId,
-  isOverBetter,
+  isOverBettor,
   sport,
   wager
  * @param  {object}   res
@@ -263,7 +263,7 @@ function placePendingBet(req, res, next) {
  * @param  {object}   req
  * req.body must have fields
    betId
-   isOverBetter
+   isOverBettor
    wager
  * @param  {object}   res
  * @param  {Function} next [description]
@@ -346,6 +346,12 @@ function getTimeseries(req, res, next) {
     });
 }
 
+//for the route: /initialAthletesLoad
+//sends allAthletesCacheJSON to browser
+function getAllAthletes(req, res) {
+  res.send(Athletes.Select.getAllAthletesJSON());
+}
+
 /*
  * ====================================================================
  * EXPORTS
@@ -358,5 +364,6 @@ exports.sendMarketHomeTopPlayers = sendMarketHomeTopPlayers;
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.getTimeseries = getTimeseries;
+exports.getAllAthletes = getAllAthletes;
 exports.renderPortfolio = renderPortfolio;
 exports.renderGraph = renderGraph;

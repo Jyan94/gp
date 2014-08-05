@@ -47,6 +47,10 @@ function updateAthletes(callback) {
           }
           else {
             athletesCache.allAthletesIdMap = result.retVal;
+            configs.globals.allAthletesCacheJSON = JSON.stringify({
+              athletesList: athletesCache.allAthletesList,
+              athletesIdMap: result.retVal
+            });
             callback(null);
           }
         });

@@ -85,8 +85,9 @@ app.get('/images/:file', profile.pictureNotFound);
 var paypal = require('routes/paypal');
 app.post('/submitPayment/:userId', paypal.submitPayment);
 
-//contest a
+//contest A
 var contestA = require('routes/contestA/contestA.js');
+app.get('/initialAthletesLoad', contestA.getAllAthletes);
 app.get('/market', contestA.getMarket);
 app.get('/getbets', contestA.getMarketBets);
 app.get('/marketHome', contestA.renderMarketHome);
