@@ -8,7 +8,6 @@ var formatTime = function (oldTime) {
   return timeString;
 }
 
-
 function getDailyBoxscores (callback) {
   $.ajax({
     url: '/marketHomeDailyBoxscores',
@@ -47,6 +46,31 @@ function getDailyBoxscores (callback) {
   });
 }
 
+function getTopPlayers (callback) {
+  $.ajax({
+    url: '/marketHomeTopPlayers',
+    type: 'GET',
+    success: function (response) {
+      var tickerContent = JSON.parse(response).reduce(function (memo, athlete, index, array) {
+        memo += ('<p>' + (athlete.fullName ? athlete.fullName : athlete.athleteId) + ' ' + athlete.fantasyPoints[0] + '</p>');
+
+        if (index !== array.length - 1) {
+          memo += '<p> | </p>';
+        }
+
+        return memo;
+      }, '');
+
+      $('#top-player-ticker').html(tickerContent);
+
+      callback(null);
+    },
+    failure: function (response) {
+      callback(new Error('Cannot get top players.'));
+    }
+  });
+}
+
 function customSetInterval (func, interval) {
   var callback = function (err) {
     if (err) {
@@ -62,3 +86,4 @@ function customSetInterval (func, interval) {
 }
 
 customSetInterval(getDailyBoxscores, 60000);
+customSetInterval(getTopPlayers, 60000);

@@ -11,7 +11,6 @@ var ModifyBets = ContestA.ModifyBets;
 var GetTimeseries = ContestA.GetTimeseries;
 var Athletes = require('libs/athletes/exports');
 var Game = require('libs/cassandra/baseball/game.js')
-var Player = require('libs/cassandra/baseball/player.js')
 
 /*
  * ====================================================================
@@ -35,6 +34,7 @@ function parseDailyBoxscores(game, callback) {
       awayScore: game.away_score,
       currentInning: game.current_inning,
       homeScore: game.home_score,
+      gameId: game.game_id,
       startTime: game.start_time,
       shortAwayName: game.short_away_name,
       shortHomeName: game.short_home_name,
@@ -67,53 +67,43 @@ function sendMarketHomeDailyBoxscores(req, res, next) {
  */
 
 
-function findTopPlayers(player, callback) {
-
+function parseTopPlayers(athlete, callback) {
+  var statistics = athlete.statistics
+  var statisticsLength = athlete.statistics.length
 
   callback(null,
     {
-      awayScore: game.away_score,
-      homeScore: game.home_score,
-      startTime: game.start_time,
-      shortAwayName: game.short_away_name,
-      shortHomeName: game.short_home_name,
-      status: game.status
+      athleteId: athlete.id,
+      fullName: athlete.fullName,
+      shortTeamName: athlete.shortTeamName,
+      fantasyPoints: [(statisticsLength > 0 ? statistics[statisticsLength - 1].fantasyPoints: 0),
+                      (statisticsLength > 1 ? statistics[statisticsLength - 2].fantasyPoints: 0)]
     });
 }
 
-function parseTopPlayers(player, callback) {
-  var statistics
-}
 
 function sendMarketHomeTopPlayers(req, res, next) {
   async.waterfall([
-    Player.selectAll,
-    function (players, callback) {
-      async.map(players, parseTopPlayers, callback);
+    function (callback) {
+      callback(null, Athletes.Select.getAllAthletesList());
     },
-    function ()],
-    ,
+    function (athletes, callback) {
+      async.map(athletes, parseTopPlayers, callback);
+    },
+    function (athletes, callback) {
+      async.sortBy(athletes,
+        function(athlete, callback) {
+          callback(null, athlete.fantasyPoints[1] - athlete.fantasyPoints[0]);
+        }, callback);
+    },
+    function (athletes, callback) {
+      res.send(JSON.stringify(athletes.slice(0, 50)));
+    }],
     function (err) {
       next(err);
     });
-
-  Player.selectAll(function (err, players) {
-    if (err) {
-      res.send(500, 'Something went wrong with the database.');
-    }
-    else {
-      async.map(players, findTopPlayers, function (err, players) {
-        if (err) {
-          res.send(500, 'WTF');
-        }
-        else {
-          console.log(players);
-          res.send(JSON.stringify(players));
-        }
-      });
-    }
-  });
 }
+
 
 /*
  * ====================================================================

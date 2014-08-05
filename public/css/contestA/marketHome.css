@@ -166,7 +166,7 @@ input[type="text"] {
 }
 
 .transition {
-  -webkit-transition: all 0.5s ease-in-out, margin 0 !important;
+  -webkit-transition: all 1s ease-in-out, margin 0 !important;
 }
 
 /* ---- playercard1 ---- */

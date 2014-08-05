@@ -10,7 +10,7 @@ var async = require('async');
 var BaseballAthletes = require('libs/cassandra/baseball/player');
 var configs = require('config/index');
 var athletesCache = configs.globals.athletes;
-var BASEBALL = configs.constants.sportNames;
+var BASEBALL = configs.constants.sportNames.baseball;
 var NUM_STATISTICS_CACHED = configs.constants.NUM_STATISTICS_CACHED;
 
 function formatAthlete(athlete, callback) {
