@@ -11,6 +11,7 @@ var ModifyBets = ContestA.ModifyBets;
 var GetTimeseries = ContestA.GetTimeseries;
 var Athletes = require('libs/athletes/exports');
 var Game = require('libs/cassandra/baseball/game.js')
+var Player = require('libs/cassandra/baseball/player.js')
 
 /*
  * ====================================================================
@@ -28,10 +29,11 @@ function renderMarketHome(req, res, next) {
  * ====================================================================
  */
 
-function filterDailyBoxscores(game, callback) {
+function parseDailyBoxscores(game, callback) {
   callback(null,
     {
       awayScore: game.away_score,
+      currentInning: game.current_inning,
       homeScore: game.home_score,
       startTime: game.start_time,
       shortAwayName: game.short_away_name,
@@ -46,7 +48,7 @@ function sendMarketHomeDailyBoxscores(req, res, next) {
       res.send(500, 'Something went wrong with the database.');
     }
     else {
-      async.map(games, filterDailyBoxscores, function (err, games) {
+      async.map(games, parseDailyBoxscores, function (err, games) {
         if (err) {
           res.send(500, 'WTF');
         }
@@ -64,7 +66,53 @@ function sendMarketHomeDailyBoxscores(req, res, next) {
  * ====================================================================
  */
 
+
+function findTopPlayers(player, callback) {
+
+
+  callback(null,
+    {
+      awayScore: game.away_score,
+      homeScore: game.home_score,
+      startTime: game.start_time,
+      shortAwayName: game.short_away_name,
+      shortHomeName: game.short_home_name,
+      status: game.status
+    });
+}
+
+function parseTopPlayers(player, callback) {
+  var statistics
+}
+
 function sendMarketHomeTopPlayers(req, res, next) {
+  async.waterfall([
+    Player.selectAll,
+    function (players, callback) {
+      async.map(players, parseTopPlayers, callback);
+    },
+    function ()],
+    ,
+    function (err) {
+      next(err);
+    });
+
+  Player.selectAll(function (err, players) {
+    if (err) {
+      res.send(500, 'Something went wrong with the database.');
+    }
+    else {
+      async.map(players, findTopPlayers, function (err, players) {
+        if (err) {
+          res.send(500, 'WTF');
+        }
+        else {
+          console.log(players);
+          res.send(JSON.stringify(players));
+        }
+      });
+    }
+  });
 }
 
 /*
@@ -72,7 +120,7 @@ function sendMarketHomeTopPlayers(req, res, next) {
  * SEND MARKET HOME PLAYER STATISTICS
  * ====================================================================
  */
-/*
+
 function parsePlayerStatistics(game, callback) {
   callback(null,
     {
@@ -86,12 +134,12 @@ function parsePlayerStatistics(game, callback) {
 }
 
 function sendMarketHomePlayerStatistics(req, res, next) {
-  Player.selectTodaysGames(function (err, games) {
+  Player.selectAll(function (err, players) {
     if (err) {
       res.send(500, 'Something went wrong with the database.');
     }
     else {
-      async.map(games, filterGames, function (err, games) {
+      async.map(players, parsePlayerStatistics, function (err, player) {
         if (err) {
           res.send(500, 'WTF');
         }
@@ -103,7 +151,7 @@ function sendMarketHomePlayerStatistics(req, res, next) {
     }
   });
 }
-*/
+
 /*
  * ====================================================================
  * PORTFOLIO

@@ -209,17 +209,17 @@ def parseAndUpdateGames(timeParam):
 
     gameRows = session.execute('SELECT * FROM baseball_game WHERE game_id = %s;', (uuid.UUID('{' + gameId + '}'),))
 
-    if (len(gameRows) == 0) or (gameRows[0].status != status) or (status in ['scheduled', 'inprogress']):
+    if (len(gameRows) == 0) or (gameRows[0].status != status) or (status != 'closed'):
       startTime = event.getElementsByTagName('scheduled_start_time')[0].firstChild.nodeValue
 
       awayInfo = getPlayers(event, 'visitor')
       homeInfo = getPlayers(event, 'home')
 
       query += ("""
-                INSERT INTO baseball_game (away_id, away_score, game_id, game_date, home_id, home_score, long_away_name, long_home_name, athletes, short_away_name, short_home_name, start_time, status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO baseball_game (away_id, game_id, game_date, home_id, long_away_name, long_home_name, athletes, short_away_name, short_home_name, start_time, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """)
-      args += (uuid.UUID('{' + awayInfo[0] + '}'), 0, uuid.UUID('{' + gameId + '}'), date, uuid.UUID('{' + homeInfo[0] + '}'), 0, awayInfo[2], homeInfo[2], awayInfo[3] + homeInfo[3], awayInfo[1], homeInfo[1], startTime, status)
+      args += (uuid.UUID('{' + awayInfo[0] + '}'), uuid.UUID('{' + gameId + '}'), date, uuid.UUID('{' + homeInfo[0] + '}'), awayInfo[2], homeInfo[2], awayInfo[3] + homeInfo[3], awayInfo[1], homeInfo[1], startTime, status)
 
       if (status == 'closed'):
         query = query[:-1] + ' '

@@ -15,11 +15,16 @@ function getDailyBoxscores (callback) {
     type: 'GET',
     success: function (response) {
       var tickerContent = JSON.parse(response).reduce(function (memo, game, index, array) {
-        if (['inprogress', 'closed'].indexOf(game.status) >= 0) {
-          memo += ('<p>' + game.shortAwayName + ' ' + game.awayScore + ' ' + game.shortHomeName + ' ' + game.homeScore + '</p>');
-        }
-        else if (game.status === 'scheduled') {
+        var status = game.status;
+
+        if (status === 'scheduled') {
           memo += ('<p>' + game.shortAwayName + ' at ' + game.shortHomeName + ' begins at ' + formatTime(game.startTime) + '</p>');
+        }
+        else if (status === 'inprogress') {
+          memo += ('<p>' + game.shortAwayName + ' ' + game.awayScore + ' ' + game.shortHomeName + ' ' + game.homeScore + ' Final</p>');
+        }
+        else if (status === 'closed') {
+          memo += ('<p>' + game.shortAwayName + ' ' + game.awayScore + ' ' + game.shortHomeName + ' ' + game.homeScore + ' Current Inning: ' + game.currentInning + '</p>');
         }
         else {
           memo += ('<p>' + game.shortAwayName + ' at ' + game.shortHomeName + ' is ' + formatTime(game.startTime) + '</p>');
