@@ -10,7 +10,6 @@ var async = require('async');
 var configs = require('config/index');
 var updateBaseballAthletes = require('libs/athletes/baseball');
 var athletesCache = configs.globals.athletes;
-var athletesCacheJSON = configs.globals.athletesJSON;
 
 //TODO: update other sports too
 function updateAthletes(callback) {
@@ -30,8 +29,6 @@ function updateAthletes(callback) {
         athletesCache.footballList,
         athletesCache.baseballList,
         athletesCache.basketballList);
-      athletesCacheJSON.allAthletesList = JSON.stringify(
-        athletesCache.allAthletesList);
 
       async.reduce(
         athletesCache.allAthletesList,
@@ -50,7 +47,10 @@ function updateAthletes(callback) {
           }
           else {
             athletesCache.allAthletesIdMap = result.retVal;
-            athletesCacheJSON.allAthletesIdMap = JSON.stringify(result.retVal);
+            configs.globals.allAthletesCacheJSON = JSON.stringify({
+              athletesList: athletesCache.allAthletesList,
+              athletesIdMap: result.retVal
+            });
             callback(null);
           }
         });

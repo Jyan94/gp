@@ -126,10 +126,14 @@ exports.athletes = {
   allAthletesIdMap: {}
 }
 
-exports.athletesJSON = {
-  allAthletesList: null,
-  allAthletesIdMap: null
-}
+/*
+  JSON stringified object:
+  {
+    athletesList: array of athlete objects
+    athletesIdMap: map of athleteIds to indicies in athletesList
+  }
+ */
+exports.allAthletesCacheJSON = null;
 
 exports.games = {
   Baseball: {

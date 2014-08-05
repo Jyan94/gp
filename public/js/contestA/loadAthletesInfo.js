@@ -19,7 +19,7 @@
 //include this file before any other non-jquery file
 'use strict';
 
-(function() {
+(function(exports) {
   var athletesList = [];
   var athletesIdMap = {};
 
@@ -36,9 +36,15 @@
       url: '/initialAthletesLoad',
       type: 'GET',
 
-      //accepts an array with elements that have fields:
-      //'dateOf(time)' and price
+      //gets data from server
+      //the data is a JSON stringified object
+      //{
+      //  athletesList: array of athlete objects,
+      //  athletesIdMap: object keyed by athleteId 
+      //    and values index of athlete in array
+      //}
       success: function(data) {
+        data = JSON.parse(data);
         athletesList = data.athletesList;
         athletesIdMap = data.athletesIdMap;
       },
@@ -47,7 +53,8 @@
       }
     });
   }
-  
+
+  loadAthletesFromServer();
   exports.getAthleteById = getAthleteById;
   exports.getAthletesArray = getAthletesArray;
 }(typeof exports === 'undefined' ? 

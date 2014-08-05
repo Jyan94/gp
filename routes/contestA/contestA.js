@@ -216,11 +216,9 @@ function getTimeseries(req, res, next) {
 }
 
 //for the route: /initialAthletesLoad
+//sends allAthletesCacheJSON to browser
 function getAllAthletes(req, res) {
-  res.send(JSON.stringify({
-    allAthletesList: Athletes.Select.getAllAthletesListJSON(),
-    allAthletesIdMap: Athletes.Select.getAllAthletesIdMapJSON()
-  }));
+  res.send(Athletes.Select.getAllAthletesJSON());
 }
 
 /*
