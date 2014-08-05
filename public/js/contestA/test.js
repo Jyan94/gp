@@ -1,5 +1,4 @@
 'use strict';
-
 /*global contestARetrieveBets*/
 
 $(document).ready(function() {

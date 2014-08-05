@@ -410,29 +410,31 @@
     return $container;
   }
   
-  //EXPORTS BELOW
+  /*
+   * ===========================================================================
+   * EXPORTS BELOW
+   * ===========================================================================
+   */
   exports.requestGetAndUpdateBets = requestGetAndUpdateBets;
   exports.getBetByIndex = getBetByIndex;
   exports.setIsotopeContainer = setIsotopeContainer;
-  /*
-   * ===========================================================================
-   * End Update Bet Globals
-   * ===========================================================================
-   */
-  /*
-   MUST HAVE SOMETHING OF THE SORT IN FILE THAT UTILIZES THIS FILE:
-  $(document).ready(function() {
 
-    $container = contestARetrieveBet.setIsotopeContainer($('.isotope'));
-    $container.isotope({
-      itemSelector: '.playercard1',
-      layoutMode: 'fitRows',
-      getSortData: {
-        id: '.id'
-      }
+  /*
+   * ===========================================================================
+   * MUST HAVE SOMETHING OF THE SORT IN FILE THAT UTILIZES THIS FILE:
+   * ===========================================================================
+    $(document).ready(function() {
+
+      $container = contestARetrieveBet.setIsotopeContainer($('.isotope'));
+      $container.isotope({
+        itemSelector: '.playercard1',
+        layoutMode: 'fitRows',
+        getSortData: {
+          id: '.id'
+        }
+      });
+      contestARetrieveBet.requestGetAndUpdateBets();
     });
-    requestGetAndUpdateBets();
-  });
   */
 }(typeof exports === 'undefined' ? window.contestARetrieveBets = {} : exports));
 
