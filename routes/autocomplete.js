@@ -4,7 +4,8 @@ var configs = require('config/index');
 var athletesCache = configs.globals.athletes;
 
 function autocomplete(req, res) {
-  res.send(athletesCache.allAthletesList);
+  //console.log(athletesCache.allAthletesList);
+  res.send(JSON.stringify(athletesCache.allAthletesList));
 }
 
-exports.autocomp = autocomplete;
+exports.autocomplete = autocomplete;

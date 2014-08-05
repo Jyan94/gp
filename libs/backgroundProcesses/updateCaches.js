@@ -12,6 +12,7 @@ var athletes = require('libs/athletes/exports');
 var customSetInterval = configs.constants.globals.customSetInterval;
 var pollIntervals = configs.constants.pollIntervals;
 var contestApollInterval = pollIntervals.contestA;
+var contestATimeseriesPollInterval = pollIntervals.contestAtimeseries;
 var athleteUpdateInterval = pollIntervals.athleteUpdate;
 
 function startPollingContestABets() {
@@ -27,6 +28,21 @@ function startPollingContestABets() {
   });
 }
 exports.startPollingContestABets = startPollingContestABets;
+
+//currently not used
+//will use if noticeable performance lag
+function startPollingContestATimeseries() {
+  contestAbets.UpdateGlobals.loadAllTimeseries(function(err) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      setTimeout(function() {
+        startPollingContestATimeseries();
+      }, contestATimeseriesPollInterval);
+    }
+  });
+}
 
 function startPollingAthletes() {
   athletes.UpdateGlobals.updateAthletes(function(err) {
@@ -49,5 +65,7 @@ function startPollingContestBContests() {
 
 exports.start = function() {
   startPollingContestABets();
+  //disable timeseries caching for now since it is not necessary
+  //startPollingContestATimeseries();
   startPollingAthletes();
 }

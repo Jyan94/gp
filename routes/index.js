@@ -95,13 +95,14 @@ var contestA = require('routes/contestA/contestA.js');
 app.get('/market', contestA.getMarket);
 app.get('/getbets', contestA.getMarketBets);
 app.get('/marketHome', contestA.renderMarketHome);
-app.get('/marketHomeGames', contestA.sendMarketHomeGames);
+app.get('/marketHomeDailyBoxscores', contestA.sendMarketHomeDailyBoxscores);
+app.get('/marketHomeTopPlayers', contestA.sendMarketHomeTopPlayers);
 app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 
 //autocomplete
-//var autocomplete = require('routes/autocomplete');
-//app.get('/autocomp', autocomplete.autocomp);
+var autocomplete = require('routes/autocomplete');
+app.get('/autocomp', autocomplete.autocomplete);
 
 //contest b
 //commented out for now since not demoing it

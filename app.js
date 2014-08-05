@@ -12,7 +12,7 @@ require('libs/backgroundProcesses/updateCaches').start();
 /*var customSetInterval = configs.constants.globals.customSetInterval;
 var globals = configs.globals.contestA;
 customSetInterval(function(callback) {
-  console.log(globals);
+  console.log(globals.timeseries);
   callback(null);
 }, 2000);*/
 

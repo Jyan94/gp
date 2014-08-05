@@ -2,6 +2,12 @@
  * =============================================================================
  * Author: Harrison Zhao
  * Date: 8/1/2014
+ * Documentation:
+ *
+ * exports contestACreateAthleteCard object
+ * has methods:
+ *   *createCard
+ *     -see documentation below above the method
  * =============================================================================
  */
 /*global async*/
@@ -64,7 +70,9 @@ function createAthleteCard(
 
       '<div class=\'playercard1-bottom submit\'>' +
         '<center>' +
-        '<div class=\'pure-button button-primary\'>Take</div>' +
+        '<div clickIndex=' + 
+        arrayId + 
+        ' class=\'pure-button button-primary take-bet-button\'>Take</div>' +
         '</center>' +
       '</div>' +
 

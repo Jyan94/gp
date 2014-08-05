@@ -164,4 +164,4 @@ CREATE TABLE IF NOT EXISTS timeseries_contest_a_bets (
     price double,
     time timeuuid,
     PRIMARY KEY (athlete_id, time)
-) WITH CLUSTERING ORDER BY (time ASC);
+) WITH CLUSTERING ORDER BY (time DESC);

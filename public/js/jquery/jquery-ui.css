@@ -150,7 +150,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
 
-.ui-menu { list-style:none; padding: 2px; margin: 0; display:block; outline: none; }
+.ui-menu { list-style:none; padding: 2px; margin: 0; display:block; outline: none; position: fixed; overflow: scroll; height: 200px; width: auto;}
 .ui-menu .ui-menu { margin-top: -3px; position: absolute; }
 .ui-menu .ui-menu-item { margin: 0; padding: 0; zoom: 1; width: 100%; }
 .ui-menu .ui-menu-divider { margin: 5px -2px 5px -2px; height: 0; font-size: 0; line-height: 0; border-width: 1px 0 0 0; }

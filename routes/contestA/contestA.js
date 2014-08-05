@@ -8,6 +8,7 @@ var User = require('libs/cassandra/user');
 var ContestA = require('libs/contestA/exports');
 var FormatBets = ContestA.FormatBets;
 var ModifyBets = ContestA.ModifyBets;
+var GetTimeseries = ContestA.GetTimeseries;
 var Athletes = require('libs/athletes/exports');
 var Game = require('libs/cassandra/baseball/game.js')
 
@@ -23,11 +24,11 @@ function renderMarketHome(req, res, next) {
 
 /*
  * ====================================================================
- * SEND MARKET HOME GAMES
+ * SEND MARKET HOME DAILY BOXSCORES
  * ====================================================================
  */
 
-function filterGames(game, callback) {
+function filterDailyBoxscores(game, callback) {
   callback(null,
     {
       awayScore: game.away_score,
@@ -39,8 +40,53 @@ function filterGames(game, callback) {
     });
 }
 
-function sendMarketHomeGames(req, res, next) {
+function sendMarketHomeDailyBoxscores(req, res, next) {
   Game.selectTodaysGames(function (err, games) {
+    if (err) {
+      res.send(500, 'Something went wrong with the database.');
+    }
+    else {
+      async.map(games, filterDailyBoxscores, function (err, games) {
+        if (err) {
+          res.send(500, 'WTF');
+        }
+        else {
+          res.send(JSON.stringify(games));
+        }
+      });
+    }
+  });
+}
+
+/*
+ * ====================================================================
+ * SEND MARKET HOME TOP PLAYERS
+ * ====================================================================
+ */
+
+function sendMarketHomeTopPlayers(req, res, next) {
+}
+
+/*
+ * ====================================================================
+ * SEND MARKET HOME PLAYER STATISTICS
+ * ====================================================================
+ */
+/*
+function parsePlayerStatistics(game, callback) {
+  callback(null,
+    {
+      awayScore: game.away_score,
+      homeScore: game.home_score,
+      startTime: game.start_time,
+      shortAwayName: game.short_away_name,
+      shortHomeName: game.short_home_name,
+      status: game.status
+    });
+}
+
+function sendMarketHomePlayerStatistics(req, res, next) {
+  Player.selectTodaysGames(function (err, games) {
     if (err) {
       res.send(500, 'Something went wrong with the database.');
     }
@@ -57,7 +103,7 @@ function sendMarketHomeGames(req, res, next) {
     }
   });
 }
-
+*/
 /*
  * ====================================================================
  * PORTFOLIO
@@ -125,11 +171,27 @@ function getUserBets(req, res) {
   });
 }
 
+/*
+ * ====================================================================
+ * Bet modification routes
+ * SEE libs/contestA/modifyBets for documentation on functions
+ * ====================================================================
+ */
 /**
  * places a pending bet
  * @param  {object}   req
  * req.body must have fields
- * 
+  athleteId,
+  athleteImage,
+  athleteName,
+  athletePosition,
+  athleteTeam,
+  expirationTimeMinutes,
+  fantasyValue,
+  gameId,
+  isOverBetter,
+  sport,
+  wager
  * @param  {object}   res
  * @param  {Function} next [description]
  * @return {[type]}        [description]
@@ -145,6 +207,17 @@ function placePendingBet(req, res, next) {
   });
 }
 
+/**
+ * places a pending bet
+ * @param  {object}   req
+ * req.body must have fields
+   betId
+   isOverBetter
+   wager
+ * @param  {object}   res
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
 function removePendingBet(req, res, next) {
   ModifyBets.deletePending(req.body, req.user, function(err) {
     if (err) {
@@ -156,6 +229,22 @@ function removePendingBet(req, res, next) {
   });
 }
 
+/**
+ * places a pending bet
+ * @param  {object}   req
+ * req.body must have fields
+    athleteId,
+    athleteName,
+    athleteTeam,
+    betId,
+    fantasyValue,
+    opponent,
+    overNotUnder,
+    wager
+ * @param  {object}   res
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
 function takePendingBet(req, res, next) {
   ModifyBets.takePending(req.body, req.user, function(err) {
     if (err) {
@@ -188,6 +277,20 @@ function takeResellBet(req, res, next) {
     }
   });
 }
+
+function getTimeseries(req, res, next) {
+  GetTimeseries.getByAthleteId(
+    req.query.athleteId,
+    req.query.timeUpdate,
+    function(err, result) {
+      if (err) {
+        next(err);
+      }
+      else {
+        res.send(result);
+      }
+    });
+}
 /*
  * ====================================================================
  * EXPORTS
@@ -195,7 +298,8 @@ function takeResellBet(req, res, next) {
  */
 
 exports.renderMarketHome = renderMarketHome;
-exports.sendMarketHomeGames = sendMarketHomeGames;
+exports.sendMarketHomeDailyBoxscores = sendMarketHomeDailyBoxscores;
+exports.sendMarketHomeTopPlayers = sendMarketHomeTopPlayers;
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.renderPortfolio = renderPortfolio;

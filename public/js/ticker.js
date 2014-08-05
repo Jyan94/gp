@@ -11,7 +11,7 @@ var formatTime = function (oldTime) {
 
 function getDailyBoxscores (callback) {
   $.ajax({
-    url: '/marketHomeGames',
+    url: '/marketHomeDailyBoxscores',
     type: 'GET',
     success: function (response) {
       var tickerContent = JSON.parse(response).reduce(function (memo, game, index, array) {
@@ -32,7 +32,7 @@ function getDailyBoxscores (callback) {
         return memo;
       }, '');
 
-      $('#marketHome-ticker').html(tickerContent);
+      $('#daily-boxscore-ticker').html(tickerContent);
 
       callback(null);
     },

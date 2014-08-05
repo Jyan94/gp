@@ -14,10 +14,13 @@ var one = cql.types.consistencies.one;
 var INSERT_GAME_CQL = multiline(function() {/*
   INSERT INTO baseball_game (
     athletes,
+    away_id,
     away_score,
+    current_inning,
     end_time,
     game_id,
     game_date,
+    home_id,
     home_score,
     long_away_name,
     long_home_name,
@@ -29,10 +32,11 @@ var INSERT_GAME_CQL = multiline(function() {/*
   ) VALUES (
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
-    ?, ?, ?);
+    ?, ?, ?, ?, ?,
+    ?);
 */});
 var ATHLETES_INDEX = 0;
-var PLAY_BY_PLAY_INDEX = 8;
+var PLAY_BY_PLAY_INDEX = 11;
 /**
  * inserts game into database
  * @param  {array}   fields
