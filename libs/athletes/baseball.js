@@ -10,7 +10,8 @@ var async = require('async');
 var BaseballAthletes = require('libs/cassandra/baseball/player');
 var configs = require('config/index');
 var athletesCache = configs.globals.athletes;
-var BASEBALL = configs.constants.sportNames
+var BASEBALL = configs.constants.sportNames;
+var NUM_STATISTICS_CACHED = configs.constants.NUM_STATISTICS_CACHED;
 
 function formatAthlete(athlete, callback) {
   var retval = {
@@ -48,7 +49,7 @@ function formatAthlete(athlete, callback) {
           callback(null, stat.gameDate);
         }, 
         function(err, results) {
-          retval.statistics = results;
+          retval.statistics = results.slice(-NUM_STATISTICS_CACHED);
           callback(null);
         });
     }

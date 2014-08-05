@@ -261,6 +261,8 @@ exports.sportNames = {
   basketball: 'Basketball',
   football: 'Football'
 }
+//for caching athletes
+exports.NUM_STATISTICS_CACHED = 10;
 /*
  * ====================================================================
  * Background Scripts

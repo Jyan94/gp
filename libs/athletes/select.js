@@ -9,6 +9,7 @@ require('rootpath')();
 var async = require('async');
 var configs = require('config/index');
 var athletesCache = configs.globals.athletes;
+var athletesCacheJSON = configs.globals.athletesJSON;
 var sportNames = configs.constants.sportNames;
 var BASEBALL = sportNames.baseball;
 var BASKETBALL = sportNames.basketball;
@@ -42,9 +43,23 @@ function getAthleteList(sport) {
 }
 
 function getAllAthletesList() {
-  return athletesCache.getAllAthletesList;
+  return athletesCache.allAthletesList;
+}
+
+function getAllAthletesIdMap() {
+  return athletesCache.allAthletesIdMap;
+}
+
+function getAllAthletesListJSON() {
+  return athletesCacheJSON.allAthletesList;
+}
+
+function getAllAthletesIdMapJSON() {
+  return athletesCacheJSON.allAthletesIdMap;
 }
 
 exports.getAthleteBySportAndById = getAthleteBySportAndById;
 exports.getAthleteList = getAthleteList;
 exports.getAllAthletesList = getAllAthletesList;
+exports.getAllAthletesListJSON = getAllAthletesListJSON;
+exports.getAllAthletesIdMapJSON = getAllAthletesIdMapJSON;

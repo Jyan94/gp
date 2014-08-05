@@ -1,13 +1,13 @@
 'use strict';
 
 /*global contestARetrieveBets*/
-var $container;
 
 $(document).ready(function() {
+  var $container;
   setTimeout(function() {
     contestARetrieveBets.getBetByIndex(0);
   }, 1000);
-  $container = $('.isotope');
+  $container = contestARetrieveBets.setIsotopeContainer($('.isotope'));
   $container.isotope({
     itemSelector: '.playercard1',
     layoutMode: 'fitRows',

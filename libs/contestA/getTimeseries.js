@@ -27,8 +27,6 @@ function getByAthleteId(athleteId, timeAgo, callback) {
   timeAgo = timeAgo || defaultTimeAgo;
   if (timeAgo < defaultTimeAgo) {
     timeAgo = defaultTimeAgo;
-    console.log(timeAgo);
-    console.log(typeof(timeAgo));
   }
   async.waterfall(
   [
@@ -36,7 +34,6 @@ function getByAthleteId(athleteId, timeAgo, callback) {
       Timeseries.limitSelectSinceTime(athleteId, timeAgo, callback);
     },
     function(dataPoints, callback) {
-      console.log(dataPoints);
       async.map(
         dataPoints, 
         function(dataPoint, callback) {

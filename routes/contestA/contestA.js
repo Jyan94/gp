@@ -215,6 +215,14 @@ function getTimeseries(req, res, next) {
     });
 }
 
+//for the route: /initialAthletesLoad
+function getAllAthletes(req, res) {
+  res.send(JSON.stringify({
+    allAthletesList: Athletes.Select.getAllAthletesListJSON(),
+    allAthletesIdMap: Athletes.Select.getAllAthletesIdMapJSON()
+  }));
+}
+
 /*
  * ====================================================================
  * EXPORTS
@@ -225,5 +233,6 @@ exports.renderMarketHome = renderMarketHome;
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.getTimeseries = getTimeseries;
+exports.getAllAthletes = getAllAthletes;
 exports.renderPortfolio = renderPortfolio;
 exports.renderGraph = renderGraph;

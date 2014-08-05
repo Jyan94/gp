@@ -94,9 +94,6 @@ exports.selectTimeRange = function(athleteId, start, end, callback) {
       if (err) {
         callback(err);
       }
-      else if (!results) {
-        callback(err, []);
-      }
       else {
         callback(null, results);
       }
@@ -137,9 +134,6 @@ exports.selectSinceTime = function(athleteId, start, callback) {
       if (err) {
         callback(err);
       }
-      else if (!results) {
-        callback(err, []);
-      }
       else {
         callback(null, results);
       }
@@ -169,11 +163,7 @@ exports.limitSelectSinceTime = function(athleteId, start, callback) {
       if (err) {
         callback(err);
       }
-      else if (!results) {
-        callback(err, []);
-      }
       else {
-        console.log(results);
         callback(null, results);
       }
     });
