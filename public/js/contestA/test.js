@@ -1,12 +1,12 @@
 'use strict';
-/*global contestARetrieveBets*/
+/*global contestAGetBets*/
 
 $(document).ready(function() {
   var $container;
   setTimeout(function() {
-    contestARetrieveBets.getBetByIndex(0);
+    contestAGetBets.getBetByIndex(0);
   }, 1000);
-  $container = contestARetrieveBets.setIsotopeContainer($('.isotope'));
+  $container = contestAGetBets.setIsotopeContainer($('.isotope'));
   $container.isotope({
     itemSelector: '.playercard1',
     layoutMode: 'fitRows',
@@ -14,5 +14,5 @@ $(document).ready(function() {
       id: '.id'
     }
   });
-  contestARetrieveBets.requestGetAndUpdateBets();
+  contestAGetBets.requestGetAndUpdateBets();
 });

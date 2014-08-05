@@ -10,7 +10,6 @@
  *     -see documentation below above the method
  * =============================================================================
  */
-/*global async*/
 'use strict';
 /**
  * returns an athlete card

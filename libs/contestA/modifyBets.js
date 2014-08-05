@@ -81,7 +81,7 @@ function verifyGameIdAndAthlete(
   expirationTimeMinutes,
   fantasyValue,
   gameId,
-  isOverBetter,
+  isOverBettor,
   sport,
   wager
  * @param  {object}   info
@@ -118,7 +118,7 @@ function insertPending(info, user, callback) {
         info.expirationTimeMinutes,
         info.fantasyValue,
         info.gameId,
-        info.isOverBetter,
+        info.isOverBettor,
         info.sport,
         user.username,
         info.wager,
@@ -130,7 +130,7 @@ function insertPending(info, user, callback) {
 /*
    info has fields
    betId
-   isOverBetter
+   isOverBettor
    wager
  */
 function deletePending(info, user, callback) {
@@ -150,7 +150,7 @@ function deletePending(info, user, callback) {
       };
       UpdateBet.deletePending(
         info.betId,
-        info.isOverBetter,
+        info.isOverBettor,
         user.username,
         info.wager,
         callback);
@@ -280,7 +280,7 @@ function placeResell(info, user, callback) {
   UpdateBet.placeResell(
     info.betId,
     info.expirationTimeMinutes,
-    info.isOverBetter,
+    info.isOverBettor,
     info.resellPrice,
     user.username,
     function(err) {

@@ -46,7 +46,7 @@ function formatAthlete(athlete, callback) {
       async.sortBy(
         statistics, 
         function(stat, callback) {
-          callback(null, stat.gameDate);
+          callback(null, parseInt(stat.gameDate.replace(/\//g, '')));
         }, 
         function(err, results) {
           retval.statistics = results.slice(-NUM_STATISTICS_CACHED);

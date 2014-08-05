@@ -436,5 +436,5 @@
       contestARetrieveBet.requestGetAndUpdateBets();
     });
   */
-}(typeof exports === 'undefined' ? window.contestARetrieveBets = {} : exports));
+}(typeof exports === 'undefined' ? window.contestAGetBets = {} : exports));
 

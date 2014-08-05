@@ -109,7 +109,7 @@ function getUserBets(req, res) {
   expirationTimeMinutes,
   fantasyValue,
   gameId,
-  isOverBetter,
+  isOverBettor,
   sport,
   wager
  * @param  {object}   res
@@ -132,7 +132,7 @@ function placePendingBet(req, res, next) {
  * @param  {object}   req
  * req.body must have fields
    betId
-   isOverBetter
+   isOverBettor
    wager
  * @param  {object}   res
  * @param  {Function} next [description]
