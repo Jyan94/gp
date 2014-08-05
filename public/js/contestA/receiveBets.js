@@ -103,6 +103,17 @@ function shuffleArray(array) {
 }
 
 //can optimize to make it async waterfall-able
+/**
+ * updates the cards 
+ * @param  {object} holes
+ * map of index to bool (TODO: change it to just an array)
+ * @param  {object} newHashes
+ * object containing objects which map id to index
+ * @param  {array} newDisplayedBets
+ * array to hold new bets to be displayed
+ * @return {object}
+ * returns the newHashes object and newDisplayedBets object
+ */
 function updateData(holes, newHashes, newDisplayedBets) {
   var holesArr = Object.keys(holes);
   var totalLength = BetsWrapper.pending.length + BetsWrapper.resell.length;
@@ -362,6 +373,7 @@ function updateBets(data, callback) {
  * makes an ajax request to server for bets
  */
 function requestGetAndUpdateBets() {
+  //add delay to this if card flipped over
   $.ajax({
     url: getBetUrl,
     dataType: 'json',
@@ -398,7 +410,7 @@ function getBetByIndex(id) {
  * =============================================================================
  */
 /*
- MUST HAVE SOMETHING OF THE SORT IN FILE THAT INCLUDES THIS:
+ MUST HAVE SOMETHING OF THE SORT IN FILE THAT UTILIZES THIS FILE:
 $(document).ready(function() {
 
   $container = $('.isotope');

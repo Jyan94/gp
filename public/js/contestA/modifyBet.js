@@ -17,6 +17,7 @@
     overNotUnder,
     wager*/
 $('.take-bet-button').click(function() {
+  //get the array index of the button, thus getting array index of the card
   var arrayIndex = $(this).attr('clickIndex');
   var bet = contestARetrieveBets.getBetByIndex(arrayIndex);
   $.ajax({
@@ -34,6 +35,7 @@ $('.take-bet-button').click(function() {
       wager: bet.wager
     },
     success: function(message) {
+      //preferably show a message for 2 seconds
       console.log(message);
     },
     error: function(xhr, status, err) {

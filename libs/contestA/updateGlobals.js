@@ -252,7 +252,7 @@ function loadAllBets(callback) {
  * args: (err)
  */
 function getAndFormatTimeseries(ids, callback) {
-  var startDate = contestAConstants.TIMESERIES_MILLISECONDS_AGO_DATE();
+  var startDate = contestAConstants.TIMESERIES_MILLISECONDS_AGO();
   async.reduce(
     ids, 
     {},
@@ -277,6 +277,7 @@ function getAndFormatTimeseries(ids, callback) {
                 callback(err);
               }
               else {
+                formattedPoints.reverse();
                 memo[id] = formattedPoints;
                 callback(null, memo);
               }

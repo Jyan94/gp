@@ -67,8 +67,8 @@ taken bet format:
 
 timeseries is a map of athleteId to formatted array formatted as an object:
 {
-  fantasyValue: double
-  time: date object
+  fantasyVal: double
+  timeVal: date object
 }
  */
 
@@ -108,7 +108,8 @@ exports.contestB = {
     longTeamName: athlete.long_team_name,
     position: athlete.position,
     shortTeamName: athlete.short_team_name,
-    sport: [SPORT] (not in database)
+    sport: [SPORT] (not in database),
+    statistics: map of gameId to statistics object,
     status: athlete.status,
     teamId: athlete.teamId,
     uniformNumber: athlete.uniform_number,

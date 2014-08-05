@@ -4,142 +4,146 @@
  * Date: 7/27/2014
  * =============================================================================
  */
-//get the player id from url (last element after split)
-var athleteId = document.URL.split('/')[document.URL.split('/').length - 1];
+/*global Highcharts*/
+'use strict';
 
-//real time updates
-function getRealTimeData() {
-  var series = this.series[0];
-  var lastUpdate = new Date();
+var POLL_INTERVAL = 5000;
+var MIN_Y_VAL = -1;
+var containerLabel = 'container';
+var ajaxUrl = '/getAthleteTimeseries';
+
+//assume these variables exist
+//proxies for now
+//in actuality make a function to get the athleteId and athleteName
+var athleteId = '00000000-0000-0000-0000-000000000000';
+var athleteName = 'hello world';
+
+function getRealTimeData(that, bool) {
+  var series = that.series[0];
+  var lastUpdate = (new Date()).getTime();
   var x;
   var y;
-  var TIMEFIELD = 'dateOf(time)';
   //every 10 seconds query for updates
   setInterval(function() {
     $.ajax({
-      url: '/update',
+      url: ajaxUrl,
       type: 'GET',
       data: {
-        'lastUpdate': lastUpdate,
-        'athleteId': athleteId
+        'athleteId': athleteId,
+        'timeUpdate': lastUpdate
       },
 
       //accepts an array with elements that have fields:
       //'dateOf(time)' and price
       success: function(data) {
-        console.log(JSON.stringify(data));
-        lastUpdate = new Date();
-        for (var i = 0; i !== data.length; ++i) {
-          x = (new Date(data[i][TIMEFIELD])).getTime();
-          y = data[i].price;
-          series.addPoint([x, y], true, true);
+        console.log(data);
+        if (data.length > 0) {
+          lastUpdate = (new Date()).getTime();
         }
+        for (var i = 0; i !== data.length; ++i) {
+          x = parseInt(data[i].timeVal);
+          y = parseFloat(data[i].fantasyVal);
+          series.addPoint(
+            [x, y],
+            false,
+            true);
+        }
+        that.redraw();
+      },
+      error: function(xhr, status, err) {
+        console.error(xhr, status, err);
       }
-
     });
-
-  }, 1000);
+  }, POLL_INTERVAL);
 }
 
-//initialize series
 function loadData(initdata) {
-  var series = [];
-  var x;
-  var y;
-  //do stuff with initialization
-  var time = (new Date()).getTime();
-  var TIMEFIELD = 'dateOf(time)';
-  for (var i = 0; i !== initdata.length; ++i) {
-    x = (new Date(initdata[i][TIMEFIELD])).getTime();
-    y = initdata[i].price;
-    series.push([x, y]);
-  }
-  return series;
-}
-
-var zoom = [
-{
-  count: 1,
-  type: 'minute',
-  text: '1m'
-}, {
-  count: 5,
-  type: 'minute',
-  text: '5m'
-}, {
-  count: 30,
-  type: 'minute',
-  text: '30m'
-}, {
-  count: 1,
-  type: 'hour',
-  text: '1h'
-}, {
-  count: 1,
-  type: 'day',
-  text: '1d'
-}, {
-  type: 'all',
-  text: 'All'
-}];
-
-var chartFormatter = {
-  backgroundColor: {
-     linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
-     stops: [
-        [0, '#005C99'],
-        [1, '#B2CEE0']
-     ]
-  },
-  style: {
-    fontFamily: "'Unica One', sans-serif"
-  },
-  plotBorderColor: '#FFFFF',
-  events : {
-    load : getRealTimeData
-  }
-};
-
-function createGraph(initdata) {
-  // Create the chart
-  $('#container').highcharts('StockChart', {
-
-    chart : chartFormatter,
-
-    credits: {
-      enabled: false
-    },
-
-    rangeSelector: {
-      buttons: zoom,
-      inputEnabled: false,
-      selected: 0
-    },
-
-    title : {
-      text : 'Fantasy value over time'
-    },
-
-    plotOptions: {
-      series: {
-        animation: false
-      }
-    },
-
-    exporting: {
-      enabled: false
-    },
-
-    series : [{
-      name : 'Fantasy Value',
-      color: '#000000',
-      data : loadData(initdata)
-    }]
+  return initdata.map(function(point) {
+    return [
+      point.timeVal,
+      point.fantasyVal
+    ]
   });
 }
 
+function createChart(initData) {
+  var chartFormatter = {
+    renderTo: containerLabel,
+    style: {
+      fontFamily: "'Unica One', sans-serif"
+    },
+    plotBorderColor: '#FFFFF',
+    events : {
+      load : function() {
+        getRealTimeData(this, true);
+      }
+    }
+  };
+  var zoomButtons = [{
+    count: 1,
+    type: 'minute',
+    text: '1m'
+  }, {
+    count: 5,
+    type: 'minute',
+    text: '5m'
+  }, {
+    count: 30,
+    type: 'minute',
+    text: '30m'
+  }, {
+    count: 1,
+    type: 'hour',
+    text: '1h'
+  }, {
+    count: 1,
+    type: 'day',
+    text: '1d'
+  }, {
+    type: 'all',
+    text: 'All'
+  }];
+
+  var chart = new Highcharts.StockChart({
+    chart: chartFormatter,
+    credits: {
+      enabled: false
+    },
+    exporting: {
+      enabled: false
+    },
+    rangeSelector: {
+      buttons: zoomButtons,
+      inputEnabled: false,
+      selected: 2
+    },
+    title : {
+      text : athleteName + '\'s fantasy value over time'
+    },
+    series: [{
+      name: 'Fantasy Value',
+      //color: '#000000',
+      data : loadData(initData)
+    }],
+    xAxis: {
+      title: {
+          text: 'Time'
+      }
+    },
+    yAxis: {
+      min: MIN_Y_VAL,
+      startOnTick: false,
+      endOnTick: false,
+      title: {
+          text: 'Fantasy Value'
+      }
+    }
+  });
+
+}
 
 //create highcharts inside
+//can change this function to load only if card is flipped over
 $(function() {
 
   //high charts below
@@ -150,14 +154,18 @@ $(function() {
   });
 
   $.ajax({
-    url: '/data',
+    url: ajaxUrl,
     type: 'GET',
     data: {
       'athleteId': athleteId
     },
     success: function (data) {
-      createGraph(data);
+      createChart(data);
     },
+    error: function(xhr, status, err) {
+      console.error(xhr, status, err);
+    }
   });
 
 });
+

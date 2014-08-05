@@ -170,9 +170,9 @@ exports.contestAbets = {
     SECONDARY_MARKET: 4
   },
   TIMESERIES_TIMEFIELD: 'dateOf(time)',
-  TIMESERIES_MILLISECONDS_AGO_DATE: function() {
+  TIMESERIES_MILLISECONDS_AGO: function() {
     //1296 * 10^5 = 1.5 days in milliseconds
-    return new Date((new Date()).getTime() - 129600000);
+    return (new Date()).getTime() - 129600000;
   }
 };
 

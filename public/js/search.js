@@ -32,9 +32,16 @@ $(function() {
     change: function(e, ui) {
       for (var i = 0; i < searchCache.length; i++) {
         if (id === searchCache[i].id) {
-          $('.playercard1#create').find('.playercard1-info.name p').replaceWith('<p>' + label + '</p');
-          $('.playercard1#create').find('.playercard1-info.pos p').replaceWith('<p>' + position + ' | ' + longTeamName + '</p');
-          $('.playercard1#create').find('.playercard1-playerpic img').replaceWith('<img src=\'' + image + '\'' + 'width=\'250\' height=\'250\'>');
+          $('.playercard1#create')
+            .find('.playercard1-info.name p')
+            .replaceWith('<p>' + label + '</p');
+          $('.playercard1#create')
+            .find('.playercard1-info.pos p')
+            .replaceWith('<p>' + position + ' | ' + longTeamName + '</p');
+          $('.playercard1#create')
+            .find('.playercard1-playerpic img')
+            .replaceWith('<img src=\'' + image +
+             '\'' + 'width=\'250\' height=\'250\'>');
           break;
         }
       }
