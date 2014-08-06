@@ -68,16 +68,20 @@ function sendMarketHomeDailyBoxscores(req, res, next) {
 
 
 function parseTopPlayers(athlete, callback) {
-  var statistics = athlete.statistics
-  var statisticsLength = athlete.statistics.length
+  var statistics = athlete.statistics;
+  var statisticsLength = athlete.statistics.length;
+  var fantasyPoints = [(statisticsLength > 0 ? statistics[statisticsLength - 1].fantasyPoints: 0),
+                       (statisticsLength > 1 ? statistics[statisticsLength - 2].fantasyPoints: 0)];
+  var change = fantasyPoints[0] - fantasyPoints[1];
+
 
   callback(null,
     {
       athleteId: athlete.id,
+      change: change,
       fullName: athlete.fullName,
       shortTeamName: athlete.shortTeamName,
-      fantasyPoints: [(statisticsLength > 0 ? statistics[statisticsLength - 1].fantasyPoints: 0),
-                      (statisticsLength > 1 ? statistics[statisticsLength - 2].fantasyPoints: 0)]
+      fantasyPoints: fantasyPoints
     });
 }
 
@@ -93,7 +97,7 @@ function sendMarketHomeTopPlayers(req, res, next) {
     function (athletes, callback) {
       async.sortBy(athletes,
         function(athlete, callback) {
-          callback(null, athlete.fantasyPoints[1] - athlete.fantasyPoints[0]);
+          callback(null, -1 * athlete.change);
         }, callback);
     },
     function (athletes, callback) {
@@ -102,44 +106,6 @@ function sendMarketHomeTopPlayers(req, res, next) {
     function (err) {
       next(err);
     });
-}
-
-
-/*
- * ====================================================================
- * SEND MARKET HOME PLAYER STATISTICS
- * ====================================================================
- */
-
-function parsePlayerStatistics(game, callback) {
-  callback(null,
-    {
-      awayScore: game.away_score,
-      homeScore: game.home_score,
-      startTime: game.start_time,
-      shortAwayName: game.short_away_name,
-      shortHomeName: game.short_home_name,
-      status: game.status
-    });
-}
-
-function sendMarketHomePlayerStatistics(req, res, next) {
-  Player.selectAll(function (err, players) {
-    if (err) {
-      res.send(500, 'Something went wrong with the database.');
-    }
-    else {
-      async.map(players, parsePlayerStatistics, function (err, player) {
-        if (err) {
-          res.send(500, 'WTF');
-        }
-        else {
-          console.log(games);
-          res.send(JSON.stringify(games));
-        }
-      });
-    }
-  });
 }
 
 /*
@@ -214,6 +180,12 @@ function getUserBets(req, res) {
 
 /*
  * ====================================================================
+ * SEND MARKET HOME PLAYER STATISTICS
+ * ====================================================================
+ */
+
+/*
+ * ====================================================================
  * Bet modification routes
  * SEE libs/contestA/modifyBets for documentation on functions
  * ====================================================================
@@ -243,7 +215,7 @@ function placePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully made!');
+      res.send({'success': 'Bet successfully made!', 'status': 200});
     }
   });
 }
@@ -357,3 +329,6 @@ exports.getTimeseries = getTimeseries;
 exports.getAllAthletes = getAllAthletes;
 exports.renderPortfolio = renderPortfolio;
 exports.renderGraph = renderGraph;
+exports.takePendingBet = takePendingBet;
+exports.placePendingBet = placePendingBet;
+exports.removePendingBet = removePendingBet;

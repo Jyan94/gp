@@ -91,6 +91,9 @@ function verifyGameIdAndAthlete(
  * args: err
  */
 function insertPending(info, user, callback) {
+  var fantasyValue = parseFloat(info.fantasyValue);
+  var wager = parseFloat(info.wager);
+
   async.waterfall(
   [
     function(callback) {
@@ -105,7 +108,7 @@ function insertPending(info, user, callback) {
         callback);
     },
     function(callback) {
-      User.subtractMoney(user.money, info.wager, user.user_id, callback);
+      User.subtractMoney(user.money, wager, user.user_id, callback);
     },
     function(callback) {
       UpdateBet.insertPending(
@@ -116,12 +119,12 @@ function insertPending(info, user, callback) {
         info.athleteTeam,
         cql.types.timeuuid(),
         info.expirationTimeMinutes,
-        info.fantasyValue,
+        fantasyValue,
         info.gameId,
         info.isOverBettor,
         info.sport,
         user.username,
-        info.wager,
+        wager,
         callback);
     }
   ], callback);

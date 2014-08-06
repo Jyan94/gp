@@ -84,8 +84,8 @@
           <div id="searchform" method="get" class="pure-form">
             <input id="autocomplete" type="text" name="search" required style="width:160px; height: 30px font-size: 2px" placeholder="Search Players">
           </div>Wager:
-          <input type="number" id="wagerAmount" name="wagerAmount" placeholder="Dollars" required style="width:100px" min="0" step="0.01" value="0"><br>Points:
-          <input type="number" id="fantasyValue" name="fantasyValue" placeholder="Value" required style="width: 100px" min="1" step="1" value="1"><br><br>
+          <input type="number" id="wagerAmount" name="wagerAmount" placeholder="Dollars" required style="width:100px" min="1" max="100" step="0.01" value="1" type="number"><br>Points:
+          <input type="number" id="fantasyValue" name="fantasyValue" placeholder="Value" required style="width: 100px" min="1" max="50" step="0.01" value="1" type="number"><br><br>
           <input id="radioFormA" type="radio" name="longOrShort" value="Over" checked="checked">Over
           <input id="radioFormB" type="radio" name="longOrShort" value="Under">Under<br><br>
           <center>
@@ -248,15 +248,16 @@
     <script src="/js/jquery/jquery-ui-1.10.4.custom.js"></script>
     <script src="http://isotope.metafizzy.co/beta/isotope.pkgd.js"></script>
     <script type="text/javascript" src="/js/jquery/jquery-ui.min.js"></script>
-    <script src="/js/slider.js"></script>
-    <script src="/js/ticker.js"></script>
+    <script src="/js/contestA/slider.js"></script>
+    <script src="/js/contestA/ticker.js"></script>
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="http://isotope.metafizzy.co/beta/isotope.pkgd.js"></script>
     <script src="js/homeIsotope.js"></script>
     <script src="/js/jquery/jquery-ui.js"></script>
-    <script type="application/javascript" src="/js/market.js"></script>
-    <script src="/js/cardCreation.js"></script>
-    <script src="/js/search.js"></script>
+    <script src="/js/contestA/loadAthletesCache.js"></script>
+    <script src="/js/contestA/createAthleteCard.js"></script>
+    <script src="/js/contestA/getBets.js"></script>
+    <script src="/js/contestA/events.js"></script>
   </body>
 </html>

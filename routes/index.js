@@ -97,6 +97,8 @@ app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/portfolio', contestA.renderPortfolio);
 app.get('/getAthleteTimeseries', contestA.getTimeseries);
 app.get('/graph', contestA.renderGraph);
+app.get('/takePendingBet', contestA.takePendingBet);
+app.post('/placePendingBet', contestA.placePendingBet);
 
 //autocomplete
 var autocomplete = require('routes/autocomplete');

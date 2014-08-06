@@ -19,10 +19,10 @@ function getDailyBoxscores (callback) {
         if (status === 'scheduled') {
           memo += ('<p>' + game.shortAwayName + ' at ' + game.shortHomeName + ' begins at ' + formatTime(game.startTime) + '</p>');
         }
-        else if (status === 'closed') {
+        else if (status === 'inprogress') {
           memo += ('<p>' + game.shortAwayName + ' ' + game.awayScore + ' ' + game.shortHomeName + ' ' + game.homeScore + ' Current Inning: ' + game.currentInning + '</p>');
         }
-        else if (status === 'inprogress') {
+        else if (status === 'closed') {
           memo += ('<p>' + game.shortAwayName + ' ' + game.awayScore + ' ' + game.shortHomeName + ' ' + game.homeScore + ' Final</p>');
         }
         else {
@@ -52,14 +52,13 @@ function getTopPlayers (callback) {
     type: 'GET',
     success: function (response) {
       var tickerContent = JSON.parse(response).reduce(function (memo, athlete, index, array) {
-        console.log(athlete);
         memo += ('<p>' + (athlete.fullName ? athlete.fullName : athlete.athleteId) + ' ' + athlete.fantasyPoints[0]);
 
         if (athlete.change >= 0) {
-          memo += ('<img src=\'/assets/uparrow.png\'>' + athlete.change + '</p>');
+          memo += ('&#160;<img src=\'/assets/uparrow.png\' style=\'width: 12px\'>&#160;' + athlete.change + '</p>');
         }
         else {
-          memo += ('<img src=\'/assets/downarrow.png\'>' + athlete.change + '</p>');
+          memo += ('&#160;<img src=\'/assets/downarrow.png\' style=\'width: 12px\'>&#160;' + athlete.change + '</p>');
         }
 
         if (index !== array.length - 1) {

@@ -43,43 +43,43 @@
     }
     var retval = $(
       '<div id=' + arrayId + ' class=\'playercard1\'>' +
-      '<div class="id" style="display:">' + arrayId + '</div>' +
-      '<div class=\'playercard1-playerpic\'>' + 
-      '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +
+        '<div class="id" style="display:">' + arrayId + '</div>' +
+          '<div class=\'playercard1-playerpic\'>' + 
+          '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +
 
-      '<div class=\'playercard1-info\'>' +
+          '<div class=\'playercard1-info\'>' +
 
-        '<div class=\'playercard1-info name\'>' +
-        '<center>' +
-        '<p>' + fullName + '</p>' +
-        '</center>' +
+            '<div class=\'playercard1-info name\'>' +
+            '<center>' +
+            '<p>' + fullName + '</p>' +
+            '</center>' +
+            '</div>' +
+
+            '<div class=\'playercard1-info pos\'>' +
+            '<center>' +
+            '<p>' + athletePosition + '|' + fullName +'</p>' +
+            '</center>' +
+            '</div>' +
+
+          '</div>' +
+
+          '<div class=\'playercard1-bottom\'>' +
+
+            '<div class=\'playercard1-bottom wager\'>' +
+            '<p> $' + wager + " " + betPosition + " " + fantasyValue + "FP</p>" +
+            '</div>' +
+
+            '<div class=\'playercard1-bottom submit\'>' +
+              '<center>' +
+              '<div clickIndex=' + 
+              arrayId + 
+              ' class=\'pure-button button-primary take-bet-button\'>Take</div>' +
+              '</center>' +
+            '</div>' +
+
+          '</div>' +
+
         '</div>' +
-
-        '<div class=\'playercard1-info pos\'>' +
-        '<center>' +
-        '<p>' + athletePosition + '|' + fullName +'</p>' +
-        '</center>' +
-        '</div>' +
-
-      '</div>' +
-
-      '<div class=\'playercard1-bottom\'>' +
-
-        '<div class=\'playercard1-bottom wager\'>' +
-        '<p> $' + wager + " " + betPosition + " " + fantasyValue + "FP</p>" +
-        '</div>' +
-
-        '<div class=\'playercard1-bottom submit\'>' +
-          '<center>' +
-          '<div clickIndex=' + 
-          arrayId + 
-          ' class=\'pure-button button-primary take-bet-button\'>Take</div>' +
-          '</center>' +
-        '</div>' +
-
-      '</div>' +
-
-      '</div>' +
       '</div>');
     return retval;
   }

@@ -13,6 +13,7 @@ var athletesCache = configs.globals.athletes;
 var BASEBALL = configs.constants.sportNames.baseball;
 var NUM_STATISTICS_CACHED = configs.constants.NUM_STATISTICS_CACHED;
 
+//TODO make sure images are already set in database
 function formatAthlete(athlete, callback) {
   var retval = {
     age: athlete.age,
@@ -20,7 +21,7 @@ function formatAthlete(athlete, callback) {
     firstName: athlete.first_name,
     fullName: athlete.full_name,
     height: athlete.height,
-    image: athlete.image_url,
+    image: '/assets/GPBaseball/' + athlete.athlete_id,
     lastName: athlete.last_name,
     longTeamName: athlete.long_team_name,
     position: athlete.position,
