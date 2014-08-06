@@ -98,7 +98,6 @@ app.post('/placePendingBet', contestA.placePendingBet);
 //contest A portfolio 
 var contestAPortfolio = require('routes/portfolioContestA/portfolio');
 app.get('/portfolio', contestAPortfolio.renderPortfolio);
-app.get('/multiGraph', contestAPortfolio.renderGraph);
 app.get('/initPortfolio', contestAPortfolio.sendOverInitData);
 app.get('/getMultiAthleteTimeseries', contestAPortfolio.getMultiTimeseries);
 

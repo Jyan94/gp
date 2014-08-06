@@ -8,15 +8,34 @@
 'use strict';
 
 $(function() {
-  /**
-  app.get('/initPortfolio', contestAPortfolio.sendOverInitData);
-  app.get('/getMultiAthleteTimeseries', contestAPortfolio.getMultiTimeseries);
-   */
+  //tab stuff
+  var activeTabIndex = -1;
+  var tabNames = ['portfolio-tab-1', 'portfolio-tab-2'/*, 'portfolio-tab-3'*/]
+  
+  $('.portfolio-tab').click(function (event) {
+    for (var i = 0; i < tabNames.length; i++) {
+      if (event.target.id === tabNames[i]) {
+        activeTabIndex = i;
+      }
+      else {
+        $('#' + tabNames[i]).removeClass('active');
+        $('#' + tabNames[i] + '-content').css('display', 'none');
+      }
+    }
+
+    $('#' + tabNames[activeTabIndex] + '-content').fadeIn();
+    $('#' + tabNames[activeTabIndex]).addClass('active');
+
+    return false;
+  });
+
+  //timeseries and isotope stuff
   var POLL_INTERVAL = 10000;
   var MIN_Y_VAL = -3;
-  var containerLabel = 'container';
+  var containerLabel = 'graph-container';
   var ajaxUrl = '/initPortfolio';
   var updateAjaxUrl = '/getMultiAthleteTimeseries';
+  var takenColors = {};
 
   /**
    * wrapper for objects received from server
@@ -137,7 +156,7 @@ $(function() {
     },
     series: [],
     title : {
-      text : 'pending bet athletes fantasy value over time'
+      text : 'Pending bet athletes fantasy value over time'
     },
     xAxis: {
       title: {
@@ -154,6 +173,22 @@ $(function() {
     }
   });
   
+  function getRandomDarkColor() {
+      var letters = '012345'.split('');
+      var color = '#';        
+      color += letters[Math.round(Math.random() * 5)];
+      letters = '0123456789ABCDEF'.split('');
+      for (var i = 0; i < 5; i++) {
+          color += letters[Math.round(Math.random() * 15)];
+      }
+      if (takenColors[color]) {
+        return getRandomDarkColor();
+      }
+      else {
+        return color;
+      }
+  }
+
   function initializePortfolio(data) {
     dataWrapper = data.data;
     var mapFunc = function (dataPoint) {
@@ -163,24 +198,34 @@ $(function() {
     for (i = 0; i !== data.timeseriesList.length; ++i) {
       chart.addSeries(
         {
+          color: getRandomDarkColor(),
           data: data.timeseriesList[i].map(mapFunc),
           name: dataWrapper.pendingAthletesList[i].fullName
-        }, false);
+        }, 
+        false);
     }
     chart.redraw();
     var $pendingContainer = $('.isotope-pending');
+    $pendingContainer.isotope({
+      itemSelector: '.playercard1',
+      layoutMode: 'fitRows'
+    });
     var $takenContainer = $('.isotope-taken');
-    var $resellContainer = $('.resell-container');
+    $takenContainer.isotope({
+      itemSelector: '.playercard1',
+      layoutMode: 'fitRows'
+    });
+    //var $resellContainer = $('.resell-container');
     //insert the stuff
-    for (i = 0; i !== dataWrapper.takenAthletesList.length; ++i) {
+    /*for (i = 0; i !== dataWrapper.takenAthletesList.length; ++i) {
       $takenContainer.data('isotope').insert();
     }
     for (i = 0; i !== dataWrapper.pendingAthletesList.length; ++i) {
       $pendingContainer.data('isotope').insert();
-    }
-    for (i = 0; i !== dataWrapper.resellAthletesList.length; ++i) {
+    }*/
+    /*for (i = 0; i !== dataWrapper.resellAthletesList.length; ++i) {
       $resellContainer.data('isotope').insert();
-    }
+    }*/
   }
 
   //high charts below

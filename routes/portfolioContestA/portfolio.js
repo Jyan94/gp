@@ -125,10 +125,6 @@ function sendOverInitData(req, res, next) {
   });
 }
 
-function renderGraph(req, res) {
-  res.render('handlebarsPartials/contestAMultiTimeseries.html');
-}
-
 function getMultiTimeseries(req, res, next) {
   req.query.timeUpdate = parseInt(req.query.timeUpdate);
   async.map(req.query.athleteIds, function(id, callback) {
@@ -145,5 +141,4 @@ function getMultiTimeseries(req, res, next) {
 
 exports.renderPortfolio = renderPortfolio;
 exports.sendOverInitData = sendOverInitData;
-exports.renderGraph = renderGraph;
 exports.getMultiTimeseries = getMultiTimeseries;
