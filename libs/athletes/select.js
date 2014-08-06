@@ -53,7 +53,12 @@ function getAllAthletesJSON() {
   return configs.globals.allAthletesCacheJSON;
 }
 
+function getAthleteById(id) {
+  return athletesCache.allAtheltesList[athletesCache.allAthletesIdMap[id]];
+}
+
 exports.getAthleteBySportAndById = getAthleteBySportAndById;
+exports.getAthleteById = getAthleteById;
 exports.getAthleteList = getAthleteList;
 exports.getAllAthletesList = getAllAthletesList;
 exports.getAllAthletesJSON = getAllAthletesJSON;

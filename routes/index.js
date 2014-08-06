@@ -94,15 +94,19 @@ app.get('/marketHome', contestA.renderMarketHome);
 app.get('/marketHomeDailyBoxscores', contestA.sendMarketHomeDailyBoxscores);
 app.get('/marketHomeTopPlayers', contestA.sendMarketHomeTopPlayers);
 app.get('/getMarketBets', contestA.getMarketBets);
-app.get('/portfolio', contestA.renderPortfolio);
 app.get('/getAthleteTimeseries', contestA.getTimeseries);
 app.get('/graph', contestA.renderGraph);
 app.get('/takePendingBet', contestA.takePendingBet);
 app.post('/placePendingBet', contestA.placePendingBet);
 
-//autocomplete
-var autocomplete = require('routes/autocomplete');
-app.get('/autocomp', autocomplete.autocomplete);
+
+//contest A portfolio 
+var contestAPortfolio = require('routes/portfolioContestA/portfolio');
+app.get('/portfolio', contestAPortfolio.renderPortfolio);
+app.get('/multiGraph', contestAPortfolio.renderGraph);
+app.get('/initPortfolio', contestAPortfolio.sendOverInitData);
+app.get('/getMultiAthleteTimeseries', contestAPortfolio.getMultiTimeseries);
+
 
 //contest b
 //commented out for now since not demoing it
