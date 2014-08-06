@@ -4,7 +4,6 @@
 var configs = require('config/index.js');
 
 var async = require('async');
-var User = require('libs/cassandra/user');
 var ContestA = require('libs/contestA/exports');
 var FormatBets = ContestA.FormatBets;
 var ModifyBets = ContestA.ModifyBets;
@@ -200,7 +199,7 @@ function takeResellBet(req, res, next) {
 
 function getTimeseries(req, res, next) {
   if (req.query.timeUpdate) {
-    req.query.timeUpdate= parseInt(req.query.timeUpdate);
+    req.query.timeUpdate = parseInt(req.query.timeUpdate);
   }
   GetTimeseries.getByAthleteId(
     req.query.athleteId,

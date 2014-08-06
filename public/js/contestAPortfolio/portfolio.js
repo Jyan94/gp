@@ -1,27 +1,35 @@
 /*
  * =============================================================================
  * Author: Harrison Zhao
- * Date: 7/27/2014
+ * Date: 8/5/2014
  * =============================================================================
  */
 /*global Highcharts*/
 'use strict';
 
-//create highcharts inside
-//can change this function to load only if card is flipped over
 $(function() {
-  var POLL_INTERVAL = 5000;
+  var POLL_INTERVAL = 10000;
   var MIN_Y_VAL = -1;
   var containerLabel = 'container';
-  var ajaxUrl = '/getAthleteTimeseries';
+  var ajaxUrl = '/getMultiAthleteTimeseries';
 
   //assume these variables exist
   //proxies for now
   //in actuality make a function to get the athleteId and athleteName
-  var athleteId = '00000000-0000-0000-0000-000000000000';
-  var athleteName = 'hello world';
+  var athleteIds = [
+    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-000000000001',
+    '00000000-0000-0000-0000-000000000002',
+    '00000000-0000-0000-0000-000000000003'
+  ];
+  var athleteNames = [
+    'hello world1',
+    'hello world2',
+    'hello world3',
+    'hello world4'
+  ];
 
-  function getRealTimeData(that) {
+  function getRealTimeData(that, bool) {
     var series = that.series[0];
     var lastUpdate = (new Date()).getTime();
     var x;
@@ -32,7 +40,7 @@ $(function() {
         url: ajaxUrl,
         type: 'GET',
         data: {
-          'athleteId': athleteId,
+          'athleteIds': athleteIds,
           'timeUpdate': lastUpdate
         },
 
@@ -76,7 +84,7 @@ $(function() {
       plotBorderColor: '#FFFFF',
       events : {
         load : function() {
-          getRealTimeData(this);
+          getRealTimeData(this, true);
         }
       }
     };
