@@ -123,15 +123,22 @@ $(function() {
     exporting: {
       enabled: false
     },
+    plotOptions: {
+      line: {
+        dataLabels: {
+            enabled: true
+        },
+      }
+    },
     rangeSelector: {
       buttons: zoomButtons,
       inputEnabled: false,
       selected: 2
     },
+    series: [],
     title : {
       text : 'pending bet athletes fantasy value over time'
     },
-    series: [],
     xAxis: {
       title: {
           text: 'Time'
@@ -154,19 +161,25 @@ $(function() {
     };
     var i;
     for (i = 0; i !== data.timeseriesList.length; ++i) {
-      chart.addSeries(data.timeseriesList[i].map(mapFunc), false);
+      chart.addSeries(
+        {
+          data: data.timeseriesList[i].map(mapFunc),
+          name: dataWrapper.pendingAthletesList[i].fullName
+        }, false);
     }
     chart.redraw();
-    var $containers = [];
-    $containers = $('.isotope');
+    var $pendingContainer = $('.isotope-pending');
+    var $takenContainer = $('.isotope-taken');
+    var $resellContainer = $('.resell-container');
+    //insert the stuff
     for (i = 0; i !== dataWrapper.takenAthletesList.length; ++i) {
-
+      $takenContainer.data('isotope').insert();
     }
     for (i = 0; i !== dataWrapper.pendingAthletesList.length; ++i) {
-
+      $pendingContainer.data('isotope').insert();
     }
     for (i = 0; i !== dataWrapper.resellAthletesList.length; ++i) {
-      
+      $resellContainer.data('isotope').insert();
     }
   }
 

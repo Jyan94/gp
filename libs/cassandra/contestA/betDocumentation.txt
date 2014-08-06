@@ -29,7 +29,7 @@ cases:
 
  //MARKET STUFF
  pending market:
- name, fantasy value, payoff, over/under, wager, better
+ name, fantasy value, payoff, over/under, wager, bettor
  if (state === pending)
  secondary market:
  name, fantasy value, payoff, over/under, listed price, seller

@@ -50,7 +50,7 @@ CREATE INDEX IF NOT EXISTS ON contest_a_bets(is_selling_position);
 /*
 is_selling_position - boolean for sells position,
 CAREFUL FOR PENDING
-if selling over, the pending bet will be placed by the under better
+if selling over, the pending bet will be placed by the under bettor
 prices[POSITION] - price for position, if pending refers to other position
 expirations[POSITION] - expiration for position, if pending refers to other position
  */
