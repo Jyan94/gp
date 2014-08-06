@@ -8,56 +8,57 @@
 'use strict';
 
 $(function() {
+  /**
+  app.get('/initPortfolio', contestAPortfolio.sendOverInitData);
+  app.get('/getMultiAthleteTimeseries', contestAPortfolio.getMultiTimeseries);
+   */
   var POLL_INTERVAL = 10000;
-  var MIN_Y_VAL = -1;
+  var MIN_Y_VAL = -3;
   var containerLabel = 'container';
-  var ajaxUrl = '/getMultiAthleteTimeseries';
+  var ajaxUrl = '/initPortfolio';
+  var updateAjaxUrl = '/getMultiAthleteTimeseries';
 
-  //assume these variables exist
-  //proxies for now
-  //in actuality make a function to get the athleteId and athleteName
-  var athleteIds = [
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000001',
-    '00000000-0000-0000-0000-000000000002',
-    '00000000-0000-0000-0000-000000000003'
-  ];
-  var athleteNames = [
-    'hello world1',
-    'hello world2',
-    'hello world3',
-    'hello world4'
-  ];
+  /**
+   * wrapper for objects received from server
+   * @type {Object}
+   * has fields:
+   *   takenAthletesList: array of user's taken bet athletes
+   *   takenAthletesIdMap: map of athleteId to index in taken array
+   *   pendingAthletesList: array of user's pending athletes
+   *   pendingAthletesIdMap: map of athleteId to index in pending array
+   *   resellAthletesList: array of user's resell athletes
+   *   resellAthletesIdMap: map of athleteId to index in resell array
+   */
+  var dataWrapper = {};
 
-  function getRealTimeData(that, bool) {
-    var series = that.series[0];
+  function getRealTimeData(chart) {
+    var allSeries = chart.series;
     var lastUpdate = (new Date()).getTime();
-    var x;
-    var y;
     //every 10 seconds query for updates
     setInterval(function() {
       $.ajax({
-        url: ajaxUrl,
+        url: updateAjaxUrl,
         type: 'GET',
         data: {
-          'athleteIds': athleteIds,
+          'athleteIds': dataWrapper.pendingAthletesIds,
           'timeUpdate': lastUpdate
         },
-
-        //accepts an array with elements that have fields:
-        //'dateOf(time)' and price
         success: function(data) {
-          if (data.length > 0) {
-            lastUpdate = (new Date()).getTime();
-          }
           for (var i = 0; i !== data.length; ++i) {
-            x = parseInt(data[i].timeVal);
-            y = parseFloat(data[i].fantasyVal);
-            series.addPoint(
-              [x, y],
-              false);
+            if (data[i].length > 0) {
+              lastUpdate = (new Date()).getTime();
+              break;
+            }
           }
-          that.redraw();
+          data.map(function(data, index) {
+            var j, x, y;
+            for (j = 0; j !== data.length; ++j) {
+              x = parseInt(data[j].timeVal);
+              y = parseFloat(data[j].fantasyVal);
+              allSeries[index].addPoint([x, y], false);
+            }
+          });
+          chart.redraw();
         },
         error: function(xhr, status, err) {
           console.error(xhr, status, err);
@@ -67,6 +68,7 @@ $(function() {
   }
 
   function loadData(initdata) {
+    dataWrapper = initdata;
     return initdata.map(function(point) {
       return [
         point.timeVal,
@@ -75,82 +77,99 @@ $(function() {
     });
   }
 
-  function createChart(initData) {
-    var chartFormatter = {
-      renderTo: containerLabel,
-      style: {
-        fontFamily: "'Unica One', sans-serif"
-      },
-      plotBorderColor: '#FFFFF',
-      events : {
-        load : function() {
-          getRealTimeData(this, true);
-        }
+  var chartFormatter = {
+    renderTo: containerLabel,
+    style: {
+      fontFamily: "'Unica One', sans-serif"
+    },
+    plotBorderColor: '#FFFFF',
+    events : {
+      load : function() {
+        getRealTimeData(this, true);
       }
-    };
-    var zoomButtons = [{
-      count: 1,
-      type: 'minute',
-      text: '1m'
-    }, {
-      count: 5,
-      type: 'minute',
-      text: '5m'
-    }, {
-      count: 30,
-      type: 'minute',
-      text: '30m'
-    }, {
-      count: 1,
-      type: 'hour',
-      text: '1h'
-    }, {
-      count: 1,
-      type: 'day',
-      text: '1d'
-    }, {
-      type: 'all',
-      text: 'All'
-    }];
+    }
+  };
 
-    var chart = new Highcharts.StockChart({
-      chart: chartFormatter,
-      credits: {
-        enabled: false
-      },
-      exporting: {
-        enabled: false
-      },
-      rangeSelector: {
-        buttons: zoomButtons,
-        inputEnabled: false,
-        selected: 2
-      },
-      title : {
-        text : athleteName + '\'s fantasy value over time'
-      },
-      series: [{
-        name: 'Fantasy Value',
-        //color: '#000000',
-        data : loadData(initData)
-      }],
-      xAxis: {
-        title: {
-            text: 'Time'
-        }
-      },
-      yAxis: {
-        min: MIN_Y_VAL,
-        startOnTick: false,
-        endOnTick: false,
-        title: {
-            text: 'Fantasy Value'
-        }
+  var zoomButtons = [{
+    count: 1,
+    type: 'minute',
+    text: '1m'
+  }, {
+    count: 5,
+    type: 'minute',
+    text: '5m'
+  }, {
+    count: 30,
+    type: 'minute',
+    text: '30m'
+  }, {
+    count: 1,
+    type: 'hour',
+    text: '1h'
+  }, {
+    count: 1,
+    type: 'day',
+    text: '1d'
+  }, {
+    type: 'all',
+    text: 'All'
+  }];
+
+  var chart = new Highcharts.StockChart({
+    chart: chartFormatter,
+    credits: {
+      enabled: false
+    },
+    exporting: {
+      enabled: false
+    },
+    rangeSelector: {
+      buttons: zoomButtons,
+      inputEnabled: false,
+      selected: 2
+    },
+    title : {
+      text : 'pending bet athletes fantasy value over time'
+    },
+    series: [],
+    xAxis: {
+      title: {
+          text: 'Time'
       }
-    });
-
-  }
+    },
+    yAxis: {
+      min: MIN_Y_VAL,
+      startOnTick: false,
+      endOnTick: false,
+      title: {
+        text: 'Fantasy Value'
+      }
+    }
+  });
   
+  function initializePortfolio(data) {
+    dataWrapper = data.data;
+    var mapFunc = function (dataPoint) {
+      return [dataPoint.timeVal, dataPoint.fantasyVal];
+    };
+    var i;
+    for (i = 0; i !== data.timeseriesList.length; ++i) {
+      chart.addSeries(data.timeseriesList[i].map(mapFunc), false);
+    }
+    chart.redraw();
+    var $containers = [];
+    $containers = $('.isotope');
+    for (i = 0; i !== dataWrapper.takenAthletesList.length; ++i) {
+
+    }
+    for (i = 0; i !== dataWrapper.pendingAthletesList.length; ++i) {
+
+    }
+    for (i = 0; i !== dataWrapper.resellAthletesList.length; ++i) {
+      
+    }
+  }
+
   //high charts below
   Highcharts.setOptions({
     global : {
@@ -161,11 +180,8 @@ $(function() {
   $.ajax({
     url: ajaxUrl,
     type: 'GET',
-    data: {
-      'athleteId': athleteId
-    },
     success: function (data) {
-      createChart(data);
+      initializePortfolio(data);
     },
     error: function(xhr, status, err) {
       console.error(xhr, status, err);

@@ -64,9 +64,6 @@ app.get('/logout', logout.logout);
 //redirects to login if not logged in
 app.all('*', login.checkUser);
 
-//market
-var market = require('routes/market');
-
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
 //app.post('/addBets/:athleteId', market.takeBet);
