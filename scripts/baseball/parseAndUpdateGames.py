@@ -15,7 +15,7 @@ version = '4'
 timeNow = time.time()
 timePast = timeNow - 86400
 
-key = 'grnayxvqv4zxsamxhsc59agu'
+key = '5ky6e4qfcf4yja97763z6pen'
 timesRequested = 0
 
 def getPlayers(event, side):
@@ -193,7 +193,10 @@ def parseAndUpdateGames(timeParam):
 
   fGames = requests.get(gamesUrl).text;
   timesRequested += 1
+  print timesRequested
   xmlDocGames = minidom.parseString(fGames);
+
+  time.sleep(1);
 
   eventList = xmlDocGames.getElementsByTagName('events')[0].getElementsByTagName('event')
   for event in eventList:
@@ -206,7 +209,7 @@ def parseAndUpdateGames(timeParam):
 
     gameRows = session.execute('SELECT * FROM baseball_game WHERE game_id = %s;', (uuid.UUID('{' + gameId + '}'),))
 
-    if (len(gameRows) == 0) or (gameRows[0].status != status) or (status in ['scheduled', 'inprogress']):
+    if (len(gameRows) == 0) or (gameRows[0].status != status) or (status != 'closed'):
       startTime = event.getElementsByTagName('scheduled_start_time')[0].firstChild.nodeValue
 
       awayInfo = getPlayers(event, 'visitor')
@@ -225,6 +228,7 @@ def parseAndUpdateGames(timeParam):
 
         fStatistics = requests.get(statisticsUrl).text
         timesRequested += 1
+        print timesRequested, statisticsUrl
         xmlDocStatistics = minidom.parseString(fStatistics)
 
         statistics = xmlDocStatistics.getElementsByTagName('statistics')[0]

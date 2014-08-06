@@ -1,13 +1,29 @@
 #slider-range, #slider-range2 {
   width:400px;
   margin-top:10px;
+  margin-left: 20px;
 }
 
 #filterdiv {
   background-color: white;
-  opacity: 0.9;
+  opacity: 1;
   height: 300px;
   width: 500px;
   margin-left: 700px;
   padding-left: 20px;
+  position: absolute;
+  box-shadow: rgb(136, 136, 136) 0px 2px 4px 0px;
+  border-radius: 0px 0px 5px 5px;
+  display: none;
+}
+
+#filterdiv > p,
+#filterdiv > pre {
+  margin-top: 0.5em;
+}
+
+#filterdiv,
+#filters,
+#filter1 {
+  display: none;
 }

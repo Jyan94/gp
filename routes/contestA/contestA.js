@@ -9,15 +9,102 @@ var FormatBets = ContestA.FormatBets;
 var ModifyBets = ContestA.ModifyBets;
 var GetTimeseries = ContestA.GetTimeseries;
 var Athletes = require('libs/athletes/exports');
+var Game = require('libs/cassandra/baseball/game.js')
 
 /*
  * ====================================================================
- * PORTFOLIO
+ * RENDER MARKET HOME
  * ====================================================================
  */
 
-function renderMarketHome(req, res) {
-  res.render('contestA/marketHome.html');
+function renderMarketHome(req, res, next) {
+  res.render('contestA/marketHome.hbs', { user: req.user });
+}
+
+/*
+ * ====================================================================
+ * SEND MARKET HOME DAILY BOXSCORES
+ * ====================================================================
+ */
+
+function parseDailyBoxscores(game, callback) {
+  callback(null,
+    {
+      awayScore: game.away_score,
+      currentInning: game.current_inning,
+      homeScore: game.home_score,
+      gameId: game.game_id,
+      startTime: game.start_time,
+      shortAwayName: game.short_away_name,
+      shortHomeName: game.short_home_name,
+      status: game.status
+    });
+}
+
+function sendMarketHomeDailyBoxscores(req, res, next) {
+  Game.selectTodaysGames(function (err, games) {
+    if (err) {
+      res.send(500, 'Something went wrong with the database.');
+    }
+    else {
+      async.map(games, parseDailyBoxscores, function (err, games) {
+        if (err) {
+          res.send(500, 'WTF');
+        }
+        else {
+          res.send(JSON.stringify(games));
+        }
+      });
+    }
+  });
+}
+
+/*
+ * ====================================================================
+ * SEND MARKET HOME TOP PLAYERS
+ * ====================================================================
+ */
+
+
+function parseTopPlayers(athlete, callback) {
+  var statistics = athlete.statistics;
+  var statisticsLength = athlete.statistics.length;
+  var fantasyPoints = [(statisticsLength > 0 ? statistics[statisticsLength - 1].fantasyPoints: 0),
+                       (statisticsLength > 1 ? statistics[statisticsLength - 2].fantasyPoints: 0)];
+  var change = fantasyPoints[0] - fantasyPoints[1];
+
+
+  callback(null,
+    {
+      athleteId: athlete.id,
+      change: change,
+      fullName: athlete.fullName,
+      shortTeamName: athlete.shortTeamName,
+      fantasyPoints: fantasyPoints
+    });
+}
+
+
+function sendMarketHomeTopPlayers(req, res, next) {
+  async.waterfall([
+    function (callback) {
+      callback(null, Athletes.Select.getAllAthletesList());
+    },
+    function (athletes, callback) {
+      async.map(athletes, parseTopPlayers, callback);
+    },
+    function (athletes, callback) {
+      async.sortBy(athletes,
+        function(athlete, callback) {
+          callback(null, -1 * athlete.change);
+        }, callback);
+    },
+    function (athletes, callback) {
+      res.send(JSON.stringify(athletes.slice(0, 50)));
+    }],
+    function (err) {
+      next(err);
+    });
 }
 
 /*
@@ -92,6 +179,12 @@ function getUserBets(req, res) {
 
 /*
  * ====================================================================
+ * SEND MARKET HOME PLAYER STATISTICS
+ * ====================================================================
+ */
+
+/*
+ * ====================================================================
  * Bet modification routes
  * SEE libs/contestA/modifyBets for documentation on functions
  * ====================================================================
@@ -121,7 +214,7 @@ function placePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully made!');
+      res.send({'success': 'Bet successfully made!', 'status': 200});
     }
   });
 }
@@ -143,7 +236,7 @@ function removePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully deleted!');
+      res.send({'success': 'Bet successfully deleted!', 'status': 200});
     }
   });
 }
@@ -165,12 +258,12 @@ function removePendingBet(req, res, next) {
  * @return {[type]}        [description]
  */
 function takePendingBet(req, res, next) {
-  ModifyBets.takePending(req.body, req.user, function(err) {
+  ModifyBets.takePending(req.query, req.user, function(err) {
     if (err) {
       next(err);
     }
     else {
-      res.send('Bet successfully taken!');
+      res.send({'success': 'Bet successfully taken!', 'status': 200});
     }
   });
 }
@@ -181,7 +274,7 @@ function placeResellBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully placed in resell!');
+      res.send({'success': 'Bet successfully placed in resell!', 'status': 200});
     }
   });
 }
@@ -192,7 +285,7 @@ function takeResellBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully taken!');
+      res.send({'success': 'Bet successfully taken!', 'status': 200});
     }
   });
 }
@@ -227,13 +320,14 @@ function getAllAthletes(req, res) {
  */
 
 exports.renderMarketHome = renderMarketHome;
+exports.sendMarketHomeDailyBoxscores = sendMarketHomeDailyBoxscores;
+exports.sendMarketHomeTopPlayers = sendMarketHomeTopPlayers;
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.getTimeseries = getTimeseries;
 exports.getAllAthletes = getAllAthletes;
 exports.renderPortfolio = renderPortfolio;
 exports.renderGraph = renderGraph;
-
 exports.takePendingBet = takePendingBet;
 exports.placePendingBet = placePendingBet;
 exports.removePendingBet = removePendingBet;

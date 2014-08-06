@@ -129,13 +129,16 @@
     var index;
 
     //fill in holes
+    console.log(holesArr);
     for (; j !== holesArr.length; ++j) {
       //keep i from before
       for (; i !== totalLength; ++i) {
-        id = candidateDisplayedBets[i].betId;
-        if (typeof(newHashes.pending[id]) === 'undefined' &&
-            typeof(newHashes.overResell[id]) === 'undefined' && 
-            typeof(newHashes.underResell[id]) === 'undefined') {
+        id = (candidateDisplayedBets[i] ? candidateDisplayedBets[i].betId : null);
+        if (
+          id &&
+          (typeof(newHashes.pending[id]) === 'undefined' &&
+          typeof(newHashes.overResell[id]) === 'undefined' && 
+          typeof(newHashes.underResell[id]) === 'undefined')) {
 
           index = parseInt([holesArr[j]]);
           newDisplayedBets[index] = candidateDisplayedBets[i];
@@ -212,7 +215,7 @@
           newDisplayedBets.length < NUM_DISPLAYED; 
         ++i) {
 
-        id = candidateDisplayedBets[i].betId;
+        id = (candidateDisplayedBets[i] ? candidateDisplayedBets[i].betId : null);
         //if none of them exist, and id exists continue
         if (
           id && 
@@ -376,18 +379,24 @@
    */
   function requestGetAndUpdateBets() {
     //add delay to this if card flipped over
-    $.ajax({
-      url: getBetUrl,
-      dataType: 'json',
-      success: function(data) {
-          updateBets(data, function() {
-            setTimeout(requestGetAndUpdateBets, POLL_INTERVAL);
-          });
-      },
-      error: function(xhr, status, err) {
-        console.error(xhr, status, err);
-      }
-    });
+    if ($('.flipped').length === 0) {
+      console.log(1);
+      $.ajax({
+        url: getBetUrl,
+        dataType: 'json',
+        success: function(data) {
+            updateBets(data, function() {
+              setTimeout(requestGetAndUpdateBets, POLL_INTERVAL);
+            });
+        },
+        error: function(xhr, status, err) {
+          console.error(xhr, status, err);
+        }
+      });
+    }
+    else {
+      setTimeout(requestGetAndUpdateBets, POLL_INTERVAL);
+    }
   }
 
   /**
@@ -423,18 +432,18 @@
    * ===========================================================================
    * MUST HAVE SOMETHING OF THE SORT IN FILE THAT UTILIZES THIS FILE:
    * ===========================================================================
-    $(document).ready(function() {
-
-      $container = contestARetrieveBet.setIsotopeContainer($('.isotope'));
-      $container.isotope({
-        itemSelector: '.playercard1',
-        layoutMode: 'fitRows',
-        getSortData: {
-          id: '.id'
-        }
-      });
-      contestARetrieveBet.requestGetAndUpdateBets();
+   */
+  /*$(document).ready(function() {
+    $container = contestARetrieveBet.setIsotopeContainer($('.isotope'));
+    $container.isotope({
+      itemSelector: '.playercard1',
+      layoutMode: 'fitRows',
+      getSortData: {
+        id: '.id'
+      }
     });
-  */
+    contestARetrieveBet.requestGetAndUpdateBets();
+  });*/
+
 }(typeof exports === 'undefined' ? window.contestAGetBets = {} : exports));
 

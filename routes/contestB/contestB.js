@@ -1166,7 +1166,7 @@ function examineContestsToProcess(callback) {
  * ====================================================================
  */
 
-function setRepeat(func, interval) {
+/*function setRepeat(func, interval) {
   var callback = function (err) {
     if (err) {
       console.log(err);
@@ -1179,7 +1179,7 @@ function setRepeat(func, interval) {
   }, interval);
 }
 
-/*setRepeat(runParsePlayers, 86400000);
+setRepeat(runParsePlayers, 86400000);
 setRepeat(runParseAndUpdateGames, 7200000);
 setRepeat(examineContestsOpenAndFilled, 60000);
 setRepeat(examineContestsToProcess, 60000);*/

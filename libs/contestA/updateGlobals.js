@@ -27,7 +27,9 @@ function formatPendingBets(bets, callback) {
   async.map(bets, function(bet, callback){
     var retVal = {
       athleteId: bet.athlete_id,
+      athleteImage: bet.athlete_image,
       athleteName: bet.athlete_name,
+      athletePosition: bet.athlete_position,
       athleteTeam: bet.athlete_team,
       betId: bet.bet_id,
       fantasyValue: bet.fantasy_value,
@@ -84,7 +86,9 @@ function formatTakenBet(bet, overNotUnder) {
 
   return {
     athleteId: bet.athlete_id,
+    athleteImage: bet.athlete_image,
     athleteName: bet.athlete_name,
+    athletePosition: bet.athlete_position,
     athleteTeam: bet.athlete_team,
     betId: bet.bet_id,
     fantasyValue: bet.fantasy_value,
@@ -113,7 +117,9 @@ function formatResellBet(bet, overNotUnder) {
 
   return {
     athleteId: bet.athlete_id,
+    athleteImage: bet.athlete_image,
     athleteName: bet.athlete_name,
+    athletePosition: bet.athlete_position,
     athleteTeam: bet.athlete_team,
     betId: bet.bet_id,
     fantasyValue: bet.fantasy_value,

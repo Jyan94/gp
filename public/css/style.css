@@ -289,6 +289,14 @@ input {
 #updates a {
   display: block;
 }
+
+.dropdown-icon {
+  border-radius: 5px;
+  background-color: #083f75;
+  color: #fff;
+  padding: 5px 10px 5px 10px;
+  cursor: pointer;
+}
 .dropdown-menu {
   background-color: #ffffff;
   border: 0px;
@@ -297,6 +305,7 @@ input {
   box-shadow: 0px 2px 4px #888;
   display: block;
   height: 0px;
+  width: 110px;
   list-style: none;
   margin: 0px 0px 0px;
   padding: 0px 0px;
@@ -309,12 +318,9 @@ input {
   -moz-transition: all 0.2s ease-in-out, border 0s linear 0.2s;
 }
 .dropdown-menu.active {
-  z-index: 9999999;
-  position: fixed;
-  border: 1px solid #ddc;
-  height: 131px;
-  width: 110px;
-  padding: 5px 0px;
+  border: 0px solid #ddc;
+  padding: 0px 0px;
+  height: 123px;
   -webkit-transition: all 0.2s ease-in-out, border-top-width 0s;
   -moz-transition: all 0.2s ease-in-out, border-top-width 0s;
 }
@@ -329,6 +335,11 @@ input {
   background-color: #2460a0;
   color: #ffffff;
 }
+.dropdown-top-divider {
+  background-color: #ddc;
+  height: 1px;
+  margin: 0px 4px 4px;
+}
 .dropdown-divider {
   background-color: #ddc;
   height: 1px;
@@ -338,7 +349,8 @@ input {
 .btn1 {
   background-color: white;
   border-radius: 10px;
-  margin-top: -100px;
+  margin-top: -34px;
+  position: absolute;
 }
 /*----------------------------------------------------------------------------*/
 /* Body content                                                               */
