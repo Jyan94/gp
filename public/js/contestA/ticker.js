@@ -13,28 +13,42 @@ function getDailyBoxscores (callback) {
     url: '/marketHomeDailyBoxscores',
     type: 'GET',
     success: function (response) {
-      var tickerContent = JSON.parse(response).reduce(function (memo, game, index, array) {
-        var status = game.status;
+      var tickerContent = JSON.parse(response).reduce(
+        function (memo, game, index, array) {
+          var status = game.status;
 
-        if (status === 'scheduled') {
-          memo += ('<p>' + game.shortAwayName + ' at ' + game.shortHomeName + ' begins at ' + formatTime(game.startTime) + '</p>');
-        }
-        else if (status === 'inprogress') {
-          memo += ('<p>' + game.shortAwayName + ' ' + game.awayScore + ' ' + game.shortHomeName + ' ' + game.homeScore + ' Current Inning: ' + game.currentInning + '</p>');
-        }
-        else if (status === 'closed') {
-          memo += ('<p>' + game.shortAwayName + ' ' + game.awayScore + ' ' + game.shortHomeName + ' ' + game.homeScore + ' Final</p>');
-        }
-        else {
-          memo += ('<p>' + game.shortAwayName + ' at ' + game.shortHomeName + ' is ' + formatTime(game.startTime) + '</p>');
-        }
+          if (status === 'scheduled') {
+            memo += ('<p>' +
+                       game.shortAwayName + ' at ' + game.shortHomeName +
+                       ' begins at ' + formatTime(game.startTime) +
+                     '</p>');
+          }
+          else if (status === 'inprogress') {
+            memo += ('<p>' +
+                       game.shortAwayName + ' ' + game.awayScore + ' ' +
+                       game.shortHomeName + ' ' + game.homeScore +
+                       ' Current Inning: ' + game.currentInning +
+                     '</p>');
+          }
+          else if (status === 'closed') {
+            memo += ('<p>' +
+                       game.shortAwayName + ' ' + game.awayScore + ' ' +
+                       game.shortHomeName + ' ' + game.homeScore +
+                       ' Final</p>');
+          }
+          else {
+            memo += ('<p>' +
+                       game.shortAwayName + ' at ' + game.shortHomeName +
+                       ' is ' + formatTime(game.startTime) +
+                     '</p>');
+          }
 
-        if (index !== array.length - 1) {
-          memo += '<p>&#160;&#160;&#160;&#160;&#160</p>';
-        }
+          if (index !== array.length - 1) {
+            memo += '<p>&#160;&#160;&#160;&#160;&#160</p>';
+          }
 
-        return memo;
-      }, '');
+          return memo;
+        }, '');
 
       $('#daily-boxscore-ticker').html(tickerContent);
 
@@ -51,22 +65,30 @@ function getTopPlayers (callback) {
     url: '/marketHomeTopPlayers',
     type: 'GET',
     success: function (response) {
-      var tickerContent = JSON.parse(response).reduce(function (memo, athlete, index, array) {
-        memo += ('<p>' + (athlete.fullName ? athlete.fullName : athlete.athleteId) + ' ' + athlete.fantasyPoints[0]);
+      var tickerContent = JSON.parse(response).reduce(
+        function (memo, athlete, index, array) {
+          memo += ('<p>' +
+                     (athlete.fullName ? athlete.fullName : athlete.athleteId) +
+                     ' ' +
+                     athlete.fantasyPoints[0]);
 
-        if (athlete.change >= 0) {
-          memo += ('&#160;<img src=\'/assets/uparrow.png\' style=\'width: 12px\'>&#160;' + athlete.change + '</p>');
-        }
-        else {
-          memo += ('&#160;<img src=\'/assets/downarrow.png\' style=\'width: 12px\'>&#160;' + athlete.change + '</p>');
-        }
+          if (athlete.change >= 0) {
+            memo += ('&#160;<img src=\'/assets/uparrow.png\' style=\'width: 12px\'>&#160;' +
+                     athlete.change +
+                     '</p>');
+          }
+          else {
+            memo += ('&#160;<img src=\'/assets/downarrow.png\' style=\'width: 12px\'>&#160;' +
+                     athlete.change +
+                     '</p>');
+          }
 
-        if (index !== array.length - 1) {
-          memo += '<p>&#160;&#160;&#160;&#160;&#160</p>';
-        }
+          if (index !== array.length - 1) {
+            memo += '<p>&#160;&#160;&#160;&#160;&#160</p>';
+          }
 
-        return memo;
-      }, '');
+          return memo;
+        }, '');
 
       $('#top-player-ticker').html(tickerContent);
 

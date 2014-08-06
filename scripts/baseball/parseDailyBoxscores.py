@@ -31,6 +31,7 @@ def parseDailyBoxscores(timeParam):
 
   fGames = requests.get(dailyBoxscoresUrl).text;
   timesRequested += 1
+  print timesRequested
   xmlDocGames = minidom.parseString(fGames);
 
   boxscoreList = xmlDocGames.getElementsByTagName('boxscores')[0].getElementsByTagName('boxscore')
@@ -71,6 +72,8 @@ def parseDailyBoxscores(timeParam):
                       INSERT INTO baseball_game (away_score, current_inning, game_id, home_score, status)
                       VALUES (%s, %s, %s, %s, %s);
                       """, (awayScore, currentInning, uuid.UUID('{' + gameId + '}'), homeScore, status))
+
+  time.sleep(1)
 
 parseDailyBoxscores(timeNow)
 parseDailyBoxscores(timePast)

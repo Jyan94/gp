@@ -190,7 +190,6 @@ input[type="text"] {
 
 .playercard1.flipped {
   box-sizing: border-box;
-  /*-webkit-transform: scale(2) rotateY(180deg) rotateZ(90deg) translateZ(-1px);*/
   z-index: 5;
 }
 
@@ -510,15 +509,16 @@ input[type="text"] {
   display: inline-block;
   margin-top: -3px;
   white-space: nowrap;
-  -webkit-animation: moveTicker 40s linear 0s infinite normal;
 }
 
-.ticker p {
-  margin-bottom: 13px;
-  margin-top: 13px;
-  font-size: 19px;
-  display: inline-block;
+#daily-boxscore-ticker {
+  -webkit-animation: moveTicker 60s linear 0s infinite normal;
 }
+
+#top-player-ticker {
+  -webkit-animation: moveTicker 90s linear 0s infinite normal;
+}
+
 
 @-webkit-keyframes moveTicker {
   from {
@@ -527,4 +527,11 @@ input[type="text"] {
   to { 
         -webkit-transform: translate(-100%, 0)
      }
+}
+
+.ticker p {
+  margin-bottom: 13px;
+  margin-top: 13px;
+  font-size: 19px;
+  display: inline-block;
 }

@@ -40,7 +40,7 @@ function getUserTaken(username, callback) {
 
 function getPrimaryMarket(username, callback) {
   async.map(contestAGlobals.pendingBets, function(bet, callback) {
-    bet.better !== username ? callback(null, bet) : callback(null, null);
+    bet.bettor !== username ? callback(null, bet) : callback(null, null);
   }, callback);
 }
 

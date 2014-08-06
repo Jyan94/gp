@@ -65,7 +65,7 @@ app.get('/logout', logout.logout);
 app.all('*', login.checkUser);
 
 //market
-var market = require('routes/market');
+//var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);

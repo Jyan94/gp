@@ -32,7 +32,8 @@
     overNotUnder,
     pictureUrl,
     athletePosition,
-    wager) {
+    wager,
+    sport) {
 
     var betPosition;
     if (overNotUnder) {
@@ -42,43 +43,65 @@
       betPosition = 'under';
     }
     var retval = $(
-      '<div id=' + arrayId + ' class=\'playercard1\'>' +
-        '<div class="id" style="display:">' + arrayId + '</div>' +
+      '<div id=\'playercard1-' + arrayId + '\' class=\'playercard1 ' + sport + '\'>' +
+        '<div class=\'id\' style=\'display: none;\'>' + arrayId + '</div>' +
+        '<div class=\'playercard1-front\'>' +
           '<div class=\'playercard1-playerpic\'>' + 
-          '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +
-
-          '<div class=\'playercard1-info\'>' +
-
-            '<div class=\'playercard1-info name\'>' +
-            '<center>' +
-            '<p>' + fullName + '</p>' +
-            '</center>' +
+            '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +
+            '<div class=\'playercard1-info\'>' +
+              '<div class=\'playercard1-info name\'>' +
+                '<center>' +
+                  '<p>' + fullName + '</p>' +
+                '</center>' +
+              '</div>' +
+              '<div class=\'playercard1-info pos\'>' +
+                '<center>' +
+                  '<p>' + athletePosition + '&#160;|&#160;' + fullName +'</p>' +
+                '</center>' +
+              '</div>' +
             '</div>' +
-
-            '<div class=\'playercard1-info pos\'>' +
-            '<center>' +
-            '<p>' + athletePosition + '|' + fullName +'</p>' +
-            '</center>' +
+            '<div class=\'playercard1-bottom\'>' +
+              '<div class=\'playercard1-bottom wager\'><p>$' + wager + ' '  + betPosition + ' ' + fantasyValue + ' FP</p></div>' +
+              '<div class=\'playercard1-bottom submit\'>' +
+                '<center>' +
+                  '<div clickIndex=' + 
+                  arrayId + 
+                  ' class=\'pure-button button-primary take-bet-button\'>Take</div>' +
+                '</center>' +
+              '</div>' +
             '</div>' +
-
           '</div>' +
-
-          '<div class=\'playercard1-bottom\'>' +
-
-            '<div class=\'playercard1-bottom wager\'>' +
-            '<p> $' + wager + " " + betPosition + " " + fantasyValue + "FP</p>" +
+        '</div>' +
+        '<div class=\'playercard1-back\'>' +
+          '<div class="playercard1-back-info">' +
+         ' </div>' +
+          '<div class=\'playercard1-back-tab-container\'>' + 
+            '<ul class=\'playercard1-back-tab-menu\'>' +
+              '<li id=\'playercard1-' + arrayId + '-tab-1\' class=\'playercard1-back-tab active\'>' +
+                'Tab 1' +
+              '</li>' +
+              '<li id=\'playercard1-' + arrayId + '-tab-2\' class=\'playercard1-back-tab\'>' +
+                'Tab 2' +
+              '</li>' +
+              '<li id=\'playercard1-' + arrayId + '-tab-3\' class=\'playercard1-back-tab\'>' +
+                'Tab 3' +
+              '</li>' +
+            '</ul>' +
+            '<div class=\'playercard1-back-tab-border\'>' +
             '</div>' +
-
-            '<div class=\'playercard1-bottom submit\'>' +
-              '<center>' +
-              '<div clickIndex=' + 
-              arrayId + 
-              ' class=\'pure-button button-primary take-bet-button\'>Take</div>' +
-              '</center>' +
+            '<div id=\'playercard1-' + arrayId + '-tab-1-content\' class=\'playercard1-back-tab-content active\'>' +
+              '<p>Stuff 1</p>' +
+              '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>' +
+              '<p>Stuff 1</p>' +
             '</div>' +
-
+            '<div id=\'playercard1-' + arrayId + '-tab-2-content\' class=\'playercard1-back-tab-content\'>' +
+              '<p>Stuff 2</p>' +
+              '<p>Stuff 2</p>' +
+            '</div>' +
+            '<div id=\'playercard1-' + arrayId + '-tab-3-content\' class=\'playercard1-back-tab-content\'>' +
+              '<p>Stuff 3</p>' +
+            '</div>' +
           '</div>' +
-
         '</div>' +
       '</div>');
     return retval;
@@ -106,10 +129,11 @@
         bet.overNotUnder,
         bet.athleteImage,
         bet.athletePosition,
-        bet.price);
+        bet.price,
+        bet.sport);
     }
     else {
-      card = '<div id=' + index + ' style="display: none;">'
+      card = '<div id=\'playercard1-' + index + '\' class=\'playercard1\' style=\'display: none;\'>';
     }
     return card;
   }

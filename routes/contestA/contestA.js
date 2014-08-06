@@ -236,7 +236,7 @@ function removePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully deleted!');
+      res.send({'success': 'Bet successfully deleted!', 'status': 200});
     }
   });
 }
@@ -258,12 +258,12 @@ function removePendingBet(req, res, next) {
  * @return {[type]}        [description]
  */
 function takePendingBet(req, res, next) {
-  ModifyBets.takePending(req.body, req.user, function(err) {
+  ModifyBets.takePending(req.query, req.user, function(err) {
     if (err) {
       next(err);
     }
     else {
-      res.send('Bet successfully taken!');
+      res.send({'success': 'Bet successfully taken!', 'status': 200});
     }
   });
 }
@@ -274,7 +274,7 @@ function placeResellBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully placed in resell!');
+      res.send({'success': 'Bet successfully placed in resell!', 'status': 200});
     }
   });
 }
@@ -285,7 +285,7 @@ function takeResellBet(req, res, next) {
       next(err);
     }
     else {
-      res.send('Bet successfully taken!');
+      res.send({'success': 'Bet successfully taken!', 'status': 200});
     }
   });
 }

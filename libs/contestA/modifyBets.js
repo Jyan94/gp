@@ -93,6 +93,7 @@ function verifyGameIdAndAthlete(
 function insertPending(info, user, callback) {
   var fantasyValue = parseFloat(info.fantasyValue);
   var wager = parseFloat(info.wager);
+  var isOverBettor = (info.isOverBettor === 'true');
 
   async.waterfall(
   [
@@ -121,7 +122,7 @@ function insertPending(info, user, callback) {
         info.expirationTimeMinutes,
         fantasyValue,
         info.gameId,
-        info.isOverBettor,
+        isOverBettor,
         info.sport,
         user.username,
         wager,
@@ -182,17 +183,22 @@ function deletePending(info, user, callback) {
  * args: (err)
  */
 function takePending(info, user, callback) {
+  var fantasyValue = parseFloat(info.fantasyValue);
+  var payoff = parseFloat(info.payoff);
+  var price = parseFloat(info.price);
+  var overNotUnder = (info.overNotUnder === 'true');
+
   async.waterfall(
   [
     function(callback) {
-      User.subtractMoney(user.money, info.wager, user.user_id, callback);
+      User.subtractMoney(user.money, price, user.user_id, callback);
     },
     function(callback) {
       var takePendingCallback = function(err) {
         if (err && err.message === APPLIED) {
           User.addMoney(
-            user.money - info.wager,
-            info.wager,
+            user.money - price,
+            price,
             user.user_id,
             function(err) {
               if (err) {
@@ -215,11 +221,11 @@ function takePending(info, user, callback) {
         info.athleteName,
         info.athleteTeam,
         info.betId,
-        info.fantasyValue,
+        fantasyValue,
         info.opponent,        
-        info.overNotUnder,
+        overNotUnder,
         user.username,
-        info.wager,
+        price,
         takePendingCallback);
     },
     function(callback) {
@@ -232,11 +238,11 @@ function takePending(info, user, callback) {
             info.athleteName,
             info.athleteTeam,
             info.betId,
-            info.fantasyValue,
+            fantasyValue,
             info.opponent,
-            info.overNotUnder,
-            info.payoff,
-            info.wager,
+            overNotUnder,
+            payoff,
+            price,
             false,
             user.username,
             callback);
@@ -248,11 +254,11 @@ function takePending(info, user, callback) {
             info.athleteName,
             info.athleteTeam,
             info.betId,
-            info.fantasyValue,
+            fantasyValue,
             user.username,
-            !info.overNotUnder,
-            info.payoff,
-            info.wager,
+            !overNotUnder,
+            payoff,
+            price,
             true,
             info.opponent,
             callback);
@@ -261,8 +267,8 @@ function takePending(info, user, callback) {
         function(callback) {
           Timeseries.insert(
             info.athleteId,
-            info.fantasyValue,
-            info.wager,
+            fantasyValue,
+            price,
             callback);
         }
       ], callback);
