@@ -279,29 +279,112 @@ BaseballGame.selectTodaysGames(function(err, result) {
 });
 
 */
-/*
+
 var hello = [];
 for (var i = 0; i !== 100; ++i) {
   hello[i] = i;
 }
 var async = require('async');
-async.reduce(
-  hello, 
-  {},
-  function(memo, index, callback) {
-    setTimeout(function() {
-      Timeseries.insert(
-        '00000000-0000-0000-0000-000000000000', 
-        Math.random()*20, 
-        index, 
-        function(err) {
-          callback(null, memo);
-        });
-    }, 1000);
-  },  
-  function(err) {
-    if (err) {
-      console.log(err);
-    }
-  })
-*/
+
+async.parallel(
+[
+  function(callback) {
+    async.reduce(
+      hello, 
+      {},
+      function(memo, index, callback) {
+        setTimeout(function() {
+          Timeseries.insert(
+            '00000000-0000-0000-0000-000000000000', 
+            Math.random()*20, 
+            index, 
+            function(err) {
+              callback(null, memo);
+            });
+        }, 1000);
+      },  
+      function(err) {
+        callback(err);
+      })
+  },
+  function(callback) {
+    async.reduce(
+      hello, 
+      {},
+      function(memo, index, callback) {
+        setTimeout(function() {
+          Timeseries.insert(
+            '00000000-0000-0000-0000-000000000001', 
+            Math.random()*20, 
+            index, 
+            function(err) {
+              callback(null, memo);
+            });
+        }, 1000);
+      },  
+      function(err) {
+        callback(err);
+      })
+  },
+  function(callback) {
+    async.reduce(
+      hello, 
+      {},
+      function(memo, index, callback) {
+        setTimeout(function() {
+          Timeseries.insert(
+            '00000000-0000-0000-0000-000000000002', 
+            Math.random()*20, 
+            index, 
+            function(err) {
+              callback(null, memo);
+            });
+        }, 1000);
+      },  
+      function(err) {
+        callback(err);
+      })
+  },
+  function(callback) {
+    async.reduce(
+      hello, 
+      {},
+      function(memo, index, callback) {
+        setTimeout(function() {
+          Timeseries.insert(
+            '00000000-0000-0000-0000-000000000003', 
+            Math.random()*20, 
+            index, 
+            function(err) {
+              callback(null, memo);
+            });
+        }, 1000);
+      },  
+      function(err) {
+        callback(err);
+      })
+  },
+  function(callback) {
+    async.reduce(
+      hello, 
+      {},
+      function(memo, index, callback) {
+        setTimeout(function() {
+          Timeseries.insert(
+            '00000000-0000-0000-0000-000000000004', 
+            Math.random()*20, 
+            index, 
+            function(err) {
+              callback(null, memo);
+            });
+        }, 1000);
+      },  
+      function(err) {
+        callback(err);
+      })
+  }
+],
+function(err) {
+  console.log(err);
+});
+

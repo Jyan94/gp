@@ -39,8 +39,11 @@ $(function() {
           break;
         }
       }
-    }
+    },
+    delay: 500,
+    minLength: 3
   }).data('ui-autocomplete')._renderItem = function ( ul, item ) {
+      console.log(1);
       return $('<li>')
         .append('<a><img style="background-image: url(' + item.image + ')">' +
           item.label + '</a>')

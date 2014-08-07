@@ -50,7 +50,6 @@
       //}
       success: function(data) {
         data = JSON.parse(data);
-        console.log(data);
         athletesList = data.athletesList;
         athletesIdMap = data.athletesIdMap;
       },

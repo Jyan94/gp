@@ -1,5 +1,7 @@
+/*global contestAGetBets*/
+
 // debounce so filtering doesn't happen every millisecond
-function debounce( fn, threshold ) {
+/*function debounce( fn, threshold ) {
   var timeout;
   return function debounced() {
     if ( timeout ) {
@@ -125,53 +127,79 @@ $(function () {
   var tabNames = ['tab-1', 'tab-2', 'tab-3'];
 
   $('.isotope').on('click', '.playercard1', function (e) {
-    if ((e.target.className === 'pure-button button-primary')
-        || (flippedCard >= 0) || !(transitionDone)) {
-      return true;
+    if ((flippedCard >= 0) || !(transitionDone)) {
+    }
+    else if (e.target.className
+             === 'pure-button button-primary take-bet-button') {
+      var arrayIndex = $().attr('clickIndex').substring(12);
+      var bet = contestAGetBets.getBetByIndex(arrayIndex);
+      console.log()
+      $.ajax({
+        url: '/takePendingBet',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          athleteId: bet.athleteId,
+          athleteName: bet.athleteName,
+          athleteTeam: bet.athleteTeam,
+          betId: bet.betId,
+          fantasyValue: bet.fantasyValue,
+          opponent: bet.opponent,
+          overNotUnder: bet.overNotUnder,
+          wager: bet.wager
+        },
+        success: function(message) {
+          //preferably show a message for 2 seconds
+          console.log(message);
+        },
+        error: function(xhr, status, err) {
+          console.error(xhr, status, err);
+        }
+      });
+    }
+    else {
+      transitionDone = false;
+
+      //console.log(e);
+      var currentTarget = $('#' + e.currentTarget.id);
+      currentTarget.addClass('flipped');
+      flippedCard = e.currentTarget.id.substring(12);
+
+      $('#marketHome-backdrop').addClass('active');
+
+      flippedCardOffset = currentTarget.offset();
+      var fixedOffsetX = flippedCardOffset.left - $(window).scrollLeft() - 10;
+      var fixedOffsetY = flippedCardOffset.top - $(window).scrollTop() - 10;
+      var scale = getPlayercard1Scale(currentTarget);
+
+      currentTarget.css({'position': 'fixed',
+                         'top': fixedOffsetY + 'px',
+                         'left': fixedOffsetX + 'px'});
+      console.log(currentTarget.offset().left);
+      currentTarget.addClass('transition');
+      currentTarget.css({'top': 'calc(50% - 170px)',
+                         'left': 'calc(50% - 135px)',
+                         '-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
+      currentTarget.bind("webkitTransitionEnd", function(e){ 
+        $(this).unbind(e);
+        transitionDone = true;
+      });
     }
 
-    transitionDone = false;
-
-    $('#marketHome-backdrop').addClass('active');
-
-    //console.log(e);
-    flippedCard = e.currentTarget.id.substring(12);
-    var currentTarget = $('#' + e.currentTarget.id);
-
-    flippedCardOffset = currentTarget.offset();
-    var fixedOffsetX = flippedCardOffset.left - $(window).scrollLeft() - 10;
-    var fixedOffsetY = flippedCardOffset.top - $(window).scrollTop() - 10;
-    var scale = getPlayercard1Scale(currentTarget);
-
-    currentTarget.css({'position': 'fixed',
-                       'top': fixedOffsetY + 'px',
-                       'left': fixedOffsetX + 'px',
-                       'z-index': 5});
-    console.log(currentTarget.offset().left);
-    currentTarget.addClass('transition');
-    currentTarget.css({'top': 'calc(50% - 170px)',
-                       'left': 'calc(50% - 135px)',
-                       '-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
-    currentTarget.addClass('flipped');
-    currentTarget.bind("webkitTransitionEnd", function(e){ 
-      $(this).unbind(e);
-      transitionDone = true;
-    });
-
-    return false;
+    e.preventDefault();
   });
 
   $('.backdrop').on('click', function (e) {
     if ((flippedCard >= 0) && transitionDone) {
       transitionDone = false;
 
-      $('#marketHome-backdrop').removeClass('active');
-
       var prevFlippedCard = flippedCard;
       flippedCard = -1;
 
       var currentTarget = $('#playercard1-' + prevFlippedCard);
       var scale = currentTarget.css('-webkit-transform').match(/(-?[0-9\.]+)/g)[2];
+
+      $('#marketHome-backdrop').removeClass('active');
 
       var currentTargetOffset = currentTarget.offset();
       var absoluteOffsetX = currentTargetOffset.left + (160 * scale) - 255; //is originally 120px + 10px + 125px = 255px away needs to be 320 now
@@ -180,22 +208,21 @@ $(function () {
       currentTarget.removeClass('transition');
       currentTarget.css({'position': 'absolute',
                          'top': absoluteOffsetY + 'px',
-                         'left': absoluteOffsetX + 'px',
-                         'z-index': ''});
+                         'left': absoluteOffsetX + 'px'});
       console.log(currentTarget.offset().left);
       currentTarget.addClass('transition');
       currentTarget.css({'top': flippedCardOffset.top - 10 + 'px',
                          'left': flippedCardOffset.left - 130  + 'px',
                          '-webkit-transform': ''});
-      currentTarget.removeClass('flipped');
       currentTarget.bind("webkitTransitionEnd", function(e){ 
         $(this).unbind(e);
         currentTarget.removeClass('transition');
+        currentTarget.removeClass('flipped');
         transitionDone = true;
       });
     }
 
-    return false;
+    e.preventDefault();
   });
   
   $(window).resize(function (e) {
@@ -206,7 +233,7 @@ $(function () {
       currentTarget.css({'-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
     }
 
-    return false;
+    e.preventDefault();
   });
 
   $('.isotope').on('click', '.playercard1-back', function (e) {
@@ -228,6 +255,8 @@ $(function () {
       $(currentTargetCardPrefix + tabNames[activeTabIndex]).addClass('active');
     }
 
-    return false;
+    e.preventDefault();
   });
 });
+
+*/

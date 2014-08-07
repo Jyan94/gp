@@ -11,7 +11,7 @@
 //can change this function to load only if card is flipped over
 $(function() {
   var POLL_INTERVAL = 5000;
-  var MIN_Y_VAL = -1;
+  var MIN_Y_VAL = -3;
   var containerLabel = 'container';
   var ajaxUrl = '/getAthleteTimeseries';
 
@@ -21,8 +21,8 @@ $(function() {
   var athleteId = '00000000-0000-0000-0000-000000000000';
   var athleteName = 'hello world';
 
-  function getRealTimeData(that) {
-    var series = that.series[0];
+  function getRealTimeData(chart) {
+    var series = chart.series[0];
     var lastUpdate = (new Date()).getTime();
     var x;
     var y;
@@ -37,7 +37,7 @@ $(function() {
         },
 
         //accepts an array with elements that have fields:
-        //'dateOf(time)' and price
+        //timeVal and fantasyVal
         success: function(data) {
           if (data.length > 0) {
             lastUpdate = (new Date()).getTime();
@@ -49,7 +49,7 @@ $(function() {
               [x, y],
               false);
           }
-          that.redraw();
+          chart.redraw();
         },
         error: function(xhr, status, err) {
           console.error(xhr, status, err);
