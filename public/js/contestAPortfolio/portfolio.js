@@ -181,13 +181,6 @@ $(function() {
     exporting: {
       enabled: false
     },
-    plotOptions: {
-      line: {
-        dataLabels: {
-            enabled: true
-        },
-      }
-    },
     rangeSelector: {
       buttons: zoomButtons,
       inputEnabled: false,
