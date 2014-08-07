@@ -48,13 +48,13 @@ function getAthletesFromBets(betArr, callback) {
 function sendOverInitData(req, res, next) {
   var sendObj = {};
   sendObj.data = {
-    taken: [],
+    takenBets: [],
     takenAthletesList: [],
     takenAthletesIdMap: {},
-    pending: [],
+    pendingBets: [],
     pendingAthletesList: [],
     pendingAthletesIdMap: {},
-    resell: [],
+    resellBets: [],
     resellAthletesList: [],
     resellAthletesIdMap: {}
   };
@@ -89,9 +89,9 @@ function sendOverInitData(req, res, next) {
           callback(null, results);
         });
       }, function (err, results) {
-        sendObj.data.taken = results[0] || [];
-        sendObj.data.pending = results[1] || [];
-        sendObj.data.resell = results[2] || [];
+        sendObj.data.takenBets = results[0] || [];
+        sendObj.data.pendingBets = results[1] || [];
+        sendObj.data.resellBets = results[2] || [];
         callback(null);
       });
     },
@@ -99,7 +99,7 @@ function sendOverInitData(req, res, next) {
       async.parallel(
       [
         function(callback) {
-          getAthletesFromBets(sendObj.data.taken, function(err, results) {
+          getAthletesFromBets(sendObj.data.takenBets, function(err, results) {
             if (err) {
               callback(err);
             }
@@ -111,7 +111,7 @@ function sendOverInitData(req, res, next) {
           });
         },
         function(callback) {
-          getAthletesFromBets(sendObj.data.pending, function(err, results) {
+          getAthletesFromBets(sendObj.data.pendingBets, function(err, results) {
             if (err) {
               callback(err);
             }
@@ -123,7 +123,7 @@ function sendOverInitData(req, res, next) {
           });
         },
         function(callback) {
-          getAthletesFromBets(sendObj.data.resell, function(err, results) {
+          getAthletesFromBets(sendObj.data.resellBets, function(err, results) {
             if (err) {
               callback(err);
             }

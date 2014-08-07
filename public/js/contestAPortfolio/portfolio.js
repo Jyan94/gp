@@ -5,6 +5,7 @@
  * =============================================================================
  */
 /*global Highcharts*/
+/*global portfolioCreateAthleteCard*/
 'use strict';
 
 $(function() {
@@ -42,10 +43,13 @@ $(function() {
    * wrapper for objects received from server
    * @type {Object}
    * has fields:
+   *   takenBets: array of taken bets
    *   takenAthletesList: array of user's taken bet athletes
    *   takenAthletesIdMap: map of athleteId to index in taken array
+   *   pendingBets: array of pending bets
    *   pendingAthletesList: array of user's pending athletes
    *   pendingAthletesIdMap: map of athleteId to index in pending array
+   *   resellBets: array of resell bets
    *   resellAthletesList: array of user's resell athletes
    *   resellAthletesIdMap: map of athleteId to index in resell array
    */
@@ -53,8 +57,9 @@ $(function() {
   var timeseriesAthleteIds = [];
 
   function getRealTimeData(chart) {
-    var allSeries = chart.series;
     var lastUpdate = (new Date()).getTime();
+    var timeNow;
+    var i;
     //every 10 seconds query for updates
     setInterval(function() {
       $.ajax({
@@ -65,19 +70,51 @@ $(function() {
           'timeUpdate': lastUpdate
         },
         success: function(data) {
-          for (var i = 0; i !== data.length; ++i) {
+          for (i = 0; i !== data.length; ++i) {
             if (data[i].length > 0) {
               lastUpdate = (new Date()).getTime();
               break;
             }
           }
+          for (i = 0; i !== data.length; ++i) {
+            if (data[i].length > 0 && 
+                data[i][0].timeVal < 
+                  chart.series[i].points[chart.series[i].points.length - 1]) {
+
+              chart.series[i]
+                .points[chart.series[i].points.length - 1].remove();
+            }
+          }
+          //remove the most recent point artificially added to extend graph
+          /*chart.series.map(function(series) {
+            series.points[series.points.length - 1].remove();
+          });*/
           data.map(function(data, index) {
             var j, x, y;
             for (j = 0; j !== data.length; ++j) {
               x = parseInt(data[j].timeVal);
               y = parseFloat(data[j].fantasyVal);
-              allSeries[index].addPoint([x, y], false);
+              chart.series[index].addPoint([x, y], false);
             }
+          });
+          //artificially extend chart again
+          timeNow = (new Date()).getTime();
+          //need this in order to make sure the 0th series catches up
+          //very strange highstocks visual bug
+          /*if (chart.series[0]) {
+            chart.series[0].addPoint(
+              [
+                timeNow,
+                chart.series[0].yData[chart.series[0].yData.length - 1]
+              ]);
+            chart.series[0].points[chart.series[0].points.length - 1].remove();
+          }*/
+          chart.series.map(function(series) {
+            series.addPoint(
+              [
+                timeNow, 
+                series.yData[series.yData.length - 1]
+              ]);
           });
           chart.redraw();
         },
@@ -99,6 +136,7 @@ $(function() {
   }
 
   var chartFormatter = {
+    animation: false,
     renderTo: containerLabel,
     style: {
       fontFamily: "'Unica One', sans-serif"
@@ -106,11 +144,10 @@ $(function() {
     plotBorderColor: '#FFFFF',
     events : {
       load : function() {
-        getRealTimeData(this, true);
+        getRealTimeData(this);
       }
     }
   };
-
   var zoomButtons = [{
     count: 1,
     type: 'minute',
@@ -144,13 +181,6 @@ $(function() {
     exporting: {
       enabled: false
     },
-    plotOptions: {
-      line: {
-        dataLabels: {
-            enabled: true
-        },
-      }
-    },
     rangeSelector: {
       buttons: zoomButtons,
       inputEnabled: false,
@@ -181,7 +211,7 @@ $(function() {
       color += letters[Math.round(Math.random() * 5)];
       letters = '0123456789ABCDEF'.split('');
       for (var i = 0; i < 5; i++) {
-          color += letters[Math.round(Math.random() * 15)];
+        color += letters[Math.round(Math.random() * 15)];
       }
       if (takenColors[color]) {
         return getRandomDarkColor();
@@ -213,6 +243,21 @@ $(function() {
         }, 
         false);
     }
+    //extends the current fantasy value of each series to the current time
+    //[1] is the index of the y value of the series
+    //each series is represented as [[x1, y1], [x2, y2], ...]
+   // console.log(chart.series[0].data.length);
+    var timeNow = (new Date()).getTime();
+    chart.series.map(function(series) {
+      series.addPoint(
+        [
+          timeNow, 
+          series.yData[series.yData.length - 1]
+        ]);
+    });
+    //console.log(typeof(chart.series[0].data));
+    //console.log(chart.series[0].yData.length);
+    //console.log(chart.series[0].points.length);
     chart.redraw();
     var $pendingContainer = $('.isotope-pending');
     $pendingContainer.isotope({
@@ -226,12 +271,14 @@ $(function() {
     });
     //var $resellContainer = $('.resell-container');
     //insert the stuff
-    /*for (i = 0; i !== dataWrapper.takenAthletesList.length; ++i) {
-      $takenContainer.data('isotope').insert();
+    for (i = 0; i !== dataWrapper.takenBets.length; ++i) {
+      $takenContainer.data('isotope').insert(
+        portfolioCreateAthleteCard.createCard(dataWrapper.takenBets[i]));
     }
-    for (i = 0; i !== dataWrapper.pendingAthletesList.length; ++i) {
-      $pendingContainer.data('isotope').insert();
-    }*/
+    for (i = 0; i !== dataWrapper.pendingBets.length; ++i) {
+      $pendingContainer.data('isotope').insert(
+        portfolioCreateAthleteCard.createCard(dataWrapper.pendingBets[i]));
+    }
     /*for (i = 0; i !== dataWrapper.resellAthletesList.length; ++i) {
       $resellContainer.data('isotope').insert();
     }*/
@@ -248,7 +295,6 @@ $(function() {
     url: ajaxUrl,
     type: 'GET',
     success: function (data) {
-      console.log(data);
       initializePortfolio(data);
     },
     error: function(xhr, status, err) {
