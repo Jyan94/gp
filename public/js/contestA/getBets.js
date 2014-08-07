@@ -13,6 +13,7 @@
  * make sure athlete cards are sortable by id class
  * each bet has an id corresponding to its index in displayedBets
  * must include async and createAthleteCard before this file
+ * ASSUMES THE IDs for cards are of the form [string]-[array index]
  * 
  * $container.isotope({
     getSortData: {
@@ -32,6 +33,7 @@
   var $container;
   //request url
   var getBetUrl = 'getbets';
+  var DELIM = '-';
 
   //TODO: should make following lists not global
   //list of isotope elements
@@ -88,10 +90,12 @@
    */
   //replace with linear time sort or async sort in future
   function sortElementList() {
-
-    elementList.sort(function(a, b) {
-      return (parseInt(a.getAttribute('id').substring(12))
-              > parseInt(b.getAttribute('id').substring(12)));
+    var aId, bId;
+    elementList = elementList.sort(function(a, b) {
+      aId = a.getAttribute('id');
+      bId = b.getAttribute('id');
+      return parseInt(aId.substring(aId.indexOf(DELIM) + 1)) > 
+        parseInt(bId.substring(bId.indexOf(DELIM) + 1));
     });
   }
 
@@ -131,11 +135,10 @@
     var index;
 
     //fill in holes
-    console.log(holesArr);
     for (; j !== holesArr.length; ++j) {
       //keep i from before
       for (; i !== totalLength; ++i) {
-        id = (candidateDisplayedBets[i] ? candidateDisplayedBets[i].betId : null);
+        id = candidateDisplayedBets[i] ? candidateDisplayedBets[i].betId : null;
         if (
           id &&
           (typeof(newHashes.pending[id]) === 'undefined' &&
@@ -217,7 +220,7 @@
           newDisplayedBets.length < NUM_DISPLAYED; 
         ++i) {
 
-        id = (candidateDisplayedBets[i] ? candidateDisplayedBets[i].betId : null);
+        id = candidateDisplayedBets[i] ? candidateDisplayedBets[i].betId : null;
         //if none of them exist, and id exists continue
         if (
           id && 
@@ -382,7 +385,6 @@
   function requestGetAndUpdateBets() {
     //add delay to this if card flipped over
     if ($('.flipped').length === 0) {
-      console.log(1);
       $.ajax({
         url: getBetUrl,
         dataType: 'json',

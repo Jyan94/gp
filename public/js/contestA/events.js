@@ -10,6 +10,8 @@
 'use strict';
 
 (function(exports)  {
+  var DELIM = '-';
+
   function debounce( fn, threshold ) {
     var timeout;
     return function debounced() {
@@ -43,10 +45,13 @@
         var $this = $(this);
         var searchResult = qsRegex ? $this.text().match( qsRegex ) : true;
         var buttonResult = buttonFilter ? $this.is(buttonFilter) : true;
-        var overUnderResult = overUnderFilter ? $this.is(overUnderFilter) : true;
+        var overUnderResult = overUnderFilter ? 
+          $this.is(overUnderFilter) : true;
         var wageResult = wageResultFilter ? $this.is(wageResultFilter) : true;
-        var fantasyResult = fantasyResultFilter ? $this.is(fantasyResultFilter) : true;
-        return searchResult && buttonResult && overUnderResult && wageResult && fantasyResult;
+        var fantasyResult = fantasyResultFilter ? 
+          $this.is(fantasyResultFilter) : true;
+        return searchResult && 
+          buttonResult && overUnderResult && wageResult && fantasyResult;
       }
     });
 
@@ -56,18 +61,25 @@
       wager: function() {
         var wageBottom = $('#slider-range').slider("values", 0);
         var wageTop = $('#slider-range').slider("values", 1);
-        var wager = $(this).find('.playercard1-bottom.wager').text().split(" ")[0].substring(1);
+        var wager = $(this).find('.playercard1-bottom.wager')
+          .text().split(" ")[0].substring(1);
         return (parseFloat(wager) >= parseFloat(wageBottom)
                 && parseFloat(wager) <= parseFloat(wageTop));
       },
       over: function() {
-        var overOrUnder = $(this).find('.playercard1-bottom.wager').text().split(" ")[1];
+        var overOrUnder = $(this)
+          .find('.playercard1-bottom.wager')
+          .text()
+          .split(" ")[1];
         console.log(overOrUnder);
         console.log(overOrUnder.match(/over/));
         return overOrUnder.match(/over/);
       },
       under: function() {
-        var overOrUnder = $(this).find('.playercard1-bottom.wager').text().split(" ")[1];
+        var overOrUnder = $(this)
+          .find('.playercard1-bottom.wager')
+          .text()
+          .split(" ")[1];
         console.log(overOrUnder);
         console.log(overOrUnder.match(/under/));
         return overOrUnder.match(/under/);
@@ -159,7 +171,8 @@
     var windowWidthScale = ($(window).width() * 0.8) / 320;
     var windowHeightScale = ($(window).height() * 0.8) / 250;
 
-    return (windowWidthScale > windowHeightScale ? windowHeightScale : windowHeightScale);
+    return (windowWidthScale > windowHeightScale ? 
+      windowHeightScale : windowHeightScale);
   }
 
   (function () {
@@ -172,10 +185,12 @@
 
     $('.isotope').on('click', '.playercard1', function (e) {
       if ((flippedCard >= 0) || !(transitionDone)) {
+        $.noop();
       }
       else if (e.target.className
                === 'pure-button button-primary take-bet-button') {
-        var arrayIndex = e.currentTarget.id.substring(12);
+        var arrayIndex = e.currentTarget.id.substring(
+          e.currentTarget.id.indexOf(DELIM) + 1);
         var bet = contestAGetBets.getBetByIndex(arrayIndex);
         $.ajax({
           url: '/takePendingBet',
@@ -206,7 +221,8 @@
 
         var currentTarget = $('#' + e.currentTarget.id);
         currentTarget.addClass('flipped');
-        flippedCard = e.currentTarget.id.substring(12);
+        flippedCard = e.currentTarget.id.substring(
+          e.currentTarget.id.indexOf(DELIM) + 1);
 
         $('#marketHome-backdrop').addClass('active');
 
@@ -222,7 +238,9 @@
         currentTarget.addClass('transition');
         currentTarget.css({'top': 'calc(50% - 170px)',
                            'left': 'calc(50% - 135px)',
-                           '-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
+                           '-webkit-transform': 
+                           'scale(' + scale + ')' +
+                           ' rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
         currentTarget.bind("webkitTransitionEnd", function(e){ 
           $(this).unbind(e);
           transitionDone = true;
@@ -240,13 +258,16 @@
         flippedCard = -1;
 
         var currentTarget = $('#playercard1-' + prevFlippedCard);
-        var scale = currentTarget.css('-webkit-transform').match(/(-?[0-9\.]+)/g)[2];
+        var scale = currentTarget.css('-webkit-transform')
+          .match(/(-?[0-9\.]+)/g)[2];
 
         $('#marketHome-backdrop').removeClass('active');
 
         var currentTargetOffset = currentTarget.offset();
-        var absoluteOffsetX = currentTargetOffset.left + (160 * scale) - 255; //is originally 120px + 10px + 125px = 255px away needs to be 320 now
-        var absoluteOffsetY = currentTargetOffset.top + (125 * scale) - 170; //is originally 160px + 10px = 170px away needs to be 250 now
+        var absoluteOffsetX = currentTargetOffset.left + (160 * scale) - 255; 
+        //is originally 120px + 10px + 125px = 255px away needs to be 320 now
+        var absoluteOffsetY = currentTargetOffset.top + (125 * scale) - 170; 
+        //is originally 160px + 10px = 170px away needs to be 250 now
 
         currentTarget.removeClass('transition');
         currentTarget.css({'position': 'absolute',
@@ -273,7 +294,8 @@
         var currentTarget = $('#'+ $('.flipped')[0].id);
         var scale = getPlayercard1Scale(currentTarget);
 
-        currentTarget.css({'-webkit-transform': 'scale(' + scale + ') rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
+        currentTarget.css({'-webkit-transform': 'scale(' + scale + ')' +
+          'rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
       }
 
       e.preventDefault();
@@ -282,20 +304,25 @@
     $('.isotope').on('click', '.playercard1-back', function (e) {
       if (e.target.className.slice(0, 20) === 'playercard1-back-tab') {
         var currentTargetId = e.target.id;
-        var currentTargetCardPrefix = '#' + currentTargetId.slice(0, currentTargetId.length - 6) + '-';
+        var currentTargetCardPrefix = '#' + 
+          currentTargetId.slice(0, currentTargetId.length - 6) + '-';
 
         for (var i = 0; i < tabNames.length; i++) {
-          if (currentTargetId.substring(currentTargetId.length - 5) === tabNames[i]) {
+          if (currentTargetId
+            .substring(currentTargetId.length - 5) === tabNames[i]) {
             activeTabIndex = i;
           }
           else {
             $(currentTargetCardPrefix + tabNames[i]).removeClass('active');
-            $(currentTargetCardPrefix + tabNames[i] + '-content').css('display', 'none');
+            $(currentTargetCardPrefix + tabNames[i] + '-content')
+              .css('display', 'none');
           }
         }
 
-        $(currentTargetCardPrefix + tabNames[activeTabIndex] + '-content').fadeIn();
-        $(currentTargetCardPrefix + tabNames[activeTabIndex]).addClass('active');
+        $(currentTargetCardPrefix + tabNames[activeTabIndex] + '-content')
+          .fadeIn();
+        $(currentTargetCardPrefix + tabNames[activeTabIndex])
+          .addClass('active');
       }
 
       e.preventDefault();
@@ -343,8 +370,8 @@
           minLength: 3
         }).data('ui-autocomplete')._renderItem = function ( ul, item ) {
             return $('<li>')
-              .append('<a><img style="background-image: url(' + item.image + ')">' +
-                item.label + '</a>')
+              .append('<a><img style="background-image: url(' + 
+                item.image + ')">' + item.label + '</a>')
               .appendTo(ul);
         };
       }
@@ -365,15 +392,21 @@
       wagerAmount = $('#wagerAmount').val();
       fantasyValue = $('#fantasyValue').val();
         
-      var playerString = "$" + wagerAmount + " " + overUnder + " " + fantasyValue + " FP";
-      $('.playercard1#create').find('.playercard1-bottom.wager p').replaceWith('<p>' + playerString + '</p');
-    }, 500));
+      var playerString = "$" + wagerAmount + 
+        " " + overUnder + " " + fantasyValue + " FP";
+      $('.playercard1#create')
+        .find('.playercard1-bottom.wager p')
+        .replaceWith('<p>' + playerString + '</p');
+    }), 500);
 
     $('input[type=\'radio\']').on('change', function() {
       overUnder = $('input[type=\'radio\']:checked')[0].value.toLowerCase();
         
-      var playerString = "$" + wagerAmount + " " + overUnder + " " + fantasyValue + " FP";
-      $('.playercard1#create').find('.playercard1-bottom.wager p').replaceWith('<p>' + playerString + '</p');
+      var playerString = "$" + wagerAmount + 
+        " " + overUnder + " " + fantasyValue + " FP";
+      $('.playercard1#create')
+      .find('.playercard1-bottom.wager p')
+      .replaceWith('<p>' + playerString + '</p');
     });
 
     //create bet
@@ -393,7 +426,8 @@
             expirationTimeMinutes: null,
             fantasyValue: $('#fantasyValue').val(),
             gameId: null,
-            isOverBettor: ($('input[type=\'radio\']:checked')[0].value.toLowerCase() === 'over'),
+            isOverBettor: ($('input[type=\'radio\']:checked')[0]
+              .value.toLowerCase() === 'over'),
             sport: athleteObj.sport, 
             wager: $('#wagerAmount').val()
           },

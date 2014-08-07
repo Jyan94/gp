@@ -9,11 +9,13 @@ require('rootpath')();
 var configs = require('config/index');
 var contestAbets = require('libs/contestA/exports');
 var athletes = require('libs/athletes/exports');
+var games = require('libs/games/exports');
 var customSetInterval = configs.constants.globals.customSetInterval;
 var pollIntervals = configs.constants.pollIntervals;
 var contestApollInterval = pollIntervals.contestA;
 var contestATimeseriesPollInterval = pollIntervals.contestAtimeseries;
 var athleteUpdateInterval = pollIntervals.athleteUpdate;
+var gameUpdateInterval = pollIntervals.gameUpdate;
 
 function startPollingContestABets() {
   contestAbets.UpdateGlobals.loadAllBets(function(err) {
@@ -57,6 +59,19 @@ function startPollingAthletes() {
   });
 }
 
+function startPollingGames() {
+  games.UpdateGlobals.updateGames(function(err) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      setTimeout(function() {
+        startPollingGames();
+      }, gameUpdateInterval);
+    }
+  });
+}
+
 function startPollingContestBContests() {
   customSetInterval(function(callback) {
     //add in content
@@ -68,4 +83,5 @@ exports.start = function() {
   //disable timeseries caching for now since it is not necessary
   //startPollingContestATimeseries();
   startPollingAthletes();
+  startPollingGames();
 }

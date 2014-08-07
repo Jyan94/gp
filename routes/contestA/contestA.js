@@ -9,7 +9,10 @@ var FormatBets = ContestA.FormatBets;
 var ModifyBets = ContestA.ModifyBets;
 var GetTimeseries = ContestA.GetTimeseries;
 var Athletes = require('libs/athletes/exports');
-var Game = require('libs/cassandra/baseball/game.js')
+var Games = require('libs/games/exports');
+
+var contestAGlobals = configs.globals.contestA;
+var customSetInterval = configs.constants.globals.customSetInterval;
 
 /*
  * ====================================================================
@@ -26,7 +29,7 @@ function renderMarketHome(req, res, next) {
  * SEND MARKET HOME DAILY BOXSCORES
  * ====================================================================
  */
-
+/*
 function parseDailyBoxscores(game, callback) {
   callback(null,
     {
@@ -58,14 +61,14 @@ function sendMarketHomeDailyBoxscores(req, res, next) {
     }
   });
 }
-
+*/
 /*
  * ====================================================================
  * SEND MARKET HOME TOP PLAYERS
  * ====================================================================
  */
 
-
+/*
 function parseTopPlayers(athlete, callback) {
   var statistics = athlete.statistics;
   var statisticsLength = athlete.statistics.length;
@@ -106,7 +109,7 @@ function sendMarketHomeTopPlayers(req, res, next) {
       next(err);
     });
 }
-
+*/
 /*
  * ====================================================================
  * PORTFOLIO
@@ -176,12 +179,6 @@ function getUserBets(req, res) {
     });
   });
 }
-
-/*
- * ====================================================================
- * SEND MARKET HOME PLAYER STATISTICS
- * ====================================================================
- */
 
 /*
  * ====================================================================
@@ -313,6 +310,67 @@ function getAllAthletes(req, res) {
   res.send(Athletes.Select.getAllAthletesJSON());
 }
 
+function getTodaysGames(req, res, next) {
+  /*console.log(Games.Select.getAllGamesList(), 111111111);
+  async.map(Games.Select.getAllGamesList(),
+    function (game, callback) {
+      callback(null, {
+        awayScore: game.awayScore,
+        currentInning: game.currentInning,
+        gameDate: game.gameDate,
+        homeScore: game.homeScore,
+        id: game.id,
+        longAwayName: game.longAwayName,
+        longHomeName: game.longHomeName,
+        shortAwayName: game.shortAwayName,
+        shortHomeName: game.shortHomeName, //acronym for home team
+        startTime: game.startTime,
+        status: game.status
+      });
+    },
+    function (err, games) {
+      if (err) {
+        next(err);
+      }
+      else {
+        res.send(JSON.stringify(games));
+      }
+    });*/
+  res.send(Games.Select.getAllGamesJSON());
+}
+
+/*
+ * ====================================================================
+ * BET BACKGROUND FUNCTIONS (PENDING)
+ * ====================================================================
+ */
+
+function checkExpired (pendingBet) {
+
+}
+
+function updateStateBetsPending (callback) {
+  var pendingBets = contestAGlobals.pendingBets;
+
+  async.waterfall([
+    function (callback) {
+      async.map(pendingBets, checkExpired, callback);
+    }],
+    function (err) {
+      callback(err);
+    });
+}
+
+/*
+ * ====================================================================
+ * BET BACKGROUND FUNCTIONS (ACTIVE)
+ * ====================================================================
+ */
+
+function updateBetsActive () {
+
+}
+
 /*
  * ====================================================================
  * EXPORTS
@@ -320,12 +378,13 @@ function getAllAthletes(req, res) {
  */
 
 exports.renderMarketHome = renderMarketHome;
-exports.sendMarketHomeDailyBoxscores = sendMarketHomeDailyBoxscores;
-exports.sendMarketHomeTopPlayers = sendMarketHomeTopPlayers;
+/*exports.sendMarketHomeDailyBoxscores = sendMarketHomeDailyBoxscores;
+exports.sendMarketHomeTopPlayers = sendMarketHomeTopPlayers;*/
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.getTimeseries = getTimeseries;
 exports.getAllAthletes = getAllAthletes;
+exports.getTodaysGames = getTodaysGames;
 exports.renderPortfolio = renderPortfolio;
 exports.renderGraph = renderGraph;
 exports.takePendingBet = takePendingBet;

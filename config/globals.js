@@ -135,10 +135,16 @@ exports.athletes = {
  */
 exports.allAthletesCacheJSON = null;
 
+//maps of gameId to object containing game date
 exports.games = {
-  Baseball: {
-    //gameId: object containing game date
-  }
+  baseballList: [],
+  baseballIdMap: {},
+  footballList: [],
+  footballIdMap: {},
+  basketballList: [],
+  basketballIdMap: {},
+  allGamesList: [],
+  allGamesIdMap: {}
 }
 
 exports.currentSportsInSeason = {
