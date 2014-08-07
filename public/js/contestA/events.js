@@ -361,13 +361,13 @@
       }
     );
     
-    $('#betForm').on('input', debounce(function(){
+    $('#wagerAmount, #fantasyValue').on('input', debounce(function () {
       wagerAmount = $('#wagerAmount').val();
       fantasyValue = $('#fantasyValue').val();
         
       var playerString = "$" + wagerAmount + " " + overUnder + " " + fantasyValue + " FP";
       $('.playercard1#create').find('.playercard1-bottom.wager p').replaceWith('<p>' + playerString + '</p');
-    }), 500);
+    }, 500));
 
     $('input[type=\'radio\']').on('change', function() {
       overUnder = $('input[type=\'radio\']:checked')[0].value.toLowerCase();
@@ -410,8 +410,7 @@
       }
     });
 
-  }());
-  
+  })();
 
   //more event bindings below
   //...

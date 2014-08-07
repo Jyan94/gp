@@ -88,8 +88,10 @@
    */
   //replace with linear time sort or async sort in future
   function sortElementList() {
+
     elementList.sort(function(a, b) {
-      return parseInt(a.getAttribute('id')) > parseInt(b.getAttribute('id'));
+      return (parseInt(a.getAttribute('id').substring(12))
+              > parseInt(b.getAttribute('id').substring(12)));
     });
   }
 
