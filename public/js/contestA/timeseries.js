@@ -41,8 +41,12 @@ $(function() {
         success: function(data) {
           if (data.length > 0) {
             lastUpdate = (new Date()).getTime();
+            if (data[0].timeVal < 
+                series.points[series.points.length - 1].timeVal) {
+              series.points[series.points.length - 1].remove();
+            }
           }
-          series.points[series.points.length - 1].remove();
+
           for (var i = 0; i !== data.length; ++i) {
             x = parseInt(data[i].timeVal);
             y = parseFloat(data[i].fantasyVal);
@@ -50,10 +54,12 @@ $(function() {
               [x, y],
               false);
           }
+
           series.addPoint([
             (new Date()).getTime(), 
             series.yData[series.yData.length - 1]
           ]);
+          
           chart.redraw();
         },
         error: function(xhr, status, err) {

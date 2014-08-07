@@ -59,6 +59,7 @@ $(function() {
   function getRealTimeData(chart) {
     var lastUpdate = (new Date()).getTime();
     var timeNow;
+    var i;
     //every 10 seconds query for updates
     setInterval(function() {
       $.ajax({
@@ -69,16 +70,25 @@ $(function() {
           'timeUpdate': lastUpdate
         },
         success: function(data) {
-          for (var i = 0; i !== data.length; ++i) {
+          for (i = 0; i !== data.length; ++i) {
             if (data[i].length > 0) {
               lastUpdate = (new Date()).getTime();
               break;
             }
           }
+          for (i = 0; i !== data.length; ++i) {
+            if (data[i].length > 0 && 
+                data[i][0].timeVal < 
+                  chart.series[i].points[chart.series[i].points.length - 1]) {
+
+              chart.series[i]
+                .points[chart.series[i].points.length - 1].remove();
+            }
+          }
           //remove the most recent point artificially added to extend graph
-          chart.series.map(function(series) {
+          /*chart.series.map(function(series) {
             series.points[series.points.length - 1].remove();
-          });
+          });*/
           data.map(function(data, index) {
             var j, x, y;
             for (j = 0; j !== data.length; ++j) {
@@ -91,14 +101,14 @@ $(function() {
           timeNow = (new Date()).getTime();
           //need this in order to make sure the 0th series catches up
           //very strange highstocks visual bug
-          if (chart.series[0]) {
+          /*if (chart.series[0]) {
             chart.series[0].addPoint(
               [
                 timeNow,
                 chart.series[0].yData[chart.series[0].yData.length - 1]
               ]);
             chart.series[0].points[chart.series[0].points.length - 1].remove();
-          }
+          }*/
           chart.series.map(function(series) {
             series.addPoint(
               [
