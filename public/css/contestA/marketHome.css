@@ -44,7 +44,7 @@ a {
   color: black;
 }
 a:hover {
-  color: #990604;
+  color: #cecece;
 }
 button {
   background-color: #cecece;
@@ -98,10 +98,9 @@ input[type="text"] {
 .isotope {
   border: 0px;
   display: block;
-  margin-left: 120px;
-  margin-right: auto;
+  margin-left: 10%;
   padding-top: 145px;
-  max-width: 980px;
+  width: 65%;
   position: relative;
 }
 
@@ -141,7 +140,8 @@ input[type="text"] {
 .makeBets {
   margin-top: 10%;
   position: fixed;
-  margin-left: 1120px;
+  float: left;
+  margin-left: 75%;
   background-color: white;
   height: 610px;
   width: 275px;
@@ -494,8 +494,10 @@ input[type="text"] {
 }
 
 #daily-boxscore-ticker-wrapper {
-  background-color: #17599B;
-  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
+  background-color: #000;
+  border-style: solid;
+  border-color: white;
+  border-width: 1px 1px 1px 1px;
   top: 45px;
 }
 
@@ -524,7 +526,7 @@ input[type="text"] {
   from {
           -webkit-transform: translate(1920px, 0)
        }
-  to { 
+  to {
         -webkit-transform: translate(-100%, 0)
      }
 }
