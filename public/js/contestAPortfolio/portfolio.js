@@ -36,6 +36,7 @@ $(function() {
   var ajaxUrl = '/initPortfolio';
   var updateAjaxUrl = '/getMultiAthleteTimeseries';
   var takenColors = {};
+  var MAX_SERIES = 5;
 
   /**
    * wrapper for objects received from server
@@ -49,6 +50,7 @@ $(function() {
    *   resellAthletesIdMap: map of athleteId to index in resell array
    */
   var dataWrapper = {};
+  var timeseriesAthleteIds = [];
 
   function getRealTimeData(chart) {
     var allSeries = chart.series;
@@ -59,7 +61,7 @@ $(function() {
         url: updateAjaxUrl,
         type: 'GET',
         data: {
-          'athleteIds': dataWrapper.pendingAthletesIds,
+          'athleteIds': timeseriesAthleteIds,
           'timeUpdate': lastUpdate
         },
         success: function(data) {
@@ -195,12 +197,19 @@ $(function() {
       return [dataPoint.timeVal, dataPoint.fantasyVal];
     };
     var i;
-    for (i = 0; i !== data.timeseriesList.length; ++i) {
+    timeseriesAthleteIds = data
+      .data
+      .takenAthletesList
+      .slice(0, MAX_SERIES)
+      .map(function(athlete) {
+        return athlete.id;
+      });
+    for (i = 0; i !== data.timeseriesList.length && i < MAX_SERIES; ++i) {
       chart.addSeries(
         {
           color: getRandomDarkColor(),
           data: data.timeseriesList[i].map(mapFunc),
-          name: dataWrapper.pendingAthletesList[i].fullName
+          name: dataWrapper.takenAthletesList[i].fullName
         }, 
         false);
     }
@@ -239,6 +248,7 @@ $(function() {
     url: ajaxUrl,
     type: 'GET',
     success: function (data) {
+      console.log(data);
       initializePortfolio(data);
     },
     error: function(xhr, status, err) {

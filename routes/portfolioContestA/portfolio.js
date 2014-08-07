@@ -20,14 +20,14 @@ function renderPortfolio(req, res) {
   res.render('portfolioContestA/portfolio.html');
 }
 
-function getAthletesFromBets(betArr, athletesArr, athletesIdMap, callback) {
+function getAthletesFromBets(betArr, callback) {
   async.reduce(
     betArr, 
     {index: 0, idToIndex: {}, athletes: []}, 
     function(memo, betObj, callback) {
-      if (!memo.idToIndex[betObj.athleteId]) {
+      if (betObj && !memo.idToIndex[betObj.athleteId]) {
         memo.idToIndex[betObj.athleteId] = memo.index;
-        memo.athletes.push(Athlete.Select.getByAthleteId(betObj.athleteId));
+        memo.athletes.push(Athlete.Select.getAthleteById(betObj.athleteId));
         ++memo.index;
       }
       callback(null, memo);
@@ -37,35 +37,61 @@ function getAthletesFromBets(betArr, athletesArr, athletesIdMap, callback) {
         callback(err);
       }
       else {
-        athletesArr = result.athletes;
-        athletesIdMap = result.idToIndex;
-        callback(null);
+        callback(null, {
+          athletesArr: result.athletes,
+          athletesIdMap: result.idToIndex
+        });
       }
     });
 }
 
 function sendOverInitData(req, res, next) {
   var sendObj = {};
-  sendObj.data = {};
+  sendObj.data = {
+    taken: [],
+    takenAthletesList: [],
+    takenAthletesIdMap: {},
+    pending: [],
+    pendingAthletesList: [],
+    pendingAthletesIdMap: {},
+    resell: [],
+    resellAthletesList: [],
+    resellAthletesIdMap: {}
+  };
+  sendObj.timeseries = [];
   async.waterfall(
   [
     function(callback) {
+      var filterNulls = function(arr, callback) {
+        async.filter(arr, function(item, callback) {
+          callback(item);
+        }, callback);
+      } 
       async.parallel(
       [
         function(callback) {
-          FormatBets.getUserTaken(callback);
+          FormatBets.getUserTaken(req.user.username, callback);
         },
         function(callback) {
-          FormatBets.getUserPending(callback);
+          FormatBets.getUserPending(req.user.username, callback);
         },
         function(callback) {
-          FormatBets.getUserResell(callback);
+          FormatBets.getUserResell(req.user.username, callback);
         }
       ],
-      function(err, results) {
-        sendObj.data.taken = results[0];
-        sendObj.data.pending = results[1];
-        sendObj.data.resell = results[2];
+      callback);
+    },
+    function(results, callback) {
+      async.map(results, function(arr, callback) {
+        async.filter(arr, function(item, callback) {
+          callback(item);
+        }, function(results) {
+          callback(null, results);
+        });
+      }, function (err, results) {
+        sendObj.data.taken = results[0] || [];
+        sendObj.data.pending = results[1] || [];
+        sendObj.data.resell = results[2] || [];
         callback(null);
       });
     },
@@ -73,25 +99,40 @@ function sendOverInitData(req, res, next) {
       async.parallel(
       [
         function(callback) {
-          getAthletesFromBets(
-            sendObj.data.taken, 
-            sendObj.data.takenAthletesList, 
-            sendObj.data.takenAthletesIdMap,
-            callback);
+          getAthletesFromBets(sendObj.data.taken, function(err, results) {
+            if (err) {
+              callback(err);
+            }
+            else {
+              sendObj.data.takenAthletesList = results.athletesArr;
+              sendObj.data.takenAthletesIdMap = results.idToIndex;
+              callback(null);
+            }
+          });
         },
         function(callback) {
-          getAthletesFromBets(
-            sendObj.data.pending, 
-            sendObj.data.pendingAthletesList, 
-            sendObj.data.pendingAthletesIdMap,
-            callback);
+          getAthletesFromBets(sendObj.data.pending, function(err, results) {
+            if (err) {
+              callback(err);
+            }
+            else {
+              sendObj.data.pendingAthletesList = results.athletesArr;
+              sendObj.data.pendingAthletesIdMap = results.idToIndex;
+              callback(null);
+            }
+          });
         },
         function(callback) {
-          getAthletesFromBets(
-            sendObj.data.resell, 
-            sendObj.data.resellAthletesList, 
-            sendObj.data.resellAthletesIdMap,
-            callback);
+          getAthletesFromBets(sendObj.data.resell, function(err, results) {
+            if (err) {
+              callback(err);
+            }
+            else {
+              sendObj.data.resellAthletesList = results.athletesArr;
+              sendObj.data.resellAthletesIdMap = results.idToIndex;
+              callback(null);
+            }
+          });
         }
       ],
       function(err) {
@@ -102,7 +143,12 @@ function sendOverInitData(req, res, next) {
       async.map(
         sendObj.data.takenAthletesList,
         function(athlete, callback) {
-          GetTimeseries.getByAthleteId(athlete.id, null, callback);
+          if (athlete) {
+            GetTimeseries.getByAthleteId(athlete.id, null, callback);
+          }
+          else {
+            callback(null, null);
+          }
         },
         function(err, results) {
           if (err) {
@@ -126,7 +172,9 @@ function sendOverInitData(req, res, next) {
 }
 
 function getMultiTimeseries(req, res, next) {
+  req.query.timeUpdate = req.query.timeUpdate || 0;
   req.query.timeUpdate = parseInt(req.query.timeUpdate);
+  req.query.athleteIds = req.query.athleteIds || [];
   async.map(req.query.athleteIds, function(id, callback) {
     GetTimeseries.getByAthleteId(id, req.query.timeUpdate, callback);
   }, function(err, results) {
