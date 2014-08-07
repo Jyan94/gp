@@ -16,9 +16,9 @@ app.use(passport.session());
 //root path
 //FOR TESTING PURPOSES
 var staticPages = require('routes/static/routes');
-app.get('/', staticPages.home);
+app.get('/', staticPages.features);
 //commented out for purposes of making public
-app.get('/home', staticPages.home);
+//app.get('/home', staticPages.home);
 
 app.get('/about', staticPages.about);
 app.get('/contact', staticPages.contact);
@@ -65,7 +65,6 @@ app.get('/logout', logout.logout);
 app.all('*', login.checkUser);
 
 //market
-var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);

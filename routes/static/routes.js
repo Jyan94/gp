@@ -27,15 +27,6 @@ exports.faq = function (req, res) {
   }
 }
 
-exports.features = function (req, res) {
-  if (req.user) {
-    res.render('static/features.hbs', {link: 'logout', display: 'Logout'});
-  }
-  else {
-    res.render('static/features.hbs', {link: 'login', display: 'Login'});
-  }
-}
-
 exports.home = function (req, res) {
   if (req.user) {
     res.redirect('/user');
@@ -60,5 +51,14 @@ exports.terms = function (req, res) {
   }
   else {
     res.render('static/terms.hbs', {link: 'login', display: 'Login'});
+  }
+}
+
+exports.features = function (req, res) {
+  if (req.user) {
+    res.render('features/features.html', {link: 'logout', display: 'Logout'});
+  }
+  else {
+    res.render('features/features.html', {link: 'login', display: 'Login'});
   }
 }
