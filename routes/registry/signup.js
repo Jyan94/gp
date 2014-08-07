@@ -31,9 +31,9 @@ function insertUser(uuid, body, res, next) {
         null, //age
         body.email, //email
         null, //facebook_id
-        body.firstName, //first_name
+        null, //first_name
         defaultPlayerImage, //image
-        body.lastName, //last_name
+        null, //last_name
         10000.0, //starting money
         hash, //password
         null, //payment_info
@@ -144,7 +144,7 @@ var processSignup = function(req, res, next) {
 }
 
 var renderSignup = function(req, res) {
-  res.render('registry/signup');
+  res.render('registry/signup.html');
 }
 
 //exports
