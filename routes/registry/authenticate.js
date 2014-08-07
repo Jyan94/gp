@@ -41,6 +41,7 @@ function localStrategyVerify(username, password, done) {
   User.selectByUsername(username, selectCallback);
 }
 
+/*
 passport.use(new FacebookStrategy(FacebookStrategyObj,
   function(accessToken, refreshToken, profile, done) {
     var profileUsername = profile.name.givenName + profile.id;
@@ -109,7 +110,7 @@ passport.use(new FacebookStrategy(FacebookStrategyObj,
       User.selectByEmail(profileUsername, selectEmailCallback);
     });
   }
-));
+));*/
 
 passport.use(new LocalStrategy(
   LocalStrategyObject,

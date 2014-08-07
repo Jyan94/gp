@@ -27,16 +27,6 @@ html(lang='en')
             a(href='/login') Login
     div#login-box-wrapper.content
       div#login-box-wrapper.bounding-box.rounded
-        if errors.length > 0
-          each error in errors
-            div.padded-less
-              div.flash-error.rounded
-                div.padded-less
-                  div
-                    img(src='assets/common/deleteButton.png' width='30' height='30' style="margin-right: 10px; float: left")
-                    h3(style="padding: 4px")=error.title
-                  each part in error.parts
-                    p=part
         //div.padded
           a(href='/auth/facebook')
             img(src='assets/registry/login-with-facebook.png' width='154' height='22')
