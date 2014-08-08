@@ -81,7 +81,11 @@
           point.fantasyVal
         ]
       });
-      retArr.push([(new Date()).getTime(), retArr[retArr.length - 1][1]]);
+
+      if (retArr.length > 0) {
+        retArr.push([(new Date()).getTime(), retArr[retArr.length - 1][1]]);
+      }
+      
       return retArr;
     }
 

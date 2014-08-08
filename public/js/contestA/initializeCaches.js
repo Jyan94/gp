@@ -67,9 +67,7 @@
               var change = fantasyPoints[0] - fantasyPoints[1];
 
               memo += ('<p>' +
-                         (athlete.fullName ? athlete.fullName : athlete.athleteId) +
-                          ' ' +
-                          fantasyPoints[0]);
+                         (athlete.fullName ? athlete.fullName : athlete.athleteId));
 
               if (change >= 0) {
                 memo += ('&#160;<img src=\'/assets/uparrow.png\' style=\'width: 12px\'>&#160;' +
@@ -204,9 +202,9 @@
                    '</p>');
         }
 
-        if (index !== array.length - 1) {
+        //if (index !== array.length - 1) {
           memo += '<p>&#160;&#160;&#160;&#160;&#160</p>';
-        }
+        //}
 
         index++;
         
