@@ -17,7 +17,7 @@ var Athlete = require('libs/athletes/exports');
  */
 
 function renderPortfolio(req, res) {
-  res.render('portfolioContestA/portfolio.html');
+  res.render('portfolioContestA/portfolio.hbs');
 }
 
 function getAthletesFromBets(betArr, callback) {
