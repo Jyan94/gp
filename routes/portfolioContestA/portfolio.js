@@ -17,7 +17,13 @@ var Athlete = require('libs/athletes/exports');
  */
 
 function renderPortfolio(req, res) {
-  res.render('portfolioContestA/portfolio.hbs', {user: req.user});
+  res.render(
+    'portfolioContestA/portfolio.hbs', 
+    {
+      userImage: req.user.image,
+      username: req.user.username,
+      money: Math.round(parseFloat(req.user.money) * 100) / 100
+    });
 }
 
 function getAthletesFromBets(betArr, callback) {
