@@ -95,7 +95,7 @@
                 callback(err);
               }
               else {
-                $('#top-player-ticker').html(tickerContent);
+                $('#top-player-ticker-text').html(tickerContent);
                 callback(null);
               }
             });
@@ -217,7 +217,7 @@
           callback(err);
         }
         else {
-          $('#daily-boxscore-ticker').html(tickerContent);
+          $('#daily-boxscore-ticker-text').html(tickerContent);
           callback(null);
         }
       });
