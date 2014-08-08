@@ -14,7 +14,7 @@ var defaultPlayerImage = constants.defaultPlayerImage;
 var SMTP = constants.SMTP;
 var smtpTransport = nodemailer.createTransport(SMTP.name, SMTP.configObject);
 
-function insertUser(uuid, body, res, next) {
+function insertUser(uuid, body, req, res, next) {
   var bcryptHashCallback = function(err, hash) {
     if (err) {
       next(err);
@@ -52,18 +52,58 @@ function insertUser(uuid, body, res, next) {
           res.send({value: responseValues.success});
         }
       };
+      var redirectSignup = function() {
+        async.waterfall(
+        [
+          function(callback) {
+            User.selectById(uuid, callback);
+          },
+          function(user, callback) {
+            req.login(user, function(err) {
+              callback(err);
+            });
+          }
+        ],
+        function(err) {
+          if (err) {
+            next(err);
+          }
+          else {
+            res.redirect('/user');
+          }
+        });
+      };
       var insertCallback = function(err) {
         if (err) {
           next(err);
         }
-        else if (configs.isDev()){
-          res.send({value: responseValues.success});
+        else {
+          redirectSignup();
+        }
+        //add in verification eventually
+        /*else if (configs.isDev()){
+          //res.send({value: responseValues.success});
+          User.selectById(uuid, function(err, result) {
+            if (err) {
+              res.send({message: 'Cannot redirect signup', status: 500});
+            }
+            else {
+              req.login(result, function (err) {
+                if (err) {
+                  return next(err);
+                }
+                else {
+                  return res.redirect('/user');
+                }
+              });
+            }
+          });
         }
         else {
           var MailOptions = 
             SMTP.createMailOptions(body.email, verificationCode);
           smtpTransport.sendMail(MailOptions, sendMailCallback);
-        }
+        }*/
       };
       User.insert(fields, insertCallback);
     }
@@ -115,7 +155,7 @@ var processSignup = function(req, res, next) {
 
       User.selectByUsername(body.username, selectUsernameCallback);
     },
-
+ 
     //email lookup
     function(callback) {
       var selectEmailCallback = function(err, result) {
@@ -138,7 +178,7 @@ var processSignup = function(req, res, next) {
       next(err);
     }
     else {
-      insertUser(uuid, body, res, next);
+      insertUser(uuid, body, req, res, next);
     }
   });
 }

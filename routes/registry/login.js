@@ -25,7 +25,7 @@ var checkUser = function(req, res, next) {
  */
 var redirectLogin = function(req, res, next) {
   if (req.user) {
-    res.redirect('/user');
+    res.redirect('/marketHome');
   } else {
     next();
   }

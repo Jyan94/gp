@@ -119,9 +119,6 @@ function renderPortfolio(req, res) {
   res.render('contestA/portfolio.hbs');
 }
 
-function renderGraph(req, res) {
-  res.render('handlebarsPartials/contestATimeseriesAthleteGraph.html');
-}
 /*
  * ====================================================================
  * Bets
@@ -330,7 +327,6 @@ exports.getMarketBets = getMarketBets;
 exports.getTimeseries = getTimeseries;
 exports.getAllAthletes = getAllAthletes;
 exports.renderPortfolio = renderPortfolio;
-exports.renderGraph = renderGraph;
 exports.takePendingBet = takePendingBet;
 exports.placePendingBet = placePendingBet;
 exports.removePendingBet = removePendingBet;
