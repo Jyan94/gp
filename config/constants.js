@@ -136,7 +136,7 @@ exports.verificationMessages = {
  * ====================================================================
  */
 exports.pollIntervals = {
-  contestA: 2000,
+  contestA: 500,
   athleteUpdate: 6 * 60000 * 60, //every 6 hrs
   contestAtimeseries: 2000,
   gameUpdate: 2000

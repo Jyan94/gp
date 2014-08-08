@@ -306,14 +306,14 @@ input[type="text"] {
 }
 
 /* ---- back ---- */
-
+/* HARRISON CHANGE: MADE back-info-height 240px -> 0 px and tab height 100%-240px -> 100%-0px*/
 .playercard1-back-info {
   background-color: #ccc;
-  height: 240px;
+  height: 0;
 }
 
 .playercard1-back-tab-container {
-  height: calc(100% - 240px);
+  height: calc(100% - 0px);
   overflow: hidden;
 }
 
