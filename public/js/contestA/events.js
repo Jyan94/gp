@@ -9,6 +9,7 @@
 /*global contestALoadGamesCache*/
 /*global initializeCaches*/
 /*global contestAGetBets*/
+/*global timeseries*/
 'use strict';
 
 (function(exports)  {
@@ -78,6 +79,7 @@
       }
     });
 
+    //load the bets from server here
     contestAGetBets.requestGetAndUpdateBets();
 
     var filterFns = {
@@ -207,9 +209,6 @@
             //preferably show a message for 2 seconds
             flash(true, message.message);
           },
-          failure: function (response) {
-            flash(false, response);
-          },
           error: function(xhr, status, err) {
             flash(false, err);
           }
@@ -220,6 +219,13 @@
 
         var currentTarget = $('#' + e.currentTarget.id);
         currentTarget.addClass('flipped');
+        //set up and create highcharts stuff here
+        var arrayId = currentTarget.find('div.id').text();
+        var graphContainerId = 'playercard1-' + arrayId + '-graph-container';
+        var athleteName = currentTarget.find('div.athleteName').text();
+        var athleteId = currentTarget.find('div.athleteId').text();
+        timeseries.createGraph(graphContainerId, athleteName, athleteId);
+        //end
         flippedCard = e.currentTarget.id.substring(
           e.currentTarget.id.indexOf(DELIM) + 1);
 

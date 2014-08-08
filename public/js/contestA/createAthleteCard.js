@@ -50,6 +50,8 @@
     var retval = $(
       '<div id=\'playercard1-' + arrayId + '\' class=\'playercard1 ' + sport + '\'>' +
         '<div class=\'id\' style=\'display: none;\'>' + arrayId + '</div>' +
+        '<div class=\'athleteName\' style=\'display: none;\'>' + fullName + '</div>' +
+        '<div class=\'athleteId\' style=\'display: none;\'>' + athleteId + '</div>' +
         '<div class=\'playercard1-front\'>' +
           '<div class=\'playercard1-playerpic\'>' + 
             '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +

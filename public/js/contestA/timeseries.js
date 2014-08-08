@@ -134,7 +134,8 @@
         rangeSelector: {
           buttons: zoomButtons,
           inputEnabled: false,
-          selected: 2
+          //default show all at once
+          selected: 5
         },
         title : {
           text : athleteName + '\'s fantasy value over time'
