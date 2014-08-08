@@ -232,7 +232,7 @@ function placePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'success': 'Bet successfully made!', 'status': 200});
+      res.send({'message': 'Bet successfully made!', 'status': 200});
     }
   });
 }
@@ -254,7 +254,7 @@ function removePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'success': 'Bet successfully deleted!', 'status': 200});
+      res.send({'message': 'Bet successfully deleted!', 'status': 200});
     }
   });
 }
@@ -285,7 +285,7 @@ function takePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'success': 'Bet successfully taken!', 'status': 200});
+      res.send({'message': 'Bet successfully taken!', 'status': 200});
     }
   });
 }
@@ -297,7 +297,7 @@ function placeResellBet(req, res, next) {
     }
     else {
       res.send(
-        {'success': 'Bet successfully placed in resell!', 'status': 200});
+        {'message': 'Bet successfully placed in resell!', 'status': 200});
     }
   });
 }
@@ -308,7 +308,7 @@ function takeResellBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'success': 'Bet successfully taken!', 'status': 200});
+      res.send({'message': 'Bet successfully taken!', 'status': 200});
     }
   });
 }

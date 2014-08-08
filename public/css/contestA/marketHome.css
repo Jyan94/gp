@@ -99,7 +99,7 @@ input[type="text"] {
 .isotope {
   border: 0px;
   display: block;
-  margin-left: 10%;
+  margin-left: 120px;
   padding-top: 145px;
   width: 65%;
   position: relative;
@@ -492,6 +492,18 @@ input[type="text"] {
   position: fixed;
   overflow: hidden;
   z-index: 1;
+  /*background-color: #17599B;
+  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
+  top: 45px;*/
+  background-color: #083f75;
+  box-shadow: 0px 4px 4px #888;
+  top: 45px;
+}
+
+/*#daily-boxscore-ticker-wrapper {
+  background-color: #17599B;
+  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
+  top: 45px;
 }
 
 #daily-boxscore-ticker-wrapper {
@@ -503,24 +515,30 @@ input[type="text"] {
 }
 
 #top-player-ticker-wrapper {
+  background-color: #17599B;
+  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
+  top: 90px;
+
+#top-player-ticker-wrapper {
   background-color: #083f75;
   box-shadow: 0px 4px 4px #888;
   top: 45px;
-}
+}*/
 
 .ticker {
   display: inline-block;
   margin-top: -3px;
   white-space: nowrap;
+  -webkit-animation: moveTicker 300s linear 0s infinite normal;
 }
 
-#daily-boxscore-ticker {
+/*#daily-boxscore-ticker {
   -webkit-animation: moveTicker 105s linear 0s infinite normal;
 }
 
 #top-player-ticker {
   -webkit-animation: moveTicker 180s linear 0s infinite normal;
-}
+}*/
 
 
 @-webkit-keyframes moveTicker {
@@ -532,9 +550,47 @@ input[type="text"] {
      }
 }
 
+.ticker-text {
+  display: table-cell;
+}
+
 .ticker p {
   margin-bottom: 13px;
   margin-top: 13px;
   font-size: 19px;
   display: inline-block;
+}
+
+/*.ticker p p {
+  margin-bottom: 0px;
+  margin-top: 0px;
+}*/
+
+/*#6AA0D6*/
+.flash {
+  background-color: #083f75;
+  border: solid 1px #083f75;
+  box-shadow: 0px 1px 4px #888;
+  color: #fff;
+  display: none;
+  height: 45px;
+  width: 80%;
+  border-radius: 5px;
+  padding: 10px;
+  position: fixed;
+  top: 95px;
+  left: 10%;
+  z-index: 1;
+}
+
+.flash p {
+  margin: 0;
+}
+
+.flash img {
+  vertical-align: middle;
+}
+
+.flash span {
+  vertical-align: middle;
 }

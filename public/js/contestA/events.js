@@ -28,6 +28,27 @@
     }
   }
 
+
+  function flash (success, message) {
+    if ($('#marketHome-flash').is(':animated')) {
+      $('#marketHome-flash').stop(true, true);
+    }
+
+    var fullMessage = '';
+
+    if (success) {
+      fullMessage += '<p><img src=\'/assets/common/Check-Mark-Green.png\' style=\'width: 25px\'>';
+    }
+    else {
+      fullMessage += '<p><img src=\'/assets/error_message_icon.png\' style=\'width: 25px\'>'; 
+    }
+
+    fullMessage += ('<span>&#160;' + message + '</span></p>');
+
+    $('#marketHome-flash').html(fullMessage);
+    $('#marketHome-flash').show().fadeOut(5000);
+  }
+
   //initialization of isotope container and filters
   (function () {
     var qsRegex;
@@ -184,10 +205,13 @@
           },
           success: function(message) {
             //preferably show a message for 2 seconds
-            console.log(message);
+            flash(true, message.message);
+          },
+          failure: function (response) {
+            flash(false, response);
           },
           error: function(xhr, status, err) {
-            console.error(xhr, status, err);
+            flash(false, err);
           }
         });
       }
@@ -385,11 +409,15 @@
             sport: athleteObj.sport,
             wager: $('#wagerAmount').val()
           },
-          success: function(response) {
-            console.log(response.success);
+          success: function(message) {
+            //preferably show a message for 2 seconds
+            flash(true, message.message);
+          },
+          failure: function (response) {
+            flash(false, response);
           },
           error: function(xhr, status, err) {
-            console.error(xhr, status, err);
+            flash(false, err);
           }
         });
       }
