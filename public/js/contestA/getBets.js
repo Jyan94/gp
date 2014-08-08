@@ -75,7 +75,7 @@
     overResell: {},
     underResell: {}
   };
-  var POLL_INTERVAL = 5000;
+  var POLL_INTERVAL = 50000;
   var NUM_DISPLAYED = 5;
   /*
    * ===========================================================================
