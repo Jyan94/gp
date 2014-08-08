@@ -90,7 +90,7 @@ p {
 
 .portfolio-tab-container {
   height: calc(100% - 420px);
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .portfolio-tab-menu {
@@ -111,7 +111,7 @@ p {
   padding: 5px 10px 5px 10px;
   background-color: #083f75;
   border-bottom: none;
-  border-width: 1px 1px 0px 1px; 
+  border-width: 1px 1px 0px 1px;
   border-color: #000;
   border-style: solid;
   color: #fff;
@@ -152,6 +152,10 @@ p {
   border-color: #545454;
 }
 
+#quicksearchHidden {
+  visibility: hidden;
+}
+
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 
@@ -162,5 +166,5 @@ p {
 
 /* Only kicks in when width is at least 992px */
 @media (min-width: 992px) {
-  
+
 }
