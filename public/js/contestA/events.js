@@ -197,6 +197,7 @@
         var arrayIndex = e.currentTarget.id.substring(
           e.currentTarget.id.indexOf(DELIM) + 1);
         var bet = contestAGetBets.getBetByIndex(arrayIndex);
+        console.log(bet.gameId);
         $.ajax({
           url: '/takePendingBet',
           type: 'GET',

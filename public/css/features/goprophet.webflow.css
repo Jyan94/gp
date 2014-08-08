@@ -7,7 +7,7 @@ body {
 h1 {
   margin-top: 20px;
   margin-bottom: 10px;
-  background-color: #073f75;
+  background-color: #083f75;
   font-family: Lato, sans-serif;
   color: white;
   font-size: 38px;
@@ -36,7 +36,7 @@ h4 {
   margin-top: 0px;
   margin-bottom: 10px;
   font-family: Lato, sans-serif;
-  color: #073f75;
+  color: #083f75;
   font-size: 16px;
   line-height: 19px;
   font-weight: 900;
@@ -89,7 +89,7 @@ p {
   color: black;
 }
 .navbar:focus {
-  color: #073f75;
+  color: #083f75;
 }
 .header {
   padding-top: 130px;
@@ -217,7 +217,7 @@ p {
   text-decoration: none;
 }
 .work-block:hover {
-  border-bottom-color: #073f75;
+  border-bottom-color: #083f75;
   -webkit-transform: translate(0px, -5px);
   -ms-transform: translate(0px, -5px);
   -o-transform: translate(0px, -5px);
@@ -241,13 +241,13 @@ p {
 }
 .nav-link:hover {
   border-color: #dbdbdb;
-  color: #073f75;
+  color: #083f75;
 }
 .nav-link.w--current {
   color: black;
 }
 .nav-link.w--current:hover {
-  color: #073f75;
+  color: #083f75;
 }
 .logo {
   margin-top: 0px;
@@ -399,10 +399,10 @@ p {
 .color-stripe {
   padding-top: 80px;
   padding-bottom: 80px;
-  background-color: #073f75;
-  background-image: -webkit-linear-gradient(256deg, #073f75 32%, white);
-  background-image: -o-linear-gradient(166deg, #073f75 32%, white);
-  background-image: linear-gradient(166deg, #073f75 32%, white);
+  background-color: #083f75;
+  background-image: -webkit-linear-gradient(256deg, #083f75 32%, white);
+  background-image: -o-linear-gradient(166deg, #083f75 32%, white);
+  background-image: linear-gradient(166deg, #083f75 32%, white);
   text-align: center;
 }
 .color-stripe.process {
@@ -626,9 +626,9 @@ p {
   padding-right: 10px;
   padding-left: 10px;
   float: left;
-  border: 2px solid #073f75;
+  border: 2px solid #083f75;
   border-radius: 2px;
-  background-color: #073f75;
+  background-color: #083f75;
   text-align: center;
 }
 .process-number.orange {
@@ -648,8 +648,8 @@ p {
   text-transform: uppercase;
 }
 .header-tab-button:hover {
-  border-bottom-color: #073f75;
-  background-color: #073f75;
+  border-bottom-color: #083f75;
+  background-color: #083f75;
   opacity: 0.82;
 }
 .header-tab-button.w--current {
@@ -661,8 +661,8 @@ p {
   transition: background-color 500ms ease;
 }
 .header-tab-button.w--current:hover {
-  border-bottom-color: #073f75;
-  background-color: #073f75;
+  border-bottom-color: #083f75;
+  background-color: #083f75;
   opacity: 0.82;
 }
 .header-tab-pane {
@@ -773,7 +773,7 @@ p {
 }
 .creatingbet {
   margin-top: 50px;
-  background-color: #073f75;
+  background-color: #083f75;
   color: white;
 }
 .takingbetbody {
@@ -786,7 +786,7 @@ p {
   background-color: #cecece;
 }
 .takebethead {
-  background-color: #073f75;
+  background-color: #083f75;
 }
 .createbetsection {
   margin-top: 0px;

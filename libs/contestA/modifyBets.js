@@ -230,6 +230,7 @@ function takePending(info, user, callback) {
           callback(null);
         }
       };
+      console.log(info);
       UpdateBet.takePending(
         info.athleteId,
         info.athleteName,
@@ -237,7 +238,7 @@ function takePending(info, user, callback) {
         info.betId,
         fantasyValue,
         info.gameId,
-        info.opponent,        
+        info.opponent,
         overNotUnder,
         user.username,
         price,
