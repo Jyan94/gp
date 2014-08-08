@@ -43,12 +43,12 @@
         var $this = $(this);
         var searchResult = qsRegex ? $this.text().match( qsRegex ) : true;
         var buttonResult = buttonFilter ? $this.is(buttonFilter) : true;
-        var overUnderResult = overUnderFilter ? 
+        var overUnderResult = overUnderFilter ?
           $this.is(overUnderFilter) : true;
         var wageResult = wageResultFilter ? $this.is(wageResultFilter) : true;
-        var fantasyResult = fantasyResultFilter ? 
+        var fantasyResult = fantasyResultFilter ?
           $this.is(fantasyResultFilter) : true;
-        return searchResult && 
+        return searchResult &&
           buttonResult && overUnderResult && wageResult && fantasyResult;
       }
     });
@@ -169,7 +169,7 @@
     var windowWidthScale = ($(window).width() * 0.8) / 320;
     var windowHeightScale = ($(window).height() * 0.8) / 250;
 
-    return (windowWidthScale > windowHeightScale ? 
+    return (windowWidthScale > windowHeightScale ?
       windowHeightScale : windowHeightScale);
   }
 
@@ -237,10 +237,10 @@
         currentTarget.addClass('transition');
         currentTarget.css({'top': 'calc(50% - 170px)',
                            'left': 'calc(50% - 135px)',
-                           '-webkit-transform': 
+                           '-webkit-transform':
                            'scale(' + scale + ')' +
                            ' rotateY(180deg) rotateZ(90deg) translateZ(-1px)'});
-        currentTarget.bind("webkitTransitionEnd", function(e){ 
+        currentTarget.bind("webkitTransitionEnd", function(e){
           $(this).unbind(e);
           transitionDone = true;
         });
@@ -263,9 +263,9 @@
         $('#marketHome-backdrop').removeClass('active');
 
         var currentTargetOffset = currentTarget.offset();
-        var absoluteOffsetX = currentTargetOffset.left + (160 * scale) - 255; 
+        var absoluteOffsetX = currentTargetOffset.left + (160 * scale) - 255;
         //is originally 120px + 10px + 125px = 255px away needs to be 320 now
-        var absoluteOffsetY = currentTargetOffset.top + (125 * scale) - 170; 
+        var absoluteOffsetY = currentTargetOffset.top + (125 * scale) - 170;
         //is originally 160px + 10px = 170px away needs to be 250 now
 
         currentTarget.removeClass('transition');
@@ -277,7 +277,7 @@
         currentTarget.css({'top': flippedCardOffset.top - 10 + 'px',
                            'left': flippedCardOffset.left - 130  + 'px',
                            '-webkit-transform': ''});
-        currentTarget.bind("webkitTransitionEnd", function(e){ 
+        currentTarget.bind("webkitTransitionEnd", function(e){
           $(this).unbind(e);
           currentTarget.removeClass('transition');
           currentTarget.removeClass('flipped');
@@ -287,7 +287,7 @@
 
       e.preventDefault();
     });
-    
+
     $(window).resize(function (e) {
       if (flippedCard >= 0) {
         var currentTarget = $('#'+ $('.flipped')[0].id);
@@ -303,7 +303,7 @@
     $('.isotope').on('click', '.playercard1-back', function (e) {
       if (e.target.className.slice(0, 20) === 'playercard1-back-tab') {
         var currentTargetId = e.target.id;
-        var currentTargetCardPrefix = '#' + 
+        var currentTargetCardPrefix = '#' +
           currentTargetId.slice(0, currentTargetId.length - 6) + '-';
 
         for (var i = 0; i < tabNames.length; i++) {
@@ -358,7 +358,7 @@
               .replaceWith('<p>' + athleteObj.fullName + '</p');
             $('.playercard1#create')
               .find('.playercard1-info.pos p')
-              .replaceWith('<p>' + athleteObj.position + ' | ' + 
+              .replaceWith('<p>' + athleteObj.position + ' | ' +
                 athleteObj.longTeamName + '</p');
             $('.playercard1#create')
               .find('.playercard1-playerpic img')
@@ -366,10 +366,9 @@
                '\'' + 'width=\'250\' height=\'250\'>');
           },
           delay: 500,
-          minLength: 3
         }).data('ui-autocomplete')._renderItem = function ( ul, item ) {
             return $('<li>')
-              .append('<a><img style="background-image: url(' + 
+              .append('<a><img style="background-image: url(' +
                 item.image + ')">' + item.label + '</a>')
               .appendTo(ul);
         };
@@ -386,12 +385,12 @@
         $( this ).removeClass('ui-state-hover');
       }
     );
-    
+
     $('#betForm').on('input', debounce(function(){
       wagerAmount = $('#wagerAmount').val();
       fantasyValue = $('#fantasyValue').val();
-        
-      var playerString = "$" + wagerAmount + 
+
+      var playerString = "$" + wagerAmount +
         " " + overUnder + " " + fantasyValue + " FP";
       $('.playercard1#create')
         .find('.playercard1-bottom.wager p')
@@ -400,8 +399,8 @@
 
     $('input[type=\'radio\']').on('change', function() {
       overUnder = $('input[type=\'radio\']:checked')[0].value.toLowerCase();
-        
-      var playerString = "$" + wagerAmount + 
+
+      var playerString = "$" + wagerAmount +
         " " + overUnder + " " + fantasyValue + " FP";
       $('.playercard1#create')
       .find('.playercard1-bottom.wager p')
@@ -427,7 +426,7 @@
             gameId: null,
             isOverBettor: ($('input[type=\'radio\']:checked')[0]
               .value.toLowerCase() === 'over'),
-            sport: athleteObj.sport, 
+            sport: athleteObj.sport,
             wager: $('#wagerAmount').val()
           },
           success: function(response) {
@@ -444,11 +443,11 @@
     });
 
   }());
-  
+
 
   //more event bindings below
   //...
 
-}(typeof exports === 'undefined' ? 
-    window.events = {} : 
+}(typeof exports === 'undefined' ?
+    window.events = {} :
     exports));
