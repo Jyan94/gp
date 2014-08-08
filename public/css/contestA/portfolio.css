@@ -47,6 +47,11 @@ p {
 
 /* MAIN CONTENT CSS
 -------------------------------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
 .content {
   position: relative;
   height: 100%;
@@ -66,7 +71,7 @@ p {
 }
 
 .portfolio-info {
-  height: 420px;
+  height: 330px;
 }
 .portfolio-graph-container {
   background-color: #545454;
@@ -89,7 +94,7 @@ p {
 }
 
 .portfolio-tab-container {
-  height: calc(100% - 420px);
+  height: calc(100% - 330px);
   overflow: hidden;
 }
 
@@ -154,6 +159,220 @@ p {
 
 #quicksearchHidden {
   visibility: hidden;
+}
+
+
+.playercard1 {
+  height: 300px;
+  width: 250px;
+  position: relative;
+  border-radius: 0px;
+  float: left;
+  margin: 10px 10px 10px 10px;
+  border-radius: 5px;
+  -webkit-transform-origin: 50% 50%;
+  -webkit-transform-style: preserve-3d;
+  box-shadow: 0px 4px 4px #888;
+}
+
+.playercard1-background {
+  background-color: #083f75;
+}
+
+.playercard1.flipped {
+  box-sizing: border-box;
+  z-index: 5;
+}
+
+.playercard1-front,
+.playercard1-back {
+  position: absolute;
+  -webkit-backface-visibility: hidden;
+}
+
+.playercard1-front {
+  top: 0;
+  left: 0;
+  height: 300px;
+  width: 250px;
+  background-color: #083f75;
+  -webkit-transform: scale(1);
+}
+
+.playercard1-back {
+  top: -90px;
+  left: -195px;
+  height: 500px;
+  width: 640px;
+  background-color: #fff;
+  overflow: hidden;
+  -webkit-transform: scale(0.5) rotateY(180deg) rotateZ(90deg);
+}
+
+.playercard1-playerpic {
+  height: 250px;
+  width: 250px;
+  border-radius: 2px 2px 0px 0px;
+  background-color: white;
+  position: absolute;
+  float: top;
+}
+
+.playercard1-playerpic img {
+  border-radius: 5px 5px 0px 0px;
+  height: 100%;
+  width: 100%;
+}
+
+.playercard1-info {
+  height: 60px;
+  width: 250px;
+  background-color: black;
+  opacity: 0.8;
+  position: absolute;
+  bottom: 0;
+  border-radius: 0px;
+}
+
+.playercard1-info .name {
+  position: absolute;
+  height: 20px;
+  width: 250px;
+  top: 12px;
+}
+
+.playercard1-info .name p{
+  font-family: "Helvetica";
+  color: #fff;
+  font-size: 22px;
+  font-weight: 200;
+  margin-top: -10px;
+}
+
+.playercard1-info .pos {
+  margin-top: -10px;
+  height: 20px;
+  width: 250px;
+  position: absolute;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.playercard1-info .pos p {
+  margin-top: -5px;
+  font-family: "Helvetica";
+  color: white;
+}
+
+.playercard1-bottom {
+  position: absolute;
+  float: bottom;
+  height: 50px;
+  width: 250px;
+  border-radius: 0px 0px 0px 0px;
+}
+
+.playercard1-bottom .wager {
+  height: 20px;
+  width: 250px;
+  float: top;
+  text-align: center;
+}
+
+.playercard1-bottom .wager p {
+  margin-top: -3px;
+  font-family: "Helvetica";
+  font-size: 18px;
+  color: white;
+  text-align:center;
+}
+
+/* ---- back ---- */
+
+.playercard1-back-info {
+  background-color: #ccc;
+  height: 240px;
+}
+
+.playercard1-back-tab-container {
+  height: calc(100% - 240px);
+  overflow: hidden;
+}
+
+.playercard1-back-tab-menu {
+  height: 28px;
+  list-style: none;
+  width: 100%;
+  margin: 0px;
+  padding-left: 15px;
+}
+
+.playercard1-back-tab {
+  display: block;
+  float: left;
+  position: relative;
+  font-weight: 700;
+  padding: 5px 10px 5px 10px;
+  background-color: #eee;
+  border-bottom: none;
+  border-width: 1px;
+  color: #999;
+  cursor: default;
+  margin-bottom: 0px;
+  margin-right: 5px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  width: 100px;
+}
+
+.playercard1-back-tab:hover,
+.playercard1-back-tab.active {
+  display: block;
+  background: #ccc;
+}
+
+.playercard1-back-tab-border {
+  border-bottom: 1px solid #ddc;
+}
+
+.playercard1-back-tab-content.active {
+  display: block;
+  background: #fff;
+}
+
+.playercard1-back-tab-content {
+  background: #fff;
+  margin: 0 auto;
+  padding: 10px;
+  text-align: left;
+  font-size: 11px;
+  display: none;
+  overflow-y: auto;
+  height: calc(100% - 49px);
+}
+
+/* ---- backdrop ---- */
+
+.backdrop {
+  background-color: #000;
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+
+  -webkit-transition: all 1s ease-in-out;
+
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.backdrop.active {
+  pointer-events: auto;
+
+  opacity: 0.5;
 }
 
 /* RESPONSIVE CSS
