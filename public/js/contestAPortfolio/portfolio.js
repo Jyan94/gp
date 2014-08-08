@@ -188,7 +188,7 @@ $(function() {
     },
     series: [],
     title : {
-      text : 'Pending bet athletes fantasy value over time'
+      text : 'Player Fantasy Values'
     },
     xAxis: {
       title: {
