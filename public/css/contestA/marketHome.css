@@ -44,7 +44,7 @@ a {
   color: black;
 }
 a:hover {
-  color: #990604;
+  color: #cecece;
 }
 button {
   background-color: #cecece;
@@ -60,6 +60,7 @@ input {
   -ms-transition: border-color 0.5s ease-in;
   -o-transition: border-color 0.5s ease-in;
   transition: border-color 0.5s ease-in;
+  margin-bottom: 7px;
 }
 .pure-form .button-primary {
   margin-left: 4px;
@@ -98,10 +99,9 @@ input[type="text"] {
 .isotope {
   border: 0px;
   display: block;
-  margin-left: 120px;
-  margin-right: auto;
+  margin-left: 10%;
   padding-top: 145px;
-  max-width: 980px;
+  width: 65%;
   position: relative;
 }
 
@@ -141,7 +141,8 @@ input[type="text"] {
 .makeBets {
   margin-top: 10%;
   position: fixed;
-  margin-left: 1120px;
+  float: left;
+  margin-left: 75%;
   background-color: white;
   height: 610px;
   width: 275px;
@@ -161,7 +162,7 @@ input[type="text"] {
   border-style: solid;
   border-color: black;
   border-width: 1px;
-  padding: 5% 5% 5% 5%;
+  padding: 4% 4% 4% 4%;
   z-index: -500;
 }
 
@@ -178,7 +179,7 @@ input[type="text"] {
   border-radius: 0px;
   float: left;
   margin: 10px 10px 10px 10px;
-  border-radius: 2px 2px 2px 2px;
+  border-radius: 5px;
   -webkit-transform-origin: 50% 50%;
   -webkit-transform-style: preserve-3d;
   box-shadow: 0px 4px 4px #888;
@@ -255,7 +256,7 @@ input[type="text"] {
   color: #fff;
   font-size: 22px;
   font-weight: 200;
-  margin-top: -10px;
+  margin-top: -12px;
 }
 
 .playercard1-info .pos {
@@ -494,15 +495,17 @@ input[type="text"] {
 }
 
 #daily-boxscore-ticker-wrapper {
-  background-color: #17599B;
-  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
+  background-color: #000;
+  border-style: solid;
+  border-color: white;
+  border-width: 1px 1px 1px 1px;
   top: 45px;
 }
 
 #top-player-ticker-wrapper {
-  background-color: #17599B;
-  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
-  top: 90px;
+  background-color: #083f75;
+  box-shadow: 0px 4px 4px #888;
+  top: 45px;
 }
 
 .ticker {
@@ -524,7 +527,7 @@ input[type="text"] {
   from {
           -webkit-transform: translate(1920px, 0)
        }
-  to { 
+  to {
         -webkit-transform: translate(-100%, 0)
      }
 }
