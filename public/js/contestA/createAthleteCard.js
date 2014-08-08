@@ -46,6 +46,7 @@
     else {
       betPosition = 'under';
     }
+    /*jshint ignore:start*/
     var retval = $(
       '<div id=\'playercard1-' + arrayId + '\' class=\'playercard1 ' + sport + '\'>' +
         '<div class=\'id\' style=\'display: none;\'>' + arrayId + '</div>' +
@@ -109,6 +110,7 @@
         '</div>' +
       '</div>');
     return retval;
+    /*jshint ignore:end*/
   }
 
   /**
@@ -138,7 +140,9 @@
         bet.sport);
     }
     else {
-      card = '<div id=\'playercard1-' + index + '\' class=\'playercard1\' style=\'display: none;\'>';
+      card = '<div id=\'playercard1-' + 
+        index + 
+        '\' class=\'playercard1\' style=\'display: none;\'>';
     }
     return card;
   }

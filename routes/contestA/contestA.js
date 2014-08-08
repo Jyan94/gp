@@ -87,8 +87,10 @@ function sendMarketHomeDailyBoxscores(req, res, next) {
 function parseTopPlayers(athlete, callback) {
   var statistics = athlete.statistics;
   var statisticsLength = athlete.statistics.length;
-  var fantasyPoints = [(statisticsLength > 0 ? statistics[statisticsLength - 1].fantasyPoints: 0),
-                       (statisticsLength > 1 ? statistics[statisticsLength - 2].fantasyPoints: 0)];
+  var fantasyPoints = [
+    (statisticsLength > 0 ? statistics[statisticsLength - 1].fantasyPoints: 0),
+    (statisticsLength > 1 ? statistics[statisticsLength - 2].fantasyPoints: 0)
+  ];
   var change = fantasyPoints[0] - fantasyPoints[1];
 
 
@@ -135,9 +137,6 @@ function renderPortfolio(req, res) {
   res.render('contestA/portfolio.hbs');
 }
 
-function renderGraph(req, res) {
-  res.render('handlebarsPartials/contestATimeseriesAthleteGraph.html');
-}
 /*
  * ====================================================================
  * Bets
@@ -286,7 +285,8 @@ function placeResellBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'success': 'Bet successfully placed in resell!', 'status': 200});
+      res.send(
+        {'success': 'Bet successfully placed in resell!', 'status': 200});
     }
   });
 }
@@ -500,7 +500,6 @@ exports.getTimeseries = getTimeseries;
 exports.getAllAthletes = getAllAthletes;
 exports.getTodaysGames = getTodaysGames;
 exports.renderPortfolio = renderPortfolio;
-exports.renderGraph = renderGraph;
 exports.takePendingBet = takePendingBet;
 exports.placePendingBet = placePendingBet;
 exports.removePendingBet = removePendingBet;

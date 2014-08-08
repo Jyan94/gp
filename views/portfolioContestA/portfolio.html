@@ -14,12 +14,56 @@
   </head>
 
   <body>
-    <div class="banner">
-      <div class="placeholder">
-        <p> Placeholder </p>
+    <div class="pure-g-r banner">
+      <div class="pure-u-3-4 banner-inner">
+        <div class="banner-nav">
+          <span><a class="dropdown-icon">{{user.username}}</a></span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-top-divider"></li>
+            <li class="dropdown-entry"><a href="/user">Profile</a></li>
+            <li class="dropdown-entry"><a href="/portfolio">Portfolio</a></li>
+            <li class="dropdown-entry"><a href="/features">About</a></li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-entry"><a href="/logout">Logout</a></li>
+          </ul>
+          <div class="pure-hidden-desktop pure-hidden-tablet"><span><a href="/" class="fui-list"></a></span></div>
+        </div>
+        <div class="pure-form">
+          <input id="quicksearch" type="text" name="search" placeholder="Search for Players">
+        </div>
+        <div class="banner-brand"><a href="/markethome"><img src="/img/GoProphetLogo8.jpg"></a></div>
+        <button style="margin-left: 800px;" class="btn1">Filter</button>
+        <div id="filterdiv">
+          <p id="filter">
+            <label for="amount">Price range:</label>
+            <input id="amount" type="text" style="border: 0; color: #299; font-weight: bold;">
+          </p>
+          <div id="slider-range" data-filter="wager"></div>
+          <p id="filter2">
+            <label for="amount">Fantasy Value:</label>
+            <input id="amount2" type="text" style="border: 0; color: #299; font-weight: bold;">
+          </p>
+          <div id="slider-range2" data-filter="fantasyValue"></div>
+          <div id="filters">
+            <h3>Sport</h3>
+            <div data-filter-group="sport" class="button-group js-radio-button-group">
+              <button data-filter="" class="button is-checked">show all</button>
+              <button data-filter=".Football" class="button">nfl</button>
+              <button data-filter=".Basketball" class="button">nba</button>
+              <button data-filter=".Baseball" class="button">mlb</button>
+            </div>
+          </div>
+          <div id="filters1">
+            <h3>Over/Under</h3>
+            <div data-filter-group="overunder" class="button-group js-radio-button-group">
+              <button data-filter="" class="button is-checked">any</button>
+              <button data-filter="over" class="button">Over</button>
+              <button data-filter="under" class="button">Under</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
 
     <div class="content">
       <div class="portfolio">
@@ -55,10 +99,12 @@
         </div>
       </div>
     </div>
-    <script src="http://code.highcharts.com/stock/highstock.js"></script>
-    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
     <script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/libModules/highcharts/highstock.js"></script>
+    <script type="text/javascript" src="/js/libModules/highcharts/exporting.js"></script>
     <script type="text/javascript" src="/js/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/js/libModules/isotope.pkgd.min.js"></script>
+    <script type="text/javascript" src="/js/contestAPortfolio/createAthleteCard.js"></script>
     <script type="text/javascript" src="/js/contestAPortfolio/portfolio.js"></script>
   </body>
 </html>

@@ -14,28 +14,33 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //root path
-//FOR TESTING PURPOSES
 var staticPages = require('routes/static/routes');
-app.get('/', staticPages.home);
-//commented out for purposes of making public
-app.get('/home', staticPages.home);
+app.get('/', staticPages.features);
 
+/*
+DEAD LINKS:
 app.get('/about', staticPages.about);
 app.get('/contact', staticPages.contact);
 app.get('/faq', staticPages.faq);
 app.get('/features', staticPages.features);
 app.get('/rules', staticPages.rules);
 app.get('/terms', staticPages.terms);
+*/
 
 //login
 var login = require('routes/registry/login');
 app.route('/login')
-.get(login.redirectLogin)
-.get(login.renderLogin)
-.post(passport.authenticate('local',
-  { successRedirect: '/user',
-    failureRedirect: '/login',
-    failureFlash: true }));
+  .get(login.redirectLogin)
+  .get(login.renderLogin)
+  .post(function(req, res, next) {
+    login.authenticateCallback(passport, req, res, next);
+  });
+
+/*
+    passport.authenticate('local',
+    { successRedirect: '/marketHome',
+      failureRedirect: '/login',
+      failureFlash: true }));*/
 /*
 // Redirect the user to Facebook for authentication
 app.get('/auth/facebook',
@@ -49,23 +54,22 @@ app.get('/auth/facebook/callback',
 //signup
 var signup = require('routes/registry/signup');
 app.route('/signup')
-.get(login.redirectLogin)
-.get(signup.renderSignup)
-.post(signup.processSignup);
+  .get(login.redirectLogin)
+  .get(signup.renderSignup)
+  .post(signup.processSignup);
 
+//need to do
 //verify
-var verify = require('routes/registry/verify');
-app.get('/verify/:email/:verCode', verify.verify);
-
-//logout
-var logout = require('routes/registry/logout');
-app.get('/logout', logout.logout);
+//var verify = require('routes/registry/verify');
+//app.get('/verify/:email/:verCode', verify.verify);
 
 //redirects to login if not logged in
 app.all('*', login.checkUser);
 
+//logout
+var logout = require('routes/registry/logout');
+app.get('/logout', logout.logout);
 //market
-//var market = require('routes/market');
 
 //app.get('/market/:athleteId', market.renderAthletePage);
 //app.post('/submitForm/:athleteId', market.submitBet);
@@ -96,7 +100,6 @@ app.get('/marketHome', contestA.renderMarketHome);
 app.get('/marketHomeTopPlayers', contestA.sendMarketHomeTopPlayers);*/
 app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/getAthleteTimeseries', contestA.getTimeseries);
-app.get('/graph', contestA.renderGraph);
 app.get('/takePendingBet', contestA.takePendingBet);
 app.post('/placePendingBet', contestA.placePendingBet);
 
@@ -106,7 +109,6 @@ var contestAPortfolio = require('routes/portfolioContestA/portfolio');
 app.get('/portfolio', contestAPortfolio.renderPortfolio);
 app.get('/initPortfolio', contestAPortfolio.sendOverInitData);
 app.get('/getMultiAthleteTimeseries', contestAPortfolio.getMultiTimeseries);
-
 
 //contest b
 //commented out for now since not demoing it
