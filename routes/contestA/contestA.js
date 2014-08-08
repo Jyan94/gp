@@ -1,3 +1,15 @@
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+/* TODO: DONT USE CACHE FOR CALCULATING PAYOUTS */
+
 'use strict';
 (require('rootpath')());
 
@@ -5,11 +17,17 @@ var configs = require('config/index.js');
 
 var async = require('async');
 var ContestA = require('libs/contestA/exports');
+var ContestADirect = require('libs/cassandra/contestA/exports');
 var FormatBets = ContestA.FormatBets;
 var ModifyBets = ContestA.ModifyBets;
 var GetTimeseries = ContestA.GetTimeseries;
 var Athletes = require('libs/athletes/exports');
-var Game = require('libs/cassandra/baseball/game.js')
+var Games = require('libs/games/exports');
+var GamesDirect = require('libs/cassandra/baseball/game');
+var User = require('libs/cassandra/user');
+
+var contestAGlobals = configs.globals.contestA;
+var customSetInterval = configs.constants.globals.customSetInterval;
 
 /*
  * ====================================================================
@@ -26,7 +44,7 @@ function renderMarketHome(req, res, next) {
  * SEND MARKET HOME DAILY BOXSCORES
  * ====================================================================
  */
-
+/*
 function parseDailyBoxscores(game, callback) {
   callback(null,
     {
@@ -58,14 +76,14 @@ function sendMarketHomeDailyBoxscores(req, res, next) {
     }
   });
 }
-
+*/
 /*
  * ====================================================================
  * SEND MARKET HOME TOP PLAYERS
  * ====================================================================
  */
 
-
+/*
 function parseTopPlayers(athlete, callback) {
   var statistics = athlete.statistics;
   var statisticsLength = athlete.statistics.length;
@@ -108,7 +126,7 @@ function sendMarketHomeTopPlayers(req, res, next) {
       next(err);
     });
 }
-
+*/
 /*
  * ====================================================================
  * PORTFOLIO
@@ -175,12 +193,6 @@ function getUserBets(req, res) {
     });
   });
 }
-
-/*
- * ====================================================================
- * SEND MARKET HOME PLAYER STATISTICS
- * ====================================================================
- */
 
 /*
  * ====================================================================
@@ -313,6 +325,166 @@ function getAllAthletes(req, res) {
   res.send(Athletes.Select.getAllAthletesJSON());
 }
 
+function getTodaysGames(req, res, next) {
+  /*console.log(Games.Select.getAllGamesList(), 111111111);
+  async.map(Games.Select.getAllGamesList(),
+    function (game, callback) {
+      callback(null, {
+        awayScore: game.awayScore,
+        currentInning: game.currentInning,
+        gameDate: game.gameDate,
+        homeScore: game.homeScore,
+        id: game.id,
+        longAwayName: game.longAwayName,
+        longHomeName: game.longHomeName,
+        shortAwayName: game.shortAwayName,
+        shortHomeName: game.shortHomeName, //acronym for home team
+        startTime: game.startTime,
+        status: game.status
+      });
+    },
+    function (err, games) {
+      if (err) {
+        next(err);
+      }
+      else {
+        res.send(JSON.stringify(games));
+      }
+    });*/
+  res.send(Games.Select.getAllGamesJSON());
+}
+
+/*
+ * ====================================================================
+ * BET BACKGROUND FUNCTIONS (PENDING)
+ * ====================================================================
+ */
+
+function checkGameEnd (pendingBet, callback) {
+  var gameId = pendingBet.gameId;
+  var game = Games.Select.getGameById(gameId);
+
+  if (typeof(game) === 'undefined') {
+    GamesDirect.select(gameId,
+      function (err, game) {
+        callback(!err && (game.status === 'closed'));
+      });
+  }
+  else {
+    callback(game.status === 'closed');
+  }
+}
+
+function changeBetStateToExpired (bet, callback) {
+  ContestADirect.UpdateBet.setExpired(bet.betId, callback);
+}
+
+function updateStateBetsPending (callback) {
+  var pendingBets = contestAGlobals.pendingBets;
+
+  async.waterfall([
+    function (callback) {
+      async.filter(pendingBets, checkGameEnd,
+        function (result) {
+          callback(null, result);
+        });
+    },
+    function (expiringBets, callback) {
+      async.map(expiringBets, changeBetStateToExpired, callback);
+    }],
+    function (err) {
+      callback(err);
+    });
+}
+
+/*
+ * ====================================================================
+ * BET BACKGROUND FUNCTIONS (ACTIVE)
+ * ====================================================================
+ */
+
+function getFantasyPointsResultForBet (bet, callback) {
+  var gameId = bet.gameId;
+  var athlete = Athletes.Select.getAthleteById(bet.athleteId);
+
+  async.reduce(athlete.statistics, null,
+    function (memo, statistic, callback) {
+      callback(null, (
+        (statistic.gameId === gameId) ? statistic.fantasyPoints : memo));
+    },
+    function (err, fantasyPointsResult) {
+    //Add if game is not in statistics pulled
+      callback(err, fantasyPointsResult ? fantasyPointsResult : 0);
+    });
+}
+
+function calculateWinnings (bet, fantasyPointsResult, callback) {
+  //Does not support resell
+  var fantasyPointsPrediction = bet.fantasyValue;
+
+  if (fantasyPointsResult === fantasyPointsPrediction) {
+    async.parallel([
+        function (callback) {
+          User.addMoneyToUserUsingUsername(bet.payoff * 0.25, bet.owner, callback);
+        },
+        function (callback) {
+          User.addMoneyToUserUsingUsername(bet.payoff * 0.25, bet.opponent, callback);
+        }
+      ], callback);
+  }
+  else {
+    var winnerUsername = null;
+
+    if (fantasyPointsResult < fantasyPointsPrediction) {
+      winnerUsername = (bet.overNotUnder ? bet.opponent : bet.owner); 
+    }
+    else {
+      winnerUsername = (bet.overNotUnder ? bet.owner : bet.opponent);
+    }
+
+    User.addMoneyToUserUsingUsername(bet.payoff * 0.45, winnerUsername,
+      function (err) {
+        callback(err);
+      });
+  }
+}
+
+function changeBetStateToProcessed (bet, callback) {
+  async.parallel([
+    function (callback) {
+      async.waterfall([
+        function (callback) {
+          getFantasyPointsResultForBet(bet, callback);
+        },
+        function (fantasyPointsResult, callback) {
+          calculateWinnings(bet, fantasyPointsResult, callback);
+        }], callback);
+    },
+    function (callback) {
+      ContestADirect.UpdateBet.setProcessed(bet.betId, callback);
+    }], callback);
+}
+
+function updateStateBetsActive (callback) {
+  //Apparently all bets are both resell and taken
+  var activeBets = contestAGlobals.resellBets.concat(contestAGlobals.takenBets);
+  //var activeBets = contestAGlobals.takenBets;
+
+  async.waterfall([
+    function (callback) {
+      async.filter(activeBets, checkGameEnd,
+        function (result) {
+          callback(null, result);
+        });
+    },
+    function (toBeProcessedBets, callback) {
+      async.map(toBeProcessedBets, changeBetStateToProcessed, callback);
+    }],
+    function (err) {
+      callback(err);
+    });
+}
+
 /*
  * ====================================================================
  * EXPORTS
@@ -320,13 +492,16 @@ function getAllAthletes(req, res) {
  */
 
 exports.renderMarketHome = renderMarketHome;
-exports.sendMarketHomeDailyBoxscores = sendMarketHomeDailyBoxscores;
-exports.sendMarketHomeTopPlayers = sendMarketHomeTopPlayers;
+/*exports.sendMarketHomeDailyBoxscores = sendMarketHomeDailyBoxscores;
+exports.sendMarketHomeTopPlayers = sendMarketHomeTopPlayers;*/
 exports.getMarket = getMarket;
 exports.getMarketBets = getMarketBets;
 exports.getTimeseries = getTimeseries;
 exports.getAllAthletes = getAllAthletes;
+exports.getTodaysGames = getTodaysGames;
 exports.renderPortfolio = renderPortfolio;
 exports.takePendingBet = takePendingBet;
 exports.placePendingBet = placePendingBet;
 exports.removePendingBet = removePendingBet;
+exports.updateStateBetsPending = updateStateBetsPending;
+exports.updateStateBetsActive = updateStateBetsActive;

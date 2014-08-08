@@ -92,11 +92,12 @@ app.post('/submitPayment/:userId', paypal.submitPayment);
 //contest A
 var contestA = require('routes/contestA/contestA.js');
 app.get('/initialAthletesLoad', contestA.getAllAthletes);
+app.get('/getTodaysGames', contestA.getTodaysGames);
 app.get('/market', contestA.getMarket);
 app.get('/getbets', contestA.getMarketBets);
 app.get('/marketHome', contestA.renderMarketHome);
-app.get('/marketHomeDailyBoxscores', contestA.sendMarketHomeDailyBoxscores);
-app.get('/marketHomeTopPlayers', contestA.sendMarketHomeTopPlayers);
+/*app.get('/marketHomeDailyBoxscores', contestA.sendMarketHomeDailyBoxscores);
+app.get('/marketHomeTopPlayers', contestA.sendMarketHomeTopPlayers);*/
 app.get('/getMarketBets', contestA.getMarketBets);
 app.get('/getAthleteTimeseries', contestA.getTimeseries);
 app.get('/takePendingBet', contestA.takePendingBet);

@@ -6,10 +6,14 @@
  */
 
 /*global contestALoadAthletesCache*/
+/*global contestALoadGamesCache*/
+/*global initializeCaches*/
 /*global contestAGetBets*/
 'use strict';
 
 (function(exports)  {
+  var DELIM = '-';
+
   function debounce( fn, threshold ) {
     var timeout;
     return function debounced() {
@@ -85,7 +89,10 @@
       fantasyValue: function() {
         var fantasyBottom = $('#slider-range2').slider("values", 0);
         var fantasyTop = $('#slider-range2').slider("values", 1);
-        var fantasy = $(this).find('.playercard1-bottom.wager').text().split(" ")[2];
+        var fantasy = $(this)
+          .find('.playercard1-bottom.wager')
+          .text()
+          .split(" ")[2];
         return (parseFloat(fantasy) >= parseFloat(fantasyBottom)
                 && parseFloat(fantasy) <= parseFloat(fantasyTop));
       }
@@ -133,38 +140,6 @@
     });
   })();
 
-  //take bet
-  //moved to homeisotope.js
-  /*(function () {
-    $('.take-bet-button').click(function() {
-      //get the array index of the button, thus getting array index of the card
-      var arrayIndex = $(this).attr('clickIndex');
-      var bet = contestAGetBets.getBetByIndex(arrayIndex);
-      $.ajax({
-        url: '/takePendingBet',
-        type: 'POST',
-        dataType: 'json',
-        data: {
-          athleteId: bet.athleteId,
-          athleteName: bet.athleteName,
-          athleteTeam: bet.athleteTeam,
-          betId: bet.betId,
-          fantasyValue: bet.fantasyValue,
-          opponent: bet.opponent,
-          overNotUnder: bet.overNotUnder,
-          wager: bet.wager
-        },
-        success: function(message) {
-          //preferably show a message for 2 seconds
-          console.log(message);
-        },
-        error: function(xhr, status, err) {
-          console.error(xhr, status, err);
-        }
-      });
-    });
-  })();*/
-
   function getPlayercard1Scale (currentTarget) {
     var windowWidthScale = ($(window).width() * 0.8) / 320;
     var windowHeightScale = ($(window).height() * 0.8) / 250;
@@ -188,10 +163,8 @@
       else if (e.target.className
                === 'pure-button button-primary take-bet-button') {
         var arrayIndex = e.currentTarget.id.substring(
-          e.currentTarget.id.indexOf('-') + 1);
+          e.currentTarget.id.indexOf(DELIM) + 1);
         var bet = contestAGetBets.getBetByIndex(arrayIndex);
-        console.log(bet);
-        console.log(arrayIndex);
         $.ajax({
           url: '/takePendingBet',
           type: 'GET',
@@ -202,6 +175,7 @@
             athleteTeam: bet.athleteTeam,
             betId: bet.betId,
             fantasyValue: bet.fantasyValue,
+            gameId: bet.gameId,
             opponent: bet.bettor,
             overNotUnder: bet.overNotUnder,
             payoff: bet.payoff,
@@ -221,7 +195,8 @@
 
         var currentTarget = $('#' + e.currentTarget.id);
         currentTarget.addClass('flipped');
-        flippedCard = e.currentTarget.id.substring(12);
+        flippedCard = e.currentTarget.id.substring(
+          e.currentTarget.id.indexOf(DELIM) + 1);
 
         $('#marketHome-backdrop').addClass('active');
 
@@ -329,52 +304,19 @@
   })();
 
   //make bet form
-  //autocomplete and create bet
+  //create bet
   (function () {
-    var athleteObj = {};
     var wagerAmount = $('#wagerAmount').val();
     var fantasyValue = $('#fantasyValue').val();
-    var overUnder = $('input[type=\'radio\']:checked')[0].value;
-
-    function initAutocomplete() {
-      var searchCache = contestALoadAthletesCache.getAthletesArray().map(
-        function (athlete) {
-          athlete.label = athlete.fullName;
-          return athlete;
-      });
-
-      if (searchCache.length === 0) {
-        setTimeout(function() {
-          initAutocomplete();
-        }, 1000);
-      }
-      else {
-        $('#autocomplete').autocomplete({
-          source: searchCache,
-          select: function(e, ui) {
-            athleteObj = contestALoadAthletesCache.getAthleteById(ui.item.id);
-            $('.playercard1#create')
-              .find('.playercard1-info.name p')
-              .replaceWith('<p>' + athleteObj.fullName + '</p');
-            $('.playercard1#create')
-              .find('.playercard1-info.pos p')
-              .replaceWith('<p>' + athleteObj.position + ' | ' +
-                athleteObj.longTeamName + '</p');
-            $('.playercard1#create')
-              .find('.playercard1-playerpic img')
-              .replaceWith('<img src=\'' + athleteObj.image +
-               '\'' + 'width=\'250\' height=\'250\'>');
-          },
-          delay: 500,
-        }).data('ui-autocomplete')._renderItem = function ( ul, item ) {
-            return $('<li>')
-              .append('<a><img style="background-image: url(' +
-                item.image + ')">' + item.label + '</a>')
-              .appendTo(ul);
-        };
-      }
+    var overUnder;
+    if ($('input[type=\'radio\']:checked')[0].value === 'Over') {
+      console.log($('input[type=\'radio\']:checked')[0].value);
+      overUnder = 'under';
     }
-    initAutocomplete();
+    else {
+      console.log($('input[type=\'radio\']:checked')[0].value);
+      overUnder = 'over';
+    }
 
     // Hover states on the static widgets
     $('#dialog-link, #icons li').hover(
@@ -385,8 +327,7 @@
         $( this ).removeClass('ui-state-hover');
       }
     );
-
-    $('#betForm').on('input', debounce(function(){
+    $('#wagerAmount, #fantasyValue').on('input', debounce(function () {
       wagerAmount = $('#wagerAmount').val();
       fantasyValue = $('#fantasyValue').val();
 
@@ -395,10 +336,19 @@
       $('.playercard1#create')
         .find('.playercard1-bottom.wager p')
         .replaceWith('<p>' + playerString + '</p');
-    }), 500);
+    }, 500));
 
     $('input[type=\'radio\']').on('change', function() {
-      overUnder = $('input[type=\'radio\']:checked')[0].value.toLowerCase();
+      var overUnder;
+      if ($('input[type=\'radio\']:checked')[0].value === 'Over') {
+        console.log($('input[type=\'radio\']:checked')[0].value);
+        overUnder = 'under';
+      }
+      else {
+        console.log($('input[type=\'radio\']:checked')[0].value);
+        overUnder = 'over';
+      }
+      //overUnder = $('input[type=\'radio\']:checked')[0].value.toLowerCase();
 
       var playerString = "$" + wagerAmount +
         " " + overUnder + " " + fantasyValue + " FP";
@@ -410,7 +360,12 @@
     //create bet
     $('#betForm').submit(function(e) {
       e.preventDefault();
+      var athleteObj = initializeCaches.getSearchedAthleteObj();
+
       if (athleteObj) {
+        var gameId = contestALoadGamesCache.getGameIdByLongTeamName(
+              athleteObj.longTeamName);
+
         $.ajax({
           url:'/placePendingBet',
           type: 'POST',
@@ -423,7 +378,7 @@
             athleteTeam: athleteObj.longTeamName,
             expirationTimeMinutes: null,
             fantasyValue: $('#fantasyValue').val(),
-            gameId: null,
+            gameId: (typeof(gameId) === 'undefined') ? null : gameId,
             isOverBettor: ($('input[type=\'radio\']:checked')[0]
               .value.toLowerCase() === 'over'),
             sport: athleteObj.sport,
@@ -441,9 +396,7 @@
         console.log('cannot submit!');
       }
     });
-
-  }());
-
+  })();
 
   //more event bindings below
   //...

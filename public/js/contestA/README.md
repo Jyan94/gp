@@ -1,10 +1,11 @@
 Order of included js files in html:
 
 Dependency: Jquery
-loadAthletesCache
+Dependency: async
+loadAthletesCache (also loads ticker)
+loadGamesCache (also loads ticker)
 createAthleteCard
 Dependency: HighCharts
 timeseries (might be already included)
-Dependency: async
 getBets
 events

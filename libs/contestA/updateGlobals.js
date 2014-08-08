@@ -159,6 +159,7 @@ function formatResellAndTakenBets(bets, callback) {
         memo.overTakenIdToIndex[bet.bet_id] = memo.takenCount;
         ++memo.takenCount;
       }
+      
       if (bet.is_selling_position[UNDER]) {
         memo.resell.push(formatResellBet(bet, false));
         memo.overResellIdToIndex[bet.bet_id] = memo.resellCount;

@@ -179,7 +179,7 @@ input[type="text"] {
   border-radius: 0px;
   float: left;
   margin: 10px 10px 10px 10px;
-  border-radius: 2px 2px 2px 2px;
+  border-radius: 5px;
   -webkit-transform-origin: 50% 50%;
   -webkit-transform-style: preserve-3d;
   box-shadow: 0px 4px 4px #888;
@@ -256,7 +256,7 @@ input[type="text"] {
   color: #fff;
   font-size: 22px;
   font-weight: 200;
-  margin-top: -10px;
+  margin-top: -12px;
 }
 
 .playercard1-info .pos {
@@ -515,11 +515,11 @@ input[type="text"] {
 }
 
 #daily-boxscore-ticker {
-  -webkit-animation: moveTicker 60s linear 0s infinite normal;
+  -webkit-animation: moveTicker 105s linear 0s infinite normal;
 }
 
 #top-player-ticker {
-  -webkit-animation: moveTicker 90s linear 0s infinite normal;
+  -webkit-animation: moveTicker 180s linear 0s infinite normal;
 }
 
 
