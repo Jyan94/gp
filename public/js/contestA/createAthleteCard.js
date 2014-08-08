@@ -85,7 +85,7 @@
           '<div class=\'playercard1-back-tab-container\'>' + 
             '<ul class=\'playercard1-back-tab-menu\'>' +
               '<li id=\'playercard1-' + arrayId + '-tab-1\' class=\'playercard1-back-tab active\'>' +
-                'Tab 1' +
+                'Timeseries' +
               '</li>' +
               '<li id=\'playercard1-' + arrayId + '-tab-2\' class=\'playercard1-back-tab\'>' +
                 'Tab 2' +
@@ -97,7 +97,7 @@
             '<div class=\'playercard1-back-tab-border\'>' +
             '</div>' +
             '<div id=\'playercard1-' + arrayId + '-tab-1-content\' class=\'playercard1-back-tab-content active\'>' +
-              '<div id=\'playercard1-' + arrayId + '-graph-container\' class=\'graph-container\'></div>' +
+              '<div id=\'playercard1-' + arrayId + '-graph-container\' class=\'graph-container\'"></div>' +
             '</div>' +
             '<div id=\'playercard1-' + arrayId + '-tab-2-content\' class=\'playercard1-back-tab-content\'>' +
               '<p>Stuff 2</p>' +
