@@ -17,13 +17,13 @@ var Athlete = require('libs/athletes/exports');
  */
 
 function renderPortfolio(req, res) {
-  res.render('portfolioContestA/portfolio.hbs');
+  res.render('portfolioContestA/portfolio.hbs', {user: req.user});
 }
 
 function getAthletesFromBets(betArr, callback) {
   async.reduce(
-    betArr, 
-    {index: 0, idToIndex: {}, athletes: []}, 
+    betArr,
+    {index: 0, idToIndex: {}, athletes: []},
     function(memo, betObj, callback) {
       if (betObj && !memo.idToIndex[betObj.athleteId]) {
         memo.idToIndex[betObj.athleteId] = memo.index;
@@ -31,7 +31,7 @@ function getAthletesFromBets(betArr, callback) {
         ++memo.index;
       }
       callback(null, memo);
-    }, 
+    },
     function(err, result) {
       if (err) {
         callback(err);
@@ -66,7 +66,7 @@ function sendOverInitData(req, res, next) {
         async.filter(arr, function(item, callback) {
           callback(item);
         }, callback);
-      } 
+      }
       async.parallel(
       [
         function(callback) {

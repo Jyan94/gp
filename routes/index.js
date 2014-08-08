@@ -77,12 +77,12 @@ app.get('/logout', logout.logout);
 //app.get('/markethome', market.getDailyScores);
 
 //profile
-var profile = require('routes/profile');
+/*var profile = require('routes/profile');
 app.get('/user', profile.redirectProfile);
 app.get('/user/', profile.redirectProfile);
 app.get('/user/:username', profile.retrieveProfile);
 app.post('/upload/image/:username', profile.updateProfile);
-app.get('/images/:file', profile.pictureNotFound);
+app.get('/images/:file', profile.pictureNotFound);*/
 //app.post('/deleteBets/:betId', profile.cancelPendingBet);
 
 //paypal
@@ -104,7 +104,7 @@ app.get('/takePendingBet', contestA.takePendingBet);
 app.post('/placePendingBet', contestA.placePendingBet);
 
 
-//contest A portfolio 
+//contest A portfolio
 var contestAPortfolio = require('routes/portfolioContestA/portfolio');
 app.get('/portfolio', contestAPortfolio.renderPortfolio);
 app.get('/initPortfolio', contestAPortfolio.sendOverInitData);

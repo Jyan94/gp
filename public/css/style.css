@@ -320,7 +320,7 @@ input {
 .dropdown-menu.active {
   border: 0px solid #ddc;
   padding: 0px 0px;
-  height: 123px;
+  height: 100px;
   -webkit-transition: all 0.2s ease-in-out, border-top-width 0s;
   -moz-transition: all 0.2s ease-in-out, border-top-width 0s;
 }

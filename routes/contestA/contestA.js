@@ -447,7 +447,7 @@ function calculateWinnings (bet, fantasyPointsResult, callback) {
     var winnerUsername = null;
 
     if (fantasyPointsResult < fantasyPointsPrediction) {
-      winnerUsername = (bet.overNotUnder ? bet.opponent : bet.owner); 
+      winnerUsername = (bet.overNotUnder ? bet.opponent : bet.owner);
     }
     else {
       winnerUsername = (bet.overNotUnder ? bet.owner : bet.opponent);
