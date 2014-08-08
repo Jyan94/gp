@@ -1,3 +1,10 @@
+/**
+ * =============================================================================
+ * Author: Harrison Zhao
+ * Documentation:
+ *   README: success for signup is when res.send obj does not have field message
+ * =============================================================================
+ */
 'use strict';
 require('rootpath')();
 
@@ -6,12 +13,11 @@ var bcrypt = require('bcrypt-nodejs');
 var configs = require('config/index');
 var nodemailer = require('nodemailer');
 var User = require('libs/cassandra/user');
-var constants = configs.constants;
+var constants = configs.constants.signup;
 var cql = configs.cassandra.cql;
-var responseValues = constants.signupResponseValues;
 
-var defaultPlayerImage = constants.defaultPlayerImage;
-var SMTP = constants.SMTP;
+var defaultPlayerImage = configs.constants.defaultPlayerImage;
+var SMTP = configs.constants.SMTP;
 var smtpTransport = nodemailer.createTransport(SMTP.name, SMTP.configObject);
 
 function insertUser(uuid, body, req, res, next) {
@@ -44,14 +50,14 @@ function insertUser(uuid, body, req, res, next) {
         verified, //verified
         null //verication_time
       ];
-      var sendMailCallback = function(err, response) {
+      /*var sendMailCallback = function(err, response) {
         if (err) {
           next(err);
         }
         else {
-          res.send({value: responseValues.success});
+          res.send({message: responseValues.success});
         }
-      };
+      };*/
       var redirectSignup = function() {
         async.waterfall(
         [
@@ -69,7 +75,7 @@ function insertUser(uuid, body, req, res, next) {
             next(err);
           }
           else {
-            res.redirect('/user');
+            res.send({});
           }
         });
       };
@@ -133,54 +139,96 @@ function verifyUniqueUuid(uuid, callback) {
   });
 }
 
+function validateEmail(email) {
+/*jshint ignore:start*/ 
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+/*jshint ignore:end*/
+} 
+
 var processSignup = function(req, res, next) {
   var body = req.body;
-  var uuid = cql.types.uuid();
-  
-  async.waterfall(
-  [
-    //username lookup
-    function(callback) {
-      var selectUsernameCallback = function(err, result) {
-        if (err) {
-          callback(err);
-        }
-        else if (result) {
-          res.send({value: responseValues.userTaken});
-        }
-        else {
-          callback(null);
-        }
-      };
+  if (!(body.username && body.email && body.password && body.verifyPassword)) {
+    res.send({message: 'must fill out all fields'});
+  }
+  else if (body.password !== body.verifyPassword) {
+    res.send({message: 'passwords do not match'});
+  }
+  else if (!body.username.match(/^[0-9a-zA-Z_]+$/)) {
+    res.send({
+      message: 'cannot have special characters or spaces in username'
+    });
+  }
+  else if (body.username.length < constants.MINIMUM_USERNAME_LENGTH) {
+    res.send({
+      message: 'username cannot be fewer than ' + 
+        constants.MINIMUM_USERNAME_LENGTH +
+        ' characters'
+    });
+  }
+  else if (body.password.length < constants.MINIMUM_PASSWORD_LENGTH) {
+    res.send({
+      message: 'password cannot be fewer than ' +
+        constants.MINIMUM_PASSWORD_LENGTH +
+        ' characters'
+    });
+  }
+  else if (!validateEmail(body.email)) {
+    res.send({
+      message: 'invalid email format'
+    });
+  }
+  else {
+    var uuid = cql.types.uuid();
+    async.waterfall(
+    [
+      //username lookup
+      function(callback) {
+        var selectUsernameCallback = function(err, result) {
+          if (err) {
+            callback(err);
+          }
+          else if (result) {
+            res.send({
+              message: 'username: ' + body.username + ' is already taken!'
+            });
+          }
+          else {
+            callback(null);
+          }
+        };
 
-      User.selectByUsername(body.username, selectUsernameCallback);
-    },
- 
-    //email lookup
-    function(callback) {
-      var selectEmailCallback = function(err, result) {
-        if (err) {
-          callback(err);
-        }
-        else if (result) {
-          res.send({value: responseValues.emailTaken});
-        }
-        else {
-          callback(null);
-        }
-      };
+        User.selectByUsername(body.username, selectUsernameCallback);
+      },
+   
+      //email lookup
+      function(callback) {
+        var selectEmailCallback = function(err, result) {
+          if (err) {
+            callback(err);
+          }
+          else if (result) {
+            res.send({
+              message: 'email: ' + body.email + ' is already registered!'
+            });
+          }
+          else {
+            callback(null);
+          }
+        };
 
-      User.selectByEmail(body.email, selectEmailCallback);
-    }
-  ],
-  function(err) {
-    if (err) {
-      next(err);
-    }
-    else {
-      insertUser(uuid, body, req, res, next);
-    }
-  });
+        User.selectByEmail(body.email, selectEmailCallback);
+      }
+    ],
+    function(err) {
+      if (err) {
+        next(err);
+      }
+      else {
+        insertUser(uuid, body, req, res, next);
+      }
+    });
+  }
 }
 
 var renderSignup = function(req, res) {

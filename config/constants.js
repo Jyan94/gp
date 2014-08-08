@@ -40,6 +40,10 @@ exports.auth = {
     '"parts": ["The provided email address has not been verified.", ' +
     '"Please check your email for a verification link." ]}'
 };
+exports.signup = {
+  MINIMUM_USERNAME_LENGTH: 3,
+  MINIMUM_PASSWORD_LENGTH: 6
+};
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
 /*
  * ====================================================================

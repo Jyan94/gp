@@ -1,60 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html" charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <link href="//fonts.googleapis.com/css?family=Roboto+Condensed:400,300" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="/css/pure-min.css">
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
-    <script src="/js/jquery/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
-    <link rel="import" href="/htmlImports/dependencies/jquery-ui.html">
-    <title></title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <!-- Placed at the end of the document so the pages load faster-->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <!-- Optional theme-->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-    <!-- Custom styles for this template-->
-    <link href="css/bootstrap/signupAndLogin.css" rel="stylesheet">
-    <!-- Latest compiled and minified JavaScript-->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  </head>
-  <body>
-    <div class="masthead clearfix">
-      <div class="wrap"><a href="/" class="masthead-brand"><img src="img/GoProphetLogo8.jpg" width="200" height="42"></a>
-        <ul class="nav masthead-nav">
-        </ul>
-      </div>
-    </div>
-    <div id="login-box-wrapper" class="content">
-      <div id="login-box-wrapper" class="bounding-box rounded">
-        <div class="padded">
-          <h3>Login</h3>
-          <hr>
-          <div class="pure-g-r">
-            <div id="login-box" class="pure-u-11-24">
-              <form id="login" action="/login" method="post" class="pure-form pure-form-stacked">
-                <fieldset>
-                  <label for="username">Username</label>
-                  <input type="text" name="username" placeholder="username" autofocus required>
-                </fieldset>
-                <fieldset>
-                  <label for="password">Password</label>
-                  <input type="password" name="password" placeholder="password" required>
-                </fieldset>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Login</title>
+  <meta name="generator" content="Bootply" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+      <link href="/css/registry/registry.css" rel="stylesheet">
+    </head>
+    <body>
+      <!--login modal-->
+      <div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <!-- remove close button for now -->
+              <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
+              <h1 class="text-center">Login</h1>
+            </div>
+            <div class="modal-body">
+              <form id="login-form" class="form col-md-12 center-block">
+                <div class="form-group">
+                  <input id="username" type="username" class="form-control input-lg" placeholder="Username">
+                </div>
+                <div class="form-group">
+                  <input id="password" type="password" class="form-control input-lg" placeholder="Password">
+                </div>
+                <div class="form-group">
+                  <button id="submit-login" class="btn btn-primary btn-lg btn-block">Sign In</button>
+                  <!--Remove need help-->
+                  <span class="pull-right"><a href="/signup">Signup</a></span>
+                  <span id="error-message-span"></span>
+                </div>
               </form>
-              <div class="button-align">
-                <input type="submit" form="login" value="Log in" class="pure-button button-primary left">
-                <p>or</p>
-                <form>
-                  <input onClick="parent.location=&quot;signup&quot;" value="Sign Up" class="pure-button button-primary right">
-                </form>
-              </div>
+            </div>
+            <div class="modal-footer">
+              <!-- <div class="col-md-12">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+              </div> -->
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </body>
-</html>
+      <!-- script references -->
+      <script src="/js/jquery/jquery.min.js"></script>
+      <script src="/js/libModules/bootstrap.min.js"></script>
+      <script src="/js/registry/login.js"></script>
+    </body>
+    </html>

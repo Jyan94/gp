@@ -32,10 +32,15 @@ var login = require('routes/registry/login');
 app.route('/login')
   .get(login.redirectLogin)
   .get(login.renderLogin)
-  .post(passport.authenticate('local',
+  .post(function(req, res, next) {
+    login.authenticateCallback(passport, req, res, next);
+  });
+
+/*
+    passport.authenticate('local',
     { successRedirect: '/marketHome',
       failureRedirect: '/login',
-      failureFlash: true }));
+      failureFlash: true }));*/
 /*
 // Redirect the user to Facebook for authentication
 app.get('/auth/facebook',
