@@ -25,19 +25,19 @@
     <div class="pure-g-r banner">
       <div class="pure-u-3-4 banner-inner">
         <div class="banner-nav">
-          <span><a class="dropdown-icon">{{user.username}}</a></span>
+          <span><a class="dropdown-icon">{{username}}</a></span>
           <ul class="dropdown-menu">
             <li class="dropdown-top-divider"></li>
-            <li class="dropdown-entry"><a href="/user">Profile</a></li>
+            <!--<li class="dropdown-entry"><a href="/user">Profile</a></li>-->
             <li class="dropdown-entry"><a href="/portfolio">Portfolio</a></li>
-            <li class="dropdown-entry"><a href="/features">About</a></li>
+            <li class="dropdown-entry"><a href="/#features">About</a></li>
             <li class="dropdown-divider"></li>
             <li class="dropdown-entry"><a href="/logout">Logout</a></li>
           </ul>
           <div class="pure-hidden-desktop pure-hidden-tablet"><span><a href="/" class="fui-list"></a></span></div>
         </div>
         <div class="pure-form">
-          <input id="quicksearch" type="text" name="search" placeholder="Search for Players">
+          <input id="quicksearchHidden" type="text" name="search" placeholder="Search for Players">
         </div>
         <div class="banner-brand"><a href="/markethome"><img src="/img/GoProphetLogo8.jpg"></a></div>
           </div>
@@ -49,14 +49,14 @@
           <div id="graph-container" class="portfolio-graph-container">
           </div>
           <div class="portfolio-profile">
-            <img src="assets/static/stockgraph.jpg" alt="53e199b9e62dd0272abc8fed_RiskTakerFantasy.jpg" style='width:100%; height:70%; border-radius: 5px 5px 0px 0px'>
+            <img src="{{userImage}}" alt="53e199b9e62dd0272abc8fed_RiskTakerFantasy.jpg" style='width:100%; height:70%; border-radius: 5px 5px 0px 0px'>
             <p class="lead"><font size="3">
-            Username: <br>
-            Total Money: <br>
-            Number of Bets Taken: <br>
+            Username: {{username}}<br>
+            Total Money: {{money}}<br>
+            <!-- Number of Bets Taken: <br>
             Number of Bets Made: <br>
-            Number of Bets Won: <br>
-            Most Betted on Athlete: <br>
+            Number of Bets Won: <br> 
+            Most Betted on Athlete: <br> -->
           </div>
         </div>
         <div class="portfolio-tab-container">

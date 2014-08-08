@@ -232,7 +232,7 @@ function placePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'message': 'Bet successfully made!', 'status': 200});
+      res.send({message: 'Bet successfully made!'});
     }
   });
 }
@@ -254,7 +254,7 @@ function removePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'message': 'Bet successfully deleted!', 'status': 200});
+      res.send({message: 'Bet successfully deleted!'});
     }
   });
 }
@@ -285,7 +285,7 @@ function takePendingBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'message': 'Bet successfully taken!', 'status': 200});
+      res.send({message: 'Bet successfully taken!'});
     }
   });
 }
@@ -297,7 +297,7 @@ function placeResellBet(req, res, next) {
     }
     else {
       res.send(
-        {'message': 'Bet successfully placed in resell!', 'status': 200});
+        {message: 'Bet successfully placed in resell!'});
     }
   });
 }
@@ -308,7 +308,7 @@ function takeResellBet(req, res, next) {
       next(err);
     }
     else {
-      res.send({'message': 'Bet successfully taken!', 'status': 200});
+      res.send({message: 'Bet successfully taken!'});
     }
   });
 }
@@ -447,7 +447,7 @@ function calculateWinnings (bet, fantasyPointsResult, callback) {
     var winnerUsername = null;
 
     if (fantasyPointsResult < fantasyPointsPrediction) {
-      winnerUsername = (bet.overNotUnder ? bet.opponent : bet.owner); 
+      winnerUsername = (bet.overNotUnder ? bet.opponent : bet.owner);
     }
     else {
       winnerUsername = (bet.overNotUnder ? bet.owner : bet.opponent);
