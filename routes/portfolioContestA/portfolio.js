@@ -22,7 +22,7 @@ function renderPortfolio(req, res) {
     {
       userImage: req.user.image,
       username: req.user.username,
-      money: Math.round(parseFloat(req.user.money) * 100) / 100
+      money: Math.round(req.user.money * 100) / 100
     });
 }
 
