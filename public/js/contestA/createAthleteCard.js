@@ -95,9 +95,7 @@
             '<div class=\'playercard1-back-tab-border\'>' +
             '</div>' +
             '<div id=\'playercard1-' + arrayId + '-tab-1-content\' class=\'playercard1-back-tab-content active\'>' +
-              '<p>Stuff 1</p>' +
-              '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>' +
-              '<p>Stuff 1</p>' +
+              '<div id=\'playercard1-' + arrayId + '-graph-container\' class=\'graph-container\'></div>' +
             '</div>' +
             '<div id=\'playercard1-' + arrayId + '-tab-2-content\' class=\'playercard1-back-tab-content\'>' +
               '<p>Stuff 2</p>' +

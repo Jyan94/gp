@@ -33,8 +33,8 @@ var CassandraStore = require('connect-cassandra-cql')(session);
 var client = new cql.Client(cassandraConfig);
 
 //CHANGE TO PRODUCTION WHEN IN PRODUCTION
-process.env.NODE_ENV = 'development';
-//process.env.NODE_ENV = 'production';
+//process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'production';
 //var cookieConfig = (process.env.NODE_ENV === 'development') ? false : true;
 var cookieConfig = false;
 

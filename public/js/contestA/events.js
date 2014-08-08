@@ -335,11 +335,11 @@
     var fantasyValue = $('#fantasyValue').val();
     var overUnder;
     if ($('input[type=\'radio\']:checked')[0].value === 'Over') {
-      console.log($('input[type=\'radio\']:checked')[0].value);
+      //console.log($('input[type=\'radio\']:checked')[0].value);
       overUnder = 'under';
     }
     else {
-      console.log($('input[type=\'radio\']:checked')[0].value);
+      //console.log($('input[type=\'radio\']:checked')[0].value);
       overUnder = 'over';
     }
 
