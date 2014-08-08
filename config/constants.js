@@ -174,6 +174,7 @@ exports.contestAbets = {
     MARKET_PENDING: 3,
     SECONDARY_MARKET: 4
   },
+  DEFAULT_GAME_ID: '00000000-0000-0000-0000-000000000000',
   TIMESERIES_TIMEFIELD: 'dateOf(time)',
   TIMESERIES_MILLISECONDS_AGO: function() {
     //1296 * 10^5 = 1.5 days in milliseconds

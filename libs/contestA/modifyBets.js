@@ -41,7 +41,7 @@ function verifyGameIdAndAthlete(
   gameId,
   sport,
   callback) {
-  if (configs.isDev() && false) {
+  if (configs.isDev()) {
     callback(null);
   }
   else {
@@ -105,10 +105,6 @@ function verifyGameIdAndAthlete(
  * args: err
  */
 function insertPending(info, user, callback) {
-  var fantasyValue = parseFloat(info.fantasyValue);
-  var wager = parseFloat(info.wager);
-  var isOverBettor = (info.isOverBettor === 'true');
-
   async.waterfall(
   [
     function(callback) {
@@ -123,7 +119,7 @@ function insertPending(info, user, callback) {
         callback);
     },
     function(callback) {
-      User.subtractMoney(user.money, wager, user.user_id, callback);
+      User.subtractMoney(user.money, info.wager, user.user_id, callback);
     },
     function(callback) {
         UpdateBet.insertPending(
@@ -134,12 +130,12 @@ function insertPending(info, user, callback) {
         info.athleteTeam,
         cql.types.timeuuid(),
         info.expirationTimeMinutes,
-        fantasyValue,
+        info.fantasyValue,
         info.gameId,
-        isOverBettor,
+        info.isOverBettor,
         info.sport,
         user.username,
-        wager,
+        info.wager,
         callback);
     }
   ], callback);
@@ -197,22 +193,17 @@ function deletePending(info, user, callback) {
  * args: (err)
  */
 function takePending(info, user, callback) {
-  var fantasyValue = parseFloat(info.fantasyValue);
-  var payoff = parseFloat(info.payoff);
-  var price = parseFloat(info.price);
-  var overNotUnder = (info.overNotUnder === 'true');
-
   async.waterfall(
   [
     function(callback) {
-      User.subtractMoney(user.money, price, user.user_id, callback);
+      User.subtractMoney(user.money, info.price, user.user_id, callback);
     },
     function(callback) {
       var takePendingCallback = function(err) {
         if (err && err.message === APPLIED) {
           User.addMoney(
-            user.money - price,
-            price,
+            user.money - info.price,
+            info.price,
             user.user_id,
             function(err) {
               if (err) {
@@ -235,12 +226,12 @@ function takePending(info, user, callback) {
         info.athleteName,
         info.athleteTeam,
         info.betId,
-        fantasyValue,
+        info.fantasyValue,
         info.gameId,
         info.opponent,        
-        overNotUnder,
+        info.overNotUnder,
         user.username,
-        price,
+        info.price,
         takePendingCallback);
     },
     function(callback) {
@@ -253,11 +244,11 @@ function takePending(info, user, callback) {
             info.athleteName,
             info.athleteTeam,
             info.betId,
-            fantasyValue,
+            info.fantasyValue,
             info.opponent,
-            overNotUnder,
-            payoff,
-            price,
+            info.overNotUnder,
+            info.payoff,
+            info.price,
             false,
             user.username,
             callback);
@@ -269,11 +260,11 @@ function takePending(info, user, callback) {
             info.athleteName,
             info.athleteTeam,
             info.betId,
-            fantasyValue,
+            info.fantasyValue,
             user.username,
-            !overNotUnder,
-            payoff,
-            price,
+            !info.overNotUnder,
+            info.payoff,
+            info.price,
             true,
             info.opponent,
             callback);
@@ -282,8 +273,8 @@ function takePending(info, user, callback) {
         function(callback) {
           Timeseries.insert(
             info.athleteId,
-            fantasyValue,
-            price,
+            info.fantasyValue,
+            info.price,
             callback);
         }
       ], callback);

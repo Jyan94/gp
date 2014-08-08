@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link href="//fonts.googleapis.com/css?family=Roboto+Condensed:400,300" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/css/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+    <link rel="stylesheet" type="text/css" href="/js/jquery/jquery-ui.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+    <link rel="stylesheet" type="text/css" href="/css/contestA/marketHome.css">
 
     <title> Contest A Portfolio</title>
 
@@ -32,38 +40,8 @@
           <input id="quicksearch" type="text" name="search" placeholder="Search for Players">
         </div>
         <div class="banner-brand"><a href="/markethome"><img src="/img/GoProphetLogo8.jpg"></a></div>
-        <button style="margin-left: 800px;" class="btn1">Filter</button>
-        <div id="filterdiv">
-          <p id="filter">
-            <label for="amount">Price range:</label>
-            <input id="amount" type="text" style="border: 0; color: #299; font-weight: bold;">
-          </p>
-          <div id="slider-range" data-filter="wager"></div>
-          <p id="filter2">
-            <label for="amount">Fantasy Value:</label>
-            <input id="amount2" type="text" style="border: 0; color: #299; font-weight: bold;">
-          </p>
-          <div id="slider-range2" data-filter="fantasyValue"></div>
-          <div id="filters">
-            <h3>Sport</h3>
-            <div data-filter-group="sport" class="button-group js-radio-button-group">
-              <button data-filter="" class="button is-checked">show all</button>
-              <button data-filter=".Football" class="button">nfl</button>
-              <button data-filter=".Basketball" class="button">nba</button>
-              <button data-filter=".Baseball" class="button">mlb</button>
-            </div>
-          </div>
-          <div id="filters1">
-            <h3>Over/Under</h3>
-            <div data-filter-group="overunder" class="button-group js-radio-button-group">
-              <button data-filter="" class="button is-checked">any</button>
-              <button data-filter="over" class="button">Over</button>
-              <button data-filter="under" class="button">Under</button>
-            </div>
           </div>
         </div>
-      </div>
-    </div>
 
     <div class="content">
       <div class="portfolio">
@@ -71,6 +49,14 @@
           <div id="graph-container" class="portfolio-graph-container">
           </div>
           <div class="portfolio-profile">
+            <img src="assets/static/stockgraph.jpg" alt="53e199b9e62dd0272abc8fed_RiskTakerFantasy.jpg" style='width:100%; height:70%; border-radius: 5px 5px 0px 0px'>
+            <p class="lead"><font size="3">
+            Username: <br>
+            Total Money: <br>
+            Number of Bets Taken: <br>
+            Number of Bets Made: <br>
+            Number of Bets Won: <br>
+            Most Betted on Athlete: <br>
           </div>
         </div>
         <div class="portfolio-tab-container">
@@ -93,12 +79,17 @@
           <div id='portfolio-tab-2-content' class='portfolio-tab-content'>
             <div class='isotope-taken'></div>
           </div>
+
+
           <!-- <div id='portfolio-tab-3-content' class='portfolio-tab-content'>
             Stuff
           </div> -->
         </div>
       </div>
     </div>
+
+
+
     <script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="/js/libModules/highcharts/highstock.js"></script>
     <script type="text/javascript" src="/js/libModules/highcharts/exporting.js"></script>
@@ -106,5 +97,6 @@
     <script type="text/javascript" src="/js/libModules/isotope.pkgd.min.js"></script>
     <script type="text/javascript" src="/js/contestAPortfolio/createAthleteCard.js"></script>
     <script type="text/javascript" src="/js/contestAPortfolio/portfolio.js"></script>
+    <script src="/js/banner.js"></script>
   </body>
 </html>

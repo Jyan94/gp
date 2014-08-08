@@ -44,7 +44,7 @@ a {
   color: black;
 }
 a:hover {
-  color: #cecece;
+  color: #990604;
 }
 button {
   background-color: #cecece;
@@ -60,7 +60,6 @@ input {
   -ms-transition: border-color 0.5s ease-in;
   -o-transition: border-color 0.5s ease-in;
   transition: border-color 0.5s ease-in;
-  margin-bottom: 7px;
 }
 .pure-form .button-primary {
   margin-left: 4px;
@@ -100,8 +99,9 @@ input[type="text"] {
   border: 0px;
   display: block;
   margin-left: 120px;
+  margin-right: auto;
   padding-top: 145px;
-  width: 65%;
+  max-width: 980px;
   position: relative;
 }
 
@@ -141,8 +141,7 @@ input[type="text"] {
 .makeBets {
   margin-top: 10%;
   position: fixed;
-  float: left;
-  margin-left: 75%;
+  margin-left: 1120px;
   background-color: white;
   height: 610px;
   width: 275px;
@@ -162,7 +161,7 @@ input[type="text"] {
   border-style: solid;
   border-color: black;
   border-width: 1px;
-  padding: 4% 4% 4% 4%;
+  padding: 5% 5% 5% 5%;
   z-index: -500;
 }
 
@@ -179,7 +178,7 @@ input[type="text"] {
   border-radius: 0px;
   float: left;
   margin: 10px 10px 10px 10px;
-  border-radius: 5px;
+  border-radius: 2px 2px 2px 2px;
   -webkit-transform-origin: 50% 50%;
   -webkit-transform-style: preserve-3d;
   box-shadow: 0px 4px 4px #888;
@@ -256,7 +255,7 @@ input[type="text"] {
   color: #fff;
   font-size: 22px;
   font-weight: 200;
-  margin-top: -12px;
+  margin-top: -10px;
 }
 
 .playercard1-info .pos {
@@ -372,7 +371,7 @@ input[type="text"] {
 /* ---- backdrop ---- */
 
 .backdrop {
-  background-color: #000;
+  background-color: #fff;
   box-sizing: border-box;
   height: 100%;
   left: 0;
@@ -492,25 +491,11 @@ input[type="text"] {
   position: fixed;
   overflow: hidden;
   z-index: 1;
-  /*background-color: #17599B;
-  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
-  top: 45px;*/
-  background-color: #083f75;
-  box-shadow: 0px 4px 4px #888;
-  top: 45px;
-}
-
-/*#daily-boxscore-ticker-wrapper {
-  background-color: #17599B;
-  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
-  top: 45px;
 }
 
 #daily-boxscore-ticker-wrapper {
-  background-color: #000;
-  border-style: solid;
-  border-color: white;
-  border-width: 1px 1px 1px 1px;
+  background-color: #17599B;
+  box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
   top: 45px;
 }
 
@@ -518,40 +503,30 @@ input[type="text"] {
   background-color: #17599B;
   box-shadow: inset 0px 12px 12px #20548A, inset 0px -20px 24px #0D2E50, 0px 1px 4px #888;
   top: 90px;
-
-#top-player-ticker-wrapper {
-  background-color: #083f75;
-  box-shadow: 0px 4px 4px #888;
-  top: 45px;
-}*/
+}
 
 .ticker {
   display: inline-block;
   margin-top: -3px;
   white-space: nowrap;
-  -webkit-animation: moveTicker 300s linear 0s infinite normal;
 }
 
-/*#daily-boxscore-ticker {
-  -webkit-animation: moveTicker 105s linear 0s infinite normal;
+#daily-boxscore-ticker {
+  -webkit-animation: moveTicker 60s linear 0s infinite normal;
 }
 
 #top-player-ticker {
-  -webkit-animation: moveTicker 180s linear 0s infinite normal;
-}*/
+  -webkit-animation: moveTicker 90s linear 0s infinite normal;
+}
 
 
 @-webkit-keyframes moveTicker {
   from {
           -webkit-transform: translate(1920px, 0)
        }
-  to {
+  to { 
         -webkit-transform: translate(-100%, 0)
      }
-}
-
-.ticker-text {
-  display: table-cell;
 }
 
 .ticker p {
@@ -559,38 +534,4 @@ input[type="text"] {
   margin-top: 13px;
   font-size: 19px;
   display: inline-block;
-}
-
-/*.ticker p p {
-  margin-bottom: 0px;
-  margin-top: 0px;
-}*/
-
-/*#6AA0D6*/
-.flash {
-  background-color: #083f75;
-  border: solid 1px #083f75;
-  box-shadow: 0px 1px 4px #888;
-  color: #fff;
-  display: none;
-  height: 45px;
-  width: 80%;
-  border-radius: 5px;
-  padding: 10px;
-  position: fixed;
-  top: 95px;
-  left: 10%;
-  z-index: 1;
-}
-
-.flash p {
-  margin: 0;
-}
-
-.flash img {
-  vertical-align: middle;
-}
-
-.flash span {
-  vertical-align: middle;
 }
