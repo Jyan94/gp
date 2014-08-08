@@ -17,17 +17,13 @@
  */
 //must have jquery before this
 //include this file before any other non-jquery file
+/* global async */
 'use strict';
 
 (function(exports) {
   var athletesList = [];
   var athletesIdMap = {};
 
-  /**
-   * returns an athlete object corresponding to given id
-   * @param  {uuid} id
-   * @return {object}    athlete object
-   */
   function getAthleteById(id) {
     return athletesList[athletesIdMap[id]];
   }
@@ -36,7 +32,7 @@
     return athletesList;
   }
 
-  function loadAthletesFromServer() {
+  function loadAthletesFromServer(callback) {
     $.ajax({
       url: '/initialAthletesLoad',
       type: 'GET',
@@ -52,16 +48,22 @@
         data = JSON.parse(data);
         athletesList = data.athletesList;
         athletesIdMap = data.athletesIdMap;
+        callback(null);
+      },
+      failure: function (response) {
+        console.log(response);
+        callback(new Error(response));
       },
       error: function(xhr, status, err) {
         console.error(xhr, status, err);
+        callback(err);
       }
     });
   }
 
-  loadAthletesFromServer();
   exports.getAthleteById = getAthleteById;
   exports.getAthletesArray = getAthletesArray;
+  exports.loadAthletesFromServer = loadAthletesFromServer;
 }(typeof exports === 'undefined' ? 
     window.contestALoadAthletesCache = {} : 
     exports));

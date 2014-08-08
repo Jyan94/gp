@@ -10,6 +10,7 @@
  *     -see documentation below above the method
  * =============================================================================
  */
+/* global contestALoadAthletesCache*/
 'use strict';
 /**
  * returns an athlete card
@@ -27,6 +28,7 @@
   function createAthleteCard(
     arrayId,
     fantasyValue,
+    athleteId,
     fullName,  
     fullTeamName,
     overNotUnder,
@@ -34,6 +36,8 @@
     athletePosition,
     wager,
     sport) {
+
+    var athlete = contestALoadAthletesCache.getAthleteById(athleteId);
 
     var betPosition;
     if (overNotUnder) {
@@ -57,7 +61,7 @@
               '</div>' +
               '<div class=\'playercard1-info pos\'>' +
                 '<center>' +
-                  '<p>' + athletePosition + '&#160;|&#160;' + fullName +'</p>' +
+                  '<p>' + athletePosition + '&#160;|&#160;' + fullTeamName +'</p>' +
                 '</center>' +
               '</div>' +
             '</div>' +
@@ -126,6 +130,7 @@
       card = createAthleteCard(
         index,
         bet.fantasyValue,
+        bet.athleteId,
         bet.athleteName,
         bet.athleteTeam,
         bet.overNotUnder,

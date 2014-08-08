@@ -40,6 +40,10 @@ exports.auth = {
     '"parts": ["The provided email address has not been verified.", ' +
     '"Please check your email for a verification link." ]}'
 };
+exports.signup = {
+  MINIMUM_USERNAME_LENGTH: 3,
+  MINIMUM_PASSWORD_LENGTH: 6
+};
 exports.mlbKey='grnayxvqv4zxsamxhsc59agu';
 /*
  * ====================================================================
@@ -134,7 +138,8 @@ exports.verificationMessages = {
 exports.pollIntervals = {
   contestA: 2000,
   athleteUpdate: 6 * 60000 * 60, //every 6 hrs
-  contestAtimeseries: 2000
+  contestAtimeseries: 2000,
+  gameUpdate: 2000
 }
 /*
  * ====================================================================
@@ -147,7 +152,7 @@ exports.validSports = {
 }
 /*
  * ====================================================================
- * contest A bets
+ * Contest A bets
  * ====================================================================
  */
 exports.contestAbets = {
@@ -175,6 +180,12 @@ exports.contestAbets = {
     return (new Date()).getTime() - 129600000;
   }
 };
+
+/*
+ * ====================================================================
+ * Other
+ * ====================================================================
+ */
 
 exports.game = {
   hasEnded: function(game) {

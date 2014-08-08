@@ -20,11 +20,18 @@ var BASEBALL = sportNames.baseball;
 var BASKETBALL = sportNames.basketball;
 var FOOTBALL = sportNames.football;
 var athletes = configs.globals.athletes;
+var Games = require('libs/games/exports');
  
 var constants = configs.constants;
 var APPLIED = constants.cassandra.APPLIED;
 
 //need to verify gameId and athlete in game!!!
+//once a game is closed and the cache says so as well,
+//no more bets can be made for that game, and the calculation
+//script will go through all bets for that game
+//ISSUE: Once time goes past 12 AM ET, no bets can be placed
+//on games from the previous day, even if they are still in progress
+//Perhaps refactor? Does not just check athlete information mismatch
 function verifyGameIdAndAthlete(
   athleteId,
   athleteImage,
@@ -34,22 +41,29 @@ function verifyGameIdAndAthlete(
   gameId,
   sport,
   callback) {
-  if (configs.isDev()) {
+  if (configs.isDev() && false) {
     callback(null);
   }
   else {
     var verify = function(idMap, list) {
-      var athleteObj = list[idMap[athleteId]];
-      return 
-        (athleteObj.image === athleteImage &&
-         athleteObj.fullName === athleteName &&
-         athleteObj.position === athletePosition &&
-         athleteObj.statistics[athleteObj.statistics.length - 1].gameId === 
-          gameId &&
-         athleteObj.sport === sport); 
+      if (Games.Select.getGameIdByLongTeamName(athleteTeam) === gameId) {
+        var athleteObj = list[idMap[athleteId]];
+        var gameObj = Games.Select.getGameById(gameId);
+      
+        //Extra checks in place to prevent race conditions
+        return (athleteObj.image === athleteImage &&
+          athleteObj.fullName === athleteName &&
+          athleteObj.position === athletePosition &&
+          athleteObj.longTeamName === athleteTeam &&
+          typeof(gameObj) !== 'undefined' &&
+          gameObj.id === gameId &&
+          gameObj.status !== 'closed' &&
+          athleteObj.sport === sport);
+      }
+      else {
+        return false
+      }
     }
-    var athleteMap;
-    var athleteList;
     switch(sport) {
       case FOOTBALL:
         verify(athletes.footballIdMap, athletes.footballList) ?
@@ -112,7 +126,7 @@ function insertPending(info, user, callback) {
       User.subtractMoney(user.money, wager, user.user_id, callback);
     },
     function(callback) {
-      UpdateBet.insertPending(
+        UpdateBet.insertPending(
         info.athleteId,
         info.athleteImage,
         info.athleteName,
@@ -222,6 +236,7 @@ function takePending(info, user, callback) {
         info.athleteTeam,
         info.betId,
         fantasyValue,
+        info.gameId,
         info.opponent,        
         overNotUnder,
         user.username,

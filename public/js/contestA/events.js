@@ -6,10 +6,14 @@
  */
 
 /*global contestALoadAthletesCache*/
+/*global contestALoadGamesCache*/
+/*global initializeCaches*/
 /*global contestAGetBets*/
 'use strict';
 
 (function(exports)  {
+  var DELIM = '-';
+
   function debounce( fn, threshold ) {
     var timeout;
     return function debounced() {
@@ -85,7 +89,10 @@
       fantasyValue: function() {
         var fantasyBottom = $('#slider-range2').slider("values", 0);
         var fantasyTop = $('#slider-range2').slider("values", 1);
-        var fantasy = $(this).find('.playercard1-bottom.wager').text().split(" ")[2];
+        var fantasy = $(this)
+          .find('.playercard1-bottom.wager')
+          .text()
+          .split(" ")[2];
         return (parseFloat(fantasy) >= parseFloat(fantasyBottom)
                 && parseFloat(fantasy) <= parseFloat(fantasyTop));
       }
@@ -188,10 +195,8 @@
       else if (e.target.className
                === 'pure-button button-primary take-bet-button') {
         var arrayIndex = e.currentTarget.id.substring(
-          e.currentTarget.id.indexOf('-') + 1);
+          e.currentTarget.id.indexOf(DELIM) + 1);
         var bet = contestAGetBets.getBetByIndex(arrayIndex);
-        console.log(bet);
-        console.log(arrayIndex);
         $.ajax({
           url: '/takePendingBet',
           type: 'GET',
@@ -202,6 +207,7 @@
             athleteTeam: bet.athleteTeam,
             betId: bet.betId,
             fantasyValue: bet.fantasyValue,
+            gameId: bet.gameId,
             opponent: bet.bettor,
             overNotUnder: bet.overNotUnder,
             payoff: bet.payoff,
@@ -221,7 +227,8 @@
 
         var currentTarget = $('#' + e.currentTarget.id);
         currentTarget.addClass('flipped');
-        flippedCard = e.currentTarget.id.substring(12);
+        flippedCard = e.currentTarget.id.substring(
+          e.currentTarget.id.indexOf(DELIM) + 1);
 
         $('#marketHome-backdrop').addClass('active');
 
@@ -329,14 +336,13 @@
   })();
 
   //make bet form
-  //autocomplete and create bet
+  //create bet
   (function () {
-    var athleteObj = {};
     var wagerAmount = $('#wagerAmount').val();
     var fantasyValue = $('#fantasyValue').val();
     var overUnder = $('input[type=\'radio\']:checked')[0].value;
 
-    function initAutocomplete() {
+/*    function initAutocomplete() {
       var searchCache = contestALoadAthletesCache.getAthletesArray().map(
         function (athlete) {
           athlete.label = athlete.fullName;
@@ -375,7 +381,7 @@
         };
       }
     }
-    initAutocomplete();
+    initAutocomplete();*/
 
     // Hover states on the static widgets
     $('#dialog-link, #icons li').hover(
@@ -387,7 +393,7 @@
       }
     );
     
-    $('#betForm').on('input', debounce(function(){
+    $('#wagerAmount, #fantasyValue').on('input', debounce(function () {
       wagerAmount = $('#wagerAmount').val();
       fantasyValue = $('#fantasyValue').val();
         
@@ -396,7 +402,7 @@
       $('.playercard1#create')
         .find('.playercard1-bottom.wager p')
         .replaceWith('<p>' + playerString + '</p');
-    }), 500);
+    }, 500));
 
     $('input[type=\'radio\']').on('change', function() {
       overUnder = $('input[type=\'radio\']:checked')[0].value.toLowerCase();
@@ -411,7 +417,12 @@
     //create bet
     $('#betForm').submit(function(e) {
       e.preventDefault();
+      var athleteObj = initializeCaches.getSearchedAthleteObj();
+
       if (athleteObj) {
+        var gameId = contestALoadGamesCache.getGameIdByLongTeamName(
+              athleteObj.longTeamName);
+
         $.ajax({
           url:'/placePendingBet',
           type: 'POST',
@@ -424,7 +435,7 @@
             athleteTeam: athleteObj.longTeamName,
             expirationTimeMinutes: null,
             fantasyValue: $('#fantasyValue').val(),
-            gameId: null,
+            gameId: (typeof(gameId) === 'undefined') ? null : gameId,
             isOverBettor: ($('input[type=\'radio\']:checked')[0]
               .value.toLowerCase() === 'over'),
             sport: athleteObj.sport, 
@@ -443,8 +454,7 @@
       }
     });
 
-  }());
-  
+  })();
 
   //more event bindings below
   //...

@@ -25,6 +25,12 @@ var ACTIVE = states.ACTIVE;
 var PROCESSED = states.PROCESSED;
 var EXPIRED = states.EXPIRED;
 
+/**
+ * ====================================================================
+ * UPDATE QUERIES FOR BET EXCHANGING
+ * ====================================================================
+ */
+
 var INSERT_BET_CQL = multiline(function() {/*
   INSERT INTO contest_a_bets (
     athlete_id,
@@ -239,6 +245,8 @@ var TAKE_PENDING_BET_CQL = multiline(function() {/*
     bettor_usernames[?] = ?
   AND
     fantasy_value = ?;
+  AND
+    game_id = ?;
 */});
 function takePending(
   athleteId,
@@ -246,6 +254,7 @@ function takePending(
   athleteTeam,
   betId,
   fantasyValue,
+  gameId,
   opponent,
   overNotUnder,
   username, 
@@ -283,7 +292,8 @@ function takePending(
       athleteTeam,
       otherPosition,
       opponent,
-      {value: fantasyValue, hint: 'double'}
+      {value: fantasyValue, hint: 'double'},
+      gameId
     ],
     one,
     function(err, result) {
@@ -564,6 +574,62 @@ function recallResell(betId, isOverBettor, price, username, callback) {
       }
     });
 }
+
+/**
+ * ====================================================================
+ * UPDATE QUERIES FOR BET STATES
+ * ====================================================================
+ */
+
+var UPDATE_STATE_CQL = multiline(function() {/*
+  UPDATE 
+    contest_a_bets
+  SET 
+    bet_state = ?
+  WHERE
+    bet_id = ?;
+*/});
+
+/**
+ * [updateBetState description]
+ * @param  {int}   nextState 
+ * 0-3, defined in constants.contestABets.STATES
+ * @param  {timeuuid}   betId
+ * @param  {Function} callback
+ * args: (err)
+ */
+function updateBetState(nextState, betId, callback) {
+  //need to do function(err) {callback(err)} for callback
+  cassandra.query(
+    UPDATE_STATE_CQL, 
+    [nextState, betId], 
+    one, 
+    function(err) {
+      callback(err);
+    });
+}
+
+exports.setPending = function(betId, callback) {
+  updateBetState(PENDING, betId, callback);
+}
+
+exports.setActive = function(betId, callback) {
+  updateBetState(ACTIVE, betId, callback);
+}
+
+exports.setProcessed = function(betId, callback) {
+  updateBetState(PROCESSED, betId, callback);
+}
+
+exports.setExpired = function(betId, callback) {
+  updateBetState(EXPIRED, betId, callback);
+}
+
+/**
+ * ====================================================================
+ * EXPORTS
+ * ====================================================================
+ */
 
 exports.insertPending = insertPending;
 exports.takePending = takePending;

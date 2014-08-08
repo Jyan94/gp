@@ -75,7 +75,7 @@
     overResell: {},
     underResell: {}
   };
-  var POLL_INTERVAL = 10000;
+  var POLL_INTERVAL = 5000;
   var NUM_DISPLAYED = 5;
   /*
    * ===========================================================================
@@ -135,7 +135,6 @@
     var index;
 
     //fill in holes
-    console.log(holesArr);
     for (; j !== holesArr.length; ++j) {
       //keep i from before
       for (; i !== totalLength; ++i) {
@@ -275,7 +274,6 @@
     sortElementList();
     insertList = [];
     removeList = [];
-    console.log(elementList);
     //get extra changed
     for (i = 0; i !== changed.length; ++i) {
       removeList.push(changed[i]);
@@ -289,7 +287,6 @@
       $container.data('isotope').remove(elementList[removeList[i]]);
     }
     for (i = 0; i !== insertList.length; ++i) {
-      console.log(insertList[i]);
       $container.data('isotope').insert(
         contestACreateAthleteCard.createCard(
           insertList[i], newDisplayedBets[insertList[i]]));
@@ -388,7 +385,6 @@
   function requestGetAndUpdateBets() {
     //add delay to this if card flipped over
     if ($('.flipped').length === 0) {
-      console.log(1);
       $.ajax({
         url: getBetUrl,
         dataType: 'json',
