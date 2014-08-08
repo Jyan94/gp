@@ -244,7 +244,7 @@ var TAKE_PENDING_BET_CQL = multiline(function() {/*
   AND
     bettor_usernames[?] = ?
   AND
-    fantasy_value = ?;
+    fantasy_value = ?
   AND
     game_id = ?;
 */});
