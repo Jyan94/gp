@@ -220,6 +220,13 @@ function getUserBets(req, res) {
  * @return {[type]}        [description]
  */
 function placePendingBet(req, res, next) {
+  //TEMPORARY FIX FOR NON-PULLED GAMES
+  if (configs.isDev()) {
+    req.body.gameId = configs.constants.contestAbets.DEFAULT_GAME_ID;
+  }
+  req.body.fantasyValue = parseFloat(req.body.fantasyValue);
+  req.body.wager = parseFloat(req.body.wager);
+  req.body.isOverBettor = (req.body.isOverBettor === 'true');
   ModifyBets.insertPending(req.body, req.user, function(err) {
     if (err) {
       next(err);
@@ -269,6 +276,10 @@ function removePendingBet(req, res, next) {
  * @return {[type]}        [description]
  */
 function takePendingBet(req, res, next) {
+  req.query.fantasyValue = parseFloat(req.query.fantasyValue);
+  req.query.payoff = parseFloat(req.query.payoff);
+  req.query.price = parseFloat(req.query.price);
+  req.query.overNotUnder = (req.query.overNotUnder === 'true');
   ModifyBets.takePending(req.query, req.user, function(err) {
     if (err) {
       next(err);

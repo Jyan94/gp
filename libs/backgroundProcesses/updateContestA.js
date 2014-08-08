@@ -26,8 +26,10 @@ function startUpdatingContestAActive () {
 } 
 
 exports.start = function() {
-  startUpdatingContestAPending();
-  startUpdatingContestAActive();
+  if (!configs.isDev()) {
+    startUpdatingContestAPending();
+    startUpdatingContestAActive();
+  }
   //disable timeseries caching for now since it is not necessary
   //startPollingContestATimeseries();
 }
