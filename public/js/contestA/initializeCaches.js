@@ -6,7 +6,7 @@
  * must have jquery before this
  * include this file before any other non-jquery file to access athletes
  *
- * exports the object contestALoadGaCache
+ * exports the object contestALoadGamesCache
  * which has methods:
  *   -getAthleteById
  *     args: (id)
@@ -19,18 +19,23 @@
  */
 
 /* global async */
+/* global contestALoadAthletesCache */
+/* global contestALoadGamesCache */
 'use strict';
 
 (function (exports) {
+  var POLL_INTERVAL = 60000; 
+  var CUTOFF = 50;
 
-  /**
-   * returns an athlete object corresponding to given id
-   * @param  {uuid} id
-   * @return {object}    athlete object
+  var searchedAthleteObj = {};
+
+  /*
+   * ===========================================================================
+   * INITIALIZE TOP PLAYER TICKER
+   * ===========================================================================
    */
 
-
-  function compareTopPlayers(athlete, callback) {
+  function compareTopPlayers (athlete, callback) {
     var statistics = athlete.statistics;
     var statisticsLength = athlete.statistics.length;
     var fantasyPoints = [(statisticsLength > 0
@@ -40,43 +45,17 @@
     callback(null, (fantasyPoints[1] - fantasyPoints[0]));
   }
 
-/*
-  function sendMarketHomeTopPlayers(req, res, next) {
-    async.waterfall([
-      function (callback) {
-        callback(null, Athletes.Select.getAllAthletesList());
-      },
-      function (athletes, callback) {
-        async.map(athletes, parseTopPlayers, callback);
-      },
-      function (athletes, callback) {
-        async.sortBy(athletes,
-          function(athlete, callback) {
-            callback(null, -1 * athlete.change);
-          }, callback);
-      },
-      function (athletes, callback) {
-        res.send(JSON.stringify(athletes.slice(0, 50)));
-      }],
-      function (err) {
-        next(err);
-      });
-  }
-*/
-
   function getTopPlayers (callback) {
-  /*$.ajax({
-    url: '/marketHomeTopPlayers',
-    type: 'GET',
-    success: function (response) {*/
-    async.sortBy(exports.getAthletesArray(), compareTopPlayers,
+    async.sortBy(contestALoadAthletesCache.getAthletesArray(),
+      compareTopPlayers,
       function (err, athletes) {
         if (err) {
           callback(err);
         }
         else {
-          var array = athletes.slice(0, 50);
+          var array = athletes.slice(0, CUTOFF);
           var index = 0;
+
           async.reduce(array, '',
             function (memo, athlete, callback) {
               var statistics = athlete.statistics;
@@ -103,7 +82,7 @@
                          '</p>');
               }
 
-              if (index !== array.length - 1) {
+              if (index !== CUTOFF - 1) {
                 memo += '<p>&#160;&#160;&#160;&#160;&#160</p>';
               }
 
@@ -122,32 +101,65 @@
             });
         }
       });
-        /*callback(null);
-      },
-      failure: function (response) {
-        callback(new Error('Cannot get top players.'));
-      }
-    });*/
   }
 
-
-  var gamesList = [];
-  var gamesIdMap = {};
-  var POLL_INTERVAL = 60000;
-
-  /**
-   * returns an game object corresponding to given id
-   * @param  {uuid} id
-   * @return {object}    game object
+  /*
+   * ===========================================================================
+   * INITIALIZE AUTOCOMPLETE
+   * ===========================================================================
    */
-  function getGameById(id) {
-    return gamesList[gamesIdMap[id]];
+  
+  function getSearchedAthleteObj () {
+    return searchedAthleteObj;
   }
 
-  function getGamesArray() {
-    return gamesList;
+  function initAutocomplete(callback) {
+    async.map(contestALoadAthletesCache.getAthletesArray(),
+      function (athlete, callback) {
+        athlete.label = athlete.fullName;
+        callback(null, athlete);
+      },
+      function (err, result) {
+        if (err) {
+          callback(err);
+        }
+        else {
+          $('#autocomplete').autocomplete({
+            source: result,
+            select: function(e, ui) {
+              searchedAthleteObj = contestALoadAthletesCache.getAthleteById(ui.item.id);
+              $('.playercard1#create')
+                .find('.playercard1-info.name p')
+                .replaceWith('<p>' + searchedAthleteObj.fullName + '</p');
+              $('.playercard1#create')
+                .find('.playercard1-info.pos p')
+                .replaceWith('<p>' + searchedAthleteObj.position + ' | ' + 
+                  searchedAthleteObj.longTeamName + '</p');
+              $('.playercard1#create')
+                .find('.playercard1-playerpic img')
+                .replaceWith('<img src=\'' + searchedAthleteObj.image +
+                 '\'' + 'width=\'250\' height=\'250\'>');
+            },
+            delay: 500,
+            minLength: 3
+          }).data('ui-autocomplete')._renderItem = function ( ul, item ) {
+              return $('<li>')
+                .append('<a><img style="background-image: url(' + 
+                  item.image + ')">' + item.label + '</a>')
+                .appendTo(ul);
+              }
+
+          callback(null);
+        }
+      });
   }
 
+  /*
+   * ===========================================================================
+   * INITIALIZE DAILY BOXSCORES TICKER
+   * ===========================================================================
+   */
+  
   var formatTime = function (oldTime) {
     var time = new Date(oldTime);
     var timeHalf = (time.getHours() > 11 ? ' PM' : ' AM');
@@ -159,12 +171,7 @@
   }
   
   function getDailyBoxscores (callback) {
-    /*$.ajax({
-      url: '/marketHomeDailyBoxscores',
-      type: 'GET',
-      success: function (response) {*/
-
-    var array = exports.getGamesArray();
+    var array = contestALoadGamesCache.getGamesArray();
     var index = 0
 
     async.reduce(array, '',
@@ -206,53 +213,115 @@
         callback(null, memo);
       },
       function (err, tickerContent) {
-        $('#daily-boxscore-ticker').html(tickerContent);
+        if (err) {
+          callback(err);
+        }
+        else {
+          $('#daily-boxscore-ticker').html(tickerContent);
+          callback(null);
+        }
       });
-
-    /*    callback(null);
-      },
-      failure: function (response) {
-        callback(new Error('Cannot get daily boxscores.'));
-      }
-    });*/
   }
 
-  function loadGamesFromServer() {
-    $.ajax({
-      url: '/getTodaysGames',
-      type: 'GET',
-
-      //gets data from server
-      //the data is a JSON stringified object
-      //{
-      //  gamesList: array of athlete objects,
-      //  gamesIdMap: object keyed by gameed 
-      //    and values index of game in array
-      //}
-      success: function(data) {
-        data = JSON.parse(data);
-        gamesList = data.gamesList;
-        gamesIdMap = data.gamesIdMap;
-        getDailyBoxscores(function (err) {
-          if (err) {
-            console.log(err);
-          }
-
-          setTimeout(loadGamesFromServer, POLL_INTERVAL);
-        });
-      },
-      failure: function (response) {
-        console.log(response);
-      },
-      error: function(xhr, status, err) {
-        console.error(xhr, status, err);
-      }
-    });
+  /*
+   * ===========================================================================
+   * INITIALIZE SHORT TEAM NAME TO GAME CACHE
+   * ===========================================================================
+   */
+  /*
+  function getGameByShortTeamName (shortTeamName) {
+    return contestALoadGamesCache.getGameById(
+      shortTeamNameToGameMap[shortTeamName]);
   }
 
-  loadGamesFromServer();
-  exports.getGameById = getGameById;
-  exports.getGamesArray = getGamesArray;
+  function getGameByAthlete (athlete) {
+    return getGameByShortTeamName(athlete.shortTeamName);
+  }
+
+  function getGameByAthleteId (athleteId) {
+    return getGameByAthlete(
+      contestALoadAthletesCache.getAthleteById(athleteId));
+  }
+
+  function loadShortTeamNameToGameCache (callback) {
+    async.reduce(contestALoadGamesCache.getGamesArray(),
+      {},
+      function (memo, game, callback) {
+        memo[game.shortAwayName] = game.id;
+        memo[game.shortHomeName] = game.id;
+
+        callback(null, memo);
+      },
+      function (err, result) {
+        if (err) {
+          callback(err);
+        }
+        else {
+          shortTeamNameToGameMap = result;
+          callback(null);
+        }
+      });
+  }
+*/
+  /*
+   * ===========================================================================
+   * RUN IT ALL
+   * ===========================================================================
+   */
+
+  function customSetInterval (func, interval) {
+    var callback = function (err) {
+      if (err) {
+        console.log(err);
+      }
+
+      setTimeout(function () {
+        customSetInterval(func, interval);
+      }, interval);
+    };
+
+    func(callback);
+  }
+
+  function initializeCaches (callback) {
+    async.parallel([
+        function (callback) {
+          async.waterfall([
+              contestALoadAthletesCache.loadAthletesFromServer,
+              function (callback) {
+                async.parallel([
+                    getTopPlayers,
+                    initAutocomplete
+                  ],
+                  callback);
+              }
+            ],
+            callback);
+        },
+        function (callback) {
+          async.waterfall([
+              contestALoadGamesCache.loadGamesFromServer,
+              getDailyBoxscores
+            ],
+            callback);
+        }
+      ],
+      /*function (err) {
+        if (err) {
+          callback(err);
+        }
+        else {
+          loadShortTeamNameToGameCache(callback);
+        }
+      })*/
+      callback);
+  }
+
+  customSetInterval(initializeCaches, POLL_INTERVAL);
+  exports.getSearchedAthleteObj = getSearchedAthleteObj;
+  /*exports.getGameByShortTeamName = getGameByShortTeamName;
+  exports.getGameByAthlete = getGameByAthlete;
+  exports.getGameByAthleteId = getGameByAthleteId;*/
 }(typeof exports === 'undefined' ? 
-    window.contestALoadGamesCache = {} : 
+    window.initializeCaches = {} : 
     exports));

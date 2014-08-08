@@ -28,7 +28,7 @@ function formatAthlete(athlete, callback) {
     shortTeamName: athlete.short_team_name,
     sport: BASEBALL,
     status: athlete.status,
-    teamId: athlete.teamId,
+    teamId: athlete.team_id,
     uniformNumber: athlete.uniform_number,
     weight: athlete.weight 
   };

@@ -144,7 +144,8 @@ exports.games = {
   basketballList: [],
   basketballIdMap: {},
   allGamesList: [],
-  allGamesIdMap: {}
+  allGamesIdMap: {},
+  longTeamNameToGameMap: {}
 }
 
 exports.currentSportsInSeason = {

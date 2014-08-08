@@ -22,7 +22,7 @@
 (function(exports) {
   var gamesList = [];
   var gamesIdMap = {};
-  var POLL_INTERVAL = 60000;
+  var longTeamNameToGameMap = {};
 
   /**
    * returns an game object corresponding to given id
@@ -33,80 +33,15 @@
     return gamesList[gamesIdMap[id]];
   }
 
+  function getGameIdByLongTeamName (longTeamName) {
+    return longTeamNameToGameMap[longTeamName];
+  }
+
   function getGamesArray() {
     return gamesList;
   }
 
-  var formatTime = function (oldTime) {
-    var time = new Date(oldTime);
-    var timeHalf = (time.getHours() > 11 ? ' PM' : ' AM');
-    var timeString = (((time.getHours() + 11) % 12) + 1
-                      + time.toTimeString().substring(2, 8)
-                      + timeHalf);
-
-    return timeString;
-  }
-  
-  function getDailyBoxscores (callback) {
-    /*$.ajax({
-      url: '/marketHomeDailyBoxscores',
-      type: 'GET',
-      success: function (response) {*/
-
-    var array = exports.getGamesArray();
-    var index = 0
-
-    async.reduce(array, '',
-      function (memo, game, callback) {
-        var status = game.status;
-
-        if (status === 'scheduled') {
-          memo += ('<p>' +
-                     game.shortAwayName + ' at ' + game.shortHomeName +
-                     ' begins at ' + formatTime(game.startTime) +
-                   '</p>');
-        }
-        else if (status === 'inprogress') {
-          memo += ('<p>' +
-                     game.shortAwayName + ' ' + game.awayScore + ' ' +
-                     game.shortHomeName + ' ' + game.homeScore +
-                     ' Current Inning: ' + game.currentInning +
-                   '</p>');
-        }
-        else if (status === 'closed') {
-          memo += ('<p>' +
-                     game.shortAwayName + ' ' + game.awayScore + ' ' +
-                     game.shortHomeName + ' ' + game.homeScore +
-                     ' Final</p>');
-        }
-        else {
-          memo += ('<p>' +
-                     game.shortAwayName + ' at ' + game.shortHomeName +
-                     ' is ' + formatTime(game.startTime) +
-                   '</p>');
-        }
-
-        if (index !== array.length - 1) {
-          memo += '<p>&#160;&#160;&#160;&#160;&#160</p>';
-        }
-
-        index++;
-        
-        callback(null, memo);
-      },
-      function (err, tickerContent) {
-        $('#daily-boxscore-ticker').html(tickerContent);
-      });
-
-    /*    callback(null);
-      },
-      failure: function (response) {
-        callback(new Error('Cannot get daily boxscores.'));
-      }
-    });*/
-  }
-
-  function loadGamesFromServer() {
+  function loadGamesFromServer(callback) {
     $.ajax({
       url: '/getTodaysGames',
       type: 'GET',
@@ -122,26 +57,24 @@
         data = JSON.parse(data);
         gamesList = data.gamesList;
         gamesIdMap = data.gamesIdMap;
-        getDailyBoxscores(function (err) {
-          if (err) {
-            console.log(err);
-          }
-
-          setTimeout(loadGamesFromServer, POLL_INTERVAL);
-        });
+        longTeamNameToGameMap = data.longTeamNameToGameMap;
+        callback(null);
       },
       failure: function (response) {
         console.log(response);
+        callback(new Error(response));
       },
       error: function(xhr, status, err) {
         console.error(xhr, status, err);
+        callback(err);
       }
     });
   }
 
-  loadGamesFromServer();
   exports.getGameById = getGameById;
+  exports.getGameIdByLongTeamName = getGameIdByLongTeamName;
   exports.getGamesArray = getGamesArray;
+  exports.loadGamesFromServer = loadGamesFromServer;
 }(typeof exports === 'undefined' ? 
     window.contestALoadGamesCache = {} : 
     exports));

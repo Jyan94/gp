@@ -48,16 +48,15 @@
         data = JSON.parse(data);
         athletesList = data.athletesList;
         athletesIdMap = data.athletesIdMap;
-        getTopPlayers(function (err) {
-          if (err) {
-            console.log(err);
-          }
-
-          setTimeout(loadAthletesFromServer, POLL_INTERVAL);
-        });
+        callback(null);
+      },
+      failure: function (response) {
+        console.log(response);
+        callback(new Error(response));
       },
       error: function(xhr, status, err) {
         console.error(xhr, status, err);
+        callback(err);
       }
     });
   }

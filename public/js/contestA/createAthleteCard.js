@@ -60,7 +60,7 @@
               '</div>' +
               '<div class=\'playercard1-info pos\'>' +
                 '<center>' +
-                  '<p>' + athletePosition + '&#160;|&#160;' + fullName +'</p>' +
+                  '<p>' + athletePosition + '&#160;|&#160;' + fullTeamName +'</p>' +
                 '</center>' +
               '</div>' +
             '</div>' +

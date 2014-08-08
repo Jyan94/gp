@@ -44,6 +44,10 @@ function getAllGamesIdMap() {
   return gamesCache.allGamesIdMap;
 }
 
+function getAllLongTeamNameToGameMap() {
+  return gamesCache.longTeamNameToGameMap;
+}
+
 function getAllGamesJSON() {
   return configs.globals.allGamesCacheJSON;
 }
@@ -52,8 +56,13 @@ function getGameById(id) {
   return gamesCache.allGamesList[gamesCache.allGamesIdMap[id]];
 }
 
+function getGameIdByLongTeamName(longTeamName) {
+  return gamesCache.longTeamNameToGameMap[longTeamName];
+}
+
 exports.getGameBySportAndById = getGameBySportAndById;
 exports.getGameById = getGameById;
 exports.getGameList = getGameList;
 exports.getAllGamesList = getAllGamesList;
 exports.getAllGamesJSON = getAllGamesJSON;
+exports.getGameIdByLongTeamName = getGameIdByLongTeamName;

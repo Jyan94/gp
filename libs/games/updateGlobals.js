@@ -19,18 +19,20 @@ var gamesCache = configs.globals.games;
 
 //TODO: update other sports too
 function updateGames(callback) {
-  async.parallel(
-  [
-    function(callback) {
-      updateBaseballGames.update(callback);
-    }
-    //add other sports
-  ],
-  function(err) {
-    if (err) {
-      callback(err);
-    }
-    else {
+  async.waterfall([
+    function (callback) {
+      async.parallel(
+        [
+          function(callback) {
+            updateBaseballGames.update(callback);
+          }
+          //add other sports
+        ],
+        function (err) {
+          callback(err);
+        });
+    },
+    function (callback) {
       gamesCache.allGamesList = [].concat(
         gamesCache.baseballList,
         gamesCache.footballList,
@@ -53,14 +55,42 @@ function updateGames(callback) {
           }
           else {
             gamesCache.allGamesIdMap = result.retVal;
-            configs.globals.allGamesCacheJSON = JSON.stringify({
-              gamesList: gamesCache.allGamesList,
-              gamesIdMap: result.retVal
-            });
             callback(null);
           }
         });
+    },
+    function (callback) {
+      async.reduce(
+        gamesCache.allGamesList,
+        {},
+        function (memo, gameObj, callback) {
+          memo[gameObj.longAwayName] = gameObj.id;
+          memo[gameObj.longHomeName] = gameObj.id;
+          callback(null, memo);
+        },
+        function (err, result) {
+          if (err) {
+            callback(err);
+          }
+          else {
+            gamesCache.longTeamNameToGameMap = result;
+            callback(null);
+          }
+        });
+    }],
+    function (err) {
+      if (err) {
+        callback(err);
       }
-  });
+      else {
+        configs.globals.allGamesCacheJSON = JSON.stringify({
+            gamesList: gamesCache.allGamesList,
+            gamesIdMap: gamesCache.allGamesIdMap,
+            longTeamNameToGameMap: gamesCache.longTeamNameToGameMap
+          });
+
+        callback(null);
+      }
+    });
 }
 exports.updateGames = updateGames;

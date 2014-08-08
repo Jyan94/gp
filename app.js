@@ -9,6 +9,7 @@ configs.configure(app);
 //mount on on other modules
 //keep this file clean
 require('libs/backgroundProcesses/updateCaches').start();
+require('libs/backgroundProcesses/updateContestA').start();
 /*var customSetInterval = configs.constants.globals.customSetInterval;
 var globals = configs.globals.contestA;
 customSetInterval(function(callback) {

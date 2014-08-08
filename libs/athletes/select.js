@@ -54,7 +54,7 @@ function getAllAthletesJSON() {
 }
 
 function getAthleteById(id) {
-  return athletesCache.allAtheltesList[athletesCache.allAthletesIdMap[id]];
+  return athletesCache.allAthletesList[athletesCache.allAthletesIdMap[id]];
 }
 
 exports.getAthleteBySportAndById = getAthleteBySportAndById;

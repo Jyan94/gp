@@ -512,11 +512,11 @@ input[type="text"] {
 }
 
 #daily-boxscore-ticker {
-  -webkit-animation: moveTicker 90s linear 0s infinite normal;
+  -webkit-animation: moveTicker 105s linear 0s infinite normal;
 }
 
 #top-player-ticker {
-  -webkit-animation: moveTicker 120s linear 0s infinite normal;
+  -webkit-animation: moveTicker 180s linear 0s infinite normal;
 }
 
 
