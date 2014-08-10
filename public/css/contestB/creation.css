@@ -1,0 +1,149 @@
+/* GLOBAL STYLES
+-------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+
+body {
+  margin: 0;
+  padding-bottom: 40px;
+  font-family: 'Helvetica', 'Arial', 'sans-serif';
+  font-size: 16px;
+  background-color: #242425;
+  background-image: url('../../assets/stadium_wide.jpg');
+  background-size: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+/* CUSTOMIZE THE BANNER
+-------------------------------------------------- */
+.banner {
+  background-color: #000;
+  box-shadow: inset 0 0 10px rgba(255,255,255,.5);
+  position: fixed;
+  margin: 0;
+  height: 45px;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+}
+
+.placeholder {
+  float: right;
+  color : #fff;
+  padding: 14px;
+  margin-right: 15px;
+}
+
+/* MAIN CONTENT CSS
+-------------------------------------------------- */
+.content {
+  padding-top: 75px;
+  width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 0;
+}
+
+.entry {
+  position: relative;
+  box-shadow: 0 0 5px rgba(95, 99, 105, 0.5);
+  max-height: 800px;
+  width: 800px;
+  overflow: hidden;
+  background-color: #fff;
+  border-radius: 4px;
+}
+
+.entry-header {
+  color: #fff;
+  height: 80px;
+  padding: 10px;
+  background-color: #293c58;
+}
+
+.entry-body {
+  height: 560px;
+  padding: 10px;
+  overflow-y: scroll;
+}
+
+.game-box {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  position: relative;
+}
+
+.game-title-box {
+  position: relative;
+  border-radius: 4px;
+  background-color: #888;
+  padding: 10px;
+  z-index: 2;
+}
+.game-teams-box-container {
+  position: relative;
+  background-color: #ccc;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin-top: -4px;
+  height: 4px;
+  overflow: hidden;
+  z-index: 1;
+  -webkit-transition: all 0.3s ease-in-out;
+}
+.game-teams-box {
+  padding: 10px;
+  padding-top: 14px;
+  overflow: auto;
+}
+
+.game-team-box-left,
+.game-team-box-right {
+  float: left;
+}
+
+.players-box {
+  overflow: auto;
+}
+
+.players-checkbox,
+.players-info {
+  float: left;
+}
+
+.entry-footer {
+  height: 80px;
+  width: 100%;
+  padding: 10px;
+  background-color: #293c58;
+}
+
+.entry-submission {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 10px;
+}
+
+.entry-footer-button {
+  border-radius: 4px;
+}
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+/* Only kicks in when width is at least 768px */
+@media (min-width: 768px) {
+
+}
+
+/* Only kicks in when width is at least 992px */
+@media (min-width: 992px) {
+  
+}

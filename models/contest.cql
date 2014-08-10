@@ -2,7 +2,7 @@ USE goprophet;
 
 CREATE TABLE IF NOT EXISTS daily_prophet (
   athlete_names list<text>,
-  athletes map<text, text>,
+  athletes list<text>,
   commission_earned int, //updated after processed payouts
   contest_deadline_time timestamp,  //actually matters for contestants, deadline for submitting
   contest_end_time timestamp, //is end time of the real-world event(s)
@@ -15,12 +15,12 @@ CREATE TABLE IF NOT EXISTS daily_prophet (
   current_entries int,
   entries_allowed_per_contestant int,
   entry_fee int,
-  games map<text, text>,
+  games list<text>,
   isfiftyfifty boolean,
   max_wager int,
   maximum_entries int,
   minimum_entries int,
-  pay_outs map<text, double>,
+  payouts list<double>,
   processed_payouts_time timestamp, //updated after processed payouts
   sport text, //lowercase text
   starting_virtual_money int,
@@ -33,13 +33,13 @@ CREATE INDEX IF NOT EXISTS ON daily_prophet(KEYS(contestants));
 CREATE INDEX IF NOT EXISTS ON daily_prophet(athlete_names);
 
 CREATE TABLE IF NOT EXISTS timeseries_daily_prophet (
-    player_id uuid,
+    athlete_id uuid,
     time timeuuid,
     fantasy_value double,
     virtual_money_wagered int,
     username text,
     active boolean,
-    PRIMARY KEY (player_id, time)
+    PRIMARY KEY (athlete_id, time)
 ) WITH CLUSTERING ORDER BY (time ASC);
 CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);
 
@@ -47,78 +47,86 @@ CREATE INDEX IF NOT EXISTS ON timeseries_daily_prophet(active);
 ===================================================
 daily_prophet tables, see readme.md in libs/cassandra/dailyProphet for more information
 ===================================================
- */
-
-/*
-
-CREATE TYPE IF NOT EXISTS baseball_team (
-  team_id uuid,
-  team_name text,
-  team_abbreviation
-);
-
-CREATE TYPE IF NOT EXISTS baseball_team_table (
-  team_id uuid,
-  team_name text,
-  team_abbreviation
-);*/
+*/
 
 CREATE TABLE IF NOT EXISTS baseball_game (
-  gsis_id uuid PRIMARY KEY,
-  start_time text,
-  end_time timeuuid,
-  game_date text,
-  season_type text,
-  status text,
-  home_team text,
-  away_team text,
-  home_score int,
+  athletes list<text>,
+  away_id uuid,
   away_score int,
-  play_by_play list<text>
+  current_inning text,
+  end_time timestamp,
+  game_id uuid PRIMARY KEY,
+  game_date text,
+  home_id uuid,
+  home_score int,
+  long_away_name text,
+  long_home_name text,  //full name for home team
+  play_by_play list<text>,
+  short_away_name text,
+  short_home_name text, //acronym for home team
+  start_time timestamp,
+  status text
 );
+CREATE INDEX IF NOT EXISTS on baseball_game(game_date);
+CREATE INDEX IF NOT EXISTS on baseball_game(start_time);
 
-CREATE INDEX IF NOT EXISTS on baseball_game (game_date);
+/**
+ game_id - timeuuid initialized
+ athletes - list of athlete objects
+ {
+    athleteId: athlete player uuid,
+    athleteName: name of athlete,
+    isOnHomeTeam: boolean,
+    shortTeamName: short string for team,
+    longTeamName: full team name,
+    teamId: uuid for team
+ }
+ status: 'closed', 'scheduled', 'ongoing'?
+ */
 
-CREATE TABLE IF NOT EXISTS baseball_player_game_statistics (
-  statistic_id uuid PRIMARY KEY,
-  player_id uuid,
+CREATE TABLE IF NOT EXISTS baseball_player (
+  age int,
+  athlete_id uuid PRIMARY KEY,
+  first_name text,
+  full_name text,
+  height int,
+  image_url text,
+  last_name text,
+  long_team_name text,
+  position text,
+  short_team_name text,
+  statistics map<text, text>,
+  status text,
+  team_id uuid,
+  uniform_number int,
+  weight int
+);
+CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
+CREATE INDEX IF NOT EXISTS ON baseball_player(long_team_name);
+CREATE INDEX IF NOT EXISTS ON baseball_player(short_team_name);
+
+/*
+statistics: map of game_date (yyyy/mm/dd) to stringified statistics objects
+{
   sport text,
-  game_date timestamp,
-  season_year int,
-  season_type text,
-  position_in_game text,
+  gameDate formatted as (yyyy/mm/dd),
+  gameId,
+  seasonYear int,
+  seasonType text,
+  positionInGame text,
   singles int,
   doubles int,
   triples int,
-  home_runs int,
+  homeRuns int,
   runs int,
-  rbis int,
-  stolen_bases int,
-  caught_stealing_bases int,
+  rbis int, //runs batted in
+  stolenBases int,
+  caughtStealingBases int,
   walks int,
-  earned_runs_allowed int,
+  earnedRunsAllowed int,
   strikeouts int,
-  walks_and_hits_allowed int,
-  fantasy_points double
-);
-CREATE INDEX IF NOT EXISTS ON baseball_player_game_statistics(player_id);
-
-CREATE TABLE IF NOT EXISTS baseball_player (
-  player_id uuid PRIMARY KEY,
-  current_value double,
-  full_name text,
-  first_name text,
-  last_name text,
-  team text,
-  status text,
-  position text,
-  profile_url text,
-  uniform_number int,
-  height int,
-  weight int,
-  age int,
-  image text,
-  statistics list<uuid>
-);
-CREATE INDEX IF NOT EXISTS ON baseball_player(full_name);
-//statistics is list of baseball_player_game_statistics
+  walksAndHitsAllowed int,
+  fantasyPoints double,
+  processed boolean
+}
+ */

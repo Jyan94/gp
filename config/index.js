@@ -1,8 +1,14 @@
+/**
+ * ====================================================================
+ * Author: Harrison Zhao
+ * ====================================================================
+ */
 'use strict';
 (require('rootpath')());
 
 var constants = require('config/constants');
-var handlebarsHelpers = require('config/handlebarsHelpers');
+var globals = require('config/globals');
+var handlebarsHelpers = require('views/handlebarsHelpers/exports');
 
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
@@ -14,9 +20,8 @@ var hbs = require('hbs');
 var helmet = require('helmet');
 var methodOverride = require('method-override');
 var morgan = require('morgan');
-var session = require('express-session');
 var path = require('path');
-var multiline = require('multiline');
+var session = require('express-session');
 
 //cassandra configurations
 var cassandraConfig = {
@@ -30,7 +35,8 @@ var client = new cql.Client(cassandraConfig);
 //CHANGE TO PRODUCTION WHEN IN PRODUCTION
 process.env.NODE_ENV = 'development';
 //process.env.NODE_ENV = 'production';
-var cookieConfig = (process.env.NODE_ENV === 'development') ? false : true;
+//var cookieConfig = (process.env.NODE_ENV === 'development') ? false : true;
+var cookieConfig = false;
 
 //exported configurations
 var config = {
@@ -49,11 +55,12 @@ var config = {
         hbs.registerHelper(key, handlebarsHelpers[key]);
       }
     }
-
+    hbs.registerPartials(path.join(__dirname, '../views/handlebarsPartials'));
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'jade');
     app.engine('jade', require('jade').__express);
     app.engine('hbs', hbs.__express);
+    app.engine('html', hbs.__express);
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(compress());
     app.use(bodyParser());
@@ -74,6 +81,7 @@ var config = {
     cql: cql,
     client: client
   },
+  globals: globals,
   isDev: function() {
     return process.env.NODE_ENV === 'development';
   },

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="//fonts.googleapis.com/css?family=Roboto+Condensed:400,300" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/css/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+    <link rel="stylesheet" type="text/css" href="/js/jquery/jquery-ui.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.10.4.custom.css">
+    <link rel="stylesheet" type="text/css" href="/css/contestA/marketHome.css">
+
+    <title> Contest A Portfolio</title>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/contestA/portfolio.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="pure-g-r banner">
+      <div class="pure-u-3-4 banner-inner">
+        <div class="banner-nav">
+          <span><a class="dropdown-icon">{{username}}</a></span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-top-divider"></li>
+            <!--<li class="dropdown-entry"><a href="/user">Profile</a></li>-->
+            <li class="dropdown-entry"><a href="/portfolio">Portfolio</a></li>
+            <li class="dropdown-entry"><a href="/#features">About</a></li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-entry"><a href="/logout">Logout</a></li>
+          </ul>
+          <div class="pure-hidden-desktop pure-hidden-tablet"><span><a href="/" class="fui-list"></a></span></div>
+        </div>
+        <div class="pure-form">
+          <input id="quicksearchHidden" type="text" name="search" placeholder="Search for Players">
+        </div>
+        <div class="banner-brand"><a href="/markethome"><img src="/img/GoProphetLogo8.jpg"></a></div>
+          </div>
+        </div>
+
+    <div class="content">
+      <div class="portfolio">
+        <div class="portfolio-info">
+          <div id="graph-container" class="portfolio-graph-container">
+          </div>
+          <div class="portfolio-profile">
+            <img src="{{userImage}}" alt="53e199b9e62dd0272abc8fed_RiskTakerFantasy.jpg" style='width:100%; height:70%; border-radius: 5px 5px 0px 0px'>
+            <p class="lead"><font size="3">
+            Username: {{username}}<br>
+            Total Money: {{money}}<br>
+            <!-- Number of Bets Taken: <br>
+            Number of Bets Made: <br>
+            Number of Bets Won: <br> 
+            Most Betted on Athlete: <br> -->
+          </div>
+        </div>
+        <div class="portfolio-tab-container">
+          <ul class="portfolio-tab-menu">
+            <li id='portfolio-tab-1' class='portfolio-tab'>
+              Pending
+            </li>
+            <li id='portfolio-tab-2' class='portfolio-tab'>
+              Taken
+            </li>
+            <!-- <li id='portfolio-tab-3' class='portfolio-tab'>
+              Resell
+            </li> -->
+          </ul>
+          <div class='portfolio-tab-border'>
+          </div>
+          <div id='portfolio-tab-1-content' class='portfolio-tab-content active'>
+            <div class='isotope-pending'></div>
+          </div>
+          <div id='portfolio-tab-2-content' class='portfolio-tab-content'>
+            <div class='isotope-taken'></div>
+          </div>
+
+
+          <!-- <div id='portfolio-tab-3-content' class='portfolio-tab-content'>
+            Stuff
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+
+
+    <script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/libModules/highcharts/highstock.js"></script>
+    <script type="text/javascript" src="/js/libModules/highcharts/exporting.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/js/libModules/isotope.pkgd.min.js"></script>
+    <script type="text/javascript" src="/js/contestAPortfolio/createAthleteCard.js"></script>
+    <script type="text/javascript" src="/js/contestAPortfolio/portfolio.js"></script>
+    <script src="/js/banner.js"></script>
+  </body>
+</html>

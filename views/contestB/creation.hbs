@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/contestB/creation.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <div class="banner">
+      <div class="placeholder">
+        <p> Placeholder </p>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="entry">
+
+        <div class="entry-header">
+          <h1> Contest Creation </h1>
+        </div>
+
+        <div class="entry-body">
+          <form id="entry-form" action="/contestBCreationProcess" method="post">
+            {{#each games}}
+              <div class="game-box" id="game-box-game-{{this.gameId}}">
+                <div class="game-title-box">
+                  {{this.shortAwayName}} vs. {{this.shortHomeName}}<br>
+                  {{this.startTime}}
+                </div>
+                <div class="game-teams-box-container">
+                  <div class="game-teams-box">
+                    <div class="game-team-box-left">
+                      {{#contestBCreationHelperAway this}}
+                        <div class="players-box"  id="players-box-game-{{this.gameId}}">
+                          <div class="players-checkbox">
+                            <input type="checkbox" name="player-{{this.athlete.athleteId}}-game-{{this.gameId}}">
+                          </div>
+                          <div class="players-info">
+                            {{this.athlete.fullName}} {{this.athlete.position}}
+                          </div>
+                        </div>
+                      {{/contestBCreationHelperAway}}
+                    </div>
+                    <div class="game-team-box-right">
+                      {{#contestBCreationHelperHome this}}
+                        <div class="players-box" id="players-box-game-{{this.gameId}}">
+                          <div class="players-checkbox">
+                            <input type="checkbox" name="player-{{this.athlete.athleteId}}-game-{{this.gameId}}">
+                          </div>
+                          <div class="players-info">
+                            {{this.athlete.fullName}} {{this.athlete.position}}
+                          </div>
+                        </div>
+                      {{/contestBCreationHelperHome}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {{/each}}
+
+            <table>
+              <thead>
+                <tr>
+                  <th> Fields  </th>
+                  <th> Values </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td> Fifty-fifty </td>
+                  <td>
+                    <select name="is-fifty-fifty" id="is-fifty-fifty">
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td> Entry Fee </td>
+                  <td>
+                    <input type="number" name="entry-fee" placeholder="Entry Fee" min="0" max="1000" required="true" step="5" value ="10" id="entry-fee">
+                  </td>
+                </tr>
+                <tr>
+                  <td> Maximum Entries </td>
+                  <td>
+                    <input type="number" name="maximum-entries" placeholder="Maximum Entries" min="3" max="2001" required="true" step="2" value ="11" id="maximum-entries">
+                  </td>
+                </tr>
+                <tr>
+                  <td> Starting Virtual Money </td>
+                  <td>
+                    <input type="number" name="starting-virtual-money" placeholder="Starting Virtual Money" min="1000" max="100000" required="true" step="1000" value="10000" id="starting-virtual-money">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
+
+
+
+          <!--div class="entry-form-table">
+            <table>
+
+              <thead>
+                <tr>
+                  <th> Athlete </th>
+                  <th> Prediction </th>
+                  <th> Wager </th>
+                  <th> 5 for 5 </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <form id="entry-form-1" action="/contestBEntryProcess/{{contestInfo.contestId}}" method="post">
+                  {{#each contestInfo.athletes}}
+                    <tr>
+                      <td> {{this.athleteName}} </td>
+                        <td>
+                          <input class="entry-form-input prediction" type="number" name="prediction-{{@index}}" placeholder="Your prediction" required=true min="0" step="0.01"></input>
+                        </td>
+                        <td>
+                          <input class="entry-form-input wager" type="number" name="wager-{{@index}}" placeholder="Your wager" required=true min="0" max="8000" step="1"></input>
+                        </td>
+                      </fieldset>
+                      <td>
+                        <button type="button" class="entry-form-button"> 5 for 5 </button>
+                      </td>
+                    </tr>
+                  {{/each}}
+                </form>
+              </tbody>
+
+            </table>
+          </div>
+
+          <div class="entry-form-info">
+            <div class="entry-form-money" id="entry-form-money-{{contestInfo.startingVirtualMoney}}">
+              <p> Money Remaining: {{contestInfo.startingVirtualMoney}} </p>
+            </div>
+          </div-->
+
+        </div>
+
+        <div class="entry-footer">
+          <div class="entry-submission">
+            <button class="entry-footer-button" form="entry-form" type="submit" value="Submit"> Submit </button>
+          </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <link rel="import" href="/htmlImports/dependencies/jquery.html">
+    <link rel="import" href="/htmlImports/dependencies/jquery-ui.html">
+    <script src="/js/contestB/creation.js"></script>
+  </body>
+</html>

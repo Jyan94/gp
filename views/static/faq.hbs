@@ -7,6 +7,22 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="css/bootstrap/faq.css" rel="stylesheet">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
     <title>GoProphet: Real-Time Fantasy Sports</title>
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
@@ -24,22 +40,18 @@
 ================================================== -->
   <body>
     <div class="masthead clearfix">
-      <div class="inner">
-        <a href=/home><img src= 'assets/GP-01.png' href = "/home" class = "masthead-brand" height="90" width="120"></a>
+      <div class="wrap">
+        <a href= "/home" class="masthead-brand">
+          <img src= 'assets/static/GP-01.png'>
+        </a>
         <ul class="nav masthead-nav">
-          <li><a href="/about">About</a></li>
+          <li><a href="/about">About Us</a></li>
           <li><a href="/features">Features</a></li>
           <li class="active"><a href="#">FAQ</a></li>
-          <li><a href="/rules">Rules</a></li>
-          <li><a href="/contact">Contact</a></li>
+          <!--<li><a href="/contact">Contact</a></li>-->
           <li><a href="/{{link}}" >{{display}}</a></li>
       </div>
     </div>
-
-
-
-
-
 
 
     <!-- Marketing messaging and featurettes
@@ -66,7 +78,12 @@
       <div class="row featurette">
         <div class="col-md-12">
           <h2 class="featurette-heading">What is GoProphet?</span></h2>
-          <p class="lead"></p>
+          <p class="lead">
+            GoProphet is a real-time fantasy sports website where you can make bets even when a game
+            is going on.  There are no salary caps and you do not have to draft athletes.  You can
+            just place bets on your favorite players, then when your players' stock rises, you can
+            sell the bet for a profit.  Learn more on the <a href="/features" style="color: #52527A">Features Page</a>.
+          </p>
         </div>
         <div class="col-md-5">
         </div>
@@ -74,8 +91,15 @@
 
       <div class="row featurette">
         <div class="col-md-12">
-          <h2 class="featurette-heading">Why should I choose to play on GoProphet?</span></h2>
-          <p class="lead" ></p>
+          <h2 class="featurette-heading">Real-time fantasy sports sounds complicated.  Why should I choose to play GoProphet?</span></h2>
+          <p class="lead" >
+            GoProphet is very intuitive.  It is simpler than traditional fantasy
+            sports websites or daily fantasy sports websites, because you do not have to know
+            all the athletes in a specific sport.  You can place bets on only your favorite
+            athletes. <br>
+            It is easy for beginners to learn, but experts can also profit by researching the players
+            they are betting on.
+          </p>
         </div>
         <div class="col-md-5">
         </div>
@@ -84,7 +108,9 @@
       <div class="row featurette">
         <div class="col-md-12">
           <h2 class="featurette-heading">Are there any restrictions for playing?</span></h2>
-          <p class="lead">You must be at least 18 years old to play on the GoProphet Site. Not only that, you must be a legal resident in the United States, as well as from one of the states that allows fantasy sports. See the <a href="/rules" style="color: #52527A">Terms and Conditions</a> for more information.</p>
+          <p class="lead">
+          GoProphet is legal to play for play money.  To play for real money, you must be at least 18 years old to play. You must also be a legal resident in the United States, and a legal resident from one of the following states: Alabama; Alaska; California; Colorado; Connecticut; Delaware; Georgia; Hawaii; Idaho; Illinois; Indiana; Iowa; Kansas; Kentucky; Maine; Maryland; Massachusetts; Michigan; Minnesota; Mississippi; Missouri; Nebraska; Nevada; New Hampshire; New Jersey; New Mexico; New York; North Carolina; North Dakota; Ohio; Oregon; Pennsylvania; Rhode Island; South Dakota; Tennessee; Texas; Utah; Vermont; Virginia; West Virginia; Wisconsin; or Wyoming; or the District of Columbia that allows fantasy sports. See the <a href="/terms" style="color: #52527A">Terms and Conditions</a> for more information.
+          </p>
         </div>
         <div class="col-md-5">
         </div>
@@ -120,12 +146,23 @@
       <div class="row featurette">
         <div class="col-md-12">
           <h2 class="featurette-heading">Is playing on GoProphet legal?</span></h2>
-          <p class="lead" >Please see our <a href="/terms" style="color: #52527A">Terms and Conditions</a> page for more information on how games work. </p>
+          <p class="lead" >
+          In 2006 the federal government passed a law called the Unlawful Internet Gaming Enforcement Act which was designed to prevent gambling over the internet. The law included a carve out that clarified the legality of fantasy sports. Specifically, it exempted:
+
+"participation in any fantasy or simulation sports game or educational game or contest in which (if the game or contest involves a team or teams) no fantasy or simulation team is based on the current membership of an actual team that is a member of an amateur or professional sports organisation and meets the following conditions: 
+
+1. All prizes and awards offered to winning participants are established and made known to the participants in advance of the game or contest and their value is not determined by the number of participants or the amount of any fees paid by participants. 
+2. All winning outcomes reflect the relative knowledge and skill of the participants and are determined predominantly by accumulated statistical results of the performance of individuals (athletes in the case of sports events) in multiple real-world sporting or other events. 
+3. No winning outcome is based: a. On the score, point spread, or any performance or performances of any single real world team or any combination of such teams; or b. Solely on any single performance of an individual athlete in any single real-world sporting or other event."
+
+GoProphet takes the legal status of the games it offers very seriously and for more information please see our <a href="/terms" style="color: #52527A">Terms And Conditions</a> page for more information on how games work. If you have any further concerns about the legality of our games please do get in touch.</p>
+
         </div>
         <div class="col-md-5">
         </div>
       </div>
 
+      <!--
       <div class="row featurette">
         <div class="col-md-12">
           <h2 class="featurette-heading">How you do ensure people don't try to cheat in your tournaments?</span></h2>
@@ -134,6 +171,7 @@
         <div class="col-md-5">
         </div>
       </div>
+      -->
 
       <div class="row featurette">
         <div class="col-md-12">
@@ -163,22 +201,5 @@
       </footer>
 
     </div><!-- /.container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-
-    <!-- Custom styles for this template -->
-    <link href="css/bootstrap/faq.css" rel="stylesheet">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   </body>
 </html>

@@ -4,76 +4,80 @@ CREATE KEYSPACE IF NOT EXISTS "goprophet"
 USE goprophet;
 
 CREATE TABLE IF NOT EXISTS users(
-    user_id uuid PRIMARY KEY,
-    email text,
-    verified boolean,
-    verified_time timestamp,
-    ver_code timeuuid,
-    username text,
-    password text,
-    first_name text,
-    last_name text,
     age int,
-    address text,
-    payment_info text,
+    email text,
+    facebook_id text,
+    first_name text,
+    image text,
+    last_name text,
     money double,
-    spending_power double,
-    fbid text,
-    vip_status int,
-    image text
+    password text,
+    payment_info text,
+    privilege_level int,
+    user_id uuid PRIMARY KEY,
+    username text,
+    verification_code timeuuid,
+    verified boolean,
+    verified_time timestamp
 );
 CREATE INDEX IF NOT EXISTS ON users (username);
 CREATE INDEX IF NOT EXISTS ON users (email);
 
-CREATE TABLE IF NOT EXISTS user_id_to_bet_id (
-    user_id uuid,
+CREATE TABLE IF NOT EXISTS contest_a_bets (
+    athlete_id uuid,
+    athlete_image text,
+    athlete_name text,
+    athlete_position text,
+    athlete_team text,
+    bet_id timeuuid PRIMARY KEY,
+    bet_state int,  //
+    bettor_usernames map<text, text>,    //
+    expirations map<text, timestamp>,   //    
+    fantasy_value double,
+    game_id uuid,
+    is_selling_position map<text, boolean>,  //
+    old_prices map<text, double>,
+    payoff double,
+    prices map<text, double>,
+    sport text
+);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(athlete_name);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(bet_state);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(bettor_usernames);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(game_id);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets(is_selling_position);
+
+/*
+is_selling_position - boolean for sells position,
+CAREFUL FOR PENDING
+if selling over, the pending bet will be placed by the under bettor
+prices[POSITION] - price for position, if pending refers to other position
+expirations[POSITION] - expiration for position, if pending refers to other position
+ */
+
+CREATE TABLE IF NOT EXISTS contest_a_bets_history (
+    athlete_id uuid,
+    athlete_name text,
+    athlete_team text,
     bet_id timeuuid,
-    PRIMARY KEY (user_id, bet_id)
-);
+    fantasy_value double,
+    opponent text,
+    over_not_under boolean,
+    payoff double,
+    price double,
+    sell_not_buy boolean,
+    time timeuuid,
+    username text,
+    PRIMARY KEY (username, time)
+) WITH CLUSTERING ORDER BY (time ASC);
+CREATE INDEX IF NOT EXISTS ON contest_a_bets_history(bet_id);
 
-CREATE TABLE IF NOT EXISTS pending_bets (
-    bet_id timeuuid PRIMARY KEY,
-    user_id uuid,
-    long_position boolean,
-    player_id uuid,
-    bet_value double,
-    multiplier double,
-    game_id uuid,
-    expiration timeuuid,
-);
-CREATE INDEX IF NOT EXISTS ON pending_bets(player_id);
-
-CREATE TABLE IF NOT EXISTS current_bets (
-    bet_id timeuuid PRIMARY KEY,
-    long_better_id uuid,
-    short_better_id uuid,
-    player_id uuid,
-    bet_value double,
-    multiplier double,
-    game_id uuid,
-    expiration timeuuid
-);
-CREATE INDEX IF NOT EXISTS ON current_bets(player_id);
-
-CREATE TABLE IF NOT EXISTS past_bets (
-    bet_id timeuuid PRIMARY KEY,
-    long_better_id uuid,
-    short_better_id uuid,
-    player_id uuid,
-    bet_value double,
-    multiplier double,
-    long_better_payoff bigint,
-    short_better_payoff bigint,
-    game_id uuid,
-    expiration timeuuid
-);
-
-CREATE INDEX IF NOT EXISTS ON past_bets(player_id);
-
+//*_resell_value and *_resell_expiration will be null if not for resell
+//bet_state: 0 (pending), 1 (active), 2 (processed) 
 /*to-do condense bet tables by giving bet an int as state*/
 
 CREATE TABLE IF NOT EXISTS football_player (
-    player_id uuid PRIMARY KEY,
+    athlete_id uuid PRIMARY KEY,
     current_value double,
     full_name text,
     first_name text,
@@ -88,7 +92,6 @@ CREATE TABLE IF NOT EXISTS football_player (
     age int,
     image text
 );
-
 CREATE INDEX IF NOT EXISTS ON football_player (team);
 
 CREATE TABLE IF NOT EXISTS football_team (
@@ -119,7 +122,7 @@ CREATE TABLE IF NOT EXISTS football_meta (
 );
 
 CREATE TABLE IF NOT EXISTS football_player_stat (
-    player_id uuid PRIMARY KEY,
+    athlete_id uuid PRIMARY KEY,
     season_year int,
     season_type text,
     finished boolean,
@@ -138,7 +141,7 @@ CREATE TABLE IF NOT EXISTS football_player_stat (
 );
 
 CREATE TABLE IF NOT EXISTS football_market_value (
-    player_id uuid PRIMARY KEY,
+    athlete_id uuid PRIMARY KEY,
     start_time timeuuid,
     end_time timeuuid,
     position text,
@@ -155,9 +158,10 @@ CREATE TABLE IF NOT EXISTS player_images (
     image_url text
 );
 
-CREATE TABLE IF NOT EXISTS timeseries_bets (
-    player_id text,
-    time timeuuid,
+CREATE TABLE IF NOT EXISTS timeseries_contest_a_bets (
+    athlete_id uuid,
+    fantasy_value double,
     price double,
-    PRIMARY KEY (player_id, time)
-) WITH CLUSTERING ORDER BY (time ASC);
+    time timeuuid,
+    PRIMARY KEY (athlete_id, time)
+) WITH CLUSTERING ORDER BY (time DESC);

@@ -25,24 +25,34 @@ var checkUser = function(req, res, next) {
  */
 var redirectLogin = function(req, res, next) {
   if (req.user) {
-    res.redirect('/user');
+    res.redirect('/marketHome');
   } else {
     next();
   }
 }
 
 var renderLogin = function(req, res) {
-  var errors = req.flash().error;
-  var errorsSend = [];
+  res.render('registry/login.html');
+}
 
-  if (typeof(errors) !== 'undefined') {
-    for (var i = 0; i < errors.length; i++) {
-      errorsSend[i] = JSON.parse(errors[i]);
+var authenticateCallback = function(passport, req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { 
+      return next(err); 
     }
-  }
-  res.render('login.jade', { errors: errorsSend });
+    else if (info) {
+      return res.send(info);
+    }
+    req.logIn(user, function(err) {
+      if (err) { 
+        return next(err); 
+      }
+      return res.send({});
+    });
+  })(req, res, next);
 }
 
 exports.checkUser = checkUser;
 exports.redirectLogin = redirectLogin;
 exports.renderLogin = renderLogin;
+exports.authenticateCallback = authenticateCallback;

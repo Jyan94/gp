@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Login</title>
+  <meta name="generator" content="Bootply" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+      <link href="/css/registry/registry.css" rel="stylesheet">
+    </head>
+    <body>
+      <!--login modal-->
+      <div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <!-- remove close button for now -->
+              <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
+              <h1 class="text-center">Join GoProphet today</h1>
+            </div>
+            <div class="modal-body">
+              <form id="signup-form" class="form col-md-12 center-block">
+                <div class="form-group">
+                  <input id="username" type="username" class="form-control input-lg" placeholder="Username">
+                </div>
+                <div class="form-group">
+                  <input id="email" type="email" class="form-control input-lg" placeholder="Email">
+                </div>
+                <div class="form-group">
+                  <input id="password" type="password" class="form-control input-lg" placeholder="Password">
+                </div>
+                <div class="form-group">
+                  <input id="verifyPassword" type="password" class="form-control input-lg" placeholder="Re-enter Password">
+                </div>
+                <div class="form-group">
+                  <button id="submit-signup" class="btn btn-primary btn-lg btn-block">Create my account</button>
+                  <span class="pull-right"><a href="/login">Login</a></span>
+                  <span id="error-message-span"></span>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <!-- <div class="col-md-12">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- script references -->
+      <script src="/js/jquery/jquery.min.js"></script>
+      <script src="/js/libModules/bootstrap.min.js"></script>
+      <script src="/js/registry/signup.js"></script>
+    </body>
+    </html>

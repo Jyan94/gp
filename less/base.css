@@ -1,0 +1,60 @@
+/*----------------------------------------------------------------------------*/
+/* BASE STYLES                                                                */
+/*----------------------------------------------------------------------------*/
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'simplifica', 'Helvetica', 'Arial', 'sans-serif';
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+a {
+  text-decoration: none;
+}
+a:hover {
+  opacity: 0.8;
+}
+.wrap {
+  width: 80%;
+  margin: 0 auto;
+}
+.right {
+  float: right;
+}
+x,
+.left {
+  float: left;
+}
+.padded {
+  margin: 20px;
+}
+.relative {
+  position: relative;
+}
+.rounded {
+  border-radius: 10%;
+}
+/*----------------------------------------------------------------------------*/
+/* Glyphs                                                                     */
+/*----------------------------------------------------------------------------*/
+@font-face {
+  font-family: "Flat-UI-Icons";
+  src: url("../assets/simplifica.eot") format('embedded-opentype'), url("../assets/simplifica.woff") format('woff'), url("../assets/simplifica.ttf") format('truetype'), url("../assets/simplifica.svg") format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Flat-UI-Icons";
+  src: url("../assets/flat-ui-icons.eot");
+  src: url("../assets/flat-ui-icons.eot?#iefix") format('embedded-opentype'), url("../assets/flat-ui-icons.woff") format('woff'), url("../assets/flat-ui-icons.ttf") format('truetype'), url("../assets/flat-ui-icons.svg#flat-ui-icons") format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
