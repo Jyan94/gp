@@ -119,7 +119,6 @@ function insert(params, callback) {
     value: params[PRICES_INDEX],
     hint: 'map'
   };
-
   cassandra.query(INSERT_BET_CQL, params, one, callback);
 }
 /**

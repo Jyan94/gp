@@ -219,6 +219,7 @@
 
         var currentTarget = $('#' + e.currentTarget.id);
         currentTarget.addClass('flipped');
+
         //set up and create highcharts stuff here
         var arrayId = currentTarget.find('div.id').text();
         var graphContainerId = 'playercard1-' + arrayId + '-graph-container';
@@ -226,6 +227,7 @@
         var athleteId = currentTarget.find('div.athleteId').text();
         timeseries.createGraph(graphContainerId, athleteName, athleteId);
         //end
+
         flippedCard = e.currentTarget.id.substring(
           e.currentTarget.id.indexOf(DELIM) + 1);
 
