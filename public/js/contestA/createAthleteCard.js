@@ -14,7 +14,7 @@
 'use strict';
 /**
  * returns an athlete card
- * @param  {int} arrayId 
+ * @param  {int} arrayId
  * @param  {double} fantasyValue
  * @param  {string} fullName
  * @param  {string} fullTeamName
@@ -29,7 +29,7 @@
     arrayId,
     fantasyValue,
     athleteId,
-    fullName,  
+    fullName,
     fullTeamName,
     overNotUnder,
     pictureUrl,
@@ -53,7 +53,7 @@
         '<div class=\'athleteName\' style=\'display: none;\'>' + fullName + '</div>' +
         '<div class=\'athleteId\' style=\'display: none;\'>' + athleteId + '</div>' +
         '<div class=\'playercard1-front\'>' +
-          '<div class=\'playercard1-playerpic\'>' + 
+          '<div class=\'playercard1-playerpic\'>' +
             '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +
             '<div class=\'playercard1-info\'>' +
               '<div class=\'playercard1-info name\'>' +
@@ -71,8 +71,8 @@
               '<div class=\'playercard1-bottom wager\'><p>$' + wager + ' '  + betPosition + ' ' + fantasyValue + ' FP</p></div>' +
               '<div class=\'playercard1-bottom submit\'>' +
                 '<center>' +
-                  '<div clickIndex=' + 
-                  arrayId + 
+                  '<div clickIndex=' +
+                  arrayId +
                   ' class=\'pure-button button-primary take-bet-button\'>Take</div>' +
                 '</center>' +
               '</div>' +
@@ -82,16 +82,16 @@
         '<div class=\'playercard1-back\'>' +
           '<div class="playercard1-back-info">' +
          ' </div>' +
-          '<div class=\'playercard1-back-tab-container\'>' + 
+          '<div class=\'playercard1-back-tab-container\'>' +
             '<ul class=\'playercard1-back-tab-menu\'>' +
               '<li id=\'playercard1-' + arrayId + '-tab-1\' class=\'playercard1-back-tab active\'>' +
                 'Timeseries' +
               '</li>' +
               '<li id=\'playercard1-' + arrayId + '-tab-2\' class=\'playercard1-back-tab\'>' +
-                'Tab 2' +
+                'Statistics' +
               '</li>' +
               '<li id=\'playercard1-' + arrayId + '-tab-3\' class=\'playercard1-back-tab\'>' +
-                'Tab 3' +
+                'News' +
               '</li>' +
             '</ul>' +
             '<div class=\'playercard1-back-tab-border\'>' +
@@ -140,8 +140,8 @@
         bet.sport);
     }
     else {
-      card = '<div id=\'playercard1-' + 
-        index + 
+      card = '<div id=\'playercard1-' +
+        index +
         '\' class=\'playercard1\' style=\'display: none;\'>';
     }
     return card;
@@ -150,6 +150,6 @@
   //export createCard function
   exports.createCard = createCard;
 
-}(typeof exports === 'undefined' ? 
-    window.contestACreateAthleteCard = {} : 
+}(typeof exports === 'undefined' ?
+    window.contestACreateAthleteCard = {} :
     exports));

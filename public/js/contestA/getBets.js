@@ -14,7 +14,7 @@
  * each bet has an id corresponding to its index in displayedBets
  * must include async and createAthleteCard before this file
  * ASSUMES THE IDs for cards are of the form [string]-[array index]
- * 
+ *
  * $container.isotope({
     getSortData: {
       id: '.id'
@@ -47,12 +47,12 @@
    * ===========================================================================
    * Globals for displaying bets
    *
-   * BetsWrapper: raw data retrieved from server 
+   * BetsWrapper: raw data retrieved from server
    * pending: array of bets
    * pendingHash: map of id to array index
    * resell: array of bets
    * resellHash: map of id to array index
-   * 
+   *
    * displayedBets: array of ordered bets currently displayed
    * displayedBetsHash: maps of id to array index based on bet state
    *
@@ -75,8 +75,8 @@
     overResell: {},
     underResell: {}
   };
-  var POLL_INTERVAL = 500;
-  var NUM_DISPLAYED = 5;
+  var POLL_INTERVAL = 1000;
+  var NUM_DISPLAYED = 12;
   /*
    * ===========================================================================
    */
@@ -94,7 +94,7 @@
     elementList = elementList.sort(function(a, b) {
       aId = a.getAttribute('id');
       bId = b.getAttribute('id');
-      return parseInt(aId.substring(aId.indexOf(DELIM) + 1)) > 
+      return parseInt(aId.substring(aId.indexOf(DELIM) + 1)) >
         parseInt(bId.substring(bId.indexOf(DELIM) + 1));
     });
   }
@@ -112,7 +112,7 @@
 
   //can optimize to make it async waterfall-able
   /**
-   * updates the cards 
+   * updates the cards
    * @param  {object} holes
    * map of index to bool (TODO: change it to just an array)
    * @param  {object} newHashes
@@ -142,7 +142,7 @@
         if (
           id &&
           (typeof(newHashes.pending[id]) === 'undefined' &&
-          typeof(newHashes.overResell[id]) === 'undefined' && 
+          typeof(newHashes.overResell[id]) === 'undefined' &&
           typeof(newHashes.underResell[id]) === 'undefined')) {
 
           index = parseInt([holesArr[j]]);
@@ -150,7 +150,7 @@
           if (candidateDisplayedBets[i].bettor) {
             newHashes.pending[id] = index;
           }
-          else if (candidateDisplayedBets[i].seller && 
+          else if (candidateDisplayedBets[i].seller &&
                    candidateDisplayedBets[i].overNotUnder) {
             newHashes.overResell[id] = index;
           }
@@ -167,7 +167,7 @@
     for (i = 0; i !== displayedBets.length; ++i) {
       id = displayedBets[i].betId;
       if (
-        !newDisplayedBets[i] && 
+        !newDisplayedBets[i] &&
         (typeof(newHashes.pending[id]) !== 'undefined' ||
         typeof(newHashes.overResell[id]) !== 'undefined' ||
         typeof(newHashes.underResell[id]) !== 'undefined')) {
@@ -176,7 +176,7 @@
         if (displayedBets[i].bettor) {
           newHashes.pending[id] = i;
         }
-        else if (displayedBets[i].seller && 
+        else if (displayedBets[i].seller &&
                  displayedBets[i].overNotUnder) {
           newHashes.overResell[id] = i;
         }
@@ -198,8 +198,8 @@
     for (i = 0; i !== newDisplayedBets.length; ++i) {
       if (newDisplayedBets[i].bettor) {
         hashes.pending[newDisplayedBets[i].betId] = i;
-      }      
-      else if (newDisplayedBets[i].seller && 
+      }
+      else if (newDisplayedBets[i].seller &&
                newDisplayedBets[i].overNotUnder) {
         hashes.overResell[newDisplayedBets[i].betId] = i;
       }
@@ -215,23 +215,23 @@
     //edge case: bets sent < number to be displayed
     if (newDisplayedBets.length < NUM_DISPLAYED) {
       for (
-        i = 0; 
-        i !== candidateDisplayedBets.length && 
-          newDisplayedBets.length < NUM_DISPLAYED; 
+        i = 0;
+        i !== candidateDisplayedBets.length &&
+          newDisplayedBets.length < NUM_DISPLAYED;
         ++i) {
 
         id = candidateDisplayedBets[i] ? candidateDisplayedBets[i].betId : null;
         //if none of them exist, and id exists continue
         if (
-          id && 
+          id &&
           typeof(newHashes.pending[id]) === 'undefined' &&
-          typeof(newHashes.overResell[id]) === 'undefined' && 
+          typeof(newHashes.overResell[id]) === 'undefined' &&
           typeof(newHashes.underResell[id]) === 'undefined') {
 
           if (candidateDisplayedBets[i].bettor) {
             newHashes.pending[id] = newDisplayedBets.length;
           }
-          else if (candidateDisplayedBets[i].seller && 
+          else if (candidateDisplayedBets[i].seller &&
                    candidateDisplayedBets[i].overNotUnder) {
             newHashes.overResell[id] = newDisplayedBets.length;
           }
@@ -243,7 +243,7 @@
       }
     }
     //end edge case
-    
+
     //get changed
     //check against old one
     //or index changed
@@ -405,7 +405,7 @@
 
   /**
    * exported
-   * gets a bet's information given the id, 
+   * gets a bet's information given the id,
    * which is the index of the bet in array
    * @param  {int} id
    */
@@ -422,7 +422,7 @@
     $container = container;
     return $container;
   }
-  
+
   /*
    * ===========================================================================
    * EXPORTS BELOW

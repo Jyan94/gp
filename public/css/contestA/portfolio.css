@@ -93,6 +93,12 @@ p {
   box-shadow: 0 4px 4px #888;
 }
 
+.banner-brand-portfolio {
+  width: 180px;
+  margin-top: -32px;
+  margin-left: 40%;
+}
+
 .portfolio-tab-container {
   height: calc(100% - 330px);
   overflow: hidden;

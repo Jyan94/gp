@@ -13,7 +13,7 @@
  *     returns: athlete object
  *   -getAthletesArray
  *     returns: array of all athletes
- *     
+ *
  * NEED TO HIDE LOAD CACHE FUNCTIONS!!!!
  * =============================================================================
  */
@@ -24,7 +24,7 @@
 'use strict';
 
 (function (exports) {
-  var POLL_INTERVAL = 60000; 
+  var POLL_INTERVAL = 60000;
   var CUTOFF = 50;
 
   var searchedAthleteObj = {};
@@ -108,7 +108,7 @@
    * INITIALIZE AUTOCOMPLETE
    * ===========================================================================
    */
-  
+
   function getSearchedAthleteObj () {
     return searchedAthleteObj;
   }
@@ -133,7 +133,7 @@
                 .replaceWith('<p>' + searchedAthleteObj.fullName + '</p');
               $('.playercard1#create')
                 .find('.playercard1-info.pos p')
-                .replaceWith('<p>' + searchedAthleteObj.position + ' | ' + 
+                .replaceWith('<p>' + searchedAthleteObj.position + ' | ' +
                   searchedAthleteObj.longTeamName + '</p');
               $('.playercard1#create')
                 .find('.playercard1-playerpic img')
@@ -141,10 +141,9 @@
                  '\'' + 'width=\'250\' height=\'250\'>');
             },
             delay: 500,
-            minLength: 3
           }).data('ui-autocomplete')._renderItem = function ( ul, item ) {
               return $('<li>')
-                .append('<a><img style="background-image: url(' + 
+                .append('<a><img style="background-image: url(' +
                   item.image + ')">' + item.label + '</a>')
                 .appendTo(ul);
               }
@@ -159,7 +158,7 @@
    * INITIALIZE DAILY BOXSCORES TICKER
    * ===========================================================================
    */
-  
+
   var formatTime = function (oldTime) {
     var time = new Date(oldTime);
     var timeHalf = (time.getHours() > 11 ? ' PM' : ' AM');
@@ -169,7 +168,7 @@
 
     return timeString;
   }
-  
+
   function getDailyBoxscores (callback) {
     var array = contestALoadGamesCache.getGamesArray();
     var index = 0
@@ -209,7 +208,7 @@
         }
 
         index++;
-        
+
         callback(null, memo);
       },
       function (err, tickerContent) {
@@ -322,6 +321,6 @@
   /*exports.getGameByShortTeamName = getGameByShortTeamName;
   exports.getGameByAthlete = getGameByAthlete;
   exports.getGameByAthleteId = getGameByAthleteId;*/
-}(typeof exports === 'undefined' ? 
-    window.initializeCaches = {} : 
+}(typeof exports === 'undefined' ?
+    window.initializeCaches = {} :
     exports));
