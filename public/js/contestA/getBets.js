@@ -75,7 +75,7 @@
     overResell: {},
     underResell: {}
   };
-  var POLL_INTERVAL = 500;
+  var POLL_INTERVAL = 1000;
   var NUM_DISPLAYED = 5;
   /*
    * ===========================================================================
@@ -97,6 +97,37 @@
       return parseInt(aId.substring(aId.indexOf(DELIM) + 1)) > 
         parseInt(bId.substring(bId.indexOf(DELIM) + 1));
     });
+  }
+
+  function getElementId(index) {
+    return parseInt(
+      elementList[index]
+      .getAttribute('id')
+      .substring(
+        elementList[index]
+        .getAttribute('id')
+        .indexOf(DELIM) + 1));
+  }
+
+  function checkIfElementListSorted() {
+    for (var i = 1; i < elementList.length; ++i) {
+      if (getElementId(i) < getElementId(i - 1)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function checkAndSortElementList(callback) {
+    if (!checkIfElementListSorted()) {
+      setTimeout(function() {
+        sortElementList();
+        checkAndSortElementList(callback);
+      }, 100);
+    }
+    else {
+      callback();
+    }
   }
 
   //fisher-yates shuffle
@@ -122,7 +153,7 @@
    * @return {object}
    * returns the newHashes object and newDisplayedBets object
    */
-  function updateData(holes, newHashes, newDisplayedBets) {
+  function updateData(holes, newHashes, newDisplayedBets, callback) {
     var holesArr = Object.keys(holes);
     var totalLength = BetsWrapper.pending.length + BetsWrapper.resell.length;
     var candidateDisplayedBets = [];
@@ -271,35 +302,37 @@
     }
 
     elementList = $container.data('isotope').getItemElements();
-    sortElementList();
-    insertList = [];
-    removeList = [];
-    //get extra changed
-    for (i = 0; i !== changed.length; ++i) {
-      removeList.push(changed[i]);
-      insertList.push(changed[i]);
+    //sortElementList();
+    function updateCallback() {
+      insertList = [];
+      removeList = [];
+      //get extra changed
+      for (i = 0; i !== changed.length; ++i) {
+        removeList.push(changed[i]);
+        insertList.push(changed[i]);
+      }
+      for (i = newDisplayedBets.length; i < displayedBets.length; ++i) {
+        removeList.push(i);
+        nullList.push(i);
+      }
+      for (i = 0; i !== removeList.length; ++i) {
+        $container.data('isotope').remove(elementList[removeList[i]]);
+      }
+      for (i = 0; i !== insertList.length; ++i) {
+        $container.data('isotope').insert(
+          contestACreateAthleteCard.createCard(
+            insertList[i], newDisplayedBets[insertList[i]]));
+      }
+      for (i = 0; i !== nullList.length; ++i) {
+        $container.data('isotope').insert(
+          contestACreateAthleteCard.createCard(nullList[i], null));
+      }
+      $container.isotope({ sortBy : 'id' });
+      displayedBetsHashes = newHashes;
+      displayedBets = newDisplayedBets;
+      callback();
     }
-    for (i = newDisplayedBets.length; i < displayedBets.length; ++i) {
-      removeList.push(i);
-      nullList.push(i);
-    }
-    for (i = 0; i !== removeList.length; ++i) {
-      $container.data('isotope').remove(elementList[removeList[i]]);
-    }
-    for (i = 0; i !== insertList.length; ++i) {
-      $container.data('isotope').insert(
-        contestACreateAthleteCard.createCard(
-          insertList[i], newDisplayedBets[insertList[i]]));
-    }
-    for (i = 0; i !== nullList.length; ++i) {
-      $container.data('isotope').insert(
-        contestACreateAthleteCard.createCard(nullList[i], null));
-    }
-    $container.isotope({ sortBy : 'id' });
-    return {
-      newDisplayedBetsHashes: newHashes,
-      newDisplayedBets: newDisplayedBets
-    };
+    checkAndSortElementList(updateCallback);
   }
 
   /*
@@ -371,10 +404,11 @@
         results[0].holes,
         results[1].holes,
         results[2].holes);
-      var retval = updateData(holes, newDisplayedBetsHashes, newDisplayedBets);
-      displayedBetsHashes = retval.newDisplayedBetsHashes;
-      displayedBets = retval.newDisplayedBets;
-      callback();
+      updateData(holes, newDisplayedBetsHashes, newDisplayedBets, callback);
+      //var retval = updateData(holes, newDisplayedBetsHashes, newDisplayedBets);
+      //displayedBetsHashes = retval.newDisplayedBetsHashes;
+      //displayedBets = retval.newDisplayedBets;
+      //callback();
     });
   }
 

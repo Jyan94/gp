@@ -139,7 +139,7 @@
                  '\'' + 'width=\'250\' height=\'250\'>');
             },
             delay: 500,
-            minLength: 3
+            //minLength: 3
           }).data('ui-autocomplete')._renderItem = function ( ul, item ) {
               return $('<li>')
                 .append('<a><img style="background-image: url(' + 

@@ -14,8 +14,17 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //root path
+//hacked together need elegant
 var staticPages = require('routes/static/routes');
-app.get('/', staticPages.features);
+var contestA = require('routes/contestA/contestA.js');
+app.get('/', function(req, res, next) {
+  if (!req.user) {
+    staticPages.features(req, res);
+  }
+  else {
+    contestA.renderMarketHome(req, res, next);
+  }
+});
 
 /*
 DEAD LINKS:
@@ -90,7 +99,7 @@ var paypal = require('routes/paypal');
 app.post('/submitPayment/:userId', paypal.submitPayment);
 
 //contest A
-var contestA = require('routes/contestA/contestA.js');
+
 app.get('/initialAthletesLoad', contestA.getAllAthletes);
 app.get('/getTodaysGames', contestA.getTodaysGames);
 app.get('/market', contestA.getMarket);

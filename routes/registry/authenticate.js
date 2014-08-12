@@ -22,16 +22,31 @@ function localStrategyVerify(username, password, done) {
       return done(err);
     }
     if (!result) {
-      return done(null, false, {message: messages.incorrectUsername});
+      return done(
+        null, 
+        false, 
+        {
+          message: 'The username or password you entered is incorrect.'
+        });
     }
     if (result.verified === false) {
-      return done(null, false, { message: messages.unverified });
+      return done(
+        null,
+        false,
+        {
+          message: 'The account is not yet verified!'
+        });
     }
     var bcryptCallback = function(err, res) {
       if (res) {
         return done(null, result);
       } else {
-        return done(null, false, {message: messages.incorrectPassword});
+        return done(
+          null,
+          false,
+          {
+            message: 'The username or password you entered is incorrect.'
+          });
       }
     };
 
