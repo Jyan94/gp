@@ -12,7 +12,7 @@ $(function() {
 
   function showErrorMessage(message) {
     $('#error-message-span')
-      .text(message)
+      .text(message).show()
       .fadeIn(FADE_MILLISECONDS)
       .delay(SHOW_MILLISECONDS)
       .fadeOut(FADE_MILLISECONDS);
@@ -34,7 +34,7 @@ $(function() {
             window.location.href = document.URL;
           }
           else {
-            console.log(data);
+            showErrorMessage(data.message);
           }
         },
         error: function(xhr, status, err) {

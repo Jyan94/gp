@@ -42,7 +42,25 @@ function verifyGameIdAndAthlete(
   sport,
   callback) {
   if (configs.isDev()) {
-    callback(null);
+    switch(sport) {
+      case FOOTBALL:
+        athletes.footballIdMap[athleteId] ?
+          callback(null) :
+          callback(new Error('create pending: athlete information mismatch'));
+        break;
+      case BASEBALL:
+        athletes.baseballIdMap[athleteId] ?
+          callback(null) :
+          callback(new Error('create pending: athlete information mismatch'));
+        break;
+      case BASKETBALL:
+        athletes.basketballIdMap[athleteId] ?
+          callback(null) :
+          callback(new Error('create pending: athlete information mismatch'));
+        break;
+      default:
+        callback(new Error('invalid sport'));
+    }
   }
   else {
     var verify = function(idMap, list) {
