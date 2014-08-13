@@ -96,8 +96,8 @@
           .find('.playercard1-bottom.wager')
           .text()
           .split(" ")[1];
-        console.log(overOrUnder);
-        console.log(overOrUnder.match(/over/));
+        //console.log(overOrUnder);
+        //console.log(overOrUnder.match(/over/));
         return overOrUnder.match(/over/);
       },
       under: function() {
@@ -105,8 +105,8 @@
           .find('.playercard1-bottom.wager')
           .text()
           .split(" ")[1];
-        console.log(overOrUnder);
-        console.log(overOrUnder.match(/under/));
+        //console.log(overOrUnder);
+        //console.log(overOrUnder.match(/under/));
         return overOrUnder.match(/under/);
       },
       fantasyValue: function() {
@@ -188,7 +188,7 @@
         var arrayIndex = e.currentTarget.id.substring(
           e.currentTarget.id.indexOf(DELIM) + 1);
         var bet = contestAGetBets.getBetByIndex(arrayIndex);
-        console.log(bet.gameId);
+        //console.log(bet.gameId);
         $.ajax({
           url: '/takePendingBet',
           type: 'GET',
@@ -241,7 +241,7 @@
         currentTarget.css({'position': 'fixed',
                            'top': fixedOffsetY + 'px',
                            'left': fixedOffsetX + 'px'});
-        console.log(currentTarget.offset().left);
+        //console.log(currentTarget.offset().left);
         currentTarget.addClass('transition');
         currentTarget.css({'top': 'calc(50% - 170px)',
                            'left': 'calc(50% - 135px)',
@@ -280,7 +280,7 @@
         currentTarget.css({'position': 'absolute',
                            'top': absoluteOffsetY + 'px',
                            'left': absoluteOffsetX + 'px'});
-        console.log(currentTarget.offset().left);
+        //console.log(currentTarget.offset().left);
         currentTarget.addClass('transition');
         currentTarget.css({'top': flippedCardOffset.top - 10 + 'px',
                            'left': flippedCardOffset.left - 130  + 'px',
@@ -430,7 +430,7 @@
         });
       }
       else {
-        console.log('cannot submit!');
+        //console.log('cannot submit!');
       }
     });
   })();

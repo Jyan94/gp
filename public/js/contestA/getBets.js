@@ -91,13 +91,15 @@
    */
   //replace with linear time sort or async sort in future
   function sortElementList() {
-    var aId, bId;
-    elementList = elementList.sort(function(a, b) {
-      aId = a.getAttribute('id');
-      bId = b.getAttribute('id');
-      return parseInt(aId.substring(aId.indexOf(DELIM) + 1)) >
-        parseInt(bId.substring(bId.indexOf(DELIM) + 1));
-    });
+    var i, j, tmp;
+    for (i = 1; i !== elementList.length; ++i) {
+      j = i;
+      while (j > 0 && getElementId(j-1) > getElementId(j)) {
+        tmp = elementList[j-1];
+        elementList[j-1] = elementList[j];
+        elementList[j] = tmp;
+      }
+    }
   }
 
   function getElementId(index) {
