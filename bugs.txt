@@ -1,3 +1,0 @@
-First insurmountable bug of the project!
-This bullshit fucking crap ass local image serving does not fucking work
-Holy fucking shit (routes/profile.js)
