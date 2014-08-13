@@ -41,7 +41,7 @@
       fullMessage += '<p><img src=\'/assets/common/Check-Mark-Green.png\' style=\'width: 25px\'>';
     }
     else {
-      fullMessage += '<p><img src=\'/assets/error_message_icon.png\' style=\'width: 25px\'>'; 
+      fullMessage += '<p><img src=\'/assets/error_message_icon.png\' style=\'width: 25px\'>';
     }
 
     fullMessage += ('<span>&#160;' + message + '</span></p>');

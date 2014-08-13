@@ -136,7 +136,7 @@
               $('.playercard1#create')
                 .find('.playercard1-playerpic img')
                 .replaceWith('<img src=\'' + searchedAthleteObj.image +
-                 '\'' + 'width=\'250\' height=\'250\'>');
+                 '\'' + 'width=\'250\' height=\'250\' onError= \"this.onerror=null;this.src=\'/assets/noimage.jpg\';\">');
             },
             delay: 500,
           }).data('ui-autocomplete')._renderItem = function ( ul, item ) {

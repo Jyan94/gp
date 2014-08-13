@@ -54,7 +54,7 @@
         '<div class=\'athleteId\' style=\'display: none;\'>' + athleteId + '</div>' +
         '<div class=\'playercard1-front\'>' +
           '<div class=\'playercard1-playerpic\'>' +
-            '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\'>' +
+            '<img width=\'250\' height=\'250\' src=\'' + pictureUrl + '\' onError= \"this.onerror=null;this.src=\'/assets/noimage.jpg\';\">' +
             '<div class=\'playercard1-info\'>' +
               '<div class=\'playercard1-info name\'>' +
                 '<center>' +
