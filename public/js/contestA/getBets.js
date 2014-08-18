@@ -76,7 +76,7 @@
     underResell: {}
   };
   var POLL_INTERVAL = 1000;
-  var NUM_DISPLAYED = 5;
+  var NUM_DISPLAYED = 24;
 
   /*
    * ===========================================================================
